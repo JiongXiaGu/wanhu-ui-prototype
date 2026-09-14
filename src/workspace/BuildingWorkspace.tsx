@@ -1,12 +1,12 @@
 import { Bell, Building2, Castle, DoorOpen, Landmark, Waves, X } from 'lucide-react';
 
 const buildingCards = [
-  { name: '八角楼阁式木塔', type: '木构 · 七层', use: '城市地标 / 寺观', icon: Landmark },
-  { name: '重檐楼阁', type: '木构 · 双檐', use: '公共建筑', icon: Building2 },
-  { name: '钟楼', type: '木构 · 三层', use: '城市设施', icon: Bell },
-  { name: '鼓楼', type: '木构 · 三层', use: '城市设施', icon: Castle },
-  { name: '城门楼阁', type: '木构 · 城防', use: '城门建筑', icon: DoorOpen },
-  { name: '临水榭台', type: '木构 · 水岸', use: '园林建筑', icon: Waves },
+  { name: '八角楼阁式木塔', type: '木构 · 七层', use: '城市地标 / 寺观', icon: Landmark, tone: 'tower' },
+  { name: '重檐楼阁', type: '木构 · 双檐', use: '公共建筑', icon: Building2, tone: 'pavilion' },
+  { name: '钟楼', type: '木构 · 三层', use: '城市设施', icon: Bell, tone: 'bell' },
+  { name: '鼓楼', type: '木构 · 三层', use: '城市设施', icon: Castle, tone: 'drum' },
+  { name: '城门楼阁', type: '木构 · 城防', use: '城门建筑', icon: DoorOpen, tone: 'gate' },
+  { name: '临水榭台', type: '木构 · 水岸', use: '园林建筑', icon: Waves, tone: 'waterside' },
 ] as const;
 
 interface BuildingWorkspaceProps {
@@ -34,9 +34,9 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
             ))}
           </div>
           <div className="card-grid">
-            {buildingCards.map(({ name, type, use, icon: Icon }) => (
+            {buildingCards.map(({ name, type, use, icon: Icon, tone }) => (
               <button className="building-card" key={name} title={`${type} · ${use}`} onClick={onSelectBuilding}>
-                <div className="card-thumb"><Icon /></div>
+                <div className={`card-thumb card-thumb--${tone}`}><Icon /></div>
                 <div className="building-card__copy"><b>{name}</b><span>{type}</span></div>
               </button>
             ))}
