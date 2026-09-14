@@ -1,0 +1,25 @@
+/* Real in-game screenshots supplied for the Wanhu UI review.
+   UI remains pure React/CSS; these files are background/world imagery only. */
+
+.main-menu-screen,
+.flow-screen {
+  background-image: url('/assets/wanhu-main-menu.jpg') !important;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.gameplay-screen {
+  background-image: url('/assets/wanhu-gameplay-city.jpg') !important;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* Keep the world legible. The real screenshots already have a soft presentation,
+   so the gameplay vignette only protects HUD contrast instead of grading the scene heavily. */
+.game-vignette {
+  background:
+    linear-gradient(180deg, rgba(8, 12, 10, .18), transparent 18%, transparent 76%, rgba(8, 12, 10, .22)),
+    linear-gradient(90deg, rgba(8, 12, 10, .08), transparent 24%, transparent 82%, rgba(8, 12, 10, .06));
+}
