@@ -17,8 +17,9 @@ const scenarios = [
   { file: '10-tool-camera-flyout-hints-hidden.png', review: 'building-camera', waitFor: '.right-edge-flyout--camera' },
   { file: '11-pause-layer.png', review: 'pause', waitFor: '.pause-command-surface' },
   { file: '12-menu-settings.png', review: 'settings', waitFor: '.settings-panel--menu' },
-  { file: '13-pause-save.png', review: 'pause-save', waitFor: '.pause-save-panel' },
+  { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-panel--save' },
   { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
+  { file: '15-menu-load.png', review: 'load', waitFor: '.archive-panel--load' },
 ];
 
 await mkdir(outDir, { recursive: true });
