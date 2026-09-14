@@ -78,7 +78,15 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canRedo: false,
       };
     case 'EXIT_TOOL':
-      return { ...state, tool: 'none', canUndo: false, canRedo: false };
+      return {
+        ...state,
+        tool: 'none',
+        workspace: 'building',
+        activeCategory: '建筑',
+        flyout: 'none',
+        canUndo: false,
+        canRedo: false,
+      };
     case 'SET_FLYOUT':
       return { ...state, flyout: action.flyout };
     case 'SET_PAUSED':
