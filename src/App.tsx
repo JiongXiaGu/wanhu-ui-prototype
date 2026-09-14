@@ -5,6 +5,7 @@ import { resolveReviewBootstrap } from './app/scenarios';
 import type { Screen } from './app/ui-state';
 import { GameplayScreen } from './gameplay/GameplayScreen';
 import { MainMenu, type MainMenuAction } from './menu/MainMenu';
+import { SettingsPanel } from './settings/SettingsPanel';
 
 const MAIN_BG = '/assets/wanhu-main-menu.png';
 const GAME_BG = '/assets/wanhu-gameplay-city.png';
@@ -109,19 +110,11 @@ export default function App() {
 
         {screen === 'settings' && (
           <FlowBackdrop background={MAIN_BG}>
-            <div className="modal settings-modal">
-              <header className="modal-header"><div><small>OPTIONS</small><h2>设置</h2></div><button className="icon-button" onClick={() => setScreen('menu')}><X /></button></header>
-              <div className="settings-layout">
-                <nav>{['显示', '图形', '音频', '操作', '游戏'].map((item, index) => <button key={item} className={index === 0 ? 'is-active' : ''}>{item}</button>)}</nav>
-                <div className="settings-body">
-                  <SettingRow title="显示模式" note="当前窗口输出模式" value="无边框全屏" />
-                  <SettingRow title="分辨率" note="渲染输出尺寸" value="1920 × 1080" />
-                  <SettingRow title="界面缩放" note="HUD 与面板整体缩放" value="100%" />
-                  <SettingRow title="垂直同步" note="与显示器刷新率同步" value="开启" />
-                </div>
-              </div>
-              <footer className="modal-footer"><button className="ghost-button" onClick={() => setScreen('menu')}>取消</button><button className="gold-button" onClick={() => setScreen('menu')}>应用</button></footer>
-            </div>
+            <SettingsPanel
+              context="menu"
+              onClose={() => setScreen('menu')}
+              onApply={() => setScreen('menu')}
+            />
           </FlowBackdrop>
         )}
 
@@ -149,8 +142,4 @@ function Summary({ label, value }: { label: string; value: string }) {
 
 function SaveRow({ title, meta, time, selected, onClick }: { title: string; meta: string; time: string; selected?: boolean; onClick: () => void }) {
   return <button className={`save-row ${selected ? 'is-selected' : ''}`} onClick={onClick}><div className="save-thumb" /><div><b>{title}</b><span>{meta}</span><small>{time}</small></div><em>{selected ? '继续' : '载入'} →</em></button>;
-}
-
-function SettingRow({ title, note, value }: { title: string; note: string; value: string }) {
-  return <div className="setting-row"><span><b>{title}</b><small>{note}</small></span><strong>{value}</strong></div>;
 }
