@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Milestone, Mountain, Waves, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Milestone, Mountain, Waves } from 'lucide-react';
+import { ArchivePanel } from './archive/ArchivePanel';
 import { resolveReviewBootstrap } from './app/scenarios';
 import type { Screen } from './app/ui-state';
 import { GameplayScreen } from './gameplay/GameplayScreen';
@@ -97,14 +98,7 @@ export default function App() {
 
         {screen === 'load' && (
           <FlowBackdrop background={MAIN_BG}>
-            <div className="modal wide-modal">
-              <header className="modal-header"><div><small>SAVE ARCHIVE</small><h2>载入游戏</h2></div><button className="icon-button" onClick={() => setScreen('menu')}><X /></button></header>
-              <div className="save-list">
-                <SaveRow title="昭平城" meta="第十二年 · 秋 · 晴" time="自动存档 · 今天 14:32" selected onClick={enterGame} />
-                <SaveRow title="临川府" meta="第七年 · 夏 · 多云" time="手动存档 · 昨天 23:18" onClick={enterGame} />
-              </div>
-              <footer className="modal-footer"><button className="ghost-button" onClick={() => setScreen('menu')}>返回</button><span>2 个本地存档</span></footer>
-            </div>
+            <ArchivePanel mode="load" context="menu" onBack={() => setScreen('menu')} onLoad={enterGame} />
           </FlowBackdrop>
         )}
 
@@ -138,8 +132,4 @@ function PresetCard({ icon, title, copy, tag, selected }: { icon: ReactNode; tit
 
 function Summary({ label, value }: { label: string; value: string }) {
   return <div><small>{label}</small><strong>{value}</strong></div>;
-}
-
-function SaveRow({ title, meta, time, selected, onClick }: { title: string; meta: string; time: string; selected?: boolean; onClick: () => void }) {
-  return <button className={`save-row ${selected ? 'is-selected' : ''}`} onClick={onClick}><div className="save-thumb" /><div><b>{title}</b><span>{meta}</span><small>{time}</small></div><em>{selected ? '继续' : '载入'} →</em></button>;
 }
