@@ -75,11 +75,15 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
     [primary, filter],
   );
   const contentPageCount = Math.max(1, Math.ceil(visibleCards.length / CONTENT_PAGE_SIZE));
-  const pageCards = visibleCards.slice(contentPage * CONTENT_PAGE_SIZE, (contentPage + 1) * CONTENT_PAGE_SIZE);
+  const pageStart = contentPage * CONTENT_PAGE_SIZE;
+  const pageCards = visibleCards.slice(pageStart, pageStart + CONTENT_PAGE_SIZE);
   const hasPreviousContent = contentPage > 0;
   const hasNextContent = contentPage < contentPageCount - 1;
-  const previousPeek = hasPreviousContent ? visibleCards[contentPage * CONTENT_PAGE_SIZE - 1] : undefined;
-  const nextPeek = hasNextContent ? visibleCards[(contentPage + 1) * CONTENT_PAGE_SIZE] : undefined;
+  const previousPeekTop = hasPreviousContent ? visibleCards[pageStart - 4] : undefined;
+  const previousPeekBottom = hasPreviousContent ? visibleCards[pageStart - 1] : undefined;
+  const nextStart = pageStart + CONTENT_PAGE_SIZE;
+  const nextPeekTop = hasNextContent ? visibleCards[nextStart] : undefined;
+  const nextPeekBottom = hasNextContent ? visibleCards[nextStart + 3] : undefined;
 
   function selectPrimary(next: PrimaryCategory) {
     setPrimary(next);
@@ -166,8 +170,10 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
           </nav>
 
           <div className="workspace-content-stage">
-            {previousPeek && <div className={`workspace-page-peek workspace-page-peek--previous card-thumb--${previousPeek.tone}`} aria-hidden="true" />}
-            {nextPeek && <div className={`workspace-page-peek workspace-page-peek--next card-thumb--${nextPeek.tone}`} aria-hidden="true" />}
+            {previousPeekTop && <div className={`workspace-page-peek workspace-page-peek--previous workspace-page-peek--top card-thumb--${previousPeekTop.tone}`} aria-hidden="true" />}
+            {previousPeekBottom && <div className={`workspace-page-peek workspace-page-peek--previous workspace-page-peek--bottom card-thumb--${previousPeekBottom.tone}`} aria-hidden="true" />}
+            {nextPeekTop && <div className={`workspace-page-peek workspace-page-peek--next workspace-page-peek--top card-thumb--${nextPeekTop.tone}`} aria-hidden="true" />}
+            {nextPeekBottom && <div className={`workspace-page-peek workspace-page-peek--next workspace-page-peek--bottom card-thumb--${nextPeekBottom.tone}`} aria-hidden="true" />}
 
             <button
               type="button"
