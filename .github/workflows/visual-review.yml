@@ -6,11 +6,16 @@ on:
     paths:
       - 'src/**'
       - 'scripts/**'
+      - 'public/assets/**'
       - 'index.html'
       - 'package.json'
       - 'vite.config.*'
       - '.github/workflows/visual-review.yml'
   workflow_dispatch:
+
+concurrency:
+  group: visual-review-main
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -18,19 +23,29 @@ permissions:
 jobs:
   capture:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install
-      - run: npm install --no-save playwright@1.55.0
-      - run: npx playwright install --with-deps chromium
-      - run: npm run build
-      - name: Start preview server
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install Playwright package
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Start Vite review server
         run: |
-          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
-          for i in {1..30}; do
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
+          for i in {1..20}; do
             if curl -fsS http://127.0.0.1:4173 >/dev/null; then
               exit 0
             fi

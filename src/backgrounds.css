@@ -3,23 +3,27 @@
 
 .main-menu-screen,
 .flow-screen {
-  background-image: url('/assets/wanhu-main-menu.jpg') !important;
+  background-image: url('/assets/wanhu-main-menu.png') !important;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
 }
 
 .gameplay-screen {
-  background-image: url('/assets/wanhu-gameplay-city.jpg') !important;
+  background-image: url('/assets/wanhu-gameplay-city.png') !important;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
 }
 
-/* Keep the world legible. The real screenshots already have a soft presentation,
-   so the gameplay vignette only protects HUD contrast instead of grading the scene heavily. */
+/* Alternate gameplay world view kept for later camera/review scenarios. */
+:root {
+  --wanhu-gameplay-lake: url('/assets/wanhu-gameplay-lake.png');
+}
+
+/* The supplied screenshots already have a soft presentation, so only protect HUD contrast. */
 .game-vignette {
   background:
-    linear-gradient(180deg, rgba(8, 12, 10, .18), transparent 18%, transparent 76%, rgba(8, 12, 10, .22)),
-    linear-gradient(90deg, rgba(8, 12, 10, .08), transparent 24%, transparent 82%, rgba(8, 12, 10, .06));
+    linear-gradient(180deg, rgba(8, 12, 10, .16), transparent 18%, transparent 76%, rgba(8, 12, 10, .20)),
+    linear-gradient(90deg, rgba(8, 12, 10, .06), transparent 24%, transparent 84%, rgba(8, 12, 10, .05));
 }
