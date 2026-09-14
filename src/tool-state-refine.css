@@ -1,0 +1,126 @@
+/* Tool execution layout refinement.
+   Tool mode uses three independent surfaces on a shared bottom baseline:
+   bottom-left parameter panel + centered contextual utility + action cluster. */
+
+/* Keep the parameter surface away from the persistent HUD and anchor it to the work area. */
+.gameplay-screen .tool-overlay{
+  position:absolute;
+  left:22px !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:22px !important;
+  transform:none !important;
+  z-index:22;
+  max-height:560px;
+}
+
+/* ToolOverlay, contextual utility and actions share the same 22px bottom baseline. */
+.gameplay-screen .tool-bottom-cluster{
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  gap:8px;
+  align-items:center;
+}
+
+/* Reuse the persistent Utility Toolbar material instead of creating a second tool language. */
+.gameplay-screen .tool-bottom-cluster__utility{
+  width:auto;
+  height:38px;
+  padding:3px 4px;
+  border:1px solid rgba(239,233,221,.13);
+  background:linear-gradient(180deg,rgba(31,39,35,.89),rgba(25,32,29,.84));
+  box-shadow:0 10px 28px rgba(7,10,9,.22);
+  backdrop-filter:blur(9px);
+}
+
+.gameplay-screen .tool-bottom-cluster__buttons{
+  width:auto;
+  height:100%;
+  justify-content:flex-start;
+}
+
+.gameplay-screen .tool-bottom-icon{
+  width:34px;
+  height:30px;
+  flex:0 0 34px;
+}
+
+.gameplay-screen .tool-bottom-icon svg{
+  width:15px;
+  height:15px;
+}
+
+/* Tool-context tooltip rises from the same place and timing as Gameplay Utility Toolbar. */
+.gameplay-screen .tool-bottom-icon::after{
+  bottom:38px;
+}
+
+/* Primary actions stay separate so they read as commit/cancel, not as editing tools. */
+.gameplay-screen .tool-bottom-cluster__primary{
+  height:38px;
+  padding:3px 4px;
+  gap:3px;
+  border:1px solid rgba(239,233,221,.13);
+  background:linear-gradient(180deg,rgba(29,36,33,.95),rgba(24,31,28,.93));
+  box-shadow:0 10px 28px rgba(7,10,9,.22);
+  backdrop-filter:blur(9px);
+}
+
+.gameplay-screen .tool-primary-action{
+  min-width:72px;
+  height:30px;
+  padding:0 15px;
+  border-radius:1px;
+  font-size:9px;
+  letter-spacing:.04em;
+}
+
+.gameplay-screen .tool-primary-action--cancel{
+  border-color:transparent;
+  background:transparent;
+  color:#969c94;
+}
+
+.gameplay-screen .tool-primary-action--cancel:hover{
+  border-color:rgba(239,233,221,.10);
+  background:rgba(255,255,255,.035);
+  color:#d0cec5;
+}
+
+.gameplay-screen .tool-primary-action:not(.tool-primary-action--cancel){
+  border-color:rgba(201,165,95,.34);
+  background:rgba(201,165,95,.10);
+  color:#dfc078;
+}
+
+.gameplay-screen .tool-primary-action:not(.tool-primary-action--cancel):hover{
+  border-color:rgba(201,165,95,.48);
+  background:rgba(201,165,95,.16);
+}
+
+/* In tool mode the left side must not become one continuous dark column. */
+.gameplay-screen:has(.tool-overlay) .hud-group{
+  z-index:12;
+}
+
+/* Keep the internal quick toggles restrained so they visually belong to the same icon-button family. */
+.gameplay-screen .tool-overlay .icon-strip button{
+  width:34px;
+  height:34px;
+  border-radius:1px;
+  border-color:rgba(239,233,221,.12);
+  background:rgba(255,255,255,.012);
+  box-shadow:none;
+}
+
+.gameplay-screen .tool-overlay .icon-strip button:hover{
+  transform:none;
+  border-color:rgba(239,233,221,.18);
+  background:rgba(255,255,255,.045);
+}
+
+.gameplay-screen .tool-overlay .icon-strip button.is-active{
+  border-color:rgba(201,165,95,.24);
+  background:rgba(201,165,95,.085);
+}
