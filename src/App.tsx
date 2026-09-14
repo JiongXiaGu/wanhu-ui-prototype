@@ -62,35 +62,26 @@ export default function App() {
             <div className="flow-frame">
               <header className="flow-header">
                 <button className="ghost-button" onClick={() => setScreen('menu')}><ArrowLeft size={15} />返回</button>
-                <div className="flow-title"><small>NEW CITY</small><h2>新建城市</h2></div>
-                <span className="step-count">01 / 04</span>
+                <div className="flow-title"><h2>新建城市</h2></div>
               </header>
               <div className="flow-body">
                 <aside className="step-rail">
                   {['世界', '地形', '规则', '开始'].map((step, index) => (
-                    <div className={`step-item ${index === 0 ? 'is-active' : ''}`} key={step}>
-                      <span>{String(index + 1).padStart(2, '0')}</span><b>{step}</b>
-                    </div>
+                    <div className={`step-item ${index === 0 ? 'is-active' : ''}`} key={step}><b>{step}</b></div>
                   ))}
                 </aside>
                 <div className="new-game-content">
                   <div className="section-eyebrow">选择世界原型</div>
                   <div className="preset-grid">
-                    <PresetCard icon={<Waves />} title="河谷平原" copy="开阔冲积平原与主河道，适合建立大型城市。" tag="推荐" selected />
-                    <PresetCard icon={<Milestone />} title="江南水网" copy="河港密集、湖塘交错，水运与桥梁更重要。" tag="水网" />
-                    <PresetCard icon={<Mountain />} title="北地丘陵" copy="起伏地势明显，城墙与道路更需要顺应山形。" tag="丘陵" />
-                  </div>
-                  <div className="world-summary">
-                    <Summary label="城市名称" value="昭平" />
-                    <Summary label="世界种子" value="268041" />
-                    <Summary label="地图规模" value="大型" />
-                    <Summary label="起始年代" value="初建" />
+                    <PresetCard icon={<Waves />} title="河谷平原" copy="开阔平原与主河道，适合大型城市。" tag="推荐" selected />
+                    <PresetCard icon={<Milestone />} title="江南水网" copy="河港湖塘密集，桥梁与水运更重要。" tag="水网" />
+                    <PresetCard icon={<Mountain />} title="北地丘陵" copy="地势起伏明显，更强调顺应山形营造。" tag="丘陵" />
                   </div>
                 </div>
               </div>
               <footer className="flow-actions">
                 <button className="ghost-button" onClick={() => setScreen('menu')}>取消</button>
-                <button className="gold-button" onClick={enterGame}>开始营造 <ArrowRight size={15} /></button>
+                <button className="gold-button" onClick={enterGame}>下一步 <ArrowRight size={15} /></button>
               </footer>
             </div>
           </FlowBackdrop>
@@ -104,11 +95,7 @@ export default function App() {
 
         {screen === 'settings' && (
           <FlowBackdrop background={MAIN_BG}>
-            <SettingsPanel
-              context="menu"
-              onClose={() => setScreen('menu')}
-              onApply={() => setScreen('menu')}
-            />
+            <SettingsPanel context="menu" onClose={() => setScreen('menu')} onApply={() => setScreen('menu')} />
           </FlowBackdrop>
         )}
 
@@ -128,8 +115,4 @@ function FlowBackdrop({ background, children }: { background: string; children: 
 
 function PresetCard({ icon, title, copy, tag, selected }: { icon: ReactNode; title: string; copy: string; tag: string; selected?: boolean }) {
   return <article className={`preset-card ${selected ? 'is-selected' : ''}`}><div className="preset-visual">{icon}</div><b>{title}</b><p>{copy}</p><span>{tag}</span></article>;
-}
-
-function Summary({ label, value }: { label: string; value: string }) {
-  return <div><small>{label}</small><strong>{value}</strong></div>;
 }
