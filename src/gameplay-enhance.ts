@@ -26,8 +26,6 @@ const packageIcons = {
   grid: `${svgOpen}<path d="M4 4h16v16H4z"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16"/>${svgClose}`,
   undo: `${svgOpen}<path d="M9 7 4 12l5 5"/><path d="M4 12h9a6 6 0 0 1 6 6"/>${svgClose}`,
   redo: `${svgOpen}<path d="m15 7 5 5-5 5"/><path d="M20 12h-9a6 6 0 0 0-6 6"/>${svgClose}`,
-  complete: `${svgOpen}<path d="m5 12 4 4 10-10"/>${svgClose}`,
-  cancel: `${svgOpen}<path d="M6 6l12 12M18 6 6 18"/>${svgClose}`,
 };
 
 function addSeparator(parent: HTMLElement, className = 'command-utility__separator') {
@@ -79,25 +77,25 @@ function createUtilityToolbar() {
   return utility;
 }
 
-function iconButton(action: string, tooltip: string, graphic: string, selected = false) {
+function iconAction(action: string, tooltip: string, icon: string, selected = false) {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = `building-tool-icon-action${selected ? ' is-active' : ''}`;
+  button.className = `bp-icon-action${selected ? ' is-active' : ''}`;
   button.dataset.action = action;
   button.dataset.tooltip = tooltip;
   button.setAttribute('aria-label', tooltip);
-  button.innerHTML = graphic;
+  button.innerHTML = icon;
   return button;
 }
 
-function modeButton(id: string, text: string, tooltip: string, selected = false, disabled = false) {
+function modeAction(id: string, label: string, tooltip: string, selected = false, disabled = false) {
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = `building-tool-mode-action${selected ? ' is-active' : ''}`;
+  button.className = `bp-mode-action${selected ? ' is-active' : ''}`;
   button.dataset.mode = id;
   button.dataset.tooltip = tooltip;
   button.setAttribute('aria-label', tooltip);
-  button.textContent = text;
+  button.textContent = label;
   button.disabled = disabled;
   return button;
 }
@@ -106,110 +104,107 @@ function selectExclusive(parent: HTMLElement, target: HTMLButtonElement, selecto
   parent.querySelectorAll<HTMLButtonElement>(selector).forEach(button => button.classList.toggle('is-active', button === target));
 }
 
-function ensureTerrainEngineeringSection(overlay: HTMLElement) {
-  const body = overlay.querySelector<HTMLElement>('.tool-body');
-  if (!body || body.querySelector('.building-placement__terrain-engineering-section')) return;
-
-  const section = document.createElement('section');
-  section.className = 'building-placement__terrain-engineering-section is-hidden';
-  section.innerHTML = `
-    <div class="building-placement__manual-elevation-container is-hidden">
-      <div class="building-placement__manual-label">相对自动标高</div>
-      <div class="building-placement__manual-control">
-        <button type="button" data-elevation-step="-0.1">−</button>
-        <div class="building-placement__manual-track"><i style="width:50%"></i></div>
-        <button type="button" data-elevation-step="0.1">＋</button>
-        <output>0.0</output>
-      </div>
-    </div>
-    <div class="building-placement__terrain-engineering-status">等待地形候选</div>`;
-  body.prepend(section);
-
-  section.addEventListener('click', (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-elevation-step]');
-    if (!button) return;
-    const output = section.querySelector<HTMLOutputElement>('output');
-    const fill = section.querySelector<HTMLElement>('.building-placement__manual-track i');
-    if (!output || !fill) return;
-    const next = Math.max(-3, Math.min(3, Number(output.value || output.textContent || 0) + Number(button.dataset.elevationStep)));
-    output.value = next.toFixed(1);
-    output.textContent = next.toFixed(1);
-    fill.style.width = `${((next + 3) / 6) * 100}%`;
-    markHistoryDirty(overlay);
-  });
+function parameterRow(label: string, value: string, pct: number, step = 0.1) {
+  return `<div class="bp-parameter-row" data-step="${step}">
+    <span>${label}</span>
+    <button type="button" data-delta="-${step}">−</button>
+    <div class="bp-track"><i style="width:${pct}%"></i></div>
+    <button type="button" data-delta="${step}">＋</button>
+    <output>${value}</output>
+  </div>`;
 }
 
-function ensureDesignControls(overlay: HTMLElement) {
-  const body = overlay.querySelector<HTMLElement>('.tool-body');
-  if (!body || body.dataset.packageControlsReady === 'true') return;
-  body.dataset.packageControlsReady = 'true';
+function segmentedRow(label: string, values: string[], activeIndex: number, key: string) {
+  return `<div class="bp-segment-row"><span>${label}</span><div class="bp-segment" data-segment="${key}">${values.map((value, index) => `<button type="button" class="${index === activeIndex ? 'is-active' : ''}">${value}</button>`).join('')}</div></div>`;
+}
 
-  const group = Array.from(body.children).find(element => element.classList.contains('segment')) as HTMLElement | undefined;
-  if (group) {
-    group.classList.add('building-placement__design-group-field');
-    const buttons = Array.from(group.querySelectorAll<HTMLButtonElement>('button'));
-    buttons.forEach(button => button.addEventListener('click', () => {
-      buttons.forEach(item => item.classList.toggle('is-active', item === button));
-      applyDesignGroup(body, button.textContent?.trim() || '整体');
+function terrainSummary(mode: string) {
+  if (mode === 'fill-only') {
+    return `<div class="bp-terrain-summary__top"><b>只填不挖</b><span>地形关系</span></div><div class="bp-terrain-metrics"><span>最终标高 <b>12.68 m</b></span><span>最大填高 <b>0.64 m</b></span></div>`;
+  }
+  if (mode === 'manual-elevation') {
+    return `<div class="bp-terrain-summary__top"><b>手动标高</b><span>地形关系</span></div>${parameterRow('相对自动标高','0.00 m',50,0.1)}`;
+  }
+  return `<div class="bp-terrain-summary__top"><b>平衡挖填</b><span>地形关系</span></div><div class="bp-terrain-metrics"><span>最终标高 <b>12.40 m</b></span><span>挖深 <b>0.42 m</b></span><span>填高 <b>0.38 m</b></span></div>`;
+}
+
+function modeContent(mode: string) {
+  if (mode === 'massing') {
+    return `<div class="bp-mode-heading"><div><b>楼身调整</b><span>楼层、层高与结构比例</span></div><em>层</em></div>
+      <div class="bp-section-title">楼身参数</div>
+      ${parameterRow('楼层数量','3',42,1)}
+      ${parameterRow('单层高度','4.2',48,0.1)}
+      ${segmentedRow('柱网布局',['疏朗','均衡','紧凑'],1,'columns')}
+      ${parameterRow('楼层收分','0.12',34,0.01)}`;
+  }
+  if (mode === 'roof') {
+    return `<div class="bp-mode-heading"><div><b>屋顶调整</b><span>当前区段与檐口轮廓</span></div><em>顶</em></div>
+      ${segmentedRow('屋顶区段',['重檐上','重檐下','层檐'],0,'roof-section')}
+      <div class="bp-section-title">屋顶参数</div>
+      ${parameterRow('出檐尺度','1.4',36,0.1)}
+      ${parameterRow('翼角起冲','0.45',45,0.05)}`;
+  }
+  return `<div class="bp-mode-heading"><div><b>位置调整</b><span>移动、旋转与放置吸附</span></div><em>位</em></div>
+    ${segmentedRow('放置方式',['自由','道路吸附','网格'],0,'placement')}
+    <div class="bp-section-title">空间参数</div>
+    ${parameterRow('旋转角度','0°',0,15)}
+    ${parameterRow('吸附距离','4.0 m',44,0.5)}`;
+}
+
+function renderPlacementPanel(overlay: HTMLElement) {
+  const panel = overlay.querySelector<HTMLElement>('.bp-context-panel');
+  if (!panel) return;
+  const terrainMode = overlay.dataset.terrainMode || 'balanced-earthwork';
+  const adjustmentMode = overlay.dataset.adjustmentMode || 'position';
+  panel.innerHTML = `<section class="bp-terrain-summary">${terrainSummary(terrainMode)}</section><section class="bp-mode-content">${modeContent(adjustmentMode)}</section>`;
+}
+
+function ensureBuildingPlacementPanel(overlay: HTMLElement) {
+  const body = overlay.querySelector<HTMLElement>('.tool-body');
+  if (!body || body.dataset.modeDrivenReady === 'true') return;
+  body.dataset.modeDrivenReady = 'true';
+  overlay.dataset.terrainMode = 'balanced-earthwork';
+  overlay.dataset.adjustmentMode = 'position';
+  overlay.classList.add('building-placement-prototype');
+
+  Array.from(body.children).forEach(child => (child as HTMLElement).classList.add('bp-legacy-control'));
+  const panel = document.createElement('div');
+  panel.className = 'bp-context-panel';
+  body.appendChild(panel);
+  renderPlacementPanel(overlay);
+
+  body.addEventListener('click', (event) => {
+    const target = (event.target as HTMLElement).closest<HTMLButtonElement>('button');
+    if (!target) return;
+    if (target.closest('.bp-segment')) {
+      const segment = target.closest<HTMLElement>('.bp-segment');
+      if (segment) selectExclusive(segment, target, 'button');
       markHistoryDirty(overlay);
-    }));
-  }
-
-  let section: 'massing' | 'roof' | null = null;
-  Array.from(body.children).forEach((node) => {
-    const element = node as HTMLElement;
-    if (element.classList.contains('building-placement__terrain-engineering-section')) return;
-    if (element === group) return;
-    if (element.tagName === 'H3') {
-      const text = element.textContent?.trim();
-      if (text === '楼身比例') section = 'massing';
-      else if (text === '屋顶轮廓') section = 'roof';
+      return;
     }
-    if (section && !element.classList.contains('icon-strip')) element.dataset.designSection = section;
-  });
-
-  const eaveRow = Array.from(body.querySelectorAll<HTMLElement>('.parameter-row')).find(row => row.querySelector('span')?.textContent?.trim() === '出檐尺度');
-  if (eaveRow) {
-    const output = eaveRow.querySelector('output');
-    const fill = eaveRow.querySelector<HTMLElement>('.track i');
-    if (output) output.textContent = '1.4';
-    if (fill) fill.style.width = '36%';
-    if (!body.querySelector('[data-design-control="wing-corner"]')) {
-      const wing = document.createElement('div');
-      wing.className = 'parameter-row';
-      wing.dataset.designSection = 'roof';
-      wing.dataset.designControl = 'wing-corner';
-      wing.innerHTML = '<span>翼角起冲</span><button type="button">−</button><div class="track"><i style="width:45%"></i></div><button type="button">＋</button><output>0.45</output>';
-      eaveRow.insertAdjacentElement('afterend', wing);
+    if (target.dataset.delta) {
+      const row = target.closest<HTMLElement>('.bp-parameter-row');
+      const output = row?.querySelector<HTMLOutputElement>('output');
+      const fill = row?.querySelector<HTMLElement>('.bp-track i');
+      if (!row || !output || !fill) return;
+      const raw = (output.textContent || '0').replace(/[^0-9+\-.]/g,'');
+      const current = Number(raw || 0);
+      const delta = Number(target.dataset.delta);
+      const next = current + delta;
+      const suffix = (output.textContent || '').includes('°') ? '°' : (output.textContent || '').includes('m') ? ' m' : '';
+      const decimals = Math.abs(delta) < 0.1 ? 2 : Math.abs(delta) < 1 ? 1 : 0;
+      output.textContent = `${next.toFixed(decimals)}${suffix}`;
+      const width = Math.max(4, Math.min(96, Number.parseFloat(fill.style.width || '50') + Math.sign(delta) * 4));
+      fill.style.width = `${width}%`;
+      markHistoryDirty(overlay);
     }
-  }
-
-  body.querySelector<HTMLElement>('.icon-strip')?.classList.add('building-placement__legacy-quick-options');
-  applyDesignGroup(body, '整体');
-}
-
-function applyDesignGroup(body: HTMLElement, group: string) {
-  body.querySelectorAll<HTMLElement>('[data-design-section]').forEach(element => {
-    const visible = group === '整体' || (group === '楼身' && element.dataset.designSection === 'massing') || (group === '屋顶' && element.dataset.designSection === 'roof');
-    element.classList.toggle('is-group-hidden', !visible);
   });
-}
-
-function updateTerrainEngineering(overlay: HTMLElement, mode: string) {
-  const section = overlay.querySelector<HTMLElement>('.building-placement__terrain-engineering-section');
-  const manual = overlay.querySelector<HTMLElement>('.building-placement__manual-elevation-container');
-  const status = overlay.querySelector<HTMLElement>('.building-placement__terrain-engineering-status');
-  if (!section || !manual || !status) return;
-  section.classList.remove('is-hidden');
-  manual.classList.toggle('is-hidden', mode !== 'manual-elevation');
-  if (mode === 'balanced-earthwork') status.textContent = '最终标高 12.40 米　最大挖深 0.42 米　最大填高 0.38 米';
-  else if (mode === 'fill-only') status.textContent = '只填不挖　最终标高 12.68 米　最大填高 0.64 米';
-  else status.textContent = '手动标高　相对自动标高 0.00 米';
 }
 
 function markHistoryDirty(overlay: HTMLElement) {
-  const undo = overlay.parentElement?.querySelector<HTMLButtonElement>('.building-placement-toolbar-cluster [data-action="undo"]');
-  const redo = overlay.parentElement?.querySelector<HTMLButtonElement>('.building-placement-toolbar-cluster [data-action="redo"]');
+  const cluster = overlay.parentElement?.querySelector<HTMLElement>('.building-placement-toolbar-cluster');
+  const undo = cluster?.querySelector<HTMLButtonElement>('[data-action="undo"]');
+  const redo = cluster?.querySelector<HTMLButtonElement>('[data-action="redo"]');
   if (undo) undo.disabled = false;
   if (redo) redo.disabled = true;
 }
@@ -217,73 +212,61 @@ function markHistoryDirty(overlay: HTMLElement) {
 function createBuildingPlacementToolbar(overlay: HTMLElement) {
   const cluster = document.createElement('div');
   cluster.className = 'tool-bottom-cluster building-placement-toolbar-cluster';
-  cluster.setAttribute('aria-label', '建筑放置工具栏');
-
-  const roofAnchor = document.createElement('div');
-  roofAnchor.className = 'building-placement__roof-section-toolbar is-hidden';
-  roofAnchor.innerHTML = `
-    <button type="button" data-roof-section="terminal-roof" class="is-active">重檐上</button>
-    <button type="button" data-roof-section="double-eave-lower">重檐下</button>
-    <button type="button" data-roof-section="tier-eave">层檐</button>`;
+  cluster.setAttribute('aria-label','建筑放置工具栏');
 
   const utility = document.createElement('div');
   utility.className = 'tool-bottom-cluster__utility';
-  utility.appendChild(iconButton('grid', '显示或隐藏地图网格', packageIcons.grid, true));
-  addSeparator(utility, 'building-tool-divider');
-  const undo = iconButton('undo', '撤销当前工具的上一步操作', packageIcons.undo);
-  const redo = iconButton('redo', '重做当前工具的上一步操作', packageIcons.redo);
+  utility.appendChild(iconAction('grid','显示或隐藏地图网格',packageIcons.grid,true));
+  addSeparator(utility,'bp-divider');
+  const undo = iconAction('undo','撤销 · Ctrl+Z',packageIcons.undo);
+  const redo = iconAction('redo','重做 · Ctrl+Y',packageIcons.redo);
   undo.disabled = true;
   redo.disabled = true;
-  utility.append(undo, redo);
+  utility.append(undo,redo);
 
   const primary = document.createElement('div');
   primary.className = 'tool-bottom-cluster__primary';
+
   const terrain = document.createElement('div');
-  terrain.className = 'building-tool-mode-group building-tool-terrain-group';
+  terrain.className = 'bp-mode-group bp-terrain-group';
   terrain.append(
-    modeButton('balanced-earthwork', '平', '平衡挖填', true),
-    modeButton('fill-only', '填', '只填不挖'),
-    modeButton('manual-elevation', '高', '手动调整建筑标高'),
+    modeAction('balanced-earthwork','平','平衡挖填',true),
+    modeAction('fill-only','填','只填不挖'),
+    modeAction('manual-elevation','高','手动调整建筑标高'),
   );
+
   const adjustment = document.createElement('div');
-  adjustment.className = 'building-tool-mode-group building-tool-adjustment-group';
+  adjustment.className = 'bp-mode-group bp-adjustment-group';
   adjustment.append(
-    modeButton('position', '位', '调整建筑位置', true),
-    modeButton('massing', '层', '调整楼身高度、楼层收分和楼层数量'),
-    modeButton('roof', '顶', '调整普通层檐举出与翼角起冲'),
-    modeButton('facade', '面', '立面调整功能等待重新设计', false, true),
+    modeAction('position','位','位置调整',true),
+    modeAction('massing','层','楼身调整'),
+    modeAction('roof','顶','屋顶调整'),
+    modeAction('facade','面','立面调整尚未开放',false,true),
   );
-  primary.appendChild(terrain);
-  addSeparator(primary, 'building-tool-divider');
-  primary.appendChild(adjustment);
-  addSeparator(primary, 'building-tool-divider');
-  primary.appendChild(iconButton('complete', '完成当前建筑并返回建筑目录', packageIcons.complete));
-  addSeparator(primary, 'building-tool-divider');
-  const cancel = iconButton('cancel', '放弃当前未提交建筑并返回建筑目录', packageIcons.cancel);
-  cancel.classList.add('is-destructive');
-  primary.appendChild(cancel);
 
-  cluster.append(roofAnchor, utility, primary);
+  const actions = document.createElement('div');
+  actions.className = 'bp-submit-group';
+  actions.innerHTML = '<button type="button" class="bp-submit bp-submit--complete" data-action="complete">完成</button><button type="button" class="bp-submit" data-action="cancel">取消</button>';
 
-  cluster.addEventListener('click', (event) => {
+  primary.append(terrain);
+  addSeparator(primary,'bp-divider');
+  primary.append(adjustment);
+  addSeparator(primary,'bp-divider');
+  primary.append(actions);
+  cluster.append(utility,primary);
+
+  cluster.addEventListener('click',(event) => {
     const target = (event.target as HTMLElement).closest<HTMLButtonElement>('button');
     if (!target || target.disabled) return;
 
-    if (target.dataset.roofSection) {
-      selectExclusive(roofAnchor, target, 'button[data-roof-section]');
-      markHistoryDirty(overlay);
-      return;
-    }
-
     const mode = target.dataset.mode;
     if (mode) {
-      const group = target.closest<HTMLElement>('.building-tool-mode-group');
+      const group = target.closest<HTMLElement>('.bp-mode-group');
       if (!group) return;
-      selectExclusive(group, target, 'button[data-mode]');
-      if (group.classList.contains('building-tool-terrain-group')) updateTerrainEngineering(overlay, mode);
-      if (group.classList.contains('building-tool-adjustment-group')) {
-        roofAnchor.classList.toggle('is-hidden', mode !== 'roof');
-      }
+      selectExclusive(group,target,'button[data-mode]');
+      if (group.classList.contains('bp-terrain-group')) overlay.dataset.terrainMode = mode;
+      else overlay.dataset.adjustmentMode = mode;
+      renderPlacementPanel(overlay);
       markHistoryDirty(overlay);
       return;
     }
@@ -304,13 +287,7 @@ function createBuildingPlacementToolbar(overlay: HTMLElement) {
       undo.disabled = false;
       return;
     }
-    if (action === 'complete') {
-      overlay.classList.add('is-committing');
-      cluster.classList.add('is-committing');
-      window.setTimeout(() => overlay.querySelector<HTMLButtonElement>('header .icon-button')?.click(), 220);
-      return;
-    }
-    if (action === 'cancel') {
+    if (action === 'complete' || action === 'cancel') {
       overlay.querySelector<HTMLButtonElement>('header .icon-button')?.click();
     }
   });
@@ -321,15 +298,12 @@ function createBuildingPlacementToolbar(overlay: HTMLElement) {
 function syncGameplayEnhancements() {
   const screen = document.querySelector<HTMLElement>('.gameplay-screen');
   if (!screen) return;
-
   if (!screen.querySelector(':scope > .command-utility')) screen.appendChild(createUtilityToolbar());
 
   const overlay = screen.querySelector<HTMLElement>('.tool-overlay');
   const cluster = screen.querySelector<HTMLElement>(':scope > .building-placement-toolbar-cluster');
   if (overlay) {
-    overlay.classList.add('building-placement-prototype');
-    ensureTerrainEngineeringSection(overlay);
-    ensureDesignControls(overlay);
+    ensureBuildingPlacementPanel(overlay);
     if (!cluster) screen.appendChild(createBuildingPlacementToolbar(overlay));
   } else if (cluster) {
     cluster.remove();
@@ -337,5 +311,5 @@ function syncGameplayEnhancements() {
 }
 
 const observer = new MutationObserver(syncGameplayEnhancements);
-observer.observe(document.body, { childList: true, subtree: true });
+observer.observe(document.body,{childList:true,subtree:true});
 queueMicrotask(syncGameplayEnhancements);
