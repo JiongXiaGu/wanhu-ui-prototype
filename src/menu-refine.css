@@ -12,6 +12,12 @@
     linear-gradient(180deg,rgba(9,12,10,.16),rgba(9,12,10,.03) 56%,rgba(9,12,10,.54));
 }
 
+/* Prototype-only metadata is intentionally hidden from the actual game title screen. */
+.top-meta,
+.main-footer{
+  display:none;
+}
+
 .main-menu-list{
   width:470px;
   border-top:0;
