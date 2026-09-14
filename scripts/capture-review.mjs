@@ -32,9 +32,19 @@ await page.waitForTimeout(350);
 await page.screenshot({ path: `${outDir}/03-workspace.png`, fullPage: false });
 
 await page.getByRole('button', { name: /八角楼阁式木塔/ }).click();
-await page.waitForSelector('.tool-overlay');
-await page.waitForSelector('.tool-bottom-cluster');
+await page.waitForSelector('.building-placement-prototype');
+await page.waitForSelector('.building-placement-toolbar-cluster');
 await page.waitForTimeout(350);
-await page.screenshot({ path: `${outDir}/04-tool.png`, fullPage: false });
+await page.screenshot({ path: `${outDir}/04-tool-default.png`, fullPage: false });
+
+await page.locator('.building-placement-toolbar-cluster [data-mode="manual-elevation"]').click();
+await page.waitForSelector('.building-placement__manual-elevation-container:not(.is-hidden)');
+await page.waitForTimeout(200);
+await page.screenshot({ path: `${outDir}/05-tool-manual-elevation.png`, fullPage: false });
+
+await page.locator('.building-placement-toolbar-cluster [data-mode="roof"]').click();
+await page.waitForSelector('.building-placement__roof-section-toolbar:not(.is-hidden)');
+await page.waitForTimeout(200);
+await page.screenshot({ path: `${outDir}/06-tool-roof-adjustment.png`, fullPage: false });
 
 await browser.close();
