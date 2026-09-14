@@ -41,7 +41,7 @@ for (const scenario of scenarios) {
     await page.locator('.workspace-content-stage').hover();
     await page.mouse.wheel(0, 120);
     await page.waitForTimeout(280);
-    const activeContentPager = await page.locator('.workspace-content-pager button.is-active').evaluateAll((items) => items.findIndex((item) => item.classList.contains('is-active')));
+    const activeContentPager = await page.locator('.workspace-content-pager button').evaluateAll((items) => items.findIndex((item) => item.classList.contains('is-active')));
     if (activeContentPager !== 1) throw new Error('Workspace content wheel should advance exactly one content group.');
   }
 
@@ -49,7 +49,7 @@ for (const scenario of scenarios) {
     await page.locator('.workspace-primary-rail').hover();
     await page.mouse.wheel(0, 120);
     await page.waitForTimeout(280);
-    const activeCategoryPager = await page.locator('.workspace-rail-pager button.is-active').evaluateAll((items) => items.findIndex((item) => item.classList.contains('is-active')));
+    const activeCategoryPager = await page.locator('.workspace-rail-pager button').evaluateAll((items) => items.findIndex((item) => item.classList.contains('is-active')));
     if (activeCategoryPager !== 1) throw new Error('Workspace category wheel should advance exactly one category group.');
   }
 
