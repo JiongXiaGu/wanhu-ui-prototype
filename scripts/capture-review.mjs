@@ -8,6 +8,8 @@ const scenarios = [
   { file: '01-main-menu.png', review: 'menu', waitFor: '.main-menu-screen' },
   { file: '02-gameplay.png', review: 'gameplay', waitFor: '.command-utility' },
   { file: '03-workspace.png', review: 'workspace-building', waitFor: '.workspace' },
+  { file: '03a-workspace-content-wheel.png', review: 'workspace-building', waitFor: '.workspace', action: 'content-wheel' },
+  { file: '03b-workspace-category-wheel.png', review: 'workspace-building', waitFor: '.workspace', action: 'category-wheel' },
   { file: '04-tool-position-hints.png', review: 'building-position', waitFor: '.gameplay-operation-hints' },
   { file: '05-tool-massing-hints.png', review: 'building-massing', waitFor: '.gameplay-operation-hints' },
   { file: '06-tool-roof-hints.png', review: 'building-roof', waitFor: '.bp-mode-content' },
@@ -34,6 +36,22 @@ for (const scenario of scenarios) {
   await page.goto(url.toString(), { waitUntil: 'networkidle' });
   await page.waitForSelector(scenario.waitFor);
   await page.waitForTimeout(180);
+
+  if (scenario.action === 'content-wheel') {
+    await page.locator('.workspace-content-stage').hover();
+    await page.mouse.wheel(0, 120);
+    await page.waitForTimeout(280);
+    const activeContentPager = await page.locator('.workspace-content-pager button.is-active').evaluateAll((items) => items.findIndex((item) => item.classList.contains('is-active')));
+    if (activeContentPager !== 1) throw new Error('Workspace content wheel should advance exactly one content group.');
+  }
+
+  if (scenario.action === 'category-wheel') {
+    await page.locator('.workspace-primary-rail').hover();
+    await page.mouse.wheel(0, 120);
+    await page.waitForTimeout(280);
+    const activeCategoryPager = await page.locator('.workspace-rail-pager button.is-active').evaluateAll((items) => items.findIndex((item) => item.classList.contains('is-active')));
+    if (activeCategoryPager !== 1) throw new Error('Workspace category wheel should advance exactly one category group.');
+  }
 
   if (scenario.review === 'building-camera') {
     const hintCount = await page.locator('.gameplay-operation-hints').count();
