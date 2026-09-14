@@ -46,7 +46,14 @@ const tools: UtilityTool[] = [
   },
 ];
 
-function toolButton(tool: UtilityTool) {
+const toolActions = [
+  { id: 'undo', label: '撤销', icon: `${svgOpen}<path d="M9 7 4 12l5 5"/><path d="M4 12h9a6 6 0 0 1 6 6"/>${svgClose}` },
+  { id: 'redo', label: '重做', icon: `${svgOpen}<path d="m15 7 5 5-5 5"/><path d="M20 12h-9a6 6 0 0 0-6 6"/>${svgClose}` },
+  { id: 'snap', label: '吸附', icon: `${svgOpen}<path d="M7 4v7a5 5 0 0 0 10 0V4"/><path d="M7 4h4M13 4h4"/><path d="M7 8h4M13 8h4"/>${svgClose}` },
+  { id: 'grid', label: '网格', icon: `${svgOpen}<path d="M4 4h16v16H4z"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16"/>${svgClose}` },
+];
+
+function makeUtilityButton(tool: UtilityTool) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'command-utility__button';
@@ -64,10 +71,7 @@ function addSeparator(parent: HTMLElement) {
   parent.appendChild(divider);
 }
 
-function mountCommandUtility() {
-  const bar = document.querySelector<HTMLElement>('.gameplay-screen .command-bar');
-  if (!bar || bar.querySelector(':scope > .command-utility')) return;
-
+function createUtilityToolbar() {
   const utility = document.createElement('div');
   utility.className = 'command-utility';
   utility.setAttribute('aria-label', '场景工具');
@@ -77,18 +81,15 @@ function mountCommandUtility() {
 
   tools.forEach((tool, index) => {
     if (index === 4 || index === 6) addSeparator(buttons);
-    buttons.appendChild(toolButton(tool));
+    buttons.appendChild(makeUtilityButton(tool));
   });
-
   utility.appendChild(buttons);
-  bar.insertBefore(utility, bar.firstChild);
 
   utility.addEventListener('click', (event) => {
     const target = (event.target as HTMLElement).closest<HTMLButtonElement>('.command-utility__button');
     if (!target) return;
 
     const behavior = target.dataset.behavior as UtilityBehavior;
-
     if (behavior === 'momentary') {
       target.classList.add('is-pressed');
       window.setTimeout(() => target.classList.remove('is-pressed'), 120);
@@ -101,13 +102,74 @@ function mountCommandUtility() {
     }
 
     const wasActive = target.classList.contains('is-active');
-    utility.querySelectorAll<HTMLButtonElement>('.command-utility__button[data-behavior="mode"]').forEach((button) => {
-      button.classList.remove('is-active');
-    });
+    utility.querySelectorAll<HTMLButtonElement>('.command-utility__button[data-behavior="mode"]').forEach((button) => button.classList.remove('is-active'));
     if (!wasActive) target.classList.add('is-active');
   });
+
+  return utility;
 }
 
-const observer = new MutationObserver(mountCommandUtility);
+function createToolBottomCluster() {
+  const cluster = document.createElement('div');
+  cluster.className = 'tool-bottom-cluster';
+  cluster.setAttribute('aria-label', '当前工具操作');
+
+  const utility = document.createElement('div');
+  utility.className = 'tool-bottom-cluster__utility';
+  toolActions.forEach((action, index) => {
+    if (index === 2) addSeparator(utility);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'tool-bottom-action';
+    button.dataset.action = action.id;
+    button.innerHTML = `${action.icon}<span>${action.label}</span>`;
+    utility.appendChild(button);
+  });
+
+  const primary = document.createElement('div');
+  primary.className = 'tool-bottom-cluster__primary';
+  primary.innerHTML = '<button type="button" class="tool-primary-action tool-primary-action--cancel" data-action="cancel">取消</button><button type="button" class="tool-primary-action" data-action="complete">完成</button>';
+
+  cluster.append(utility, primary);
+
+  cluster.addEventListener('click', (event) => {
+    const target = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-action]');
+    if (!target) return;
+    const action = target.dataset.action;
+
+    if (action === 'snap' || action === 'grid') {
+      target.classList.toggle('is-active');
+      return;
+    }
+
+    if (action === 'undo' || action === 'redo') {
+      target.classList.add('is-pressed');
+      window.setTimeout(() => target.classList.remove('is-pressed'), 120);
+      return;
+    }
+
+    if (action === 'cancel' || action === 'complete') {
+      document.querySelector<HTMLButtonElement>('.tool-overlay header .icon-button')?.click();
+    }
+  });
+
+  return cluster;
+}
+
+function syncGameplayEnhancements() {
+  const screen = document.querySelector<HTMLElement>('.gameplay-screen');
+  if (!screen) return;
+
+  if (!screen.querySelector(':scope > .command-utility')) {
+    screen.appendChild(createUtilityToolbar());
+  }
+
+  const toolOpen = Boolean(screen.querySelector('.tool-overlay'));
+  const cluster = screen.querySelector<HTMLElement>(':scope > .tool-bottom-cluster');
+  if (toolOpen && !cluster) screen.appendChild(createToolBottomCluster());
+  if (!toolOpen && cluster) cluster.remove();
+}
+
+const observer = new MutationObserver(syncGameplayEnhancements);
 observer.observe(document.body, { childList: true, subtree: true });
-queueMicrotask(mountCommandUtility);
+queueMicrotask(syncGameplayEnhancements);

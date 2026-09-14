@@ -13,18 +13,28 @@ const page = await browser.newPage({
 });
 
 await page.goto(baseUrl, { waitUntil: 'networkidle' });
-await page.waitForTimeout(1000);
-await page.screenshot({
-  path: `${outDir}/01-main-menu.png`,
-  fullPage: false,
-});
+await page.waitForTimeout(700);
+await page.screenshot({ path: `${outDir}/01-main-menu.png`, fullPage: false });
 
 await page.getByRole('button', { name: /继续游戏/ }).click();
 await page.waitForSelector('.gameplay-screen');
-await page.waitForTimeout(1200);
-await page.screenshot({
-  path: `${outDir}/02-gameplay.png`,
-  fullPage: false,
+await page.waitForSelector('.command-utility');
+await page.waitForTimeout(700);
+await page.screenshot({ path: `${outDir}/02-gameplay.png`, fullPage: false });
+
+await page.getByRole('button', { name: '建筑', exact: true }).click();
+await page.waitForSelector('.workspace');
+await page.waitForFunction(() => {
+  const utility = document.querySelector('.command-utility');
+  return utility && getComputedStyle(utility).visibility === 'hidden';
 });
+await page.waitForTimeout(350);
+await page.screenshot({ path: `${outDir}/03-workspace.png`, fullPage: false });
+
+await page.getByRole('button', { name: /八角楼阁式木塔/ }).click();
+await page.waitForSelector('.tool-overlay');
+await page.waitForSelector('.tool-bottom-cluster');
+await page.waitForTimeout(350);
+await page.screenshot({ path: `${outDir}/04-tool.png`, fullPage: false });
 
 await browser.close();
