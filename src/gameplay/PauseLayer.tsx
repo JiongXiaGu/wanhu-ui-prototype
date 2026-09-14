@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 
 interface PauseLayerProps {
@@ -13,6 +14,14 @@ const items = [
 ] as const;
 
 export function PauseLayer({ onResume, onMainMenu }: PauseLayerProps) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onResume();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onResume]);
+
   return (
     <div className="pause-layer" role="dialog" aria-label="暂停菜单">
       <div className="pause-shade" />
