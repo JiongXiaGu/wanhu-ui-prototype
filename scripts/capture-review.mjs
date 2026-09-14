@@ -13,9 +13,17 @@ const page = await browser.newPage({
 });
 
 await page.goto(baseUrl, { waitUntil: 'networkidle' });
-await page.waitForTimeout(1200);
+await page.waitForTimeout(1000);
 await page.screenshot({
   path: `${outDir}/01-main-menu.png`,
+  fullPage: false,
+});
+
+await page.getByRole('button', { name: /继续游戏/ }).click();
+await page.waitForSelector('.gameplay-screen');
+await page.waitForTimeout(1200);
+await page.screenshot({
+  path: `${outDir}/02-gameplay.png`,
   fullPage: false,
 });
 
