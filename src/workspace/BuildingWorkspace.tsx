@@ -58,55 +58,64 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
   return (
     <section className="workspace workspace--building">
       <header className="workspace-header">
-        <b>建筑</b>
+        <div className="workspace-title">
+          <Building2 size={18} aria-hidden="true" />
+          <b>建筑</b>
+        </div>
         <button className="icon-button" onClick={onClose} aria-label="关闭建筑目录"><X /></button>
       </header>
 
       <div className="workspace-body">
         <nav className="workspace-primary-rail" aria-label="建筑形制">
-          {primaryCategories.map(({ key, icon: Icon }) => (
-            <button
-              key={key}
-              type="button"
-              className={primary === key ? 'is-active' : ''}
-              onClick={() => selectPrimary(key)}
-            >
-              <Icon size={16} />
-              <span>{key}</span>
-            </button>
-          ))}
+          <div className="workspace-primary-rail__scroll">
+            {primaryCategories.map(({ key, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                className={primary === key ? 'is-active' : ''}
+                onClick={() => selectPrimary(key)}
+              >
+                <Icon size={16} />
+                <span>{key}</span>
+              </button>
+            ))}
+          </div>
         </nav>
 
         <div className="workspace-catalog">
           <nav className="workspace-context-filter" aria-label="当前建筑筛选">
-            {activeCategory.filters.map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={filter === item ? 'is-active' : ''}
-                onClick={() => setFilter(item)}
-              >
-                {item}
-              </button>
-            ))}
+            <div className="workspace-context-filter__scroll">
+              {activeCategory.filters.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={filter === item ? 'is-active' : ''}
+                  onClick={() => setFilter(item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </nav>
 
-          <div className="workspace-content-grid">
-            {visibleCards.map(({ name, meta, detail, tone }) => (
-              <button
-                type="button"
-                className="building-card"
-                key={name}
-                title={`${meta} · ${detail}`}
-                onClick={onSelectBuilding}
-              >
-                <div className={`card-thumb card-thumb--${tone}`} aria-hidden="true" />
-                <div className="building-card__copy">
-                  <b>{name}</b>
-                  <span>{meta}</span>
-                </div>
-              </button>
-            ))}
+          <div className="workspace-content-scroll">
+            <div className="workspace-content-grid">
+              {visibleCards.map(({ name, meta, detail, tone }) => (
+                <button
+                  type="button"
+                  className="building-card"
+                  key={name}
+                  title={`${meta} · ${detail}`}
+                  onClick={onSelectBuilding}
+                >
+                  <div className={`card-thumb card-thumb--${tone}`} aria-hidden="true" />
+                  <div className="building-card__copy">
+                    <b>{name}</b>
+                    <span>{meta}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
