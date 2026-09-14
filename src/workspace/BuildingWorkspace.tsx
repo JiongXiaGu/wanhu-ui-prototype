@@ -19,7 +19,7 @@ const WHEEL_THRESHOLD = 72;
 const WHEEL_LOCK_MS = 220;
 
 const contextFilters = ['全部', '庑殿', '歇山', '悬山', '硬山', '攒尖', '卷棚', '其他'] as const;
-const directContextFilters = new Set(contextFilters.slice(1, -1));
+const directContextFilters = new Set<string>(contextFilters.slice(1, -1));
 
 const primaryCategories = [
   { key: '全部', label: '全部建筑', icon: Grid2X2 },
@@ -98,7 +98,7 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
       const matchesCategory = primary === '全部' || item.form === primary;
       const matchesFilter = filter === '全部'
         || item.filter === filter
-        || (filter === '其他' && !directContextFilters.has(item.filter as (typeof contextFilters)[number]));
+        || (filter === '其他' && !directContextFilters.has(item.filter));
       const matchesSearch = !normalizedQuery || `${item.name} ${item.meta} ${item.detail}`.toLocaleLowerCase().includes(normalizedQuery);
       return matchesCategory && matchesFilter && matchesSearch;
     }),
