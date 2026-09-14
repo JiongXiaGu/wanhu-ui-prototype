@@ -110,15 +110,15 @@ function ModeParameters({ mode, onDirty }: { mode: AdjustmentMode; onDirty: () =
 
 export function BuildingPlacementOverlay({ terrainMode, adjustmentMode, onClose, onDirty }: BuildingPlacementOverlayProps) {
   return (
-    <section className="tool-overlay building-placement-prototype">
+    <section className="tool-overlay building-placement-prototype" data-terrain={terrainMode} data-adjustment={adjustmentMode}>
       <header>
         <div><b>建筑放置</b><span>八角楼阁式木塔</span></div>
         <button className="icon-button" onClick={onClose} aria-label="退出建筑放置"><X /></button>
       </header>
       <div className="tool-body">
         <div className="bp-context-panel">
-          <TerrainSummary mode={terrainMode} onDirty={onDirty} />
-          <ModeParameters mode={adjustmentMode} onDirty={onDirty} />
+          <TerrainSummary key={terrainMode} mode={terrainMode} onDirty={onDirty} />
+          <ModeParameters key={adjustmentMode} mode={adjustmentMode} onDirty={onDirty} />
         </div>
       </div>
     </section>
