@@ -18,7 +18,7 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
   return (
     <section className="workspace">
       <header>
-        <div><b>建筑</b><span>选择形制 · 点击建筑进入放置工具</span></div>
+        <div><b>建筑</b></div>
         <button className="icon-button" onClick={onClose} aria-label="关闭建筑目录"><X /></button>
       </header>
       <div className="workspace-body">
@@ -35,9 +35,9 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
           </div>
           <div className="card-grid">
             {buildingCards.map(([name, type, use]) => (
-              <button className="building-card" key={name} onClick={onSelectBuilding}>
+              <button className="building-card" key={name} title={`${type} · ${use}`} onClick={onSelectBuilding}>
                 <div className="card-thumb"><Building2 /></div>
-                <div><b>{name}</b><span>{type}</span><small>{use}</small></div>
+                <div><b>{name}</b><span>{type}</span></div>
               </button>
             ))}
           </div>
