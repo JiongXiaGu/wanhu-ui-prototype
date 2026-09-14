@@ -5,6 +5,7 @@ export type Tool = 'none' | 'building-placement';
 export type TerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
 export type GameplaySpace = 'gameplay' | 'workspace' | 'tool' | 'pause';
+export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 1 | 2 | 4;
 
 export interface GameplayUiState {
@@ -12,6 +13,7 @@ export interface GameplayUiState {
   tool: Tool;
   flyout: Flyout;
   paused: boolean;
+  pauseView: PauseView;
   speed: Speed;
   activeCategory: string;
   terrainMode: TerrainMode;
@@ -27,6 +29,7 @@ export const initialGameplayUiState: GameplayUiState = {
   tool: 'none',
   flyout: 'none',
   paused: false,
+  pauseView: 'menu',
   speed: 1,
   activeCategory: '全部',
   terrainMode: 'balanced-earthwork',
@@ -44,6 +47,7 @@ export type GameplayUiAction =
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_FLYOUT'; flyout: Flyout }
   | { type: 'SET_PAUSED'; paused: boolean }
+  | { type: 'SET_PAUSE_VIEW'; view: PauseView }
   | { type: 'SET_SPEED'; speed: Speed }
   | { type: 'SET_TERRAIN_MODE'; mode: TerrainMode }
   | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
@@ -90,7 +94,14 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
     case 'SET_FLYOUT':
       return { ...state, flyout: action.flyout };
     case 'SET_PAUSED':
-      return { ...state, paused: action.paused, flyout: action.paused ? 'none' : state.flyout };
+      return {
+        ...state,
+        paused: action.paused,
+        pauseView: 'menu',
+        flyout: action.paused ? 'none' : state.flyout,
+      };
+    case 'SET_PAUSE_VIEW':
+      return state.paused ? { ...state, pauseView: action.view } : state;
     case 'SET_SPEED':
       return { ...state, speed: action.speed };
     case 'SET_TERRAIN_MODE':
