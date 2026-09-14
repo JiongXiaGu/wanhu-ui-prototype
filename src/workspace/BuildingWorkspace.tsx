@@ -1,20 +1,20 @@
 import { useMemo, useState } from 'react';
 import {
   Building2,
-  ChevronLeft,
-  ChevronRight,
   DoorOpen,
   Grid2X2,
   House,
   Landmark,
   PanelsTopLeft,
+  Search,
   Sparkles,
   Waves,
   X,
 } from 'lucide-react';
 
-const CATEGORY_PAGE_SIZE = 5;
+const CATEGORY_PAGE_SIZE = 4;
 const CONTENT_PAGE_SIZE = 6;
+const CONTENT_PAGER_WINDOW = 5;
 
 const primaryCategories = [
   { key: '全部', icon: Grid2X2, filters: ['全部', '庑殿', '歇山', '悬山', '硬山', '攒尖', '卷棚', '其他'] },
@@ -59,31 +59,44 @@ interface BuildingWorkspaceProps {
   onSelectBuilding: () => void;
 }
 
+function getPagerWindow(pageCount: number, currentPage: number) {
+  if (pageCount <= CONTENT_PAGER_WINDOW) {
+    return Array.from({ length: pageCount }, (_, index) => index);
+  }
+
+  const half = Math.floor(CONTENT_PAGER_WINDOW / 2);
+  const start = Math.min(Math.max(currentPage - half, 0), pageCount - CONTENT_PAGER_WINDOW);
+  return Array.from({ length: CONTENT_PAGER_WINDOW }, (_, index) => start + index);
+}
+
 export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspaceProps) {
   const [primary, setPrimary] = useState<PrimaryCategory>('全部');
   const [filter, setFilter] = useState('全部');
   const [categoryPage, setCategoryPage] = useState(0);
   const [contentPage, setContentPage] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const allCategory = primaryCategories[0];
   const pageableCategories = primaryCategories.slice(1);
   const categoryPageCount = Math.ceil(pageableCategories.length / CATEGORY_PAGE_SIZE);
   const visibleCategories = pageableCategories.slice(categoryPage * CATEGORY_PAGE_SIZE, (categoryPage + 1) * CATEGORY_PAGE_SIZE);
   const activeCategory = primaryCategories.find((item) => item.key === primary) ?? allCategory;
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
+
   const visibleCards = useMemo(
-    () => buildingCards.filter((item) => (primary === '全部' || item.form === primary) && (filter === '全部' || item.filter === filter)),
-    [primary, filter],
+    () => buildingCards.filter((item) => {
+      const matchesCategory = primary === '全部' || item.form === primary;
+      const matchesFilter = filter === '全部' || item.filter === filter;
+      const matchesSearch = !normalizedQuery || `${item.name} ${item.meta} ${item.detail}`.toLocaleLowerCase().includes(normalizedQuery);
+      return matchesCategory && matchesFilter && matchesSearch;
+    }),
+    [primary, filter, normalizedQuery],
   );
+
   const contentPageCount = Math.max(1, Math.ceil(visibleCards.length / CONTENT_PAGE_SIZE));
-  const pageStart = contentPage * CONTENT_PAGE_SIZE;
-  const pageCards = visibleCards.slice(pageStart, pageStart + CONTENT_PAGE_SIZE);
-  const hasPreviousContent = contentPage > 0;
-  const hasNextContent = contentPage < contentPageCount - 1;
-  const previousPeekTop = hasPreviousContent ? visibleCards[pageStart - 4] : undefined;
-  const previousPeekBottom = hasPreviousContent ? visibleCards[pageStart - 1] : undefined;
-  const nextStart = pageStart + CONTENT_PAGE_SIZE;
-  const nextPeekTop = hasNextContent ? visibleCards[nextStart] : undefined;
-  const nextPeekBottom = hasNextContent ? visibleCards[nextStart + 3] : undefined;
+  const pageCards = visibleCards.slice(contentPage * CONTENT_PAGE_SIZE, (contentPage + 1) * CONTENT_PAGE_SIZE);
+  const pagerPages = getPagerWindow(contentPageCount, contentPage);
 
   function selectPrimary(next: PrimaryCategory) {
     setPrimary(next);
@@ -93,6 +106,23 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
 
   function selectFilter(next: string) {
     setFilter(next);
+    setContentPage(0);
+  }
+
+  function selectCategoryPage(nextPage: number) {
+    setCategoryPage(nextPage);
+    const firstCategory = pageableCategories[nextPage * CATEGORY_PAGE_SIZE];
+    if (firstCategory) selectPrimary(firstCategory.key);
+  }
+
+  function updateSearch(next: string) {
+    setSearchQuery(next);
+    setContentPage(0);
+  }
+
+  function closeSearch() {
+    setSearchOpen(false);
+    setSearchQuery('');
     setContentPage(0);
   }
 
@@ -118,38 +148,36 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
           </button>
           <div className="workspace-primary-rail__divider" />
 
-          <div className="workspace-primary-rail__page" key={categoryPage}>
-            {visibleCategories.map(({ key, icon: Icon }) => (
-              <button
-                key={key}
-                type="button"
-                className={primary === key ? 'is-active' : ''}
-                onClick={() => selectPrimary(key)}
-              >
-                <Icon size={16} />
-                <span>{key}</span>
-              </button>
-            ))}
-          </div>
+          <div className="workspace-primary-rail__content">
+            {categoryPageCount > 1 && (
+              <div className="workspace-rail-pager" aria-label="建筑分类组">
+                {Array.from({ length: categoryPageCount }, (_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={categoryPage === index ? 'is-active' : ''}
+                    aria-label={`切换到第 ${index + 1} 组建筑分类`}
+                    onClick={() => selectCategoryPage(index)}
+                  >
+                    <span />
+                  </button>
+                ))}
+              </div>
+            )}
 
-          <div className="workspace-edge-pager workspace-edge-pager--rail" aria-label="切换建筑分类组">
-            <button
-              type="button"
-              aria-label="上一组建筑分类"
-              disabled={categoryPage === 0}
-              onClick={() => setCategoryPage((page) => Math.max(0, page - 1))}
-            >
-              <ChevronLeft size={14} />
-            </button>
-            <i />
-            <button
-              type="button"
-              aria-label="下一组建筑分类"
-              disabled={categoryPage >= categoryPageCount - 1}
-              onClick={() => setCategoryPage((page) => Math.min(categoryPageCount - 1, page + 1))}
-            >
-              <ChevronRight size={14} />
-            </button>
+            <div className="workspace-primary-rail__page" key={categoryPage}>
+              {visibleCategories.map(({ key, icon: Icon }) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={primary === key ? 'is-active' : ''}
+                  onClick={() => selectPrimary(key)}
+                >
+                  <Icon size={16} />
+                  <span>{key}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </nav>
 
@@ -167,25 +195,39 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
                 </button>
               ))}
             </div>
+
+            <div className={`workspace-search ${searchOpen ? 'is-open' : ''}`}>
+              {!searchOpen ? (
+                <button
+                  type="button"
+                  className="workspace-search__trigger"
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="搜索建筑"
+                >
+                  <Search size={14} />
+                  <span>搜索</span>
+                </button>
+              ) : (
+                <div className="workspace-search__field">
+                  <Search size={14} aria-hidden="true" />
+                  <input
+                    autoFocus
+                    value={searchQuery}
+                    placeholder="搜索建筑…"
+                    aria-label="搜索建筑"
+                    onChange={(event) => updateSearch(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Escape') closeSearch();
+                    }}
+                  />
+                  <button type="button" onClick={closeSearch} aria-label="关闭搜索"><X size={12} /></button>
+                </div>
+              )}
+            </div>
           </nav>
 
           <div className="workspace-content-stage">
-            {previousPeekTop && <div className={`workspace-page-peek workspace-page-peek--previous workspace-page-peek--top card-thumb--${previousPeekTop.tone}`} aria-hidden="true" />}
-            {previousPeekBottom && <div className={`workspace-page-peek workspace-page-peek--previous workspace-page-peek--bottom card-thumb--${previousPeekBottom.tone}`} aria-hidden="true" />}
-            {nextPeekTop && <div className={`workspace-page-peek workspace-page-peek--next workspace-page-peek--top card-thumb--${nextPeekTop.tone}`} aria-hidden="true" />}
-            {nextPeekBottom && <div className={`workspace-page-peek workspace-page-peek--next workspace-page-peek--bottom card-thumb--${nextPeekBottom.tone}`} aria-hidden="true" />}
-
-            <button
-              type="button"
-              className="workspace-content-edge workspace-content-edge--previous"
-              aria-label="上一组建筑"
-              disabled={!hasPreviousContent}
-              onClick={() => setContentPage((page) => Math.max(0, page - 1))}
-            >
-              <ChevronLeft size={17} />
-            </button>
-
-            <div className="workspace-content-grid" key={`${primary}-${filter}-${contentPage}`}>
+            <div className="workspace-content-grid" key={`${primary}-${filter}-${searchQuery}-${contentPage}`}>
               {pageCards.map(({ name, meta, detail, tone }) => (
                 <button
                   type="button"
@@ -201,18 +243,28 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
                   </div>
                 </button>
               ))}
-            </div>
 
-            <button
-              type="button"
-              className="workspace-content-edge workspace-content-edge--next"
-              aria-label="下一组建筑"
-              disabled={!hasNextContent}
-              onClick={() => setContentPage((page) => Math.min(contentPageCount - 1, page + 1))}
-            >
-              <ChevronRight size={17} />
-            </button>
+              {pageCards.length === 0 && (
+                <div className="workspace-empty">没有符合条件的建筑</div>
+              )}
+            </div>
           </div>
+
+          {contentPageCount > 1 && (
+            <nav className="workspace-content-pager" aria-label="建筑内容分页">
+              {pagerPages.map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  className={contentPage === page ? 'is-active' : ''}
+                  aria-label={`切换到第 ${page + 1} 组建筑`}
+                  onClick={() => setContentPage(page)}
+                >
+                  <span />
+                </button>
+              ))}
+            </nav>
+          )}
         </div>
       </div>
     </section>
