@@ -1,195 +1,38 @@
 /* Global Pause Space — restrained full-screen game state. */
 
-.gameplay-screen .pause-layer{
-  position:absolute;
-  inset:0;
-  z-index:60;
-  overflow:hidden;
-}
-
-.gameplay-screen .pause-shade{
-  position:absolute;
-  inset:-18px;
-  background:rgba(7,10,8,.56);
-  backdrop-filter:blur(5px) brightness(.70) saturate(.76);
-}
-
-.pause-atmosphere{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 50% 45%,rgba(201,165,95,.022),transparent 26%),
-    linear-gradient(90deg,rgba(7,10,8,.10),transparent 30%,transparent 70%,rgba(7,10,8,.10));
-}
+.gameplay-screen .pause-layer{position:absolute;inset:0;z-index:60;overflow:hidden}
+.gameplay-screen .pause-shade{position:absolute;inset:-18px;background:rgba(7,10,8,.56);backdrop-filter:blur(5px) brightness(.70) saturate(.76)}
+.pause-atmosphere{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 45%,rgba(201,165,95,.02),transparent 26%)}
 
 .pause-command-surface{
   position:absolute;
   left:50%;
   top:50%;
-  width:540px;
+  width:500px;
   transform:translate(-50%,-50%);
-  padding:31px 28px 20px;
-  border-top:1px solid rgba(239,233,221,.09);
-  border-bottom:1px solid rgba(239,233,221,.075);
-  background:linear-gradient(90deg,
-    rgba(20,27,24,0),
-    rgba(20,27,24,.76) 11%,
-    rgba(20,27,24,.87) 28%,
-    rgba(20,27,24,.87) 72%,
-    rgba(20,27,24,.76) 89%,
-    rgba(20,27,24,0));
-  box-shadow:0 22px 72px rgba(4,7,5,.16);
+  padding:26px 26px 17px;
+  border-top:1px solid rgba(239,233,221,.085);
+  border-bottom:1px solid rgba(239,233,221,.07);
+  background:linear-gradient(90deg,rgba(20,27,24,0),rgba(20,27,24,.82) 17%,rgba(20,27,24,.88) 50%,rgba(20,27,24,.82) 83%,rgba(20,27,24,0));
+  box-shadow:0 22px 72px rgba(4,7,5,.14);
 }
 
-.pause-heading{
-  padding:0 34px 25px;
-  text-align:center;
-}
+.pause-heading{padding:0 28px 22px;display:flex;align-items:baseline;justify-content:center;gap:14px;text-align:center}
+.pause-heading h2{margin:0;color:#ebe5d9;font-family:'Noto Serif SC',serif;font-size:31px;font-weight:500;letter-spacing:.10em}
+.pause-heading span{color:#747b73;font-size:8.5px;letter-spacing:.035em}
 
-.pause-heading>small{
-  display:block;
-  margin-bottom:5px;
-  color:#b89b61;
-  font-size:8px;
-  letter-spacing:.24em;
-}
+.pause-command-list{display:flex;flex-direction:column;border-top:1px solid rgba(239,233,221,.06)}
+.pause-command-list button{position:relative;width:100%;height:54px;padding:0 28px;display:flex;align-items:center;border:0;border-bottom:1px solid rgba(239,233,221,.055);background:transparent;color:#9da097;text-align:left;cursor:pointer;transition:background .14s ease,color .14s ease}
+.pause-command-list button::before{content:'';position:absolute;left:0;top:11px;bottom:11px;width:2px;opacity:0;background:#c9a55f;transition:opacity .14s ease}
+.pause-command-list button:hover{background:linear-gradient(90deg,rgba(255,255,255,.03),rgba(255,255,255,.006) 72%,transparent);color:#d6d2c7}
+.pause-command-list button:hover::before{opacity:.35}
+.pause-command-list button.is-primary{color:#e1d8c4;background:linear-gradient(90deg,rgba(201,165,95,.10),rgba(201,165,95,.024) 74%,transparent)}
+.pause-command-list button.is-primary::before{opacity:1}
+.pause-command-list button>b{font-size:12px;font-weight:500;letter-spacing:.035em}
 
-.pause-heading>div{
-  display:flex;
-  align-items:baseline;
-  justify-content:center;
-  gap:13px;
-}
+.pause-footer{min-height:40px;padding:12px 26px 0;display:flex;align-items:center;color:#666d66;font-size:7.5px;letter-spacing:.05em}
+.pause-footer span{display:flex;align-items:center;gap:6px}
+.pause-footer kbd{min-width:30px;height:20px;padding:0 6px;display:inline-grid;place-items:center;border:1px solid rgba(239,233,221,.12);border-radius:1px;background:rgba(255,255,255,.015);color:#989d95;box-shadow:none;font:inherit;letter-spacing:.02em}
 
-.pause-heading h2{
-  margin:0;
-  color:#ebe5d9;
-  font-family:'Noto Serif SC',serif;
-  font-size:31px;
-  font-weight:500;
-  letter-spacing:.10em;
-}
-
-.pause-heading span{
-  color:#747b73;
-  font-size:8.5px;
-  letter-spacing:.035em;
-}
-
-.pause-command-list{
-  display:flex;
-  flex-direction:column;
-  border-top:1px solid rgba(239,233,221,.065);
-}
-
-.pause-command-list button{
-  position:relative;
-  width:100%;
-  height:60px;
-  padding:0 30px;
-  display:flex;
-  align-items:center;
-  border:0;
-  border-bottom:1px solid rgba(239,233,221,.06);
-  background:transparent;
-  color:#9da097;
-  text-align:left;
-  cursor:pointer;
-  transition:background .14s ease,color .14s ease;
-}
-
-.pause-command-list button::before{
-  content:'';
-  position:absolute;
-  left:0;
-  top:12px;
-  bottom:12px;
-  width:2px;
-  opacity:0;
-  background:#c9a55f;
-  transition:opacity .14s ease;
-}
-
-.pause-command-list button:hover{
-  background:linear-gradient(90deg,rgba(255,255,255,.032),rgba(255,255,255,.007) 72%,transparent);
-  color:#d6d2c7;
-}
-
-.pause-command-list button:hover::before{
-  opacity:.35;
-}
-
-.pause-command-list button.is-primary{
-  color:#e1d8c4;
-  background:linear-gradient(90deg,rgba(201,165,95,.105),rgba(201,165,95,.026) 74%,transparent);
-}
-
-.pause-command-list button.is-primary::before{
-  opacity:1;
-}
-
-.pause-command-copy{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-}
-
-.pause-command-copy b{
-  color:inherit;
-  font-size:12px;
-  font-weight:500;
-  letter-spacing:.035em;
-}
-
-.pause-command-copy small{
-  color:#70776f;
-  font-size:8.5px;
-  font-weight:400;
-}
-
-.pause-footer{
-  min-height:44px;
-  padding:14px 28px 0;
-  display:flex;
-  align-items:center;
-  color:#666d66;
-  font-size:7.5px;
-  letter-spacing:.07em;
-}
-
-.pause-footer span{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.pause-footer kbd{
-  min-width:30px;
-  height:20px;
-  padding:0 6px;
-  display:inline-grid;
-  place-items:center;
-  border:1px solid rgba(239,233,221,.12);
-  border-radius:1px;
-  background:rgba(255,255,255,.015);
-  color:#989d95;
-  box-shadow:none;
-  font:inherit;
-  letter-spacing:.02em;
-}
-
-.pause-secondary-surface{
-  position:absolute;
-  inset:0;
-  display:grid;
-  place-items:center;
-  padding:54px 72px;
-  animation:pause-secondary-enter .18s ease-out both;
-}
-
-@keyframes pause-secondary-enter{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:translateY(0)}
-}
+.pause-secondary-surface{position:absolute;inset:0;display:grid;place-items:center;padding:54px 72px;animation:pause-secondary-enter .18s ease-out both}
+@keyframes pause-secondary-enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
