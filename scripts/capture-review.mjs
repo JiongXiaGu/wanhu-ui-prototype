@@ -10,6 +10,7 @@ const scenarios = [
   { file: '03-workspace.png', review: 'workspace-building', waitFor: '.workspace' },
   { file: '03a-workspace-content-wheel.png', review: 'workspace-building', waitFor: '.workspace', action: 'content-wheel' },
   { file: '03b-workspace-category-wheel.png', review: 'workspace-building', waitFor: '.workspace', action: 'category-wheel' },
+  { file: '03c-workspace-filter-persistence.png', review: 'workspace-building', waitFor: '.workspace', action: 'filter-persistence' },
   { file: '04-tool-position-hints.png', review: 'building-position', waitFor: '.gameplay-operation-hints' },
   { file: '05-tool-massing-hints.png', review: 'building-massing', waitFor: '.gameplay-operation-hints' },
   { file: '06-tool-roof-hints.png', review: 'building-roof', waitFor: '.bp-mode-content' },
@@ -51,6 +52,15 @@ for (const scenario of scenarios) {
     await page.waitForTimeout(280);
     const activeCategoryPager = await page.locator('.workspace-rail-pager button').evaluateAll((items) => items.findIndex((item) => item.classList.contains('is-active')));
     if (activeCategoryPager !== 1) throw new Error('Workspace category wheel should advance exactly one category group.');
+  }
+
+  if (scenario.action === 'filter-persistence') {
+    await page.getByRole('button', { name: '歇山', exact: true }).click();
+    await page.getByRole('button', { name: '塔', exact: true }).click();
+    await page.getByRole('button', { name: '全部建筑', exact: true }).click();
+    await page.waitForTimeout(180);
+    const activeContextFilter = await page.locator('.workspace-context-filter__scroll > button.is-active').textContent();
+    if (activeContextFilter?.trim() !== '歇山') throw new Error('Primary category changes must not reset the top context filter.');
   }
 
   if (scenario.review === 'building-camera') {
