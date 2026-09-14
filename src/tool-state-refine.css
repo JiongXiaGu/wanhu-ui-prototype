@@ -1,126 +1,354 @@
-/* Tool execution layout refinement.
-   Tool mode uses three independent surfaces on a shared bottom baseline:
-   bottom-left parameter panel + centered contextual utility + action cluster. */
+/* BuildingPlacementOverlay — aligned with the original UI Toolkit package.
+   Source structure: control panel + roof-section utility + tool utility + primary dock. */
 
-/* Keep the parameter surface away from the persistent HUD and anchor it to the work area. */
-.gameplay-screen .tool-overlay{
-  position:absolute;
-  left:22px !important;
-  right:auto !important;
-  top:auto !important;
-  bottom:22px !important;
-  transform:none !important;
+.gameplay-screen .tool-overlay.building-placement-prototype{
+  left:22px;
+  top:auto;
+  bottom:22px;
+  width:500px;
+  max-height:72%;
+  overflow:hidden;
+  transform:none;
+  border-color:rgba(239,233,221,.16);
+  background:rgba(23,30,27,.972);
+  box-shadow:0 22px 58px rgba(6,9,8,.30);
   z-index:22;
-  max-height:560px;
 }
 
-/* ToolOverlay, contextual utility and actions share the same 22px bottom baseline. */
-.gameplay-screen .tool-bottom-cluster{
+.gameplay-screen .tool-overlay.building-placement-prototype>header{
+  height:58px;
+  min-height:58px;
+  padding:0 17px;
+}
+
+.gameplay-screen .tool-overlay.building-placement-prototype>header>.icon-button{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+  pointer-events:none;
+}
+
+.gameplay-screen .tool-overlay.building-placement-prototype .tool-body{
+  max-height:calc(78vh - 58px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:13px 17px 16px;
+  scrollbar-width:thin;
+}
+
+.gameplay-screen .building-placement__legacy-quick-options{
+  display:none !important;
+}
+
+.gameplay-screen .building-placement__design-group-field{
+  display:grid;
+  grid-template-columns:84px repeat(3,minmax(0,1fr));
+  align-items:stretch;
+  min-height:36px;
+  margin:0 0 9px;
+  border:0;
+  background:transparent;
+}
+
+.gameplay-screen .building-placement__design-group-field::before{
+  content:'参数分组';
+  display:flex;
+  align-items:center;
+  color:#8f958d;
+  font-size:9px;
+  letter-spacing:.025em;
+}
+
+.gameplay-screen .building-placement__design-group-field button{
+  border:1px solid rgba(239,233,221,.13);
+  border-right-width:0;
+  background:rgba(255,255,255,.012);
+}
+
+.gameplay-screen .building-placement__design-group-field button:last-child{
+  border-right-width:1px;
+}
+
+.gameplay-screen .building-placement__design-group-field button.is-active{
+  background:linear-gradient(180deg,rgba(201,165,95,.10),rgba(201,165,95,.035));
+}
+
+.gameplay-screen .is-group-hidden{
+  display:none !important;
+}
+
+.building-placement__terrain-engineering-section{
+  margin:0 0 10px;
+  padding:9px 10px;
+  border:1px solid rgba(239,233,221,.10);
+  background:rgba(255,255,255,.015);
+}
+
+.building-placement__terrain-engineering-section.is-hidden,
+.building-placement__manual-elevation-container.is-hidden{
+  display:none;
+}
+
+.building-placement__manual-elevation-container{
+  display:grid;
+  grid-template-columns:84px minmax(0,1fr);
+  align-items:center;
+  gap:7px;
+  margin-bottom:8px;
+}
+
+.building-placement__manual-label{
+  color:#9ca097;
+  font-size:9px;
+}
+
+.building-placement__manual-control{
+  display:grid;
+  grid-template-columns:28px minmax(90px,1fr) 28px 54px;
+  align-items:center;
+  gap:6px;
+}
+
+.building-placement__manual-control button{
+  width:28px;
+  height:28px;
+  border:1px solid rgba(239,233,221,.15);
+  background:rgba(255,255,255,.018);
+  color:#c9c5ba;
+  cursor:pointer;
+}
+
+.building-placement__manual-control output{
+  height:28px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(239,233,221,.15);
+  color:#ddd7ca;
+  font-size:9px;
+  font-variant-numeric:tabular-nums;
+}
+
+.building-placement__manual-track{
+  position:relative;
+  height:4px;
+  border-radius:2px;
+  background:rgba(235,228,211,.15);
+}
+
+.building-placement__manual-track i{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  background:var(--gold);
+}
+
+.building-placement__manual-track i::after{
+  content:'';
+  position:absolute;
+  right:-5px;
+  top:50%;
+  width:9px;
+  height:9px;
+  border:2px solid rgba(245,240,226,.94);
+  border-radius:50%;
+  transform:translateY(-50%);
+  background:var(--gold);
+}
+
+.building-placement__terrain-engineering-status{
+  color:#8f958d;
+  font-size:9px;
+  line-height:1.55;
+  white-space:normal;
+}
+
+.gameplay-screen .building-placement-toolbar-cluster{
   left:50%;
   bottom:22px;
   transform:translateX(-50%);
-  gap:8px;
-  align-items:center;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:5px;
+  z-index:24;
 }
 
-/* Reuse the persistent Utility Toolbar material instead of creating a second tool language. */
-.gameplay-screen .tool-bottom-cluster__utility{
-  width:auto;
-  height:38px;
-  padding:3px 4px;
+.building-placement__roof-section-toolbar{
+  position:absolute;
+  left:50%;
+  bottom:94px;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  padding:3px;
+  background:linear-gradient(180deg,rgba(31,39,35,.93),rgba(25,32,29,.89));
   border:1px solid rgba(239,233,221,.13);
-  background:linear-gradient(180deg,rgba(31,39,35,.89),rgba(25,32,29,.84));
-  box-shadow:0 10px 28px rgba(7,10,9,.22);
+  box-shadow:0 10px 26px rgba(7,10,9,.22);
   backdrop-filter:blur(9px);
 }
 
-.gameplay-screen .tool-bottom-cluster__buttons{
-  width:auto;
-  height:100%;
-  justify-content:flex-start;
+.building-placement__roof-section-toolbar.is-hidden{
+  display:none;
 }
 
-.gameplay-screen .tool-bottom-icon{
-  width:34px;
-  height:30px;
-  flex:0 0 34px;
+.building-placement__roof-section-toolbar button{
+  min-width:58px;
+  height:28px;
+  padding:0 8px;
+  border:0;
+  border-bottom:1px solid rgba(239,233,221,.075);
+  background:transparent;
+  color:#858b83;
+  font-size:9px;
+  cursor:pointer;
 }
 
-.gameplay-screen .tool-bottom-icon svg{
-  width:15px;
-  height:15px;
-}
+.building-placement__roof-section-toolbar button:last-child{border-bottom:0}
+.building-placement__roof-section-toolbar button:hover{background:rgba(255,255,255,.04);color:#c9c7bf}
+.building-placement__roof-section-toolbar button.is-active{background:rgba(201,165,95,.09);color:#dfc078}
 
-/* Tool-context tooltip rises from the same place and timing as Gameplay Utility Toolbar. */
-.gameplay-screen .tool-bottom-icon::after{
-  bottom:38px;
-}
-
-/* Primary actions stay separate so they read as commit/cancel, not as editing tools. */
-.gameplay-screen .tool-bottom-cluster__primary{
+.gameplay-screen .building-placement-toolbar-cluster .tool-bottom-cluster__utility{
+  align-self:flex-end;
   height:38px;
   padding:3px 4px;
   gap:3px;
+  background:linear-gradient(180deg,rgba(31,39,35,.91),rgba(25,32,29,.86));
   border:1px solid rgba(239,233,221,.13);
-  background:linear-gradient(180deg,rgba(29,36,33,.95),rgba(24,31,28,.93));
-  box-shadow:0 10px 28px rgba(7,10,9,.22);
-  backdrop-filter:blur(9px);
+  box-shadow:0 10px 26px rgba(7,10,9,.22);
 }
 
-.gameplay-screen .tool-primary-action{
-  min-width:72px;
-  height:30px;
-  padding:0 15px;
+.gameplay-screen .building-placement-toolbar-cluster .tool-bottom-cluster__primary{
+  height:48px;
+  padding:4px;
+  gap:3px;
+  background:linear-gradient(180deg,rgba(29,36,33,.97),rgba(24,31,28,.95));
+  border:1px solid rgba(239,233,221,.15);
+  box-shadow:0 14px 34px rgba(7,10,9,.26);
+}
+
+.building-tool-mode-group{
+  height:100%;
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
+
+.building-tool-mode-action,
+.building-tool-icon-action{
+  position:relative;
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  padding:0;
+  border:1px solid transparent;
   border-radius:1px;
-  font-size:9px;
-  letter-spacing:.04em;
-}
-
-.gameplay-screen .tool-primary-action--cancel{
-  border-color:transparent;
   background:transparent;
-  color:#969c94;
+  color:#878e86;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:500;
+  cursor:pointer;
+  transition:background .13s ease,color .13s ease,border-color .13s ease,transform .08s ease;
 }
 
-.gameplay-screen .tool-primary-action--cancel:hover{
-  border-color:rgba(239,233,221,.10);
-  background:rgba(255,255,255,.035);
-  color:#d0cec5;
+.tool-bottom-cluster__primary .building-tool-mode-action{
+  width:36px;
+  height:38px;
+  flex-basis:36px;
+  background:rgba(255,255,255,.018);
+  border-color:rgba(239,233,221,.09);
 }
 
-.gameplay-screen .tool-primary-action:not(.tool-primary-action--cancel){
-  border-color:rgba(201,165,95,.34);
+.building-tool-icon-action img,
+.building-tool-icon-action svg{
+  width:16px;
+  height:16px;
+  object-fit:contain;
+  opacity:.77;
+  pointer-events:none;
+}
+
+.building-tool-mode-action:hover,
+.building-tool-icon-action:hover{
+  background:rgba(255,255,255,.045);
+  color:#ceccc3;
+}
+
+.building-tool-mode-action.is-active,
+.building-tool-icon-action.is-active{
   background:rgba(201,165,95,.10);
+  border-color:rgba(201,165,95,.30);
   color:#dfc078;
 }
 
-.gameplay-screen .tool-primary-action:not(.tool-primary-action--cancel):hover{
-  border-color:rgba(201,165,95,.48);
-  background:rgba(201,165,95,.16);
+.building-tool-icon-action.is-active img,
+.building-tool-icon-action.is-active svg{opacity:1}
+
+.building-tool-mode-action:disabled,
+.building-tool-icon-action:disabled{
+  opacity:.28;
+  cursor:default;
+  background:transparent;
+  border-color:transparent;
 }
 
-/* In tool mode the left side must not become one continuous dark column. */
-.gameplay-screen:has(.tool-overlay) .hud-group{
-  z-index:12;
+.building-tool-mode-action[data-tooltip]::after,
+.building-tool-icon-action[data-tooltip]::after{
+  content:attr(data-tooltip);
+  position:absolute;
+  left:50%;
+  bottom:43px;
+  transform:translate(-50%,4px);
+  padding:6px 8px;
+  min-width:max-content;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  white-space:nowrap;
+  color:#d7d4ca;
+  background:rgba(19,25,22,.98);
+  border:1px solid rgba(239,233,221,.14);
+  box-shadow:0 8px 22px rgba(5,8,7,.24);
+  font-size:9px;
+  font-weight:400;
+  z-index:40;
+  transition:opacity .12s ease,transform .12s ease,visibility .12s ease;
 }
 
-/* Keep the internal quick toggles restrained so they visually belong to the same icon-button family. */
-.gameplay-screen .tool-overlay .icon-strip button{
-  width:34px;
-  height:34px;
-  border-radius:1px;
-  border-color:rgba(239,233,221,.12);
-  background:rgba(255,255,255,.012);
-  box-shadow:none;
+.building-tool-mode-action:hover::after,
+.building-tool-icon-action:hover::after{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
 }
 
-.gameplay-screen .tool-overlay .icon-strip button:hover{
-  transform:none;
-  border-color:rgba(239,233,221,.18);
-  background:rgba(255,255,255,.045);
+.building-tool-divider{
+  width:1px;
+  height:24px;
+  flex:0 0 1px;
+  margin:0 3px;
+  background:rgba(239,233,221,.09);
 }
 
-.gameplay-screen .tool-overlay .icon-strip button.is-active{
-  border-color:rgba(201,165,95,.24);
-  background:rgba(201,165,95,.085);
+.building-tool-icon-action.is-destructive{
+  background:rgba(142,57,48,.16);
+  border-color:rgba(204,91,76,.40);
+  color:#d9897d;
+}
+
+.building-tool-icon-action.is-destructive img,
+.building-tool-icon-action.is-destructive svg{opacity:.9}
+.building-tool-icon-action.is-destructive:hover{background:rgba(157,61,51,.24);border-color:rgba(216,101,86,.56)}
+
+.building-placement-toolbar-cluster.is-committing,
+.tool-overlay.building-placement-prototype.is-committing{
+  pointer-events:none;
+  opacity:.62;
+}
+
+.gameplay-screen:has(.building-placement-prototype) .hud-group{
+  z-index:18;
 }
