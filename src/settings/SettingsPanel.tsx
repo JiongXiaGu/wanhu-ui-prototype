@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronLeft, Gamepad2, Monitor, RotateCcw, Settings2, SlidersHorizontal, Speaker } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, Gamepad2, Monitor, RotateCcw, Settings2, SlidersHorizontal, Speaker } from 'lucide-react';
 
 export type SettingsContext = 'menu' | 'pause';
 
@@ -80,7 +80,7 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
       <nav className="settings-space__tabs" aria-label="设置分类">
         {categories.map(({ key, icon: Icon, detail }) => (
           <button key={key} type="button" className={active === key ? 'is-active' : ''} title={detail} onClick={() => setActive(key)}>
-            <Icon size={15} />
+            <Icon size={16} />
             <span>{key}</span>
           </button>
         ))}
@@ -93,7 +93,7 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
       </main>
 
       <footer className="global-space-footer settings-space__footer">
-        <button type="button" className="settings-restore"><RotateCcw size={13} />恢复默认</button>
+        <button type="button" className="settings-restore"><RotateCcw size={14} />恢复默认</button>
         <div>
           <button type="button" className="global-space-secondary" onClick={onClose}>取消</button>
           <button type="button" className="global-space-primary" onClick={onApply}><Check size={14} />应用</button>
@@ -104,13 +104,28 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
 }
 
 function SettingsRowView({ row }: { row: SettingRow }) {
+  const isOn = row.value === '开启';
+
   return (
     <div className="settings-row-v2" title={row.detail}>
       <span className="settings-row-v2__copy"><b>{row.title}</b></span>
       <div className={`settings-row-v2__control settings-row-v2__control--${row.kind}`}>
-        {row.kind === 'slider' && <><div className="settings-slider"><i style={{ width: `${row.pct ?? 50}%` }} /><em style={{ left: `${row.pct ?? 50}%` }} /></div><output>{row.value}</output></>}
-        {row.kind === 'select' && <button type="button">{row.value}<span>⌄</span></button>}
-        {row.kind === 'toggle' && <button type="button" className={`settings-toggle ${row.value === '开启' ? 'is-on' : ''}`}><i /><span>{row.value}</span></button>}
+        {row.kind === 'slider' && (
+          <>
+            <div className="settings-slider"><i style={{ width: `${row.pct ?? 50}%` }} /><em style={{ left: `${row.pct ?? 50}%` }} /></div>
+            <output>{row.value}</output>
+          </>
+        )}
+        {row.kind === 'select' && (
+          <button type="button" className="settings-select-value">
+            <span>{row.value}</span><ChevronDown size={14} />
+          </button>
+        )}
+        {row.kind === 'toggle' && (
+          <button type="button" className={`settings-toggle ${isOn ? 'is-on' : ''}`} aria-label={`${row.title}：${row.value}`}>
+            <i />
+          </button>
+        )}
         {row.kind === 'binding' && <div className="settings-binding">{row.keys?.map((key) => <kbd key={key}>{key}</kbd>)}</div>}
       </div>
     </div>
