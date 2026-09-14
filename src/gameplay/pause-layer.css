@@ -1,4 +1,4 @@
-/* Global Pause Space — not a modal, but a full-screen game state. */
+/* Global Pause Space — restrained full-screen game state. */
 
 .gameplay-screen .pause-layer{
   position:absolute;
@@ -19,8 +19,8 @@
   inset:0;
   pointer-events:none;
   background:
-    radial-gradient(circle at 50% 45%,rgba(201,165,95,.025),transparent 26%),
-    linear-gradient(90deg,rgba(7,10,8,.12),transparent 28%,transparent 72%,rgba(7,10,8,.12));
+    radial-gradient(circle at 50% 45%,rgba(201,165,95,.022),transparent 26%),
+    linear-gradient(90deg,rgba(7,10,8,.10),transparent 30%,transparent 70%,rgba(7,10,8,.10));
 }
 
 .pause-command-surface{
@@ -87,18 +87,16 @@
   position:relative;
   width:100%;
   height:60px;
-  padding:0 26px 0 28px;
-  display:grid;
-  grid-template-columns:34px 1fr 20px;
+  padding:0 30px;
+  display:flex;
   align-items:center;
-  gap:9px;
   border:0;
   border-bottom:1px solid rgba(239,233,221,.06);
   background:transparent;
   color:#9da097;
   text-align:left;
   cursor:pointer;
-  transition:background .14s ease,color .14s ease,padding .14s ease;
+  transition:background .14s ease,color .14s ease;
 }
 
 .pause-command-list button::before{
@@ -114,28 +112,21 @@
 }
 
 .pause-command-list button:hover{
-  padding-left:32px;
-  background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.008) 72%,transparent);
+  background:linear-gradient(90deg,rgba(255,255,255,.032),rgba(255,255,255,.007) 72%,transparent);
   color:#d6d2c7;
 }
 
 .pause-command-list button:hover::before{
-  opacity:.45;
+  opacity:.35;
 }
 
 .pause-command-list button.is-primary{
   color:#e1d8c4;
-  background:linear-gradient(90deg,rgba(201,165,95,.12),rgba(201,165,95,.032) 74%,transparent);
+  background:linear-gradient(90deg,rgba(201,165,95,.105),rgba(201,165,95,.026) 74%,transparent);
 }
 
 .pause-command-list button.is-primary::before{
   opacity:1;
-}
-
-.pause-command-index{
-  color:#676e67;
-  font-size:8px;
-  font-variant-numeric:tabular-nums;
 }
 
 .pause-command-copy{
@@ -158,27 +149,17 @@
   font-weight:400;
 }
 
-.pause-command-list button svg{
-  color:#697069;
-  stroke-width:1.7;
-}
-
-.pause-command-list button.is-primary svg{
-  color:#bfa364;
-}
-
 .pause-footer{
   min-height:44px;
   padding:14px 28px 0;
   display:flex;
   align-items:center;
-  justify-content:space-between;
   color:#666d66;
   font-size:7.5px;
   letter-spacing:.07em;
 }
 
-.pause-footer span:first-child{
+.pause-footer span{
   display:flex;
   align-items:center;
   gap:6px;
