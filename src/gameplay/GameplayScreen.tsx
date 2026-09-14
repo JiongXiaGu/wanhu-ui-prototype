@@ -50,7 +50,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         />
       )}
 
-      {toolOpen && (
+      {toolOpen && !state.paused && (
         <>
           <BuildingPlacementOverlay
             terrainMode={state.terrainMode}
@@ -63,10 +63,14 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         </>
       )}
 
-      {state.flyout !== 'none' && <RightEdgeFlyout flyout={state.flyout} onClose={() => dispatch({ type: 'SET_FLYOUT', flyout: 'none' })} />}
+      {state.flyout !== 'none' && !state.paused && (
+        <RightEdgeFlyout flyout={state.flyout} onClose={() => dispatch({ type: 'SET_FLYOUT', flyout: 'none' })} />
+      )}
 
       {state.paused && (
         <PauseLayer
+          view={state.pauseView}
+          onViewChange={(view) => dispatch({ type: 'SET_PAUSE_VIEW', view })}
           onResume={() => dispatch({ type: 'SET_PAUSED', paused: false })}
           onMainMenu={onMainMenu}
         />
