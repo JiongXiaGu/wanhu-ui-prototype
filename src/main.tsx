@@ -8,9 +8,9 @@ import './menu-refine.css';
 import './backgrounds.css';
 import './gameplay-refine.css';
 import './operation-hints.css';
+import './archive/archive-panel.css';
 import './gameplay/right-edge-flyout.css';
 import './gameplay/pause-layer.css';
-import './gameplay/save-game-panel.css';
 import './settings/settings-panel.css';
 import './tools/building-placement/building-placement.css';
 
