@@ -13,12 +13,12 @@ const svgClose = '</svg>';
 
 const tools: UtilityTool[] = [
   {
-    id: 'undo', label: '撤销', shortcut: 'Ctrl+Z', behavior: 'momentary',
-    icon: `${svgOpen}<path d="M9 7 4 12l5 5"/><path d="M4 12h9a6 6 0 0 1 6 6"/>${svgClose}`,
+    id: 'unlock', label: '地图解锁', behavior: 'toggle',
+    icon: `${svgOpen}<rect x="5" y="10" width="14" height="10" rx="1.5"/><path d="M9 10V7a3 3 0 0 1 5.7-1.3"/>${svgClose}`,
   },
   {
-    id: 'redo', label: '重做', shortcut: 'Ctrl+Y', behavior: 'momentary',
-    icon: `${svgOpen}<path d="m15 7 5 5-5 5"/><path d="M20 12h-9a6 6 0 0 0-6 6"/>${svgClose}`,
+    id: 'area', label: '编辑区域', behavior: 'mode',
+    icon: `${svgOpen}<rect x="4" y="4" width="16" height="16" rx="1.5" stroke-dasharray="2.5 2.5"/><path d="m13 15 5-5 2 2-5 5-3 1 1-3Z"/>${svgClose}`,
   },
   {
     id: 'terrain', label: '修改地形', behavior: 'mode',
@@ -29,20 +29,20 @@ const tools: UtilityTool[] = [
     icon: `${svgOpen}<path d="M12 3a9 9 0 1 0 0 18h1.3a1.7 1.7 0 0 0 0-3.4h-.6a1.6 1.6 0 0 1 0-3.2H15a6 6 0 0 0-3-11.4Z"/><circle cx="7.5" cy="10" r=".8"/><circle cx="10" cy="6.8" r=".8"/><circle cx="15.2" cy="7.6" r=".8"/>${svgClose}`,
   },
   {
-    id: 'unlock', label: '地图解锁', behavior: 'toggle',
-    icon: `${svgOpen}<rect x="5" y="10" width="14" height="10" rx="1.5"/><path d="M9 10V7a3 3 0 0 1 5.7-1.3"/>${svgClose}`,
-  },
-  {
-    id: 'area', label: '编辑区域', behavior: 'mode',
-    icon: `${svgOpen}<rect x="4" y="4" width="16" height="16" rx="1.5" stroke-dasharray="2.5 2.5"/><path d="m13 15 5-5 2 2-5 5-3 1 1-3Z"/>${svgClose}`,
-  },
-  {
     id: 'copy', label: '范围复制', behavior: 'mode',
     icon: `${svgOpen}<rect x="9" y="9" width="10" height="10" rx="1.5"/><path d="M15 7V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h2"/>${svgClose}`,
   },
   {
     id: 'move', label: '范围移动', behavior: 'mode',
     icon: `${svgOpen}<path d="M12 3v18M3 12h18"/><path d="m9 6 3-3 3 3M18 9l3 3-3 3M9 18l3 3 3-3M6 9l-3 3 3 3"/>${svgClose}`,
+  },
+  {
+    id: 'undo', label: '撤销', shortcut: 'Ctrl+Z', behavior: 'momentary',
+    icon: `${svgOpen}<path d="M9 7 4 12l5 5"/><path d="M4 12h9a6 6 0 0 1 6 6"/>${svgClose}`,
+  },
+  {
+    id: 'redo', label: '重做', shortcut: 'Ctrl+Y', behavior: 'momentary',
+    icon: `${svgOpen}<path d="m15 7 5 5-5 5"/><path d="M20 12h-9a6 6 0 0 0-6 6"/>${svgClose}`,
   },
 ];
 
@@ -76,7 +76,7 @@ function mountCommandUtility() {
   buttons.className = 'command-utility__buttons';
 
   tools.forEach((tool, index) => {
-    if (index === 2 || index === 4) addSeparator(buttons);
+    if (index === 4 || index === 6) addSeparator(buttons);
     buttons.appendChild(toolButton(tool));
   });
 
