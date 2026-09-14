@@ -4,6 +4,7 @@ import App from './App';
 import './styles.css';
 import './workspace.css';
 import './tool-overlay.css';
+import './menu-refine.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
