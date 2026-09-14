@@ -58,7 +58,9 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
   const [primary, setPrimary] = useState<PrimaryCategory>('全部');
   const [filter, setFilter] = useState('全部');
 
-  const activeCategory = primaryCategories.find((item) => item.key === primary) ?? primaryCategories[0];
+  const allCategory = primaryCategories[0];
+  const scrollCategories = primaryCategories.slice(1);
+  const activeCategory = primaryCategories.find((item) => item.key === primary) ?? allCategory;
   const visibleCards = useMemo(
     () => buildingCards.filter((item) => (primary === '全部' || item.form === primary) && (filter === '全部' || item.filter === filter)),
     [primary, filter],
@@ -81,18 +83,29 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
 
       <div className="workspace-body">
         <nav className="workspace-primary-rail" aria-label="建筑形制">
-          <div className="workspace-primary-rail__scroll">
-            {primaryCategories.map(({ key, icon: Icon }) => (
-              <button
-                key={key}
-                type="button"
-                className={primary === key ? 'is-active' : ''}
-                onClick={() => selectPrimary(key)}
-              >
-                <Icon size={16} />
-                <span>{key}</span>
-              </button>
-            ))}
+          <button
+            type="button"
+            className={`workspace-primary-rail__all ${primary === allCategory.key ? 'is-active' : ''}`}
+            onClick={() => selectPrimary(allCategory.key)}
+          >
+            <allCategory.icon size={16} />
+            <span>{allCategory.key}</span>
+          </button>
+          <div className="workspace-primary-rail__divider" />
+          <div className="workspace-primary-rail__viewport">
+            <div className="workspace-primary-rail__scroll">
+              {scrollCategories.map(({ key, icon: Icon }) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={primary === key ? 'is-active' : ''}
+                  onClick={() => selectPrimary(key)}
+                >
+                  <Icon size={16} />
+                  <span>{key}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </nav>
 
