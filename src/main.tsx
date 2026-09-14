@@ -10,9 +10,6 @@ import './gameplay-refine.css';
 import './tool-state-refine.css';
 import './operation-hints.css';
 import './placement-utility-refine.css';
-import './gameplay-enhance';
-import './operation-hints';
-import './placement-utility-refine';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
