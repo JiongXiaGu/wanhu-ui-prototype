@@ -16,26 +16,24 @@ const scenarios = [
   { file: '09-weather-flyout.png', review: 'weather', waitFor: '.right-edge-flyout--weather' },
   { file: '10-tool-camera-flyout-hints-hidden.png', review: 'building-camera', waitFor: '.right-edge-flyout--camera' },
   { file: '11-pause-layer.png', review: 'pause', waitFor: '.pause-command-surface' },
-  { file: '12-menu-settings.png', review: 'settings', waitFor: '.settings-space.settings-panel--menu' },
-  { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save.archive-space--pause' },
-  { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-space.settings-panel--pause' },
-  { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load.archive-space--menu' },
+  { file: '12-menu-settings.png', review: 'settings', waitFor: '.settings-panel--menu' },
+  { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save' },
+  { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
+  { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load' },
+  { file: '16-new-game.png', review: 'new-game', waitFor: '.flow-frame' },
 ];
 
 await mkdir(outDir, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({
-  viewport: { width: 1920, height: 1080 },
-  deviceScaleFactor: 1,
-});
+const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
 
 for (const scenario of scenarios) {
   const url = new URL(baseUrl);
   url.searchParams.set('review', scenario.review);
   await page.goto(url.toString(), { waitUntil: 'networkidle' });
   await page.waitForSelector(scenario.waitFor);
-  await page.waitForTimeout(220);
+  await page.waitForTimeout(180);
 
   if (scenario.review === 'building-camera') {
     const hintCount = await page.locator('.gameplay-operation-hints').count();
