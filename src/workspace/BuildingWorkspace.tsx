@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState, type WheelEvent } from 'react';
 import {
   Building2,
   DoorOpen,
@@ -12,21 +12,26 @@ import {
   X,
 } from 'lucide-react';
 
-const CATEGORY_PAGE_SIZE = 4;
+const CATEGORY_PAGE_SIZE = 5;
 const CONTENT_PAGE_SIZE = 6;
 const CONTENT_PAGER_WINDOW = 5;
+const WHEEL_THRESHOLD = 72;
+const WHEEL_LOCK_MS = 220;
+
+const contextFilters = ['全部', '庑殿', '歇山', '悬山', '硬山', '攒尖', '卷棚', '其他'] as const;
+const directContextFilters = new Set(contextFilters.slice(1, -1));
 
 const primaryCategories = [
-  { key: '全部', icon: Grid2X2, filters: ['全部', '庑殿', '歇山', '悬山', '硬山', '攒尖', '卷棚', '其他'] },
-  { key: '塔', icon: Landmark, filters: ['全部', '攒尖', '楼阁式', '密檐', '覆钵', '其他'] },
-  { key: '殿', icon: Building2, filters: ['全部', '庑殿', '歇山', '悬山', '硬山', '卷棚'] },
-  { key: '楼阁', icon: PanelsTopLeft, filters: ['全部', '重檐', '歇山', '庑殿', '攒尖', '其他'] },
-  { key: '屋舍', icon: House, filters: ['全部', '悬山', '硬山', '卷棚', '歇山'] },
-  { key: '门', icon: DoorOpen, filters: ['全部', '门楼', '歇山', '硬山', '悬山', '牌楼'] },
-  { key: '廊榭', icon: Waves, filters: ['全部', '卷棚', '歇山', '悬山', '平顶'] },
-  { key: '亭', icon: House, filters: ['全部', '攒尖', '歇山', '卷棚', '其他'] },
-  { key: '牌坊', icon: PanelsTopLeft, filters: ['全部', '冲天式', '楼式', '门式', '其他'] },
-  { key: '特殊', icon: Sparkles, filters: ['全部', '工程', '水工', '城防', '祭祀', '其他'] },
+  { key: '全部', label: '全部建筑', icon: Grid2X2 },
+  { key: '塔', label: '塔', icon: Landmark },
+  { key: '殿', label: '殿', icon: Building2 },
+  { key: '楼阁', label: '楼阁', icon: PanelsTopLeft },
+  { key: '屋舍', label: '屋舍', icon: House },
+  { key: '门', label: '门', icon: DoorOpen },
+  { key: '廊榭', label: '廊榭', icon: Waves },
+  { key: '亭', label: '亭', icon: House },
+  { key: '牌坊', label: '牌坊', icon: PanelsTopLeft },
+  { key: '特殊', label: '特殊', icon: Sparkles },
 ] as const;
 
 type PrimaryCategory = (typeof primaryCategories)[number]['key'];
@@ -59,6 +64,11 @@ interface BuildingWorkspaceProps {
   onSelectBuilding: () => void;
 }
 
+interface WheelPagingState {
+  accumulated: number;
+  lockedUntil: number;
+}
+
 function getPagerWindow(pageCount: number, currentPage: number) {
   if (pageCount <= CONTENT_PAGER_WINDOW) {
     return Array.from({ length: pageCount }, (_, index) => index);
@@ -71,23 +81,24 @@ function getPagerWindow(pageCount: number, currentPage: number) {
 
 export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspaceProps) {
   const [primary, setPrimary] = useState<PrimaryCategory>('全部');
-  const [filter, setFilter] = useState('全部');
+  const [filter, setFilter] = useState<(typeof contextFilters)[number]>('全部');
   const [categoryPage, setCategoryPage] = useState(0);
   const [contentPage, setContentPage] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const categoryWheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
+  const contentWheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
 
-  const allCategory = primaryCategories[0];
-  const pageableCategories = primaryCategories.slice(1);
-  const categoryPageCount = Math.ceil(pageableCategories.length / CATEGORY_PAGE_SIZE);
-  const visibleCategories = pageableCategories.slice(categoryPage * CATEGORY_PAGE_SIZE, (categoryPage + 1) * CATEGORY_PAGE_SIZE);
-  const activeCategory = primaryCategories.find((item) => item.key === primary) ?? allCategory;
+  const categoryPageCount = Math.ceil(primaryCategories.length / CATEGORY_PAGE_SIZE);
+  const visibleCategories = primaryCategories.slice(categoryPage * CATEGORY_PAGE_SIZE, (categoryPage + 1) * CATEGORY_PAGE_SIZE);
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
 
   const visibleCards = useMemo(
     () => buildingCards.filter((item) => {
       const matchesCategory = primary === '全部' || item.form === primary;
-      const matchesFilter = filter === '全部' || item.filter === filter;
+      const matchesFilter = filter === '全部'
+        || item.filter === filter
+        || (filter === '其他' && !directContextFilters.has(item.filter as (typeof contextFilters)[number]));
       const matchesSearch = !normalizedQuery || `${item.name} ${item.meta} ${item.detail}`.toLocaleLowerCase().includes(normalizedQuery);
       return matchesCategory && matchesFilter && matchesSearch;
     }),
@@ -98,21 +109,38 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
   const pageCards = visibleCards.slice(contentPage * CONTENT_PAGE_SIZE, (contentPage + 1) * CONTENT_PAGE_SIZE);
   const pagerPages = getPagerWindow(contentPageCount, contentPage);
 
+  function runWheelPaging(
+    event: WheelEvent<HTMLElement>,
+    pageCount: number,
+    wheelState: { current: WheelPagingState },
+    setPage: (updater: (page: number) => number) => void,
+  ) {
+    if (pageCount <= 1) return;
+
+    const now = performance.now();
+    const dominantDelta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+    if (Math.abs(dominantDelta) < 1) return;
+
+    event.preventDefault();
+    if (now < wheelState.current.lockedUntil) return;
+
+    wheelState.current.accumulated += dominantDelta;
+    if (Math.abs(wheelState.current.accumulated) < WHEEL_THRESHOLD) return;
+
+    const direction = wheelState.current.accumulated > 0 ? 1 : -1;
+    wheelState.current.accumulated = 0;
+    wheelState.current.lockedUntil = now + WHEEL_LOCK_MS;
+    setPage((page) => Math.min(pageCount - 1, Math.max(0, page + direction)));
+  }
+
   function selectPrimary(next: PrimaryCategory) {
     setPrimary(next);
-    setFilter('全部');
     setContentPage(0);
   }
 
-  function selectFilter(next: string) {
+  function selectFilter(next: (typeof contextFilters)[number]) {
     setFilter(next);
     setContentPage(0);
-  }
-
-  function selectCategoryPage(nextPage: number) {
-    setCategoryPage(nextPage);
-    const firstCategory = pageableCategories[nextPage * CATEGORY_PAGE_SIZE];
-    if (firstCategory) selectPrimary(firstCategory.key);
   }
 
   function updateSearch(next: string) {
@@ -137,17 +165,11 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
       </header>
 
       <div className="workspace-body">
-        <nav className="workspace-primary-rail" aria-label="建筑形制">
-          <button
-            type="button"
-            className={`workspace-primary-rail__all ${primary === allCategory.key ? 'is-active' : ''}`}
-            onClick={() => selectPrimary(allCategory.key)}
-          >
-            <allCategory.icon size={16} />
-            <span>全部建筑</span>
-          </button>
-          <div className="workspace-primary-rail__divider" />
-
+        <nav
+          className="workspace-primary-rail"
+          aria-label="建筑形制"
+          onWheel={(event) => runWheelPaging(event, categoryPageCount, categoryWheel, setCategoryPage)}
+        >
           <div className="workspace-primary-rail__content">
             {categoryPageCount > 1 && (
               <div className="workspace-rail-pager" aria-label="建筑分类组">
@@ -157,7 +179,7 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
                     type="button"
                     className={categoryPage === index ? 'is-active' : ''}
                     aria-label={`切换到第 ${index + 1} 组建筑分类`}
-                    onClick={() => selectCategoryPage(index)}
+                    onClick={() => setCategoryPage(index)}
                   >
                     <span />
                   </button>
@@ -166,7 +188,7 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
             )}
 
             <div className="workspace-primary-rail__page" key={categoryPage}>
-              {visibleCategories.map(({ key, icon: Icon }) => (
+              {visibleCategories.map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
                   type="button"
@@ -174,7 +196,7 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
                   onClick={() => selectPrimary(key)}
                 >
                   <Icon size={16} />
-                  <span>{key}</span>
+                  <span>{label}</span>
                 </button>
               ))}
             </div>
@@ -184,7 +206,7 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
         <div className="workspace-catalog">
           <nav className="workspace-context-filter" aria-label="当前建筑筛选">
             <div className="workspace-context-filter__scroll">
-              {activeCategory.filters.map((item) => (
+              {contextFilters.map((item) => (
                 <button
                   key={item}
                   type="button"
@@ -226,7 +248,10 @@ export function BuildingWorkspace({ onClose, onSelectBuilding }: BuildingWorkspa
             </div>
           </nav>
 
-          <div className="workspace-content-stage">
+          <div
+            className="workspace-content-stage"
+            onWheel={(event) => runWheelPaging(event, contentPageCount, contentWheel, setContentPage)}
+          >
             <div className="workspace-content-grid" key={`${primary}-${filter}-${searchQuery}-${contentPage}`}>
               {pageCards.map(({ name, meta, detail, tone }) => (
                 <button
