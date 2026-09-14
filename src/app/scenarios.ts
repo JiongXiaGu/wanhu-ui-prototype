@@ -3,6 +3,7 @@ import { initialGameplayUiState } from './ui-state';
 
 export type ReviewScenario =
   | 'menu'
+  | 'load'
   | 'settings'
   | 'gameplay'
   | 'workspace-building'
@@ -27,6 +28,8 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
   const gameplay = { ...initialGameplayUiState };
 
   switch (review) {
+    case 'load':
+      return { screen: 'load', gameplay };
     case 'settings':
       return { screen: 'settings', gameplay };
     case 'gameplay':
