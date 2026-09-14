@@ -10,6 +10,8 @@ import './gameplay-refine.css';
 import './operation-hints.css';
 import './gameplay/right-edge-flyout.css';
 import './gameplay/pause-layer.css';
+import './gameplay/save-game-panel.css';
+import './settings/settings-panel.css';
 import './tools/building-placement/building-placement.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
