@@ -5,6 +5,7 @@ import './styles.css';
 import './workspace.css';
 import './tool-overlay.css';
 import './menu-refine.css';
+import './backgrounds.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
