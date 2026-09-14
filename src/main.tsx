@@ -6,6 +6,8 @@ import './workspace.css';
 import './tool-overlay.css';
 import './menu-refine.css';
 import './backgrounds.css';
+import './gameplay-refine.css';
+import './gameplay-enhance';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -1,0 +1,290 @@
+/* Gameplay HUD + persistent CommandBar refinement.
+   Keeps the world as the visual hero and restores the UI Toolkit utility-toolbar semantics. */
+
+.gameplay-screen .hud-group{
+  left:22px;
+  top:22px;
+  min-width:456px;
+  background:linear-gradient(180deg,rgba(28,36,32,.88),rgba(24,31,28,.82));
+  border-color:rgba(239,233,221,.14);
+  box-shadow:0 14px 36px rgba(7,10,9,.22);
+  backdrop-filter:blur(10px);
+}
+
+.gameplay-screen .city-status{
+  height:48px;
+  padding:0 14px;
+  gap:38px;
+  border-bottom-color:rgba(239,233,221,.085);
+}
+
+.gameplay-screen .city-status div{
+  gap:12px;
+}
+
+.gameplay-screen .city-status span{
+  font-size:15px;
+  font-weight:500;
+  letter-spacing:.045em;
+  color:#f0eadf;
+}
+
+.gameplay-screen .city-status b{
+  font-size:9px;
+  color:#9da198;
+  letter-spacing:.03em;
+}
+
+.gameplay-screen .city-status small{
+  position:relative;
+  padding-left:12px;
+  color:#b4b4aa;
+  font-size:9px;
+  letter-spacing:.04em;
+}
+
+.gameplay-screen .city-status small::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:50%;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  transform:translateY(-50%);
+  background:rgba(201,165,95,.78);
+  box-shadow:0 0 8px rgba(201,165,95,.18);
+}
+
+.gameplay-screen .resource-strip{
+  height:38px;
+  padding:0 8px;
+}
+
+.gameplay-screen .resource-strip>span{
+  min-width:104px;
+  height:24px;
+  padding:0 9px;
+  gap:6px;
+  color:#90968e;
+  border-right-color:rgba(239,233,221,.075);
+}
+
+.gameplay-screen .resource-strip svg{
+  opacity:.84;
+}
+
+.gameplay-screen .resource-strip small{
+  font-size:9px;
+  letter-spacing:.015em;
+}
+
+.gameplay-screen .resource-strip b{
+  margin-left:auto;
+  color:#ded9ce;
+  font-size:10px;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.01em;
+}
+
+.gameplay-screen .quick-controls{
+  right:22px;
+  top:22px;
+  height:46px;
+  padding:4px;
+  background:linear-gradient(180deg,rgba(28,36,32,.87),rgba(24,31,28,.82));
+  border-color:rgba(239,233,221,.14);
+  box-shadow:0 14px 36px rgba(7,10,9,.20);
+  backdrop-filter:blur(10px);
+}
+
+.gameplay-screen .quick-controls button{
+  height:36px;
+  padding:0 11px;
+  color:#9ba097;
+}
+
+.gameplay-screen .quick-controls button:hover{
+  background:rgba(255,255,255,.04);
+}
+
+.gameplay-screen .quick-controls button.is-active{
+  background:rgba(201,165,95,.105);
+  color:#e0c17c;
+}
+
+.gameplay-screen .command-bar{
+  width:1360px;
+  height:84px;
+  bottom:20px;
+  padding:4px;
+  background:linear-gradient(180deg,rgba(29,36,33,.965),rgba(24,31,28,.95));
+  border-color:rgba(239,233,221,.15);
+  box-shadow:0 18px 48px rgba(7,10,9,.28);
+  backdrop-filter:blur(10px);
+}
+
+.command-utility{
+  width:340px;
+  flex:0 0 340px;
+  display:flex;
+  align-items:stretch;
+  padding:8px 10px 8px 8px;
+  border-right:1px solid rgba(239,233,221,.085);
+  background:linear-gradient(90deg,rgba(255,255,255,.018),rgba(255,255,255,0));
+}
+
+.command-utility__buttons{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.command-utility__button{
+  position:relative;
+  width:34px;
+  height:58px;
+  flex:0 0 34px;
+  padding:0;
+  border:0;
+  border-radius:1px;
+  background:transparent;
+  color:#7f877e;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:background .14s ease,color .14s ease,transform .08s ease;
+}
+
+.command-utility__button svg{
+  width:17px;
+  height:17px;
+  pointer-events:none;
+}
+
+.command-utility__button:hover{
+  background:rgba(255,255,255,.045);
+  color:#c8c7bf;
+}
+
+.command-utility__button.is-active{
+  color:#dfc078;
+  background:linear-gradient(180deg,rgba(201,165,95,.105),rgba(201,165,95,.035));
+}
+
+.command-utility__button.is-active::before{
+  content:'';
+  position:absolute;
+  left:7px;
+  right:7px;
+  top:-8px;
+  height:2px;
+  background:#c9a55f;
+}
+
+.command-utility__button.is-pressed{
+  transform:translateY(1px);
+  background:rgba(201,165,95,.08);
+  color:#d9bf83;
+}
+
+.command-utility__button::after{
+  content:attr(data-tooltip);
+  position:absolute;
+  left:50%;
+  bottom:70px;
+  transform:translate(-50%,4px);
+  padding:6px 8px;
+  min-width:max-content;
+  pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  white-space:nowrap;
+  background:rgba(19,25,22,.98);
+  border:1px solid rgba(239,233,221,.14);
+  box-shadow:0 8px 24px rgba(5,8,7,.25);
+  color:#d8d5cb;
+  font-size:9px;
+  letter-spacing:.02em;
+  transition:opacity .12s ease,transform .12s ease,visibility .12s ease;
+  z-index:30;
+}
+
+.command-utility__button:hover::after{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
+}
+
+.command-utility__separator{
+  width:1px;
+  height:34px;
+  flex:0 0 1px;
+  margin:0 2px;
+  background:rgba(239,233,221,.09);
+}
+
+.gameplay-screen .command-bar>.mode-rail{
+  width:82px;
+  flex:0 0 82px;
+  margin-left:4px;
+}
+
+.gameplay-screen .mode-rail button{
+  font-size:10px;
+  letter-spacing:.06em;
+  color:#858c83;
+}
+
+.gameplay-screen .mode-rail button.is-active{
+  color:#dfc078;
+  background:linear-gradient(90deg,rgba(201,165,95,.09),rgba(201,165,95,.025));
+}
+
+.gameplay-screen .command-bar>i{
+  margin:8px 7px;
+  background:rgba(239,233,221,.085);
+}
+
+.gameplay-screen .category-row{
+  min-width:0;
+  padding-right:2px;
+}
+
+.gameplay-screen .category-row button{
+  min-width:0;
+  gap:6px;
+  color:#80877f;
+  font-size:9px;
+  letter-spacing:.02em;
+}
+
+.gameplay-screen .category-row button svg{
+  width:18px;
+  height:18px;
+  stroke-width:1.65;
+}
+
+.gameplay-screen .category-row button:hover{
+  background:rgba(255,255,255,.03);
+  color:#c6c5bc;
+}
+
+.gameplay-screen .category-row button.is-active{
+  color:#dfc078;
+  background:linear-gradient(180deg,rgba(201,165,95,.09),rgba(201,165,95,.018));
+}
+
+.gameplay-screen .category-row button.is-active::before{
+  left:22%;
+  right:22%;
+  height:2px;
+  background:#c9a55f;
+}
+
+/* The workspace should keep a clean breathing gap above the enlarged CommandBar. */
+.gameplay-screen .workspace{
+  bottom:116px;
+}
