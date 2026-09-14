@@ -77,12 +77,11 @@ export function GameplayOperationHints({ terrainMode, adjustmentMode, flyout }: 
         {preset.rows.map((row) => <HintRowView key={`${row.binding}-${row.description}`} row={row} />)}
       </div>
 
-      <div className="operation-hints__history">
-        <div className="operation-hints__history-item"><Keycaps binding="Ctrl + Z" /><span>撤销</span></div>
-        <div className="operation-hints__history-item"><Keycaps binding="Ctrl + Y" /><span>重做</span></div>
+      <div className="operation-hints__footer">
+        <span><Keycaps binding="Ctrl + Z" />撤销</span>
+        <span><Keycaps binding="Ctrl + Y" />重做</span>
+        <span><Keycaps binding="Esc" />取消</span>
       </div>
-
-      <div className="operation-hints__exit"><Keycaps binding="Esc" /><span>取消</span></div>
     </aside>
   );
 }
