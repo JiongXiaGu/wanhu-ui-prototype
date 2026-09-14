@@ -47,8 +47,8 @@ const tools: UtilityTool[] = [
 ];
 
 const toolActions = [
-  { id: 'undo', label: '撤销', icon: `${svgOpen}<path d="M9 7 4 12l5 5"/><path d="M4 12h9a6 6 0 0 1 6 6"/>${svgClose}` },
-  { id: 'redo', label: '重做', icon: `${svgOpen}<path d="m15 7 5 5-5 5"/><path d="M20 12h-9a6 6 0 0 0-6 6"/>${svgClose}` },
+  { id: 'undo', label: '撤销', shortcut: 'Ctrl+Z', icon: `${svgOpen}<path d="M9 7 4 12l5 5"/><path d="M4 12h9a6 6 0 0 1 6 6"/>${svgClose}` },
+  { id: 'redo', label: '重做', shortcut: 'Ctrl+Y', icon: `${svgOpen}<path d="m15 7 5 5-5 5"/><path d="M20 12h-9a6 6 0 0 0-6 6"/>${svgClose}` },
   { id: 'snap', label: '吸附', icon: `${svgOpen}<path d="M7 4v7a5 5 0 0 0 10 0V4"/><path d="M7 4h4M13 4h4"/><path d="M7 8h4M13 8h4"/>${svgClose}` },
   { id: 'grid', label: '网格', icon: `${svgOpen}<path d="M4 4h16v16H4z"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16"/>${svgClose}` },
 ];
@@ -116,15 +116,23 @@ function createToolBottomCluster() {
 
   const utility = document.createElement('div');
   utility.className = 'tool-bottom-cluster__utility';
+
+  const utilityButtons = document.createElement('div');
+  utilityButtons.className = 'command-utility__buttons tool-bottom-cluster__buttons';
+
   toolActions.forEach((action, index) => {
-    if (index === 2) addSeparator(utility);
+    if (index === 2) addSeparator(utilityButtons);
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = 'tool-bottom-action';
+    button.className = 'command-utility__button tool-bottom-icon';
     button.dataset.action = action.id;
-    button.innerHTML = `${action.icon}<span>${action.label}</span>`;
-    utility.appendChild(button);
+    button.dataset.tooltip = action.shortcut ? `${action.label} · ${action.shortcut}` : action.label;
+    button.setAttribute('aria-label', action.label);
+    button.innerHTML = action.icon;
+    utilityButtons.appendChild(button);
   });
+
+  utility.appendChild(utilityButtons);
 
   const primary = document.createElement('div');
   primary.className = 'tool-bottom-cluster__primary';
