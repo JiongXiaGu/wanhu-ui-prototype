@@ -3,6 +3,7 @@ import { initialGameplayUiState } from './ui-state';
 
 export type ReviewScenario =
   | 'menu'
+  | 'settings'
   | 'gameplay'
   | 'workspace-building'
   | 'building-position'
@@ -12,6 +13,8 @@ export type ReviewScenario =
   | 'camera'
   | 'weather'
   | 'pause'
+  | 'pause-save'
+  | 'pause-settings'
   | 'building-camera';
 
 export interface ReviewBootstrap {
@@ -24,6 +27,8 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
   const gameplay = { ...initialGameplayUiState };
 
   switch (review) {
+    case 'settings':
+      return { screen: 'settings', gameplay };
     case 'gameplay':
       return { screen: 'gameplay', gameplay };
     case 'workspace-building':
@@ -41,7 +46,11 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
     case 'weather':
       return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'weather' } };
     case 'pause':
-      return { screen: 'gameplay', gameplay: { ...gameplay, paused: true } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'menu' } };
+    case 'pause-save':
+      return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'save' } };
+    case 'pause-settings':
+      return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'settings' } };
     case 'building-camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'camera' } };
     case 'menu':
