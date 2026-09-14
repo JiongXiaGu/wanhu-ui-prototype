@@ -12,7 +12,9 @@ const scenarios = [
   { file: '05-tool-massing-hints.png', review: 'building-massing', waitFor: '.gameplay-operation-hints' },
   { file: '06-tool-roof-hints.png', review: 'building-roof', waitFor: '.bp-mode-content' },
   { file: '07-tool-manual-elevation-hints.png', review: 'building-height', waitFor: '.bp-terrain-summary' },
-  { file: '08-tool-camera-flyout-hints-hidden.png', review: 'building-camera', waitFor: '.flyout' },
+  { file: '08-camera-flyout.png', review: 'camera', waitFor: '.right-edge-flyout--camera' },
+  { file: '09-weather-flyout.png', review: 'weather', waitFor: '.right-edge-flyout--weather' },
+  { file: '10-tool-camera-flyout-hints-hidden.png', review: 'building-camera', waitFor: '.right-edge-flyout--camera' },
 ];
 
 await mkdir(outDir, { recursive: true });
