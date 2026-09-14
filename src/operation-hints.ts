@@ -132,11 +132,11 @@ function createOperationHints() {
 }
 
 function currentMode(screen: HTMLElement) {
-  return screen.querySelector<HTMLButtonElement>('.building-tool-adjustment-group [data-mode].is-active')?.dataset.mode || 'position';
+  return screen.querySelector<HTMLButtonElement>('.bp-adjustment-group [data-mode].is-active')?.dataset.mode || 'position';
 }
 
 function currentTerrain(screen: HTMLElement) {
-  return screen.querySelector<HTMLButtonElement>('.building-tool-terrain-group [data-mode].is-active')?.dataset.mode || 'balanced-earthwork';
+  return screen.querySelector<HTMLButtonElement>('.bp-terrain-group [data-mode].is-active')?.dataset.mode || 'balanced-earthwork';
 }
 
 function renderRows(container: HTMLElement, rows: OperationHintRow[]) {
@@ -204,7 +204,7 @@ const observer = new MutationObserver((mutations) => {
 observer.observe(document.body, { childList: true, subtree: true });
 
 document.addEventListener('click', (event) => {
-  const target = (event.target as HTMLElement).closest('.building-tool-mode-action, .building-tool-icon-action');
+  const target = (event.target as HTMLElement).closest('.bp-mode-action, .bp-icon-action');
   if (!target) return;
   queueMicrotask(syncOperationHints);
 });
