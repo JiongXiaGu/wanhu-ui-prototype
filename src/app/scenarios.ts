@@ -9,6 +9,8 @@ export type ReviewScenario =
   | 'building-massing'
   | 'building-roof'
   | 'building-height'
+  | 'camera'
+  | 'weather'
   | 'building-camera';
 
 export interface ReviewBootstrap {
@@ -33,6 +35,10 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', adjustmentMode: 'roof' } };
     case 'building-height':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', terrainMode: 'manual-elevation' } };
+    case 'camera':
+      return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'camera' } };
+    case 'weather':
+      return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'weather' } };
     case 'building-camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'camera' } };
     case 'menu':
