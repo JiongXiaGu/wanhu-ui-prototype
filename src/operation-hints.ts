@@ -147,8 +147,11 @@ function renderRows(container: HTMLElement, rows: OperationHintRow[]) {
 function updateOperationHints(screen: HTMLElement, hints: HTMLElement) {
   const mode = currentMode(screen);
   const terrain = currentTerrain(screen);
-  const preset = adjustmentPresets[mode] || adjustmentPresets.position;
+  const stateKey = `${terrain}|${mode}`;
+  if (hints.dataset.stateKey === stateKey) return;
+  hints.dataset.stateKey = stateKey;
 
+  const preset = adjustmentPresets[mode] || adjustmentPresets.position;
   const terrainLabel = hints.querySelector<HTMLElement>('[data-hint-terrain]');
   const step = hints.querySelector<HTMLElement>('[data-hint-step]');
   const instruction = hints.querySelector<HTMLElement>('[data-hint-instruction]');
@@ -192,7 +195,12 @@ function syncOperationHints() {
   updateOperationHints(screen, hints);
 }
 
-const observer = new MutationObserver(syncOperationHints);
+const observer = new MutationObserver((mutations) => {
+  const onlyHintMutations = mutations.every((mutation) =>
+    (mutation.target as HTMLElement).closest?.('.gameplay-operation-hints'));
+  if (onlyHintMutations) return;
+  syncOperationHints();
+});
 observer.observe(document.body, { childList: true, subtree: true });
 
 document.addEventListener('click', (event) => {
