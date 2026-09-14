@@ -8,7 +8,9 @@ import './menu-refine.css';
 import './backgrounds.css';
 import './gameplay-refine.css';
 import './tool-state-refine.css';
+import './operation-hints.css';
 import './gameplay-enhance';
+import './operation-hints';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

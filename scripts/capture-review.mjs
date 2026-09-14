@@ -34,22 +34,35 @@ await page.screenshot({ path: `${outDir}/03-workspace.png`, fullPage: false });
 await page.getByRole('button', { name: /八角楼阁式木塔/ }).click();
 await page.waitForSelector('.building-placement-prototype .bp-context-panel');
 await page.waitForSelector('.building-placement-toolbar-cluster');
-await page.waitForTimeout(350);
-await page.screenshot({ path: `${outDir}/04-tool-position.png`, fullPage: false });
+await page.waitForSelector('.gameplay-operation-hints');
+await page.waitForFunction(() => document.querySelector('[data-hint-step]')?.textContent?.includes('位置调整'));
+await page.waitForTimeout(300);
+await page.screenshot({ path: `${outDir}/04-tool-position-hints.png`, fullPage: false });
 
 await page.locator('.building-placement-toolbar-cluster [data-mode="massing"]').click();
-await page.waitForFunction(() => document.querySelector('.bp-mode-heading b')?.textContent?.includes('楼身调整'));
+await page.waitForFunction(() => document.querySelector('[data-hint-step]')?.textContent?.includes('楼身调整'));
 await page.waitForTimeout(180);
-await page.screenshot({ path: `${outDir}/05-tool-massing.png`, fullPage: false });
+await page.screenshot({ path: `${outDir}/05-tool-massing-hints.png`, fullPage: false });
 
 await page.locator('.building-placement-toolbar-cluster [data-mode="roof"]').click();
 await page.waitForSelector('.bp-segment[data-segment="roof-section"]');
+await page.waitForFunction(() => document.querySelector('[data-hint-step]')?.textContent?.includes('屋顶调整'));
 await page.waitForTimeout(180);
-await page.screenshot({ path: `${outDir}/06-tool-roof.png`, fullPage: false });
+await page.screenshot({ path: `${outDir}/06-tool-roof-hints.png`, fullPage: false });
 
+await page.locator('.building-placement-toolbar-cluster [data-mode="position"]').click();
 await page.locator('.building-placement-toolbar-cluster [data-mode="manual-elevation"]').click();
-await page.waitForFunction(() => document.querySelector('.bp-terrain-summary__top b')?.textContent?.includes('手动标高'));
+await page.waitForFunction(() => document.querySelector('[data-hint-terrain]')?.textContent?.includes('手动标高'));
 await page.waitForTimeout(180);
-await page.screenshot({ path: `${outDir}/07-tool-manual-elevation.png`, fullPage: false });
+await page.screenshot({ path: `${outDir}/07-tool-manual-elevation-hints.png`, fullPage: false });
+
+await page.getByRole('button', { name: /相机/ }).click();
+await page.waitForSelector('.flyout');
+await page.waitForFunction(() => {
+  const hints = document.querySelector('.gameplay-operation-hints');
+  return hints && getComputedStyle(hints).visibility === 'hidden';
+});
+await page.waitForTimeout(180);
+await page.screenshot({ path: `${outDir}/08-tool-camera-flyout-hints-hidden.png`, fullPage: false });
 
 await browser.close();
