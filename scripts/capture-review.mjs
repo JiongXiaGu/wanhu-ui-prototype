@@ -16,6 +16,9 @@ const scenarios = [
   { file: '09-weather-flyout.png', review: 'weather', waitFor: '.right-edge-flyout--weather' },
   { file: '10-tool-camera-flyout-hints-hidden.png', review: 'building-camera', waitFor: '.right-edge-flyout--camera' },
   { file: '11-pause-layer.png', review: 'pause', waitFor: '.pause-command-surface' },
+  { file: '12-menu-settings.png', review: 'settings', waitFor: '.settings-panel--menu' },
+  { file: '13-pause-save.png', review: 'pause-save', waitFor: '.pause-save-panel' },
+  { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
 ];
 
 await mkdir(outDir, { recursive: true });
@@ -38,7 +41,7 @@ for (const scenario of scenarios) {
     if (hintCount !== 0) throw new Error('OperationHints should be hidden while a right-edge flyout is open.');
   }
 
-  if (scenario.review === 'pause') {
+  if (scenario.review === 'pause' || scenario.review === 'pause-save' || scenario.review === 'pause-settings') {
     const flyoutCount = await page.locator('.right-edge-flyout').count();
     if (flyoutCount !== 0) throw new Error('Right-edge flyouts should be closed in Pause Space.');
   }
