@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
-import { ChevronRight } from 'lucide-react';
 import type { PauseView } from '../app/ui-state';
+import { ArchivePanel } from '../archive/ArchivePanel';
 import { SettingsPanel } from '../settings/SettingsPanel';
-import { SaveGamePanel } from './SaveGamePanel';
 
 interface PauseLayerProps {
   view: PauseView;
@@ -57,26 +56,23 @@ export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLa
                   onMainMenu
                 }
               >
-                <span className="pause-command-index">{String(index + 1).padStart(2, '0')}</span>
                 <span className="pause-command-copy">
                   <b>{item.label}</b>
                   <small>{item.note}</small>
                 </span>
-                <ChevronRight size={14} />
               </button>
             ))}
           </nav>
 
           <footer className="pause-footer">
             <span><kbd>Esc</kbd> 继续游戏</span>
-            <span>WANHU PROJECT</span>
           </footer>
         </section>
       )}
 
       {view === 'save' && (
         <div className="pause-secondary-surface">
-          <SaveGamePanel onBack={() => onViewChange('menu')} />
+          <ArchivePanel mode="save" context="pause" onBack={() => onViewChange('menu')} />
         </div>
       )}
 
