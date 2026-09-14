@@ -11,6 +11,7 @@ export type ReviewScenario =
   | 'building-height'
   | 'camera'
   | 'weather'
+  | 'pause'
   | 'building-camera';
 
 export interface ReviewBootstrap {
@@ -39,6 +40,8 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'camera' } };
     case 'weather':
       return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'weather' } };
+    case 'pause':
+      return { screen: 'gameplay', gameplay: { ...gameplay, paused: true } };
     case 'building-camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'camera' } };
     case 'menu':
