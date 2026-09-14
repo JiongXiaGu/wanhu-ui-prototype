@@ -19,6 +19,8 @@ const primaryCategories = [
   { key: '屋舍', icon: House, filters: ['全部', '悬山', '硬山', '卷棚', '歇山'] },
   { key: '门', icon: DoorOpen, filters: ['全部', '门楼', '歇山', '硬山', '悬山', '牌楼'] },
   { key: '廊榭', icon: Waves, filters: ['全部', '卷棚', '歇山', '悬山', '平顶'] },
+  { key: '亭', icon: House, filters: ['全部', '攒尖', '歇山', '卷棚', '其他'] },
+  { key: '牌坊', icon: PanelsTopLeft, filters: ['全部', '冲天式', '楼式', '门式', '其他'] },
   { key: '特殊', icon: Sparkles, filters: ['全部', '工程', '水工', '城防', '祭祀', '其他'] },
 ] as const;
 
@@ -27,11 +29,23 @@ type PrimaryCategory = (typeof primaryCategories)[number]['key'];
 const buildingCards = [
   { name: '八角楼阁式木塔', form: '塔', filter: '楼阁式', meta: '楼阁式 · 七层', detail: '城市地标 / 寺观', tone: 'tower' },
   { name: '密檐砖塔', form: '塔', filter: '密檐', meta: '密檐 · 九层', detail: '寺观 / 地标', tone: 'pagoda' },
-  { name: '重檐大殿', form: '殿', filter: '庑殿', meta: '庑殿 · 重檐', detail: '礼制 / 公共建筑', tone: 'hall' },
+  { name: '五层攒尖木塔', form: '塔', filter: '攒尖', meta: '攒尖 · 五层', detail: '寺观 / 地标', tone: 'special' },
+  { name: '重檐庑殿大殿', form: '殿', filter: '庑殿', meta: '庑殿 · 重檐', detail: '礼制 / 公共建筑', tone: 'hall' },
+  { name: '单檐歇山正殿', form: '殿', filter: '歇山', meta: '歇山 · 五开间', detail: '礼制建筑', tone: 'pavilion' },
+  { name: '悬山配殿', form: '殿', filter: '悬山', meta: '悬山 · 三开间', detail: '附属建筑', tone: 'house' },
   { name: '重檐楼阁', form: '楼阁', filter: '重檐', meta: '重檐 · 双层', detail: '公共建筑', tone: 'pavilion' },
+  { name: '临街望楼', form: '楼阁', filter: '歇山', meta: '歇山 · 双层', detail: '城市建筑', tone: 'gate' },
   { name: '三开间民居', form: '屋舍', filter: '硬山', meta: '硬山 · 三开间', detail: '住宅', tone: 'house' },
+  { name: '五开间厅堂', form: '屋舍', filter: '悬山', meta: '悬山 · 五开间', detail: '住宅 / 会客', tone: 'tower' },
+  { name: '卷棚厢房', form: '屋舍', filter: '卷棚', meta: '卷棚 · 三开间', detail: '附属房屋', tone: 'waterside' },
   { name: '城门楼阁', form: '门', filter: '门楼', meta: '门楼 · 城防', detail: '城门建筑', tone: 'gate' },
+  { name: '歇山院门', form: '门', filter: '歇山', meta: '歇山 · 院门', detail: '院落入口', tone: 'hall' },
   { name: '临水榭台', form: '廊榭', filter: '卷棚', meta: '卷棚 · 水岸', detail: '园林建筑', tone: 'waterside' },
+  { name: '曲折游廊', form: '廊榭', filter: '悬山', meta: '悬山 · 连廊', detail: '园林建筑', tone: 'pagoda' },
+  { name: '四角攒尖亭', form: '亭', filter: '攒尖', meta: '攒尖 · 四角', detail: '园林建筑', tone: 'special' },
+  { name: '六角水亭', form: '亭', filter: '攒尖', meta: '攒尖 · 六角', detail: '水岸建筑', tone: 'waterside' },
+  { name: '三间四柱牌坊', form: '牌坊', filter: '楼式', meta: '楼式 · 三间', detail: '街道节点', tone: 'gate' },
+  { name: '冲天式石牌坊', form: '牌坊', filter: '冲天式', meta: '冲天式 · 石构', detail: '礼制 / 地标', tone: 'pagoda' },
   { name: '观象台', form: '特殊', filter: '工程', meta: '工程 · 高台', detail: '特殊工程', tone: 'special' },
 ] as const;
 
