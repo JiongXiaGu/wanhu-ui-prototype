@@ -23,8 +23,12 @@
 
 .gameplay-screen .right-edge-flyout--weather{
   width:430px;
-  bottom:22px;
-  max-height:none;
+  bottom:auto;
+  max-height:820px;
+}
+
+.gameplay-screen .right-edge-flyout--weather .right-edge-flyout__body{
+  max-height:752px;
 }
 
 .gameplay-screen .right-edge-flyout>header{
