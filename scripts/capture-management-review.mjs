@@ -37,7 +37,37 @@ const navRatio = navBox.width / statusBox.width;
 if (navRatio < .60 || navRatio > .66) throw new Error(`Navigation tray must read as a clearly narrower child of the status row. ratio=${navRatio.toFixed(3)}`);
 const firstNavIcon = await page.locator('.gameplay-top-navigation > button svg').first().boundingBox();
 if (!firstNavIcon || firstNavIcon.width < 18 || firstNavIcon.width > 21) throw new Error('Top navigation icons must remain readable at roughly 18-20px.');
+
+const worldTools = page.locator('.world-utility-toolbar');
+if ((await worldTools.count()) !== 1) throw new Error('Normal Gameplay must show one persistent World Utility Toolbar.');
+const worldToolsBox = await worldTools.boundingBox();
+const commandBox = await page.locator('.command-bar').boundingBox();
+const hintsBox = await page.locator('.gameplay-operation-hints').boundingBox();
+if (!worldToolsBox || !commandBox || !hintsBox) throw new Error('Gameplay bottom modules must all be measurable.');
+if (worldToolsBox.x < 1420 || worldToolsBox.y < 990) throw new Error('World Utility Toolbar must occupy the lower-right utility slot.');
+if (worldToolsBox.x < commandBox.x + commandBox.width + 6) throw new Error('World Utility Toolbar must not overlap the centered Main Dock.');
+if (hintsBox.y + hintsBox.height > worldToolsBox.y - 8) throw new Error('Operation Hints must remain a separate module above the World Utility Toolbar.');
+if ((await worldTools.getByRole('button').count()) < 10) throw new Error('World Utility Toolbar should expose the complete global tool set.');
+
+const gridSnap = worldTools.getByRole('button', { name: '网格吸附', exact: true });
+if ((await gridSnap.getAttribute('aria-pressed')) !== 'true') throw new Error('Grid snap should start enabled globally.');
 await page.screenshot({ path: `${outDir}/02a-gameplay-top-shell.png` });
+
+// Global grid settings persist when the player enters Building Placement.
+await gridSnap.click();
+if ((await gridSnap.getAttribute('aria-pressed')) !== 'false') throw new Error('Grid snap toggle must update from the global toolbar.');
+await page.getByRole('button', { name: '建筑', exact: true }).click();
+await page.waitForSelector('.workspace--building');
+await page.locator('.building-card').first().click();
+await page.waitForSelector('.building-placement-prototype');
+const toolWorldTools = page.locator('.world-utility-toolbar');
+if ((await toolWorldTools.count()) !== 1) throw new Error('World Utility Toolbar must persist into Building Placement.');
+if ((await toolWorldTools.getByRole('button', { name: '网格吸附', exact: true }).getAttribute('aria-pressed')) !== 'false') {
+  throw new Error('Global grid snap state must persist into Building Placement.');
+}
+if ((await page.locator('.placement-utility-strip').count()) !== 0) throw new Error('Building Placement must not duplicate grid/history utility controls.');
+
+await open('gameplay', '.gameplay-top-navigation');
 
 // Complex management systems stay blocking, while the shared icon navigation remains available.
 await page.getByRole('button', { name: '财政税赋', exact: true }).click();
@@ -45,7 +75,7 @@ await page.waitForSelector('.management-space--finance');
 await page.waitForTimeout(140);
 if ((await page.locator('.gameplay-top-navigation').count()) !== 1) throw new Error('Top management navigation must remain visible in Management Space.');
 if ((await page.locator('.management-space__tabs').count()) !== 0) throw new Error('Management Space must not repeat the top-level category navigation internally.');
-for (const selector of ['.command-bar', '.command-utility', '.gameplay-operation-hints']) {
+for (const selector of ['.command-bar', '.world-utility-toolbar', '.gameplay-operation-hints']) {
   if ((await page.locator(selector).count()) !== 0) throw new Error(`${selector} must not remain visible in Management Space.`);
 }
 const managementBox = await page.locator('.management-space__panel').boundingBox();
@@ -76,17 +106,20 @@ await page.waitForTimeout(160);
 if ((await page.locator('.gameplay-top-map-panel').count()) !== 0) throw new Error('Information View palette should collapse after choosing a map layer.');
 await page.screenshot({ path: `${outDir}/02d-land-value-view.png` });
 
-// Workspace and Tool keep the persistent status row but hide management navigation.
+// Workspace and Tool keep global world utilities while task-specific navigation changes.
 await open('workspace-building', '.workspace');
 if ((await page.locator('.gameplay-top-shell').count()) !== 1) throw new Error('Workspace must retain the persistent top status shell.');
 if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Management navigation must be hidden in Building Workspace.');
 if ((await page.locator('.command-bar').count()) !== 1) throw new Error('Building Workspace must retain the Main Dock.');
+if ((await page.locator('.world-utility-toolbar').count()) !== 1) throw new Error('Building Workspace must retain global world utilities.');
 
 await open('building-position', '.tool-overlay');
 if ((await page.locator('.gameplay-top-shell').count()) !== 1) throw new Error('Building Placement must retain the persistent top status shell.');
 if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Management navigation must be hidden while Building Placement is active.');
 if ((await page.locator('.command-bar').count()) !== 0) throw new Error('Main Dock must be hidden while Building Placement is active.');
-if ((await page.locator('.building-placement-toolbar-cluster').count()) !== 1) throw new Error('Building Placement must use its dedicated tool toolbar.');
+if ((await page.locator('.building-placement-toolbar-cluster').count()) !== 1) throw new Error('Building Placement must use its dedicated primary tool toolbar.');
+if ((await page.locator('.world-utility-toolbar').count()) !== 1) throw new Error('Building Placement must retain the global World Utility Toolbar.');
+if ((await page.locator('.placement-utility-strip').count()) !== 0) throw new Error('Grid/history controls must exist only in the global toolbar.');
 await page.screenshot({ path: `${outDir}/02e-building-placement-top-shell.png` });
 
 await browser.close();

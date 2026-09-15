@@ -1,4 +1,23 @@
-import { Blocks, Bridge, Building2, Castle, Copy, DoorOpen, Fence, Grid2X2, Mountain, Move, Palette, Redo2, Route, ScanLine, Trees, Undo2, Waves } from 'lucide-react';
+import {
+  Blocks,
+  Bridge,
+  Building2,
+  Castle,
+  Copy,
+  DoorOpen,
+  Fence,
+  Grid3X3,
+  Magnet,
+  Mountain,
+  Move,
+  Palette,
+  Redo2,
+  Route,
+  ScanLine,
+  Trees,
+  Undo2,
+  Waves,
+} from 'lucide-react';
 
 const categories = [
   { name: '全部', icon: Blocks },
@@ -11,30 +30,104 @@ const categories = [
   { name: '装饰', icon: Trees },
 ] as const;
 
-const utilities = [
-  { label: '地图解锁', icon: DoorOpen },
-  { label: '编辑区域', icon: ScanLine },
-  { label: '修改地形', icon: Mountain },
-  { label: '修改颜色', icon: Palette },
-  { label: '范围复制', icon: Copy },
-  { label: '范围移动', icon: Move },
-  { label: '撤销 · Ctrl+Z', icon: Undo2 },
-  { label: '重做 · Ctrl+Y', icon: Redo2 },
+type WorldUtilityId =
+  | 'unlock'
+  | 'region'
+  | 'terrain'
+  | 'palette'
+  | 'grid-snap'
+  | 'grid-visible'
+  | 'copy'
+  | 'move'
+  | 'undo'
+  | 'redo';
+
+type WorldUtilityState = {
+  active?: boolean;
+  pressed?: boolean;
+  disabled?: boolean;
+  onClick?: () => void;
+};
+
+const worldUtilityGroups = [
+  [
+    { id: 'unlock', label: '地图解锁', icon: DoorOpen },
+    { id: 'region', label: '编辑区域', icon: ScanLine },
+    { id: 'terrain', label: '地形编辑', icon: Mountain },
+    { id: 'palette', label: '配色工具', icon: Palette },
+  ],
+  [
+    { id: 'grid-snap', label: '网格吸附', icon: Magnet },
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3 },
+    { id: 'copy', label: '范围复制', icon: Copy },
+    { id: 'move', label: '范围移动', icon: Move },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2 },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2 },
+  ],
 ] as const;
 
-export function UtilityToolbar() {
+interface WorldUtilityToolbarProps {
+  gridSnap: boolean;
+  gridVisible: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  onToggleGridSnap: () => void;
+  onToggleGridVisible: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+}
+
+export function WorldUtilityToolbar({
+  gridSnap,
+  gridVisible,
+  canUndo,
+  canRedo,
+  onToggleGridSnap,
+  onToggleGridVisible,
+  onUndo,
+  onRedo,
+}: WorldUtilityToolbarProps) {
+  function getState(id: WorldUtilityId): WorldUtilityState {
+    switch (id) {
+      case 'grid-snap':
+        return { active: gridSnap, onClick: onToggleGridSnap, pressed: gridSnap };
+      case 'grid-visible':
+        return { active: gridVisible, onClick: onToggleGridVisible, pressed: gridVisible };
+      case 'undo':
+        return { disabled: !canUndo, onClick: onUndo };
+      case 'redo':
+        return { disabled: !canRedo, onClick: onRedo };
+      default:
+        return {};
+    }
+  }
+
   return (
-    <div className="command-utility" aria-label="场景工具">
-      <div className="command-utility__buttons">
-        {utilities.map(({ label, icon: Icon }, index) => (
-          <span key={label} style={{ display: 'contents' }}>
-            {(index === 4 || index === 6) && <i className="command-utility__separator" />}
-            <button type="button" className="command-utility__button" data-tooltip={label} aria-label={label}>
-              <Icon size={17} />
-            </button>
-          </span>
-        ))}
-      </div>
+    <div className="world-utility-toolbar" aria-label="世界工具">
+      {worldUtilityGroups.map((group, groupIndex) => (
+        <span className="world-utility-toolbar__group" key={group[0].id}>
+          {groupIndex > 0 && <i className="world-utility-toolbar__separator" />}
+          {group.map(({ id, label, icon: Icon }) => {
+            const state = getState(id);
+            return (
+              <button
+                key={id}
+                type="button"
+                className={`world-utility-toolbar__button ${state.active ? 'is-active' : ''}`}
+                data-tooltip={label}
+                aria-label={label}
+                aria-pressed={state.pressed}
+                disabled={state.disabled}
+                onClick={state.onClick}
+              >
+                <Icon />
+              </button>
+            );
+          })}
+        </span>
+      ))}
     </div>
   );
 }

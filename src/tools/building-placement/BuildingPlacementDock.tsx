@@ -1,4 +1,3 @@
-import { Grid3X3, Magnet, Redo2, Undo2 } from 'lucide-react';
 import type { Dispatch } from 'react';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 
@@ -9,31 +8,9 @@ interface DockProps {
   onCancel: () => void;
 }
 
-function UtilityCell({ label, active, disabled, onClick, children }: { label: string; active?: boolean; disabled?: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      className={`bp-icon-action ${active ? 'is-active' : ''}`}
-      data-tooltip={label}
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-}
-
 export function BuildingPlacementDock({ state, dispatch, onComplete, onCancel }: DockProps) {
   return (
     <div className="tool-bottom-cluster building-placement-toolbar-cluster" aria-label="建筑放置工具栏">
-      <div className="tool-bottom-cluster__utility placement-utility-strip">
-        <UtilityCell label="网格吸附" active={state.gridSnap} onClick={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}><Magnet size={16} /></UtilityCell>
-        <UtilityCell label="网格显示" active={state.gridVisible} onClick={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}><Grid3X3 size={16} /></UtilityCell>
-        <UtilityCell label="撤销 · Ctrl+Z" disabled={!state.canUndo} onClick={() => dispatch({ type: 'UNDO' })}><Undo2 size={16} /></UtilityCell>
-        <UtilityCell label="重做 · Ctrl+Y" disabled={!state.canRedo} onClick={() => dispatch({ type: 'REDO' })}><Redo2 size={16} /></UtilityCell>
-      </div>
-
       <div className="tool-bottom-cluster__primary">
         <div className="bp-mode-group bp-terrain-group">
           <button className={`bp-mode-action ${state.terrainMode === 'balanced-earthwork' ? 'is-active' : ''}`} data-tooltip="平衡挖填" onClick={() => dispatch({ type: 'SET_TERRAIN_MODE', mode: 'balanced-earthwork' })}>平</button>

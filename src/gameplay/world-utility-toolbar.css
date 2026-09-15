@@ -1,0 +1,144 @@
+/* Persistent world utility toolbar.
+   Global editing aids stay in one stable lower-right slot across Gameplay,
+   Workspace and Tool. Task-specific confirmation remains owned by each Tool. */
+
+.world-utility-toolbar{
+  position:absolute;
+  right:22px;
+  bottom:20px;
+  width:448px;
+  height:54px;
+  z-index:23;
+  box-sizing:border-box;
+  padding:6px 7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  border:1px solid rgba(239,233,221,.13);
+  border-radius:2px;
+  background:linear-gradient(180deg,rgba(29,37,33,.93),rgba(23,30,27,.91));
+  box-shadow:0 13px 34px rgba(6,9,8,.24),inset 0 1px 0 rgba(255,255,255,.015);
+  backdrop-filter:blur(10px);
+  transition:opacity .15s ease,transform .15s ease,visibility .15s ease;
+}
+
+.world-utility-toolbar__group{
+  height:100%;
+  display:flex;
+  align-items:center;
+  gap:2px;
+}
+
+.world-utility-toolbar__separator{
+  width:1px;
+  height:24px;
+  flex:0 0 1px;
+  margin:0 5px 0 3px;
+  background:rgba(239,233,221,.085);
+}
+
+.world-utility-toolbar__button{
+  position:relative;
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:2px;
+  background:transparent;
+  color:#858d84;
+  cursor:pointer;
+  transition:background .13s ease,color .13s ease,transform .09s ease,box-shadow .13s ease;
+}
+
+.world-utility-toolbar__button svg{
+  width:19px;
+  height:19px;
+  stroke-width:1.55;
+  pointer-events:none;
+}
+
+.world-utility-toolbar__button:hover{
+  background:rgba(255,255,255,.040);
+  color:#cfcdc4;
+}
+
+.world-utility-toolbar__button:active{
+  transform:translateY(1px);
+}
+
+.world-utility-toolbar__button.is-active{
+  color:#dec079;
+  background:linear-gradient(180deg,rgba(201,165,95,.115),rgba(201,165,95,.030));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+.world-utility-toolbar__button.is-active::before{
+  content:'';
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:-7px;
+  height:2px;
+  background:#c9a55f;
+  box-shadow:0 0 8px rgba(201,165,95,.18);
+}
+
+.world-utility-toolbar__button:disabled{
+  opacity:.25;
+  cursor:default;
+  background:transparent;
+  transform:none;
+}
+
+.world-utility-toolbar__button[data-tooltip]::after{
+  content:attr(data-tooltip);
+  position:absolute;
+  left:50%;
+  bottom:48px;
+  transform:translate(-50%,4px);
+  min-width:max-content;
+  padding:6px 8px;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  white-space:nowrap;
+  color:#d6d2c8;
+  background:rgba(18,24,21,.985);
+  border:1px solid rgba(239,233,221,.13);
+  box-shadow:0 8px 24px rgba(5,8,7,.25);
+  font-size:9px;
+  letter-spacing:.02em;
+  z-index:60;
+  transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
+  transition-delay:0s;
+}
+
+.world-utility-toolbar__button:hover::after{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
+  transition-delay:.32s;
+}
+
+/* Operation hints remain a separate read-only module, visually related by alignment only. */
+.gameplay-screen .gameplay-operation-hints{
+  right:22px;
+  bottom:86px;
+}
+
+/* The world toolbar is never a Management control surface. It is rendered only
+   for Gameplay / Workspace / Tool, so no CSS visibility inference is required. */
+@media (max-width:1500px){
+  .world-utility-toolbar{
+    right:18px;
+    width:436px;
+  }
+  .world-utility-toolbar__button{
+    width:39px;
+    flex-basis:39px;
+  }
+}

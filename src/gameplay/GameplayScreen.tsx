@@ -4,7 +4,7 @@ import { gameplayUiReducer, selectGameplaySpace } from '../app/ui-state';
 import { BuildingWorkspace } from '../workspace/BuildingWorkspace';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
-import { CommandBar, UtilityToolbar } from './CommandBar';
+import { CommandBar, WorldUtilityToolbar } from './CommandBar';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
 import { ManagementSpace } from './ManagementSpace';
@@ -22,6 +22,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   const space = selectGameplaySpace(state);
   const toolOpen = state.tool === 'building-placement';
   const showManagementNavigation = space === 'gameplay' || space === 'management';
+  const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
@@ -45,7 +46,19 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
       />
 
-      {space === 'gameplay' && <UtilityToolbar />}
+      {showWorldUtilityToolbar && (
+        <WorldUtilityToolbar
+          gridSnap={state.gridSnap}
+          gridVisible={state.gridVisible}
+          canUndo={state.canUndo}
+          canRedo={state.canRedo}
+          onToggleGridSnap={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}
+          onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
+          onUndo={() => dispatch({ type: 'UNDO' })}
+          onRedo={() => dispatch({ type: 'REDO' })}
+        />
+      )}
+
       {(space === 'gameplay' || space === 'workspace') && (
         <CommandBar activeCategory={state.activeCategory} onCategoryChange={(category) => dispatch({ type: 'SET_CATEGORY', category })} />
       )}
