@@ -66,7 +66,7 @@ export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLa
       )}
 
       {view === 'save' && (
-        <div className="pause-secondary-surface">
+        <div className="pause-secondary-surface archive-space--save">
           <SaveGameSpace context="pause" onBack={() => onViewChange('menu')} />
         </div>
       )}
