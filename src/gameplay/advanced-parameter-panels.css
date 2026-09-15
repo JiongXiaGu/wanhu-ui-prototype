@@ -151,3 +151,11 @@
   background:rgba(255,255,255,.010);
   color:#999f97;
 }
+
+/* Scene panels do not alter the shortcut rail in any way. */
+.gameplay-screen:has(.flyout)>.gameplay-operation-hints{
+  opacity:1;
+  visibility:visible;
+  pointer-events:none;
+  transform:none;
+}
