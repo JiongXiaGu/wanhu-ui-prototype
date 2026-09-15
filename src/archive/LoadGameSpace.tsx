@@ -1,21 +1,9 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
 import { ChevronLeft, FolderOpen, Pencil, Trash2, X } from 'lucide-react';
+import { SaveEntryCard, type SaveCompatibility, type SaveEntryCardData, type SaveKind } from './SaveEntryCard';
 
-type SaveKind = 'auto' | 'quick' | 'manual';
 type SaveFilter = 'all' | SaveKind;
-type Compatibility = 'current' | 'outdated' | 'incompatible';
-
-type SaveEntry = {
-  id: string;
-  name: string;
-  kind: SaveKind;
-  gameDate: string;
-  savedAt: string;
-  image: string;
-  version: string;
-  compatibility: Compatibility;
-  order: number;
-};
+type SaveEntry = SaveEntryCardData & { order: number };
 
 type GameGroup = {
   id: string;
@@ -50,7 +38,7 @@ const filterItems: { key: SaveFilter; label: string }[] = [
   { key: 'quick', label: '快速存档' },
 ];
 
-function compatibilityForVersion(version: string): Compatibility {
+function compatibilityForVersion(version: string): SaveCompatibility {
   if (version === CURRENT_VERSION) return 'current';
   if (version.startsWith('0.8.')) return 'outdated';
   return 'incompatible';
@@ -282,41 +270,33 @@ export function LoadGameSpace({ context, onBack, onLoad }: LoadGameSpaceProps) {
               const confirmingDelete = pendingDeleteSaveId === save.id;
               const incompatible = save.compatibility === 'incompatible';
               return (
-                <article key={save.id} data-save-kind={save.kind} data-compatibility={save.compatibility} className={`archive-save-card ${selected ? 'is-selected' : ''} is-${save.kind} is-${save.compatibility}`} onMouseEnter={() => setSaveId(save.id)} onDoubleClick={() => !incompatible && onLoad?.()}>
-                  <button type="button" className="archive-save-card__select" aria-label={`选择存档 ${save.name}`} onClick={() => setSaveId(save.id)}>
-                    <span className="archive-save-card__image" style={{ backgroundImage: `url(${save.image})` }} />
-                    <span className="archive-save-card__copy">
-                      <span className="archive-save-card__title-row">
-                        {editing ? (
-                          <input autoFocus value={saveNameDraft} aria-label="重命名存档" onClick={(event) => event.stopPropagation()} onChange={(event) => setSaveNameDraft(event.target.value)} onBlur={() => commitSaveRename(save.id)} onKeyDown={(event) => handleRenameKey(event, () => commitSaveRename(save.id), () => setEditingSaveId(null))} />
-                        ) : <b>{save.name}</b>}
-                      </span>
-                      <span className="archive-save-card__time-row"><small>游戏时间</small><span>{save.gameDate}</span></span>
-                      <span className="archive-save-card__time-row"><small>保存时间</small><span>{save.savedAt}</span></span>
-                    </span>
-                  </button>
-
-                  <div className="archive-save-card__status" aria-label={`${saveKindMeta[save.kind].label} · 版本 ${save.version}`}>
-                    {save.compatibility === 'outdated' && <em className="is-outdated">过时</em>}
-                    {save.compatibility === 'incompatible' && <em className="is-incompatible">不兼容</em>}
-                    <span className={`archive-save-card__type is-${save.kind}`}>{saveKindMeta[save.kind].label}</span>
-                    <span className="archive-save-card__version">v{save.version}</span>
-                  </div>
-
-                  <div className="archive-save-card__actions" aria-label="存档操作">
-                    <button type="button" title="重命名存档" aria-label={`重命名 ${save.name}`} onClick={() => startSaveRename(save)}><Pencil size={15} /></button>
-                    <button type="button" className="is-primary" disabled={incompatible} title={incompatible ? '当前版本无法读取此存档' : '读取存档'} aria-label={`读取 ${save.name}`} onClick={() => !incompatible && onLoad?.()}><FolderOpen size={16} /></button>
-                    <button type="button" className="is-danger" title="删除存档" aria-label={`删除 ${save.name}`} onClick={() => setPendingDeleteSaveId(save.id)}><Trash2 size={15} /></button>
-                  </div>
-
-                  {confirmingDelete && (
+                <SaveEntryCard
+                  key={save.id}
+                  save={save}
+                  selected={selected}
+                  editing={editing}
+                  nameDraft={saveNameDraft}
+                  onNameDraftChange={setSaveNameDraft}
+                  onCommitRename={() => commitSaveRename(save.id)}
+                  onCancelRename={() => setEditingSaveId(null)}
+                  onSelect={() => setSaveId(save.id)}
+                  onHover={() => setSaveId(save.id)}
+                  onDoubleClick={() => !incompatible && onLoad?.()}
+                  actions={(
+                    <>
+                      <button type="button" title="重命名存档" aria-label={`重命名 ${save.name}`} onClick={() => startSaveRename(save)}><Pencil size={15} /></button>
+                      <button type="button" className="is-primary" disabled={incompatible} title={incompatible ? '当前版本无法读取此存档' : '读取存档'} aria-label={`读取 ${save.name}`} onClick={() => !incompatible && onLoad?.()}><FolderOpen size={16} /></button>
+                      <button type="button" className="is-danger" title="删除存档" aria-label={`删除 ${save.name}`} onClick={() => setPendingDeleteSaveId(save.id)}><Trash2 size={15} /></button>
+                    </>
+                  )}
+                  confirmation={confirmingDelete ? (
                     <div className="archive-save-card__confirm">
                       <span>删除这个存档？</span>
                       <button type="button" aria-label="取消删除" onClick={() => setPendingDeleteSaveId(null)}><X size={13} /></button>
                       <button type="button" className="is-danger" aria-label="确认删除存档" onClick={() => deleteSave(save.id)}><Trash2 size={13} /></button>
                     </div>
-                  )}
-                </article>
+                  ) : undefined}
+                />
               );
             })}
             {visibleSaves.length === 0 && <div className="archive-save-empty-state">当前筛选下没有可显示的存档。</div>}
