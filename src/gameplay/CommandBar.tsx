@@ -105,7 +105,7 @@ export function WorldUtilityToolbar({
   }
 
   return (
-    <div className="world-utility-toolbar" aria-label="世界工具">
+    <div className="world-utility-toolbar command-utility" aria-label="世界工具">
       {worldUtilityGroups.map((group, groupIndex) => (
         <span className="world-utility-toolbar__group" key={group[0].id}>
           {groupIndex > 0 && <i className="world-utility-toolbar__separator" />}

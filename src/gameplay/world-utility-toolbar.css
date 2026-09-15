@@ -2,10 +2,11 @@
    Global editing aids stay in one stable lower-right slot across Gameplay,
    Workspace and Tool. Task-specific confirmation remains owned by each Tool. */
 
-.world-utility-toolbar{
+.gameplay-screen > .world-utility-toolbar.command-utility{
   position:absolute;
   right:22px;
   bottom:20px;
+  left:auto;
   width:448px;
   height:54px;
   z-index:23;
@@ -15,6 +16,10 @@
   align-items:center;
   justify-content:center;
   gap:2px;
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:none;
   border:1px solid rgba(239,233,221,.13);
   border-radius:2px;
   background:linear-gradient(180deg,rgba(29,37,33,.93),rgba(23,30,27,.91));
@@ -130,10 +135,8 @@
   bottom:86px;
 }
 
-/* The world toolbar is never a Management control surface. It is rendered only
-   for Gameplay / Workspace / Tool, so no CSS visibility inference is required. */
 @media (max-width:1500px){
-  .world-utility-toolbar{
+  .gameplay-screen > .world-utility-toolbar.command-utility{
     right:18px;
     width:436px;
   }
