@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import type { GameplayUiState } from '../app/ui-state';
 import { gameplayUiReducer, selectGameplaySpace } from '../app/ui-state';
 import { BuildingWorkspace } from '../workspace/BuildingWorkspace';
@@ -21,8 +21,46 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   const [state, dispatch] = useReducer(gameplayUiReducer, initialState);
   const space = selectGameplaySpace(state);
   const toolOpen = state.tool === 'building-placement';
-  const showManagementNavigation = space === 'gameplay' || space === 'management';
+  const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
   const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
+
+  useEffect(() => {
+    function handleGameplayEscape(event: KeyboardEvent) {
+      if (event.key !== 'Escape' || event.defaultPrevented || state.paused) return;
+
+      event.preventDefault();
+
+      if (state.flyout !== 'none') {
+        dispatch({ type: 'SET_FLYOUT', flyout: 'none' });
+        return;
+      }
+      if (state.mapPanelOpen) {
+        dispatch({ type: 'CLOSE_MAP_PANEL' });
+        return;
+      }
+      if (state.tool !== 'none') {
+        dispatch({ type: 'EXIT_TOOL' });
+        return;
+      }
+      if (state.workspace !== 'none') {
+        dispatch({ type: 'CLOSE_WORKSPACE' });
+        return;
+      }
+      if (state.management !== 'none') {
+        dispatch({ type: 'SET_MANAGEMENT', management: 'none' });
+        return;
+      }
+      if (state.mapView !== 'default') {
+        dispatch({ type: 'SET_MAP_VIEW', mapView: 'default' });
+        return;
+      }
+
+      dispatch({ type: 'SET_PAUSED', paused: true });
+    }
+
+    window.addEventListener('keydown', handleGameplayEscape);
+    return () => window.removeEventListener('keydown', handleGameplayEscape);
+  }, [state.flyout, state.management, state.mapPanelOpen, state.mapView, state.paused, state.tool, state.workspace]);
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
@@ -37,10 +75,12 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         flyout={state.flyout}
         management={state.management}
         mapView={state.mapView}
+        mapPanelOpen={state.mapPanelOpen}
         speed={state.speed}
-        showManagementNavigation={showManagementNavigation}
+        showControlTray={showControlTray}
         onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
         onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
+        onToggleMapPanel={() => dispatch({ type: 'TOGGLE_MAP_PANEL' })}
         onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
         onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
         onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
