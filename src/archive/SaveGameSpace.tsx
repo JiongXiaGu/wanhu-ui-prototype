@@ -17,7 +17,7 @@ type ManualSave = {
 };
 
 const CURRENT_VERSION = '0.8.4';
-const CURRENT_CITY = '昭平城';
+const INITIAL_GROUP_NAME = '昭平城';
 const CURRENT_PLAY_TIME = '46h 18m';
 const CURRENT_GAME_DATE = '第12年 8月17日';
 const CURRENT_SAVED_AT = '2026-09-15 17:33';
@@ -53,6 +53,9 @@ function buildManualSaves(): ManualSave[] {
 const initialManualSaves = buildManualSaves();
 
 export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
+  const [groupName, setGroupName] = useState(INITIAL_GROUP_NAME);
+  const [editingGroupName, setEditingGroupName] = useState(false);
+  const [groupNameDraft, setGroupNameDraft] = useState(INITIAL_GROUP_NAME);
   const [saves, setSaves] = useState<ManualSave[]>(() => structuredClone(initialManualSaves));
   const [selectedId, setSelectedId] = useState(saves[0]?.id ?? '');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -68,9 +71,10 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
   useEffect(() => {
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape') return;
-      if (editingId || creating || pendingOverwriteId || pendingDeleteId) {
+      if (editingGroupName || editingId || creating || pendingOverwriteId || pendingDeleteId) {
         event.preventDefault();
         event.stopPropagation();
+        setEditingGroupName(false);
         setEditingId(null);
         setCreating(false);
         setPendingOverwriteId(null);
@@ -79,11 +83,31 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
     };
     window.addEventListener('keydown', handleKeyDown, true);
     return () => window.removeEventListener('keydown', handleKeyDown, true);
-  }, [editingId, creating, pendingOverwriteId, pendingDeleteId]);
+  }, [editingGroupName, editingId, creating, pendingOverwriteId, pendingDeleteId]);
+
+  function closeTransientActions() {
+    setEditingId(null);
+    setCreating(false);
+    setPendingOverwriteId(null);
+    setPendingDeleteId(null);
+  }
+
+  function startGroupRename() {
+    setGroupNameDraft(groupName);
+    setEditingGroupName(true);
+    closeTransientActions();
+  }
+
+  function commitGroupRename() {
+    const next = groupNameDraft.trim();
+    if (next) setGroupName(next);
+    setEditingGroupName(false);
+  }
 
   function startCreate() {
     setNewNameDraft(`手动存档.${nextSerial}`);
     setCreating(true);
+    setEditingGroupName(false);
     setPendingOverwriteId(null);
     setPendingDeleteId(null);
     setEditingId(null);
@@ -109,6 +133,7 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
     setSelectedId(save.id);
     setNameDraft(save.name);
     setEditingId(save.id);
+    setEditingGroupName(false);
     setPendingOverwriteId(null);
     setPendingDeleteId(null);
   }
@@ -159,7 +184,17 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
       <main className="save-game-space__body">
         <section className="save-current-game" aria-label="当前游戏">
           <div>
-            <h2>{CURRENT_CITY}</h2>
+            {editingGroupName ? (
+              <input
+                autoFocus
+                className="save-current-game__name-input"
+                value={groupNameDraft}
+                aria-label="更改存档组名称"
+                onChange={(event) => setGroupNameDraft(event.target.value)}
+                onBlur={commitGroupRename}
+                onKeyDown={(event) => handleRenameKey(event, commitGroupRename, () => setEditingGroupName(false))}
+              />
+            ) : <h2>{groupName}</h2>}
             <p>当前版本 v{CURRENT_VERSION}<i />已游玩 {CURRENT_PLAY_TIME}</p>
           </div>
           <span>当前游戏</span>
@@ -267,7 +302,9 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
       </main>
 
       <footer className="global-space-footer save-game-space__footer" aria-label="页面操作">
-        <div />
+        <div className="save-game-space__footer-left">
+          <button type="button" className="global-space-secondary save-group-rename" onClick={startGroupRename}><Pencil size={14} />更改存档组名称</button>
+        </div>
         <button type="button" className="global-space-secondary save-game-space__back" onClick={onBack}><ChevronLeft size={14} />返回</button>
       </footer>
     </section>
