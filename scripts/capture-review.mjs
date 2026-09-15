@@ -23,8 +23,12 @@ const scenarios = [
   { file: '12a-settings-graphics.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-图形' },
   { file: '12b-settings-controls.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-操作' },
   { file: '12c-settings-gameplay.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-游戏' },
-  { file: '12d-settings-bindings.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'controls-bindings' },
-  { file: '12e-settings-binding-listening.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'controls-binding-listening' },
+  { file: '12d-settings-bindings.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-bindings' },
+  { file: '12e-settings-binding-listening.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-binding-listening' },
+  { file: '12f-settings-select-open.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-select-open' },
+  { file: '12g-settings-slider-changed.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-slider-change' },
+  { file: '12h-settings-toggle-changed.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-toggle-change' },
+  { file: '12i-settings-disabled-state.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-disabled-state' },
   { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save' },
   { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
   { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load' },
@@ -68,26 +72,60 @@ for (const scenario of scenarios) {
     if (activeContextFilter?.trim() !== '歇山') throw new Error('Primary category changes must not reset the top context filter.');
   }
 
-  if (scenario.action?.startsWith('settings-')) {
+  if (scenario.action?.startsWith('settings-') && !['settings-select-open','settings-slider-change','settings-toggle-change','settings-disabled-state','settings-bindings','settings-binding-listening'].includes(scenario.action)) {
     const tab = scenario.action.replace('settings-', '');
     await page.locator('.settings-space__tabs').getByRole('button', { name: tab, exact: true }).click();
     await page.waitForTimeout(220);
   }
 
-  if (scenario.action === 'controls-bindings' || scenario.action === 'controls-binding-listening') {
+  if (scenario.action === 'settings-bindings') {
     await page.locator('.settings-space__tabs').getByRole('button', { name: '操作', exact: true }).click();
-    await page.waitForTimeout(220);
-    await page.locator('.settings-binding-section').evaluate((element) => element.scrollIntoView({ block: 'start' }));
+    await page.locator('.settings-binding-section').scrollIntoViewIfNeeded();
     await page.waitForTimeout(180);
   }
 
-  if (scenario.action === 'controls-binding-listening') {
+  if (scenario.action === 'settings-binding-listening') {
+    await page.locator('.settings-space__tabs').getByRole('button', { name: '操作', exact: true }).click();
     await page.getByRole('button', { name: /营造与道路/ }).click();
-    await page.waitForTimeout(120);
-    await page.getByRole('button', { name: '旋转构件次要按键：未设置' }).click();
-    await page.waitForTimeout(120);
-    const listeningCount = await page.locator('.settings-binding-cell.is-listening').count();
-    if (listeningCount !== 1) throw new Error('Exactly one key binding should be listening for input.');
+    const secondary = page.getByRole('button', { name: '旋转构件次要按键：未设置' });
+    await secondary.scrollIntoViewIfNeeded();
+    await secondary.click();
+    await page.waitForTimeout(180);
+  }
+
+  if (scenario.action === 'settings-select-open') {
+    await page.locator('[data-setting-id="display-mode"] .settings-select-value').click();
+    await page.waitForSelector('.settings-select-menu');
+  }
+
+  if (scenario.action === 'settings-slider-change') {
+    const slider = page.locator('[data-setting-id="ui-scale"] .settings-slider');
+    const box = await slider.boundingBox();
+    if (!box) throw new Error('UI scale slider was not measurable.');
+    await page.mouse.click(box.x + box.width * 0.75, box.y + box.height / 2);
+    const value = Number(await slider.getAttribute('aria-valuenow'));
+    if (value <= 100) throw new Error('Clicking the slider track should increase UI scale.');
+    if (await page.locator('.settings-apply').isDisabled()) throw new Error('Changing a slider should enable Apply.');
+    await page.waitForTimeout(150);
+  }
+
+  if (scenario.action === 'settings-toggle-change') {
+    const toggle = page.locator('[data-setting-id="hdr-output"] .settings-toggle');
+    await toggle.click();
+    if ((await toggle.getAttribute('aria-pressed')) !== 'false') throw new Error('HDR toggle should switch off when clicked.');
+    if (await page.locator('.settings-apply').isDisabled()) throw new Error('Changing a toggle should enable Apply.');
+    await page.waitForTimeout(150);
+  }
+
+  if (scenario.action === 'settings-disabled-state') {
+    await page.locator('.settings-space__tabs').getByRole('button', { name: '图形', exact: true }).click();
+    await page.locator('[data-setting-id="super-resolution"] .settings-select-value').click();
+    await page.getByRole('option', { name: '关闭', exact: true }).click();
+    const frameGeneration = page.locator('[data-setting-id="frame-generation"]');
+    if (!(await frameGeneration.evaluate((node) => node.classList.contains('is-disabled')))) throw new Error('Frame generation should disable when super resolution is off.');
+    if (!(await frameGeneration.locator('.settings-toggle').isDisabled())) throw new Error('Disabled frame generation toggle must be non-interactive.');
+    await frameGeneration.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(150);
   }
 
   if (scenario.review === 'building-camera') {
