@@ -4,6 +4,7 @@ import { LoadGameSpace } from './archive/LoadGameSpace';
 import { resolveReviewBootstrap } from './app/scenarios';
 import type { Screen } from './app/ui-state';
 import { GameplayScreen } from './gameplay/GameplayScreen';
+import { LoadingSpace } from './loading/LoadingSpace';
 import { MainMenu, type MainMenuAction } from './menu/MainMenu';
 import { NewGameSpace } from './new-game/NewGameSpace';
 import { BindingDialogDemo } from './settings/BindingDialogDemo';
@@ -17,7 +18,6 @@ export default function App() {
   const reviewBootstrap = useMemo(() => resolveReviewBootstrap(window.location.search), []);
   const [screen, setScreen] = useState<Screen>(reviewBootstrap.screen);
   const [simScale, setSimScale] = useState(1);
-  const [loading, setLoading] = useState(false);
   const dialogs = useDialogSystem();
 
   useEffect(() => {
@@ -31,16 +31,16 @@ export default function App() {
 
   const canvasStyle = useMemo(() => ({ transform: `translate(-50%, -50%) scale(${simScale})` }), [simScale]);
 
-  function enterGame() {
-    setLoading(true);
-    window.setTimeout(() => {
-      setLoading(false);
-      setScreen('gameplay');
-    }, 420);
+  function enterGameDirectly() {
+    setScreen('gameplay');
+  }
+
+  function beginLoading() {
+    setScreen('loading');
   }
 
   function handleMenu(action: MainMenuAction) {
-    if (action === 'continue') enterGame();
+    if (action === 'continue') enterGameDirectly();
     if (action === 'new') setScreen('newGame');
     if (action === 'load') setScreen('load');
     if (action === 'settings') setScreen('settings');
@@ -61,13 +61,13 @@ export default function App() {
 
         {screen === 'newGame' && (
           <FlowBackdrop background={MAIN_BG}>
-            <NewGameSpace onBack={() => setScreen('menu')} onStart={enterGame} />
+            <NewGameSpace onBack={() => setScreen('menu')} onStart={beginLoading} />
           </FlowBackdrop>
         )}
 
         {screen === 'load' && (
           <FlowBackdrop background={MAIN_BG}>
-            <LoadGameSpace context="menu" onBack={() => setScreen('menu')} onLoad={enterGame} />
+            <LoadGameSpace context="menu" onBack={() => setScreen('menu')} onLoad={beginLoading} />
           </FlowBackdrop>
         )}
 
@@ -77,9 +77,16 @@ export default function App() {
           </FlowBackdrop>
         )}
 
+        {screen === 'loading' && (
+          <LoadingSpace
+            background={GAME_BG}
+            staticProgress={reviewBootstrap.loadingProgress}
+            onComplete={enterGameDirectly}
+          />
+        )}
+
         {screen === 'gameplay' && <GameplayScreen background={GAME_BG} initialState={reviewBootstrap.gameplay} onMainMenu={() => setScreen('menu')} />}
 
-        {loading && <div className="loading-layer"><div>万户天工</div><i /><span>正在进入城市…</span></div>}
         <NotificationHost />
         <DialogHost />
         <BindingDialogDemo />

@@ -6,6 +6,7 @@ export type ReviewScenario =
   | 'new-game'
   | 'load'
   | 'settings'
+  | 'loading'
   | 'gameplay'
   | 'workspace-building'
   | 'building-position'
@@ -22,6 +23,7 @@ export type ReviewScenario =
 export interface ReviewBootstrap {
   screen: Screen;
   gameplay: GameplayUiState;
+  loadingProgress?: number;
 }
 
 export function resolveReviewBootstrap(search: string): ReviewBootstrap {
@@ -35,6 +37,8 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'load', gameplay };
     case 'settings':
       return { screen: 'settings', gameplay };
+    case 'loading':
+      return { screen: 'loading', gameplay, loadingProgress: 62 };
     case 'gameplay':
       return { screen: 'gameplay', gameplay };
     case 'workspace-building':

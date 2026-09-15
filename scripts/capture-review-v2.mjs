@@ -33,6 +33,7 @@ const staticScenarios = [
   ['14-pause-settings.png', 'pause-settings', '.settings-panel--pause'],
   ['15-menu-load.png', 'load', '.archive-space--load'],
   ['16-new-game.png', 'new-game', '.new-game-space'],
+  ['16c-loading.png', 'loading', '.loading-space'],
 ];
 
 for (const [file, review, waitFor] of staticScenarios) {

@@ -1,4 +1,4 @@
-export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'gameplay';
+export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'loading' | 'gameplay';
 export type Flyout = 'none' | 'camera' | 'weather';
 export type Workspace = 'none' | 'building';
 export type Tool = 'none' | 'building-placement';
