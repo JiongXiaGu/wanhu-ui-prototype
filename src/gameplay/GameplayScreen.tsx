@@ -4,13 +4,11 @@ import { gameplayUiReducer, selectGameplaySpace } from '../app/ui-state';
 import { BuildingWorkspace } from '../workspace/BuildingWorkspace';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
-import { CityManagementRail } from './CityManagementRail';
 import { CommandBar, UtilityToolbar } from './CommandBar';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
 import { ManagementSpace } from './ManagementSpace';
 import { PauseLayer } from './PauseLayer';
-import { QuickControls } from './QuickControls';
 import { RightEdgeFlyout } from './RightEdgeFlyout';
 
 interface GameplayScreenProps {
@@ -23,6 +21,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   const [state, dispatch] = useReducer(gameplayUiReducer, initialState);
   const space = selectGameplaySpace(state);
   const toolOpen = state.tool === 'building-placement';
+  const showManagementNavigation = space === 'gameplay' || space === 'management';
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
@@ -32,26 +31,19 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
     <section className={`screen gameplay-screen gameplay-screen--${space}`} style={{ backgroundImage: `url(${background})` }}>
       <div className="game-vignette" />
       <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
-      <GameplayHUD />
 
-      {space !== 'management' && (
-        <QuickControls
-          flyout={state.flyout}
-          speed={state.speed}
-          onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
-          onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
-          onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
-        />
-      )}
-
-      {space === 'gameplay' && (
-        <CityManagementRail
-          management={state.management}
-          mapView={state.mapView}
-          onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
-          onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
-        />
-      )}
+      <GameplayHUD
+        flyout={state.flyout}
+        management={state.management}
+        mapView={state.mapView}
+        speed={state.speed}
+        showManagementNavigation={showManagementNavigation}
+        onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
+        onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
+        onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
+        onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
+        onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
+      />
 
       {space === 'gameplay' && <UtilityToolbar />}
       {(space === 'gameplay' || space === 'workspace') && (
@@ -88,7 +80,6 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
       {space === 'management' && state.management !== 'none' && (
         <ManagementSpace
           view={state.management}
-          onViewChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
           onClose={() => dispatch({ type: 'SET_MANAGEMENT', management: 'none' })}
         />
       )}

@@ -30,15 +30,17 @@ Gameplay 内部不使用大量互相独立的 Modal 叠加，而是按任务职�
 
 组成：
 
-- Global HUD；
-- Quick Controls；
-- City Management Rail；
-- Information Views；
+- Gameplay Top Shell；
 - Utility Toolbar；
 - Main Dock；
 - 轻量 Operation Hints。
 
-City Management Rail 只属于 Normal Gameplay，不是永久覆盖在所有状态上的 HUD。
+Gameplay Top Shell 是顶部唯一主控制岛，由两层组成：
+
+1. **Persistent Status Row**：钱粮、人口、木材、石料、天气、时间、相机、速度和菜单；
+2. **Management Navigation Row**：概况、户籍、财政、政策、商贸、治理、军务、图层。
+
+此前独立的左侧 City Management Rail 与右上 Quick Controls 不再作为运行时结构显示。管理入口、Information Views 入口和轻量场景入口统一收束到顶部，减少左右两侧零散 UI 岛。
 
 ### Management
 
@@ -48,16 +50,15 @@ Management 是 **阻挡世界交互的中央大型管理空间**，不是 Right 
 
 组成：
 
-- Global HUD 保留并弱化；
+- Gameplay Top Shell 保留；
+- 顶部 Management Navigation Row 保留并负责系统切换；
 - 世界画面作为压暗 / 轻模糊背景；
-- 中央大型 Management Surface；
-- Management 内部 Tab 在 `概况 / 户籍 / 财政 / 政策 / 商贸 / 治理 / 军务` 之间切换。
+- 中央大型 Management Surface。
+
+Management Surface **不再重复概况 / 户籍 / 财政 / 政策 / 商贸 / 治理 / 军务一级导航**。一级系统切换只发生在 Gameplay Top Shell 的 Management Navigation Row；Management Surface 内部只允许当前系统自己的二级内容与局部 Tab。
 
 进入 Management 后隐藏：
 
-- City Management Rail；
-- Quick Controls；
-- Information View Palette；
 - Utility Toolbar；
 - Main Dock；
 - GameplayOperationHints；
@@ -73,19 +74,18 @@ Management 是 **阻挡世界交互的中央大型管理空间**，不是 Right 
 
 组成：
 
-- Global HUD；
-- Quick Controls；
+- Gameplay Top Shell 的 Persistent Status Row；
 - Workspace；
 - Main Dock；
 - 轻量 Operation Hints。
 
 进入 Workspace 后隐藏：
 
-- City Management Rail；
+- Management Navigation Row；
 - Information View Palette；
 - Utility Toolbar。
 
-这样建筑浏览与城市管理入口不会同时争抢左侧空间。
+顶部仍保留资源 / 人口 / 时间 / 天气与场景控制，但不显示城市管理一级导航，避免浏览建筑时出现无关管理入口。
 
 ### Tool
 
@@ -93,21 +93,20 @@ Management 是 **阻挡世界交互的中央大型管理空间**，不是 Right 
 
 组成：
 
-- Global HUD；
-- Quick Controls；
+- Gameplay Top Shell 的 Persistent Status Row；
 - ToolOverlay；
 - Tool Bottom Dock；
 - GameplayOperationHints。
 
 进入 Tool 后隐藏：
 
-- City Management Rail；
+- Management Navigation Row；
 - Main Dock；
 - Utility Toolbar；
 - Information View Palette；
 - Management Space。
 
-ToolOverlay 与 Tool Bottom Dock 独占当前工具所需的左侧和底部交互区，避免与城市管理 Launcher 竞争。
+ToolOverlay 与 Tool Bottom Dock 独占当前工具所需的左侧和底部交互区。底部工具体系将在后续阶段继续统一，本轮顶部整合不改变现有 Bottom Dock 行为。
 
 ### Pause
 
@@ -121,7 +120,44 @@ Pause 是全局 UI Space，不是普通 Modal。
 
 世界仍作为背景存在，但明显压暗，并可使用轻微 Blur。
 
-## 3. Right Edge Flyout
+## 3. Gameplay Top Shell
+
+Gameplay Top Shell 是 Gameplay 内持续存在的顶部控制结构。
+
+### Persistent Status Row
+
+常驻：
+
+- 钱粮；
+- 人口；
+- 木材；
+- 石料；
+- 天气；
+- 季节 / 时间；
+- Camera 入口；
+- 时间速度；
+- Pause / Menu 入口。
+
+天气状态本身同时承担 Weather Flyout 入口，不再另放一个重复的“天气”独立块。
+
+### Management Navigation Row
+
+只在 Normal Gameplay 与 Management Space 中显示：
+
+- 概况；
+- 户籍；
+- 财政；
+- 政策；
+- 商贸；
+- 治理；
+- 军务；
+- 图层。
+
+点击复杂管理系统直接进入对应 Management Space；如果已经处于 Management Space，则直接切换当前 Management View，不经过内部重复一级菜单。
+
+图层入口打开轻量 Information View Palette；若当前在 Management Space，进入图层观察前先回到 Normal Gameplay。
+
+## 4. Right Edge Flyout
 
 Right Edge Flyout 只服务轻量、场景上下文相关的快速工具。
 
@@ -132,8 +168,8 @@ Right Edge Flyout 只服务轻量、场景上下文相关的快速工具。
 
 规则：
 
-- 从屏幕右侧滑入；
-- 不锚定到触发按钮；
+- 入口位于 Gameplay Top Shell 的 Persistent Status Row；
+- Flyout 从屏幕右侧滑入；
 - Camera 与 Weather 互斥；
 - 不承载财政、政策、军务等复杂管理系统；
 - Tool 状态中打开 Flyout 时，GameplayOperationHints 保持既定遮挡规则；
@@ -141,7 +177,7 @@ Right Edge Flyout 只服务轻量、场景上下文相关的快速工具。
 
 判断标准：如果一个功能需要多级 Tab、较宽表格、趋势图、多个管理参数或后续明显会扩展，应进入 Management / Workspace，而不是继续加宽 Flyout。
 
-## 4. Information Views
+## 5. Information Views
 
 Information Views 属于“观察城市”，不属于“管理城市”。
 
@@ -157,12 +193,13 @@ Information Views 属于“观察城市”，不属于“管理城市”。
 
 规则：
 
-- 从 City Management Rail 底部的独立入口打开轻量 Palette；
-- 选择后主要变化发生在世界地图，而不是打开大型面板；
+- 从 Gameplay Top Shell 的“图层”入口打开轻量 Palette；
+- Palette 在顶部导航下方出现，不再占用左侧独立工具栏；
+- 选择图层后 Palette 收起，主要变化发生在世界地图；
 - 与 Management Space、Workspace、Tool 互斥；
 - 后续数据表现应逐步贴合街区、建筑、道路和覆盖范围，不长期停留在纯装饰性全屏渐变。
 
-## 5. Global Management Space
+## 6. Global Management Space
 
 Archive 与 Settings 属于顶层全局管理空间，与 Gameplay 内部的 Management Space 不同。
 
@@ -190,7 +227,7 @@ Settings 在 Main Menu 与 Pause 中复用同一组件和同一视觉系统。
 
 不为 Main Menu 和 Pause 分别维护两套 Settings。
 
-## 6. Gameplay 状态模型
+## 7. Gameplay 状态模型
 
 `src/app/ui-state.ts` 是 Gameplay UI 状态的集中入口。
 
@@ -235,7 +272,7 @@ else                      → Gameplay
 
 正式 Unity 实现必须继续以显式状态驱动 VisualElement 显隐，不通过当前 VisualTree 的存在与否反推业务状态。
 
-## 7. Building Placement 模式
+## 8. Building Placement 模式
 
 ### 地形关系
 
@@ -254,7 +291,7 @@ else                      → Gameplay
 
 `高` 模式会在当前参数区域上方增加手动标高相关内容。
 
-## 8. Building Placement Dock
+## 9. Building Placement Dock
 
 Dock 分两层：
 
@@ -276,7 +313,9 @@ Dock 分两层：
 
 取消未提交放置不是危险操作，因此不使用强烈 Destructive Red。
 
-## 9. GameplayOperationHints
+底部工具系统下一阶段再统一；目标是让 Normal Gameplay 的常驻工具栏与 Tool 状态的专用工具栏共享同一底部槽位，而不是继续增加浮动岛。
+
+## 10. GameplayOperationHints
 
 OperationHints 位于右下，是轻量 Shortcut Rail。
 
@@ -292,7 +331,7 @@ Management Space 中不显示 OperationHints，因为玩家此时不操作世界
 
 最终 Unity 实现中，按键文字应来自实际 Input System 绑定，并支持 Keyboard/Mouse 与 Gamepad 动态切换；Web 原型只使用代表性 Keycap。
 
-## 10. Esc 优先级
+## 11. Esc 优先级
 
 原则：先关闭更局部的空间，再关闭更全局的空间。
 
@@ -305,7 +344,7 @@ Management Space 中不显示 OperationHints，因为玩家此时不操作世界
 
 新增 UI Space 时必须继续遵守这个优先级，不要让 Esc 行为互相竞争。
 
-## 11. Review Scenario
+## 12. Review Scenario
 
 `src/app/scenarios.ts` 提供确定性的 UI Bootstrap，用于视觉评审，不依赖人工点击流程。
 
@@ -313,11 +352,12 @@ Review Scenario 是测试入口，不是业务路由。
 
 新增重要 UI 状态时，应同步增加 Review Scenario 和 Playwright 截图场景。
 
-Management Space 至少应持续覆盖：
+Gameplay Top Shell / Management 至少应持续覆盖：
 
-- Normal Gameplay Launcher；
-- Finance Management Space；
-- 一个非 Finance 的 Management Tab；
-- Information Views；
-- Workspace 不显示 Management Rail；
-- Building Placement 不显示 Management Rail / Main Dock。
+- Normal Gameplay 双层 Top Shell；
+- Finance Management Space + 顶部一级导航；
+- 一个非 Finance 的 Management View；
+- Management Surface 内不存在重复一级 Tab；
+- Information Views 从顶部图层入口展开；
+- Workspace 只保留顶部 Persistent Status Row；
+- Building Placement 只保留顶部 Persistent Status Row，且 Main Dock 隐藏。

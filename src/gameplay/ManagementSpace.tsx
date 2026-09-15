@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { ChevronRight, X } from 'lucide-react';
-import type { ManagementView } from '../app/ui-state';
-import { MANAGEMENT_NAV_ITEMS, MANAGEMENT_PANELS, type ManagementSection } from './management-model';
+import { MANAGEMENT_PANELS, type ManagementSection } from './management-model';
 
 interface Props {
   view: ManagementSection;
-  onViewChange: (view: ManagementView) => void;
   onClose: () => void;
 }
 
@@ -25,7 +23,7 @@ const FINANCE_BREAKDOWN = [
   { label: '关津与其它', value: '2,294', pct: 68 },
 ];
 
-export function ManagementSpace({ view, onViewChange, onClose }: Props) {
+export function ManagementSpace({ view, onClose }: Props) {
   const panel = MANAGEMENT_PANELS[view];
   const HeadingIcon = panel.icon;
   const [taxRates, setTaxRates] = useState({ field: 12, commerce: 8, market: 6 });
@@ -43,39 +41,14 @@ export function ManagementSpace({ view, onViewChange, onClose }: Props) {
   return (
     <div className={`management-space management-space--${view}`}>
       <div className="management-space__scrim" aria-hidden="true" />
-      <section className="management-space__panel" role="dialog" aria-modal="true" aria-label={panel.title}>
+      <section className="management-space__panel" role="dialog" aria-label={panel.title}>
         <header className="management-space__header">
           <div className="management-space__heading">
             <span className="management-space__heading-icon"><HeadingIcon /></span>
             <h2>{panel.title}</h2>
           </div>
-          <button
-            type="button"
-            className="management-space__close icon-button"
-            style={{ gridColumn: 3 }}
-            aria-label="关闭城市管理"
-            onClick={onClose}
-          >
-            <X />
-          </button>
+          <button type="button" className="management-space__close icon-button" aria-label="关闭城市管理" onClick={onClose}><X /></button>
         </header>
-
-        <nav className="management-space__tabs" aria-label="城市管理分类">
-          {MANAGEMENT_NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={view === item.id ? 'is-active' : ''}
-                onClick={() => onViewChange(item.id)}
-              >
-                <Icon />
-                <span>{item.shortLabel}</span>
-              </button>
-            );
-          })}
-        </nav>
 
         <div className="management-space__body">
           <section className="management-metrics" aria-label="关键指标">
