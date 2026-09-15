@@ -1,26 +1,52 @@
 /* Shared full-screen action bar semantics.
+   Footer surface may span the canvas, but actions stay anchored to a centered page-content container.
    Left = object/page management actions. Right = navigation / flow actions. */
 
+.global-space-footer{
+  padding-left:0!important;
+  padding-right:0!important;
+  justify-content:center!important;
+}
+
+.global-space-footer__inner{
+  width:var(--page-action-width,1120px);
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.global-space-footer__left,
+.global-space-footer__right{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.global-space-footer__right{margin-left:auto}
+
+/* Page-specific safe widths follow the visual body, not the 1920 canvas edge. */
+.settings-space{--page-action-width:960px}
+.save-game-space{--page-action-width:1040px}
+.archive-space--load{--page-action-width:1520px}
+
+/* Settings: management on the left, navigation on the right. */
 .settings-space__footer{
   position:relative;
   display:flex;
   align-items:center;
-  justify-content:flex-start;
 }
+.settings-space__footer-left,
+.settings-space__footer-right{display:flex;align-items:center;gap:10px}
+.settings-space__footer-right{margin-left:auto}
 
-.settings-space__footer-left{display:contents}
-.settings-space__footer-right{display:none}
-.settings-space__footer .settings-restore{order:1}
-.settings-space__footer .settings-footer-back{
-  position:absolute;
-  right:44px;
-  top:50%;
-  transform:translateY(-50%);
-}
-
-/* Keep navigation actions visually stable across Settings / Archive. */
+/* Keep navigation actions visually stable across Settings / Load / Save. */
 .settings-footer-back,
-.archive-footer-back{
+.archive-footer-back,
+.save-game-space__back{
   min-width:86px;
   color:#aaa9a1;
   border-color:rgba(239,233,221,.105);
@@ -28,7 +54,8 @@
 }
 
 .settings-footer-back:hover,
-.archive-footer-back:hover{
+.archive-footer-back:hover,
+.save-game-space__back:hover{
   color:#ded9cf;
   border-color:rgba(239,233,221,.17);
   background:rgba(255,255,255,.028);
