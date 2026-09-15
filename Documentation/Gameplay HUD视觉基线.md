@@ -16,14 +16,45 @@ World Utility Toolbar 与 Operation Hints 在空间上右对齐，但保持独�
 
 Gameplay 外围 HUD 使用统一安全边距：
 
-- 左 / 右 / 下：`16px`；
-- 顶部 Top Shell：`16px`；
+- 上 / 左 / 右 / 下：`16px`；
 - 相邻独立 HUD 模块常用间距：`12px`；
-- Main Dock 与 World Utility Toolbar 在 1920×1080 下保持约 `16px` 的水平间隔。
+- Main Dock 与 World Utility Toolbar 在 1920×1080 下保持约 `16px` 的水平间隔；
+- Camera / Weather Right Edge Flyout 也使用 `16px` 顶部与右侧安全边距，不贴屏幕边缘。
 
-Main Dock、Top Shell、Management Space 等核心操作结构跟随视觉中心；World Utility Toolbar、Operation Hints 等外围工具跟随 Viewport 边缘。超宽屏中外围工具允许移动到更外侧，不强制贴近视觉中心。
+Main Dock、Top Shell、Management Space 等核心操作结构跟随视觉中心；World Utility Toolbar、Operation Hints、Right Edge Flyout 等外围工具跟随 Viewport 边缘。超宽屏中外围工具允许移动到更外侧，不强制贴近视觉中心。
 
-代码中的外围几何统一由 `src/gameplay/gameplay-hud-layout.css` 管理，组件 CSS 只维护内部排版和视觉状态，避免各组件自行维护近似边距。
+代码中的外围几何与视觉 Token 集中由 `src/gameplay/gameplay-hud-layout.css` 提供；组件 CSS 只维护自己内部排版、Surface 和状态，不允许多个文件重复拥有同一组件的外部几何。
+
+## 视觉 Token
+
+Gameplay HUD 统一使用同一套现代东方深墨 Surface，不再让顶部、底部、Workspace、World Utility 分别使用不同的黑灰材质。
+
+### Radius
+
+- `R1 = 10px`：小按钮、局部输入、Tooltip；
+- `R2 = 14px`：Top Status、Main Dock、World Utility、Operation Hints、Tool Bottom Dock；
+- `R3 = 18px`：Workspace、Camera / Weather Flyout、Building Placement Context Panel 等大 Surface。
+
+同一级别 Surface 必须使用同一圆角家族；避免继续出现大量 `1px / 2px` 方角组件。
+
+### Surface
+
+- Primary：Top Status Row、Main Dock、大 Context Surface；
+- Secondary：Top Control Tray、World Utility、Tool Bottom Dock；
+- Tertiary：Operation Hints。
+
+Primary 最实，Secondary 稍轻，Tertiary 最透明。边框统一使用低对比暖灰纸色；阴影用于悬浮关系，不制造厚重卡片感。
+
+### 色彩与状态
+
+- 主 Surface：深墨青 / 深青黑；
+- 主文字：浅纸色；
+- 次级文字与默认 Icon：低饱和灰绿；
+- Selected / Toggle On / Focus：暖金；
+- Hover：只轻微提亮背景与 Icon；
+- Disabled：降低亮度与对比，不额外增加说明。
+
+暖金只用于状态，不作为普通装饰边框。
 
 ## Gameplay Top Shell
 
@@ -68,33 +99,62 @@ Top Shell 保持两层，但职责明确分开。
 
 Control Tray 右侧天气图标是玩家的天气控制入口，点击后打开 `Weather Right Edge Flyout`。天气控制继续属于场景级轻量工具，不进入 Management Space。
 
-## Surface 层级
+## Bottom HUD
 
-HUD 不通过增加装饰来制造层级，而通过 Surface 重量区分职责：
+Main Dock、World Utility Toolbar 与 Operation Hints 不合并成一个整屏底栏，但必须明显属于同一套设计系统。
 
-1. **Primary Surface**：Top Status Row、Main Dock。背景最实、边界与阴影最清晰；
-2. **Secondary Surface**：Top Control Tray、World Utility Toolbar、Tool Bottom Dock。比 Primary 更轻；
-3. **Tertiary Surface**：Operation Hints。透明度最高、几乎无阴影，明确是只读辅助信息。
+### Main Dock
 
-暖金只用于 Selected / Toggle On / Focus，不让所有边框、图标和标题同时发金。
+- 1920×1080 核心宽度约 `940px`；
+- 高度约 `76px`；
+- 使用 Primary Surface 与 `R2 = 14px`；
+- 分类按钮圆角更小，只在 Hover / Selected 时出现局部 Tone；
+- Selected 使用暖金 Icon / 文本与细金线，不使用整块高饱和金底。
 
-## World Utility Toolbar
+### World Utility Toolbar
 
-当前分为三组：
+- 位于右下并跟随 Viewport 物理边缘；
+- 高度约 `56px`；
+- 使用 Secondary Surface 与 `R2 = 14px`；
+- 当前分为世界编辑 / 编辑辅助 / 历史三组；
+- 网格吸附 / 网格显示是 Toggle，启用时持续保留弱暖金状态；撤销 / 重做等 Action 不保留选中态。
 
-- 世界编辑：地图解锁 / 区域编辑 / 地形编辑 / 配色；
-- 编辑辅助：网格吸附 / 网格显示 / 范围复制 / 范围移动；
-- 历史：撤销 / 重做。
+### Operation Hints
 
-分组只使用弱分隔线，不增加常驻组标题。按钮保持图标优先，Hover Tooltip 提供名称。
+Operation Hints 是 Tertiary Surface：
 
-网格吸附 / 网格显示是 Toggle：启用时持续保留弱暖金状态；撤销 / 重做等 Action 不保留选中态。
+- 使用同样 `R2 = 14px`；
+- 比 World Utility 更透明、更弱；
+- 不与 World Utility 合并；
+- 只显示当前输入提示，不承担教程长文或点击操作。
 
-## Operation Hints
+## Workspace
 
-Operation Hints 是只读快捷键提示，不与 World Utility Toolbar 合并。
+Building Workspace 是 Main Dock 上方展开的内容浏览 Surface，不是另一套独立美术系统。
 
-- Normal Gameplay 标题只显示“操作提示”；
-- Tool 状态标题显示当前任务，如“建筑放置 / 体量调整 / 屋顶调整”；
-- 描述尽量使用短动词，如“旋转 / 移动 / 缩放 / 菜单”；
-- 不承担教程长文。
+- 使用 `R3 = 18px`；
+- Surface 与 Top Status / Main Dock 同色系；
+- Header、Primary Rail、Context Filter 只用弱分隔线建立层级；
+- Building Card 使用中等圆角与轻 Tone，不恢复层层 Card 边框；
+- 缩略图使用较小圆角，和外层 Card 有清楚层级；
+- Workspace 与 Main Dock 保持 `12px` 垂直间距。
+
+## Right Edge Flyout
+
+Camera / Weather 是场景级轻量 Context Surface：
+
+- 距顶部与右侧均 `16px`；
+- 使用 `R3 = 18px`；
+- 不贴边、不做抽屉式硬切边；
+- Surface 与 Top Status 同一色系；
+- 内部 Segment、参数按钮、数值框使用 R1 小圆角；
+- Flyout 打开后仍允许保留 Workspace，并遵守统一 Surface Launcher Toggle 逻辑。
+
+## Building Placement
+
+Building Placement Context Panel 与任务 Dock 使用同一视觉家族：
+
+- Context Panel 使用 Primary Surface + `R3 = 18px`；
+- Tool Bottom Dock 使用 Secondary Surface + `R2 = 14px`；
+- 内部参数仍保持扁平 Section，不重新堆 Card；
+- 网格 / Undo 等全局能力继续由 World Utility Toolbar 持有。
