@@ -29,7 +29,6 @@ const MAP_VIEWS: MapViewItem[] = [
 
 export function CityManagementRail({ management, mapView, onManagementChange, onMapViewChange }: Props) {
   const [mapPanelOpen, setMapPanelOpen] = useState(false);
-  const activeMapView = MAP_VIEWS.find((item) => item.id === mapView) ?? MAP_VIEWS[0];
 
   return (
     <div className="city-management-shell">
@@ -68,11 +67,7 @@ export function CityManagementRail({ management, mapView, onManagementChange, on
       {mapPanelOpen && (
         <aside className="map-view-panel">
           <header>
-            <div>
-              <b>信息视图</b>
-              <small>{activeMapView.label}</small>
-            </div>
-            <span>城市数据</span>
+            <b>信息视图</b>
           </header>
           <div className="map-view-grid">
             {MAP_VIEWS.map((item) => {
