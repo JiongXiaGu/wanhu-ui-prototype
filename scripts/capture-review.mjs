@@ -114,7 +114,6 @@ for (const scenario of scenarios) {
     const value = Number(await slider.getAttribute('aria-valuenow'));
     if (value >= 100) throw new Error('Dragging the safe area slider should lower its value.');
     if (await page.locator('.settings-safe-layer').count()) throw new Error('Normal sliders should save immediately without safe display confirmation.');
-    if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Modern Settings footer should not contain Apply.');
     await page.waitForTimeout(150);
   }
 
@@ -153,7 +152,6 @@ for (const scenario of scenarios) {
     await page.waitForSelector('.settings-safe-layer');
     const countdown = Number((await page.locator('.settings-safe-dialog__countdown').textContent())?.trim());
     if (!(countdown > 0 && countdown <= 15)) throw new Error('Safe confirmation should show a live countdown.');
-    if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Safe confirmation replaces the old Apply workflow.');
   }
 
   if (scenario.action === 'settings-safe-rollback') {
@@ -178,6 +176,9 @@ for (const scenario of scenarios) {
   }
 
   if (scenario.review === 'settings' || scenario.review === 'pause-settings') {
+    if (await page.locator('.settings-space__header .global-space-back').count()) throw new Error('Settings Header should not contain Back; page navigation belongs in the footer action bar.');
+    if ((await page.locator('.settings-space__footer .settings-footer-back').count()) !== 1) throw new Error('Settings footer must contain exactly one Back action.');
+    if ((await page.locator('.settings-space__footer .settings-restore').count()) !== 1) throw new Error('Settings footer must contain Restore Defaults beside Back.');
     if (await page.getByRole('button', { name: '取消', exact: true }).count()) throw new Error('Settings should not expose a persistent Cancel button.');
     if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Settings should not expose a persistent Apply button.');
   }
