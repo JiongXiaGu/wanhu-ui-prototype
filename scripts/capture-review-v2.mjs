@@ -43,7 +43,7 @@ for (const [file, review, waitFor] of staticScenarios) {
 
 // Continue Game intentionally bypasses the loading screen for fast prototype iteration.
 await open('menu', '.main-menu-screen');
-await page.getByRole('button', { name: '继续游戏', exact: true }).click();
+await page.getByRole('button', { name: /^继续游戏/ }).click();
 await page.waitForSelector('.command-utility');
 if ((await page.locator('.loading-space').count()) !== 0) throw new Error('Continue Game should enter gameplay without showing Loading Space.');
 
