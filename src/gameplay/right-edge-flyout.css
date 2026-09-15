@@ -2,13 +2,14 @@
 
 .gameplay-screen .right-edge-flyout{
   right:0;
-  top:74px;
+  top:0;
   width:420px;
-  max-height:calc(100% - 96px);
+  max-height:100%;
   overflow:hidden;
   border:1px solid rgba(239,233,221,.13);
+  border-top:0;
   border-right:0;
-  border-radius:2px 0 0 2px;
+  border-radius:0 0 0 2px;
   background:linear-gradient(180deg,rgba(30,38,34,.955),rgba(25,32,29,.945));
   box-shadow:-18px 20px 44px rgba(5,8,7,.24);
   backdrop-filter:blur(11px);
@@ -16,8 +17,8 @@
   z-index:28;
 }
 
-.gameplay-screen .right-edge-flyout--camera{width:392px;max-height:500px}
-.gameplay-screen .right-edge-flyout--weather{width:430px;bottom:auto;max-height:720px}
+.gameplay-screen .right-edge-flyout--camera{width:392px;max-height:min(500px,100%)}
+.gameplay-screen .right-edge-flyout--weather{width:430px;bottom:auto;max-height:min(720px,100%)}
 .gameplay-screen .right-edge-flyout--weather .right-edge-flyout__body{max-height:654px}
 
 .gameplay-screen .right-edge-flyout>header{
