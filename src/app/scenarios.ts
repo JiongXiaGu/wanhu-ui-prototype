@@ -18,7 +18,8 @@ export type ReviewScenario =
   | 'pause'
   | 'pause-save'
   | 'pause-settings'
-  | 'building-camera';
+  | 'building-camera'
+  | 'building-weather';
 
 export interface ReviewBootstrap {
   screen: Screen;
@@ -63,6 +64,8 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'settings' } };
     case 'building-camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'camera' } };
+    case 'building-weather':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'weather' } };
     case 'menu':
     default:
       return { screen: 'menu', gameplay };
