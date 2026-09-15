@@ -11,7 +11,7 @@ type MapOption = {
   name: string;
   image: string;
   description: string;
-  size: string;
+  dimensions: string;
   terrain: string;
   water: string;
 };
@@ -35,7 +35,7 @@ const MAPS: MapOption[] = [
     name: '河谷平原',
     image: '/assets/wanhu-gameplay-city.png',
     description: '开阔平原被主河道贯穿，城市扩张空间充足，适合作为标准开局地图。',
-    size: '大型',
+    dimensions: '350 × 640',
     terrain: '平原',
     water: '主河道',
   },
@@ -45,7 +45,7 @@ const MAPS: MapOption[] = [
     name: '江南水网',
     image: '/assets/wanhu-gameplay-lake.png',
     description: '河港、湖塘与支流交错，水运、桥梁和临水营造会更早进入城市发展。',
-    size: '中型',
+    dimensions: '480 × 480',
     terrain: '平缓',
     water: '水网密集',
   },
@@ -55,7 +55,7 @@ const MAPS: MapOption[] = [
     name: '北地丘陵',
     image: '/assets/wanhu-main-menu.png',
     description: '地势起伏更明显，可用平地更集中，城市需要顺应山形逐步展开。',
-    size: '大型',
+    dimensions: '420 × 600',
     terrain: '丘陵',
     water: '溪谷',
   },
@@ -65,7 +65,7 @@ const MAPS: MapOption[] = [
     name: '湖滨平原',
     image: '/assets/wanhu-gameplay-lake.png',
     description: '大面积湖岸与平缓腹地并存，适合发展湖港、沿岸街区和跨水连接。',
-    size: '中型',
+    dimensions: '400 × 520',
     terrain: '平原',
     water: '湖岸',
   },
@@ -75,7 +75,7 @@ const MAPS: MapOption[] = [
     name: '山前盆地',
     image: '/assets/wanhu-gameplay-city.png',
     description: '山地围合出较完整的盆地空间，中心区平缓，外围地势逐步抬升。',
-    size: '大型',
+    dimensions: '512 × 512',
     terrain: '盆地',
     water: '支流',
   },
@@ -85,7 +85,7 @@ const MAPS: MapOption[] = [
     name: '随机世界',
     image: '/assets/wanhu-gameplay-city.png',
     description: '根据地图尺寸与随机种子在开始游戏时生成一个新的世界。',
-    size: '可调整',
+    dimensions: '',
     terrain: '随机生成',
     water: '随机生成',
   },
@@ -174,7 +174,7 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
                 <span className="new-game-map-card__image" style={{ backgroundImage: `url(${map.image})` }} />
                 <span className="new-game-map-card__copy">
                   <b>{map.name}</b>
-                  <small>{map.kind === 'random' ? '运行时生成 · 参数可调' : `${map.size} · ${map.terrain} · ${map.water}`}</small>
+                  <span className="new-game-map-card__size">{map.kind === 'random' ? size : map.dimensions}</span>
                 </span>
               </button>
             ))}
@@ -198,7 +198,7 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
               </>
             ) : (
               <>
-                <div><span>地图尺寸</span><b>{selectedMap.size}</b></div>
+                <div><span>地图尺寸</span><b>{selectedMap.dimensions}</b></div>
                 <div><span>主要地貌</span><b>{selectedMap.terrain}</b></div>
                 <div><span>水系</span><b>{selectedMap.water}</b></div>
                 <div><span>来源</span><b>预定义</b></div>

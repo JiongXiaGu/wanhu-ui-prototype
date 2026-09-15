@@ -156,29 +156,34 @@
 .new-game-map-card__copy{
   min-width:0;
   flex:1 1 auto;
-  padding:10px 12px 9px;
+  padding:9px 12px 8px;
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  gap:6px;
+  align-items:stretch;
 }
 .new-game-map-card__copy b{
   color:#cfcbc1;
   font-size:12.5px;
   font-weight:520;
+  line-height:1.2;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 .new-game-map-card.is-selected .new-game-map-card__copy b{color:#eee6d8}
-.new-game-map-card__copy small{
-  color:#747c74;
+.new-game-map-card__size{
+  margin-top:auto;
+  align-self:flex-end;
+  color:#798178;
   font-size:8.5px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
-.new-game-map-card.is-selected .new-game-map-card__copy small{color:#91978e}
+.new-game-map-card[data-map-kind="random"] .new-game-map-card__size{color:#988b67}
+.new-game-map-card.is-selected .new-game-map-card__size{color:#aaa79d}
+.new-game-map-card.is-selected[data-map-kind="random"] .new-game-map-card__size{color:#d1b66f}
 
 .new-game-detail{
   min-width:0;
