@@ -1,34 +1,40 @@
 /* Unified gameplay top shell.
    Row 1 owns persistent city status + scene controls.
-   Row 2 owns city-management navigation + information views.
+   Row 2 owns icon-only city-management navigation + information views.
    Bottom command systems are intentionally unchanged in this phase. */
 
 .gameplay-top-shell{
+  --top-nav-width:800px;
   position:absolute;
   left:50%;
-  top:18px;
-  width:1000px;
+  top:16px;
+  width:1040px;
   transform:translateX(-50%);
   z-index:42;
   display:flex;
   flex-direction:column;
-  background:linear-gradient(180deg,rgba(28,36,32,.92),rgba(22,29,26,.90));
-  border:1px solid rgba(239,233,221,.14);
-  border-radius:2px;
-  box-shadow:0 16px 42px rgba(5,8,7,.24),inset 0 1px 0 rgba(255,255,255,.012);
-  backdrop-filter:blur(11px);
+  align-items:center;
+  pointer-events:none;
 }
 
 .gameplay-top-status{
-  height:48px;
-  flex:0 0 48px;
+  width:100%;
+  height:52px;
+  flex:0 0 52px;
   display:flex;
   align-items:center;
-  padding:0 8px;
+  padding:0 10px;
+  pointer-events:auto;
+  background:linear-gradient(180deg,rgba(27,35,31,.95),rgba(21,28,25,.93));
+  border:1px solid rgba(239,233,221,.16);
+  border-radius:14px;
+  box-shadow:0 14px 38px rgba(5,8,7,.23),inset 0 1px 0 rgba(255,255,255,.018);
+  backdrop-filter:blur(12px);
 }
+.gameplay-top-shell.has-navigation .gameplay-top-status{border-radius:14px 14px 8px 8px}
 
 .gameplay-top-status__resources{
-  height:46px!important;
+  height:50px!important;
   min-width:0;
   padding:0!important;
   display:flex;
@@ -36,19 +42,19 @@
 }
 
 .gameplay-screen .gameplay-top-status__resources>span{
-  min-width:104px;
-  height:30px;
+  min-width:106px;
+  height:31px;
   padding:0 10px;
   gap:7px;
-  color:#8e958d;
+  color:#8f968e;
   border-right:1px solid rgba(239,233,221,.07);
 }
 .gameplay-screen .gameplay-top-status__resources>span:last-child{border-right:0}
-.gameplay-screen .gameplay-top-status__resources svg{opacity:.84;stroke-width:1.65}
+.gameplay-screen .gameplay-top-status__resources svg{opacity:.86;stroke-width:1.65}
 .gameplay-screen .gameplay-top-status__resources small{font-size:9px;letter-spacing:.018em}
 .gameplay-screen .gameplay-top-status__resources b{
   margin-left:auto;
-  color:#ddd8ce;
+  color:#e0dbd0;
   font-size:10px;
   font-weight:520;
   font-variant-numeric:tabular-nums;
@@ -59,7 +65,7 @@
   height:24px;
   flex:0 0 1px;
   margin:0 8px;
-  background:rgba(239,233,221,.095);
+  background:rgba(239,233,221,.10);
 }
 .gameplay-top-status__separator--tight{margin:0 5px}
 
@@ -67,7 +73,7 @@
 .gameplay-top-speed-button{
   height:34px;
   border:0;
-  border-radius:1px;
+  border-radius:4px;
   background:transparent;
   color:#929990;
   cursor:pointer;
@@ -92,7 +98,7 @@
 
 .gameplay-top-status__weather{min-width:54px;color:#b7a266}
 .gameplay-top-status__clock{
-  min-width:72px;
+  min-width:76px;
   padding:0 8px 0 5px;
   color:#aaa99f;
   font-size:9px;
@@ -112,59 +118,102 @@
 }
 .gameplay-top-speed-button svg{width:13px;height:13px;stroke-width:1.7}
 
-/* Management lives directly under the status row so the top reads as one system. */
+/* The second row is deliberately narrower and icon-only, reading as an attached command tray. */
 .gameplay-top-navigation{
   position:relative;
-  height:44px;
-  flex:0 0 44px;
-  padding:0 8px;
+  width:var(--top-nav-width);
+  height:52px;
+  flex:0 0 52px;
+  margin-top:-1px;
+  padding:0 16px;
   display:flex;
   align-items:stretch;
-  border-top:1px solid rgba(239,233,221,.075);
-  background:linear-gradient(180deg,rgba(255,255,255,.006),rgba(255,255,255,.001));
+  justify-content:center;
+  pointer-events:auto;
+  background:linear-gradient(180deg,rgba(24,32,28,.965),rgba(18,25,22,.955));
+  border:1px solid rgba(239,233,221,.13);
+  border-top-color:rgba(239,233,221,.08);
+  border-radius:0 0 13px 13px;
+  box-shadow:0 14px 34px rgba(5,8,7,.22),inset 0 1px 0 rgba(255,255,255,.01);
+  backdrop-filter:blur(12px);
 }
 
 .gameplay-top-navigation>button{
   position:relative;
+  width:88px;
   flex:1 1 0;
-  min-width:0;
-  padding:0 8px;
+  min-width:72px;
+  max-width:96px;
+  padding:0;
   border:0;
   background:transparent;
-  color:#7f867e;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
+  color:#7f877f;
+  display:grid;
+  place-items:center;
   cursor:pointer;
-  font-size:9px;
-  transition:background .14s ease,color .14s ease;
+  transition:background .14s ease,color .14s ease,transform .08s ease;
 }
-.gameplay-top-navigation>button svg{width:14px;height:14px;stroke-width:1.55}
-.gameplay-top-navigation>button:hover{background:rgba(255,255,255,.024);color:#c8c6bd}
-.gameplay-top-navigation>button.is-active{color:#d9bd77;background:rgba(201,165,95,.038)}
+.gameplay-top-navigation>button svg{width:19px;height:19px;stroke-width:1.55;pointer-events:none}
+.gameplay-top-navigation>button:hover{background:rgba(255,255,255,.027);color:#c9c7be}
+.gameplay-top-navigation>button:active{transform:translateY(1px)}
+.gameplay-top-navigation>button.is-active{
+  color:#dec17b;
+  background:linear-gradient(180deg,rgba(201,165,95,.105),rgba(201,165,95,.035));
+}
 .gameplay-top-navigation>button.is-active::after{
   content:'';
   position:absolute;
-  left:24%;
-  right:24%;
+  left:28%;
+  right:28%;
   bottom:-1px;
   height:2px;
   background:#c9a55f;
+  box-shadow:0 0 8px rgba(201,165,95,.22);
 }
+
+/* Text is intentionally moved to delayed hover tooltips instead of living in the row. */
+.gameplay-top-navigation>button::before{
+  content:attr(data-tooltip);
+  position:absolute;
+  left:50%;
+  top:calc(100% + 8px);
+  transform:translate(-50%,-3px);
+  min-width:max-content;
+  padding:6px 8px;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  white-space:nowrap;
+  color:#d8d4ca;
+  background:rgba(17,23,20,.985);
+  border:1px solid rgba(239,233,221,.13);
+  box-shadow:0 8px 24px rgba(4,7,6,.28);
+  font-size:9px;
+  letter-spacing:.025em;
+  transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
+  transition-delay:0s;
+  z-index:75;
+}
+.gameplay-top-navigation>button:hover::before{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
+  transition-delay:.28s;
+}
+
 .gameplay-top-navigation__separator{
   width:1px;
-  height:22px;
+  height:24px;
   align-self:center;
   flex:0 0 1px;
-  margin:0 4px;
+  margin:0 5px;
   background:rgba(239,233,221,.09);
 }
-.gameplay-top-navigation__map{max-width:102px}
+.gameplay-top-navigation__map{max-width:86px!important}
 .gameplay-top-navigation__dot{
   position:absolute;
-  right:12px;
-  top:10px;
+  right:16px;
+  top:11px;
   width:4px;
   height:4px;
   border-radius:50%;
@@ -172,15 +221,17 @@
   box-shadow:0 0 7px rgba(201,165,95,.38);
 }
 
-/* Information views become a dropdown under the integrated top navigation. */
+/* Information views drop from the right edge of the attached icon tray. */
 .gameplay-top-map-panel{
   position:absolute;
-  right:0;
-  top:calc(100% + 6px);
+  right:calc((100% - var(--top-nav-width))/2);
+  top:calc(100% + 7px);
   width:304px;
   padding:0 12px 12px;
+  pointer-events:auto;
   background:linear-gradient(180deg,rgba(28,36,32,.97),rgba(22,29,26,.96));
   border:1px solid rgba(239,233,221,.14);
+  border-radius:4px;
   box-shadow:0 18px 42px rgba(5,8,7,.27);
   backdrop-filter:blur(11px);
   animation:gameplay-top-map-enter .15s ease-out both;
@@ -221,10 +272,10 @@
 .gameplay-top-map-legend span:last-child{text-align:right}
 @keyframes gameplay-top-map-enter{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
-/* Management panel now starts below the shared top shell and no longer owns category tabs. */
+/* Management starts below the shared top shell and never repeats the first-level navigation. */
 .gameplay-screen--management .management-space__panel{
-  top:122px;
-  height:832px;
+  top:132px;
+  height:822px;
 }
 .gameplay-screen--management .management-space__header{
   height:64px;
@@ -236,11 +287,12 @@
 .gameplay-screen--management .management-space__heading{gap:11px}
 .gameplay-screen--management .management-space__heading h2{font-size:20px}
 .gameplay-screen--management .management-space__body{padding-top:20px}
-
-/* The integrated shell is the only top-level HUD island. Legacy standalone roots are not rendered. */
-.gameplay-screen--management .gameplay-top-shell{box-shadow:0 18px 48px rgba(3,6,5,.34),inset 0 1px 0 rgba(255,255,255,.012)}
+.gameplay-screen--management .gameplay-top-status{
+  box-shadow:0 16px 44px rgba(3,6,5,.32),inset 0 1px 0 rgba(255,255,255,.018);
+}
 
 @media (max-width:1500px){
-  .gameplay-top-shell{width:940px}
+  .gameplay-top-shell{--top-nav-width:756px;width:960px}
   .gameplay-screen .gameplay-top-status__resources>span{min-width:98px;padding:0 8px}
+  .gameplay-top-navigation>button{min-width:68px}
 }

@@ -38,9 +38,11 @@ Gameplay 内部不使用大量互相独立的 Modal 叠加，而是按任务职�
 Gameplay Top Shell 是顶部唯一主控制岛，由两层组成：
 
 1. **Persistent Status Row**：钱粮、人口、木材、石料、天气、时间、相机、速度和菜单；
-2. **Management Navigation Row**：概况、户籍、财政、政策、商贸、治理、军务、图层。
+2. **Management Navigation Row**：纯图标的概况、户籍、财政、政策、商贸、治理、军务、图层入口。
 
 此前独立的左侧 City Management Rail 与右上 Quick Controls 不再作为运行时结构显示。管理入口、Information Views 入口和轻量场景入口统一收束到顶部，减少左右两侧零散 UI 岛。
+
+Management Navigation Row 不常驻显示文字标签；中文名称由 Hover Tooltip 和 ARIA Label 提供。第二层宽度小于 Persistent Status Row，作为挂接在主状态栏下方的附属命令托盘，避免再次形成一整块网页式 Tab 导航。
 
 ### Management
 
@@ -142,7 +144,7 @@ Gameplay Top Shell 是 Gameplay 内持续存在的顶部控制结构。
 
 ### Management Navigation Row
 
-只在 Normal Gameplay 与 Management Space 中显示：
+只在 Normal Gameplay 与 Management Space 中显示以下入口：
 
 - 概况；
 - 户籍；
@@ -152,6 +154,14 @@ Gameplay Top Shell 是 Gameplay 内持续存在的顶部控制结构。
 - 治理；
 - 军务；
 - 图层。
+
+正式视觉规则：
+
+- 常驻只显示图标，不显示“概况 / 户籍 / 财政”等文字；
+- Hover 约 280～400 ms 后显示中文 Tooltip；
+- Selected 使用弱暖金 Tone 与底部细金线；
+- 图标入口保留明确 ARIA Label，方便无障碍和自动化 Review；
+- 第二层整体收窄并居中挂接在 Persistent Status Row 下方，视觉上是附属命令托盘而不是另一条完整 Header。
 
 点击复杂管理系统直接进入对应 Management Space；如果已经处于 Management Space，则直接切换当前 Management View，不经过内部重复一级菜单。
 
@@ -193,7 +203,7 @@ Information Views 属于“观察城市”，不属于“管理城市”。
 
 规则：
 
-- 从 Gameplay Top Shell 的“图层”入口打开轻量 Palette；
+- 从 Gameplay Top Shell 的图层图标入口打开轻量 Palette；
 - Palette 在顶部导航下方出现，不再占用左侧独立工具栏；
 - 选择图层后 Palette 收起，主要变化发生在世界地图；
 - 与 Management Space、Workspace、Tool 互斥；
@@ -355,6 +365,8 @@ Review Scenario 是测试入口，不是业务路由。
 Gameplay Top Shell / Management 至少应持续覆盖：
 
 - Normal Gameplay 双层 Top Shell；
+- Management Navigation Row 不存在常驻文字标签；
+- 第二层图标导航宽度小于第一层 Persistent Status Row；
 - Finance Management Space + 顶部一级导航；
 - 一个非 Finance 的 Management View；
 - Management Surface 内不存在重复一级 Tab；

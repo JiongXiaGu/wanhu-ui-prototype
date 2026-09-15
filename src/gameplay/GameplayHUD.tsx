@@ -147,10 +147,10 @@ export function GameplayHUD({
                 type="button"
                 className={management === item.id ? 'is-active' : ''}
                 aria-label={item.label}
+                data-tooltip={item.label}
                 onClick={() => openManagement(item.id)}
               >
                 <Icon />
-                <span>{item.shortLabel}</span>
               </button>
             );
           })}
@@ -161,10 +161,10 @@ export function GameplayHUD({
             type="button"
             className={`gameplay-top-navigation__map ${mapPanelOpen || mapView !== 'default' ? 'is-active' : ''}`}
             aria-label="信息视图"
+            data-tooltip="信息视图"
             onClick={toggleMapViews}
           >
             <Layers3 />
-            <span>图层</span>
             {mapView !== 'default' && <i className="gameplay-top-navigation__dot" />}
           </button>
         </nav>
