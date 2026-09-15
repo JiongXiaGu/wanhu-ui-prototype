@@ -1,5 +1,17 @@
-import { useState } from 'react';
-import { Check, ChevronDown, ChevronLeft, Gamepad2, Monitor, RotateCcw, Settings2, SlidersHorizontal, Speaker } from 'lucide-react';
+import { useState, type KeyboardEvent } from 'react';
+import {
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Gamepad2,
+  Monitor,
+  Plus,
+  RotateCcw,
+  Settings2,
+  SlidersHorizontal,
+  Speaker,
+} from 'lucide-react';
 
 export type SettingsContext = 'menu' | 'pause';
 
@@ -10,7 +22,7 @@ interface SettingsPanelProps {
 }
 
 type Category = '显示' | '图形' | '音频' | '操作' | '游戏';
-type SettingKind = 'select' | 'slider' | 'toggle' | 'binding';
+type SettingKind = 'select' | 'slider' | 'toggle';
 
 type SettingRow = {
   title: string;
@@ -18,13 +30,30 @@ type SettingRow = {
   value: string;
   kind: SettingKind;
   pct?: number;
-  keys?: string[];
 };
 
 type SettingGroup = {
   title: string;
   rows: SettingRow[];
 };
+
+type BindingSlot = 'primary' | 'secondary';
+type BindingValue = { primary: string; secondary: string };
+type BindingItem = {
+  id: string;
+  label: string;
+  detail: string;
+  primary: string;
+  secondary?: string;
+};
+type BindingGroup = {
+  id: string;
+  title: string;
+  bindings: BindingItem[];
+};
+
+type ListeningBinding = { id: string; slot: BindingSlot } | null;
+type BindingConflict = { id: string; slot: BindingSlot; owner: string } | null;
 
 const categories: { key: Category; icon: typeof Monitor; detail: string }[] = [
   { key: '显示', icon: Monitor, detail: '显示输出、分辨率与界面缩放' },
@@ -131,26 +160,6 @@ const groups: Record<Category, SettingGroup[]> = {
         { title: '边缘滚动速度', detail: '调整屏幕边缘滚动的相机移动速度。', value: '1.00', kind: 'slider', pct: 50 },
       ],
     },
-    {
-      title: '基础操作',
-      rows: [
-        { title: '镜头平移', detail: '移动城市观察视角。', value: 'W / A / S / D', kind: 'binding', keys: ['W', 'A', 'S', 'D'] },
-        { title: '镜头旋转', detail: '顺时针或逆时针旋转镜头。', value: 'Q / E', kind: 'binding', keys: ['Q', 'E'] },
-        { title: '确认操作', detail: '放置建筑或确认当前工具。', value: '鼠标左键', kind: 'binding', keys: ['左键'] },
-        { title: '取消操作', detail: '关闭当前工具或返回上一层。', value: 'Esc', kind: 'binding', keys: ['Esc'] },
-        { title: '暂停游戏', detail: '暂停或恢复当前城市模拟。', value: 'Space', kind: 'binding', keys: ['Space'] },
-      ],
-    },
-    {
-      title: '营造与时间',
-      rows: [
-        { title: '旋转构件', detail: '旋转当前正在放置或调整的构件。', value: 'R', kind: 'binding', keys: ['R'] },
-        { title: '撤销', detail: '撤销最近一次营造操作。', value: 'Ctrl / Z', kind: 'binding', keys: ['Ctrl', 'Z'] },
-        { title: '重做', detail: '重做最近一次被撤销的营造操作。', value: 'Ctrl / Y', kind: 'binding', keys: ['Ctrl', 'Y'] },
-        { title: '降低游戏速度', detail: '降低当前模拟速度。', value: '1', kind: 'binding', keys: ['1'] },
-        { title: '提高游戏速度', detail: '提高当前模拟速度。', value: '3', kind: 'binding', keys: ['3'] },
-      ],
-    },
   ],
   游戏: [
     {
@@ -180,8 +189,133 @@ const groups: Record<Category, SettingGroup[]> = {
   ],
 };
 
+const bindingGroups: BindingGroup[] = [
+  {
+    id: 'basic',
+    title: '基础操作',
+    bindings: [
+      { id: 'camera-move', label: '移动镜头', detail: '移动城市观察视角。', primary: 'W / A / S / D', secondary: '↑ / ↓ / ← / →' },
+      { id: 'confirm', label: '确认操作', detail: '放置建筑或确认当前工具。', primary: '鼠标左键', secondary: 'Enter' },
+      { id: 'cancel', label: '取消操作', detail: '关闭当前工具或返回上一层。', primary: 'Esc', secondary: '鼠标右键' },
+      { id: 'pause', label: '暂停游戏', detail: '暂停或恢复当前城市模拟。', primary: 'Space', secondary: 'P' },
+    ],
+  },
+  {
+    id: 'construction',
+    title: '营造与道路',
+    bindings: [
+      { id: 'rotate', label: '旋转构件', detail: '旋转当前正在放置或调整的构件。', primary: 'R' },
+      { id: 'rotate-reverse', label: '反向旋转', detail: '向相反方向旋转当前构件。', primary: 'Shift + R' },
+      { id: 'undo', label: '撤销', detail: '撤销最近一次营造操作。', primary: 'Ctrl + Z' },
+      { id: 'redo', label: '重做', detail: '重做最近一次被撤销的营造操作。', primary: 'Ctrl + Y' },
+      { id: 'snap-toggle', label: '切换吸附', detail: '切换当前工具的吸附状态。', primary: 'G' },
+    ],
+  },
+  {
+    id: 'time',
+    title: '时间控制',
+    bindings: [
+      { id: 'speed-1', label: '正常速度', detail: '切换到正常模拟速度。', primary: '1' },
+      { id: 'speed-2', label: '二倍速度', detail: '切换到二倍模拟速度。', primary: '2' },
+      { id: 'speed-4', label: '四倍速度', detail: '切换到四倍模拟速度。', primary: '3' },
+      { id: 'pause-time', label: '暂停 / 继续', detail: '暂停或继续城市模拟。', primary: 'Space' },
+    ],
+  },
+  {
+    id: 'camera',
+    title: '镜头操作',
+    bindings: [
+      { id: 'camera-yaw-left', label: '向左旋转镜头', detail: '围绕当前观察中心向左旋转。', primary: 'Q' },
+      { id: 'camera-yaw-right', label: '向右旋转镜头', detail: '围绕当前观察中心向右旋转。', primary: 'E' },
+      { id: 'camera-reset', label: '恢复默认视角', detail: '恢复默认经营镜头。', primary: 'Home' },
+      { id: 'camera-photo', label: '摄影模式', detail: '进入或退出摄影镜头模式。', primary: 'F8' },
+    ],
+  },
+  {
+    id: 'quickbar',
+    title: '快捷栏',
+    bindings: [
+      { id: 'tool-road', label: '道路', detail: '快速进入道路营造。', primary: 'Alt + 1' },
+      { id: 'tool-wall', label: '城墙', detail: '快速进入城墙营造。', primary: 'Alt + 2' },
+      { id: 'tool-building', label: '建筑', detail: '快速打开建筑 Workspace。', primary: 'Alt + 3' },
+      { id: 'tool-decoration', label: '装饰', detail: '快速打开装饰 Workspace。', primary: 'Alt + 4' },
+    ],
+  },
+];
+
+function createDefaultBindings(): Record<string, BindingValue> {
+  const entries = bindingGroups.flatMap((group) => group.bindings.map((binding) => [
+    binding.id,
+    { primary: binding.primary, secondary: binding.secondary ?? '' },
+  ] as const));
+  return Object.fromEntries(entries);
+}
+
+function getBindingItem(id: string) {
+  return bindingGroups.flatMap((group) => group.bindings).find((binding) => binding.id === id);
+}
+
 export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps) {
   const [active, setActive] = useState<Category>('显示');
+  const [bindings, setBindings] = useState<Record<string, BindingValue>>(createDefaultBindings);
+  const [openBindingGroups, setOpenBindingGroups] = useState<string[]>(['basic']);
+  const [listening, setListening] = useState<ListeningBinding>(null);
+  const [bindingConflict, setBindingConflict] = useState<BindingConflict>(null);
+
+  function toggleBindingGroup(id: string) {
+    setOpenBindingGroups((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  }
+
+  function resetBinding(id: string) {
+    const source = getBindingItem(id);
+    if (!source) return;
+    setBindings((current) => ({
+      ...current,
+      [id]: { primary: source.primary, secondary: source.secondary ?? '' },
+    }));
+    setBindingConflict(null);
+    setListening(null);
+  }
+
+  function startListening(id: string, slot: BindingSlot) {
+    setListening({ id, slot });
+    setBindingConflict(null);
+  }
+
+  function handleBindingKeyDown(event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) {
+    if (!listening || listening.id !== id || listening.slot !== slot) return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (event.key === 'Escape') {
+      setListening(null);
+      setBindingConflict(null);
+      return;
+    }
+
+    if (event.key === 'Backspace' || event.key === 'Delete') {
+      setBindings((current) => ({ ...current, [id]: { ...current[id], [slot]: '' } }));
+      setListening(null);
+      setBindingConflict(null);
+      return;
+    }
+
+    const nextBinding = formatBindingKey(event);
+    if (!nextBinding) return;
+
+    const conflictOwner = bindingGroups
+      .flatMap((group) => group.bindings)
+      .find((binding) => binding.id !== id && (bindings[binding.id]?.primary === nextBinding || bindings[binding.id]?.secondary === nextBinding));
+
+    if (conflictOwner) {
+      setBindingConflict({ id, slot, owner: conflictOwner.label });
+      return;
+    }
+
+    setBindings((current) => ({ ...current, [id]: { ...current[id], [slot]: nextBinding } }));
+    setListening(null);
+    setBindingConflict(null);
+  }
 
   return (
     <section className={`settings-space settings-panel--${context}`} data-active={active} aria-label="游戏设置">
@@ -201,14 +335,28 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
 
       <main className="settings-space__content">
         <div className="settings-list" key={active}>
-          {groups[active].map((group) => (
-            <section className="settings-section" key={group.title}>
-              <header className="settings-section__title"><b>{group.title}</b><i /></header>
-              <div className="settings-section__rows">
-                {group.rows.map((row) => <SettingsRowView key={row.title} row={row} />)}
-              </div>
-            </section>
-          ))}
+          {active === '操作' ? (
+            <ControlsSettingsView
+              rows={groups.操作[0].rows}
+              bindings={bindings}
+              openGroups={openBindingGroups}
+              listening={listening}
+              conflict={bindingConflict}
+              onToggleGroup={toggleBindingGroup}
+              onStartListening={startListening}
+              onBindingKeyDown={handleBindingKeyDown}
+              onResetBinding={resetBinding}
+            />
+          ) : (
+            groups[active].map((group) => (
+              <section className="settings-section" key={group.title}>
+                <header className="settings-section__title"><b>{group.title}</b><i /></header>
+                <div className="settings-section__rows">
+                  {group.rows.map((row) => <SettingsRowView key={row.title} row={row} />)}
+                </div>
+              </section>
+            ))
+          )}
         </div>
       </main>
 
@@ -221,6 +369,158 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
       </footer>
     </section>
   );
+}
+
+function ControlsSettingsView({
+  rows,
+  bindings,
+  openGroups,
+  listening,
+  conflict,
+  onToggleGroup,
+  onStartListening,
+  onBindingKeyDown,
+  onResetBinding,
+}: {
+  rows: SettingRow[];
+  bindings: Record<string, BindingValue>;
+  openGroups: string[];
+  listening: ListeningBinding;
+  conflict: BindingConflict;
+  onToggleGroup: (id: string) => void;
+  onStartListening: (id: string, slot: BindingSlot) => void;
+  onBindingKeyDown: (event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) => void;
+  onResetBinding: (id: string) => void;
+}) {
+  return (
+    <>
+      <section className="settings-section">
+        <header className="settings-section__title"><b>鼠标与镜头</b><i /></header>
+        <div className="settings-section__rows">
+          {rows.map((row) => <SettingsRowView key={row.title} row={row} />)}
+        </div>
+      </section>
+
+      <section className="settings-section settings-binding-section">
+        <header className="settings-section__title"><b>按键绑定</b><i /></header>
+        <div className="settings-binding-table-header" aria-hidden="true">
+          <span>操作</span>
+          <span>主要按键</span>
+          <span>次要按键</span>
+          <i />
+        </div>
+
+        <div className="settings-binding-groups">
+          {bindingGroups.map((group) => {
+            const open = openGroups.includes(group.id);
+            return (
+              <section className={`settings-binding-group ${open ? 'is-open' : ''}`} key={group.id}>
+                <button type="button" className="settings-binding-group__header" onClick={() => onToggleGroup(group.id)} aria-expanded={open}>
+                  <ChevronRight size={14} />
+                  <b>{group.title}</b>
+                  <span>{group.bindings.length} 项</span>
+                </button>
+
+                {open && (
+                  <div className="settings-binding-group__rows">
+                    {group.bindings.map((binding) => (
+                      <BindingRow
+                        key={binding.id}
+                        binding={binding}
+                        value={bindings[binding.id]}
+                        listening={listening}
+                        conflict={conflict}
+                        onStartListening={onStartListening}
+                        onKeyDown={onBindingKeyDown}
+                        onReset={onResetBinding}
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      </section>
+    </>
+  );
+}
+
+function BindingRow({
+  binding,
+  value,
+  listening,
+  conflict,
+  onStartListening,
+  onKeyDown,
+  onReset,
+}: {
+  binding: BindingItem;
+  value: BindingValue;
+  listening: ListeningBinding;
+  conflict: BindingConflict;
+  onStartListening: (id: string, slot: BindingSlot) => void;
+  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) => void;
+  onReset: (id: string) => void;
+}) {
+  const renderBindingButton = (slot: BindingSlot) => {
+    const isListening = listening?.id === binding.id && listening.slot === slot;
+    const isConflict = conflict?.id === binding.id && conflict.slot === slot;
+    const text = value?.[slot] ?? '';
+
+    return (
+      <button
+        type="button"
+        className={`settings-binding-cell ${slot === 'primary' ? 'settings-binding-cell--primary' : 'settings-binding-cell--secondary'} ${isListening ? 'is-listening' : ''} ${isConflict ? 'is-conflict' : ''} ${!text ? 'is-empty' : ''}`}
+        aria-label={`${binding.label}${slot === 'primary' ? '主要按键' : '次要按键'}：${text || '未设置'}`}
+        onClick={() => onStartListening(binding.id, slot)}
+        onKeyDown={(event) => onKeyDown(event, binding.id, slot)}
+      >
+        {isListening ? (
+          <span>按下新的按键…</span>
+        ) : text ? (
+          <kbd>{text}</kbd>
+        ) : (
+          <span className="settings-binding-cell__empty"><Plus size={12} />添加</span>
+        )}
+      </button>
+    );
+  };
+
+  const rowConflict = conflict?.id === binding.id ? `与“${conflict.owner}”冲突` : '';
+
+  return (
+    <div className={`settings-binding-row ${rowConflict ? 'has-conflict' : ''}`} title={binding.detail}>
+      <span className="settings-binding-row__label"><b>{binding.label}</b>{rowConflict && <small>{rowConflict}</small>}</span>
+      {renderBindingButton('primary')}
+      {renderBindingButton('secondary')}
+      <button type="button" className="settings-binding-row__reset" aria-label={`恢复${binding.label}默认按键`} onClick={() => onReset(binding.id)}>
+        <RotateCcw size={13} />
+      </button>
+    </div>
+  );
+}
+
+function formatBindingKey(event: KeyboardEvent<HTMLButtonElement>) {
+  const modifierOnly = ['Control', 'Shift', 'Alt', 'Meta'];
+  if (modifierOnly.includes(event.key)) return '';
+
+  const aliases: Record<string, string> = {
+    ' ': 'Space',
+    ArrowUp: '↑',
+    ArrowDown: '↓',
+    ArrowLeft: '←',
+    ArrowRight: '→',
+  };
+
+  const base = aliases[event.key] ?? (event.key.length === 1 ? event.key.toUpperCase() : event.key);
+  const parts: string[] = [];
+  if (event.ctrlKey) parts.push('Ctrl');
+  if (event.shiftKey) parts.push('Shift');
+  if (event.altKey) parts.push('Alt');
+  if (event.metaKey) parts.push('Meta');
+  parts.push(base);
+  return parts.join(' + ');
 }
 
 function SettingsRowView({ row }: { row: SettingRow }) {
@@ -246,7 +546,6 @@ function SettingsRowView({ row }: { row: SettingRow }) {
             <i />
           </button>
         )}
-        {row.kind === 'binding' && <div className="settings-binding">{row.keys?.map((key) => <kbd key={key}>{key}</kbd>)}</div>}
       </div>
     </div>
   );
