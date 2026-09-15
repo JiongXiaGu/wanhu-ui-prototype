@@ -21,6 +21,7 @@ import './fullscreen-actions.css';
 import './tools/building-placement/building-placement.css';
 import './gameplay/gameplay-context-unified.css';
 import './gameplay/operation-hints-refined.css';
+import './gameplay/advanced-parameter-panels.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
 
