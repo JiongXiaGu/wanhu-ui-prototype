@@ -14,6 +14,7 @@ import './gameplay/pause-layer.css';
 import './settings/settings-panel.css';
 import './settings/settings-bindings.css';
 import './settings/settings-safe-confirmation.css';
+import './fullscreen-actions.css';
 import './tools/building-placement/building-placement.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
