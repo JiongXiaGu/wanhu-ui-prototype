@@ -19,6 +19,7 @@ import './settings/settings-bindings.css';
 import './settings/settings-safe-confirmation.css';
 import './fullscreen-actions.css';
 import './tools/building-placement/building-placement.css';
+import './gameplay/gameplay-context-unified.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
 
