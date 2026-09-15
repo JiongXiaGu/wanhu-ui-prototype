@@ -4,11 +4,11 @@
    Bottom command systems are intentionally unchanged in this phase. */
 
 .gameplay-top-shell{
-  --top-nav-width:800px;
+  --top-nav-width:590px;
   position:absolute;
   left:50%;
   top:16px;
-  width:1040px;
+  width:940px;
   transform:translateX(-50%);
   z-index:42;
   display:flex;
@@ -17,24 +17,30 @@
   pointer-events:none;
 }
 
+/* Primary row: denser content, stronger readability, slightly brighter than the nav tray. */
 .gameplay-top-status{
+  position:relative;
   width:100%;
-  height:52px;
-  flex:0 0 52px;
+  height:56px;
+  flex:0 0 56px;
   display:flex;
   align-items:center;
   padding:0 10px;
   pointer-events:auto;
-  background:linear-gradient(180deg,rgba(27,35,31,.95),rgba(21,28,25,.93));
-  border:1px solid rgba(239,233,221,.16);
-  border-radius:14px;
-  box-shadow:0 14px 38px rgba(5,8,7,.23),inset 0 1px 0 rgba(255,255,255,.018);
+  background:
+    linear-gradient(180deg,rgba(31,40,36,.955),rgba(23,31,27,.94));
+  border:1px solid rgba(239,233,221,.15);
+  border-radius:11px;
+  box-shadow:
+    0 15px 38px rgba(5,8,7,.23),
+    inset 0 1px 0 rgba(255,255,255,.022),
+    inset 0 -1px 0 rgba(0,0,0,.16);
   backdrop-filter:blur(12px);
 }
-.gameplay-top-shell.has-navigation .gameplay-top-status{border-radius:14px 14px 8px 8px}
+.gameplay-top-shell.has-navigation .gameplay-top-status{border-radius:11px 11px 7px 7px}
 
 .gameplay-top-status__resources{
-  height:50px!important;
+  height:54px!important;
   min-width:0;
   padding:0!important;
   display:flex;
@@ -42,36 +48,44 @@
 }
 
 .gameplay-screen .gameplay-top-status__resources>span{
-  min-width:106px;
-  height:31px;
+  min-width:104px;
+  height:34px;
   padding:0 10px;
-  gap:7px;
+  gap:8px;
   color:#8f968e;
   border-right:1px solid rgba(239,233,221,.07);
 }
 .gameplay-screen .gameplay-top-status__resources>span:last-child{border-right:0}
-.gameplay-screen .gameplay-top-status__resources svg{opacity:.86;stroke-width:1.65}
-.gameplay-screen .gameplay-top-status__resources small{font-size:9px;letter-spacing:.018em}
+.gameplay-screen .gameplay-top-status__resources svg{
+  width:15px;
+  height:15px;
+  opacity:.88;
+  stroke-width:1.65;
+}
+.gameplay-screen .gameplay-top-status__resources small{
+  font-size:9.5px;
+  letter-spacing:.018em;
+}
 .gameplay-screen .gameplay-top-status__resources b{
   margin-left:auto;
-  color:#e0dbd0;
-  font-size:10px;
-  font-weight:520;
+  color:#e4dfd4;
+  font-size:11px;
+  font-weight:560;
   font-variant-numeric:tabular-nums;
 }
 
 .gameplay-top-status__separator{
   width:1px;
-  height:24px;
+  height:26px;
   flex:0 0 1px;
-  margin:0 8px;
-  background:rgba(239,233,221,.10);
+  margin:0 7px;
+  background:rgba(239,233,221,.095);
 }
-.gameplay-top-status__separator--tight{margin:0 5px}
+.gameplay-top-status__separator--tight{margin:0 4px}
 
 .gameplay-top-status__button,
 .gameplay-top-speed-button{
-  height:34px;
+  height:38px;
   border:0;
   border-radius:4px;
   background:transparent;
@@ -80,15 +94,15 @@
   transition:background .14s ease,color .14s ease,transform .08s ease;
 }
 .gameplay-top-status__button{
-  min-width:58px;
-  padding:0 9px;
+  min-width:54px;
+  padding:0 8px;
   display:flex;
   align-items:center;
   justify-content:center;
   gap:6px;
-  font-size:9px;
+  font-size:9.5px;
 }
-.gameplay-top-status__button svg{width:14px;height:14px;stroke-width:1.6}
+.gameplay-top-status__button svg{width:15px;height:15px;stroke-width:1.6}
 .gameplay-top-status__button:hover,
 .gameplay-top-speed-button:hover{background:rgba(255,255,255,.038);color:#cfccc3}
 .gameplay-top-status__button.is-active,
@@ -96,12 +110,12 @@
 .gameplay-top-status__button:active,
 .gameplay-top-speed-button:active{transform:translateY(1px)}
 
-.gameplay-top-status__weather{min-width:54px;color:#b7a266}
+.gameplay-top-status__weather{min-width:52px;color:#bba66a}
 .gameplay-top-status__clock{
-  min-width:76px;
-  padding:0 8px 0 5px;
-  color:#aaa99f;
-  font-size:9px;
+  min-width:74px;
+  padding:0 7px 0 4px;
+  color:#b3b1a7;
+  font-size:9.5px;
   font-variant-numeric:tabular-nums;
   letter-spacing:.035em;
   white-space:nowrap;
@@ -109,41 +123,41 @@
 
 .gameplay-top-status__speed{display:flex;align-items:center;gap:2px}
 .gameplay-top-speed-button{
-  width:34px;
-  min-width:34px;
+  width:36px;
+  min-width:36px;
   padding:0;
-  font-size:9px;
+  font-size:9.5px;
   display:grid;
   place-items:center;
 }
-.gameplay-top-speed-button svg{width:13px;height:13px;stroke-width:1.7}
+.gameplay-top-speed-button svg{width:14px;height:14px;stroke-width:1.7}
 
-/* The second row is deliberately narrower and icon-only, reading as an attached command tray. */
+/* Secondary row: deliberately compact, darker, and attached like a hanging command tray. */
 .gameplay-top-navigation{
   position:relative;
   width:var(--top-nav-width);
-  height:52px;
-  flex:0 0 52px;
+  height:40px;
+  flex:0 0 40px;
   margin-top:-1px;
-  padding:0 16px;
+  padding:0 10px;
   display:flex;
   align-items:stretch;
   justify-content:center;
   pointer-events:auto;
-  background:linear-gradient(180deg,rgba(24,32,28,.965),rgba(18,25,22,.955));
-  border:1px solid rgba(239,233,221,.13);
-  border-top-color:rgba(239,233,221,.08);
-  border-radius:0 0 13px 13px;
-  box-shadow:0 14px 34px rgba(5,8,7,.22),inset 0 1px 0 rgba(255,255,255,.01);
+  background:linear-gradient(180deg,rgba(22,30,26,.965),rgba(16,23,20,.96));
+  border:1px solid rgba(239,233,221,.115);
+  border-top-color:rgba(239,233,221,.065);
+  border-radius:0 0 9px 9px;
+  box-shadow:
+    0 12px 30px rgba(5,8,7,.20),
+    inset 0 1px 0 rgba(255,255,255,.008);
   backdrop-filter:blur(12px);
 }
 
 .gameplay-top-navigation>button{
   position:relative;
-  width:88px;
   flex:1 1 0;
-  min-width:72px;
-  max-width:96px;
+  min-width:0;
   padding:0;
   border:0;
   background:transparent;
@@ -153,30 +167,35 @@
   cursor:pointer;
   transition:background .14s ease,color .14s ease,transform .08s ease;
 }
-.gameplay-top-navigation>button svg{width:19px;height:19px;stroke-width:1.55;pointer-events:none}
-.gameplay-top-navigation>button:hover{background:rgba(255,255,255,.027);color:#c9c7be}
+.gameplay-top-navigation>button svg{
+  width:19px;
+  height:19px;
+  stroke-width:1.55;
+  pointer-events:none;
+}
+.gameplay-top-navigation>button:hover{background:rgba(255,255,255,.028);color:#c9c7be}
 .gameplay-top-navigation>button:active{transform:translateY(1px)}
 .gameplay-top-navigation>button.is-active{
   color:#dec17b;
-  background:linear-gradient(180deg,rgba(201,165,95,.105),rgba(201,165,95,.035));
+  background:linear-gradient(180deg,rgba(201,165,95,.10),rgba(201,165,95,.028));
 }
 .gameplay-top-navigation>button.is-active::after{
   content:'';
   position:absolute;
-  left:28%;
-  right:28%;
+  left:27%;
+  right:27%;
   bottom:-1px;
   height:2px;
   background:#c9a55f;
-  box-shadow:0 0 8px rgba(201,165,95,.22);
+  box-shadow:0 0 8px rgba(201,165,95,.20);
 }
 
-/* Text is intentionally moved to delayed hover tooltips instead of living in the row. */
+/* Text lives in delayed hover tooltips instead of occupying the navigation row. */
 .gameplay-top-navigation>button::before{
   content:attr(data-tooltip);
   position:absolute;
   left:50%;
-  top:calc(100% + 8px);
+  top:calc(100% + 7px);
   transform:translate(-50%,-3px);
   min-width:max-content;
   padding:6px 8px;
@@ -203,17 +222,17 @@
 
 .gameplay-top-navigation__separator{
   width:1px;
-  height:24px;
+  height:20px;
   align-self:center;
   flex:0 0 1px;
-  margin:0 5px;
-  background:rgba(239,233,221,.09);
+  margin:0 4px;
+  background:rgba(239,233,221,.085);
 }
-.gameplay-top-navigation__map{max-width:86px!important}
+.gameplay-top-navigation__map{max-width:none!important}
 .gameplay-top-navigation__dot{
   position:absolute;
-  right:16px;
-  top:11px;
+  right:10px;
+  top:8px;
   width:4px;
   height:4px;
   border-radius:50%;
@@ -274,8 +293,8 @@
 
 /* Management starts below the shared top shell and never repeats the first-level navigation. */
 .gameplay-screen--management .management-space__panel{
-  top:132px;
-  height:822px;
+  top:122px;
+  height:832px;
 }
 .gameplay-screen--management .management-space__header{
   height:64px;
@@ -288,11 +307,5 @@
 .gameplay-screen--management .management-space__heading h2{font-size:20px}
 .gameplay-screen--management .management-space__body{padding-top:20px}
 .gameplay-screen--management .gameplay-top-status{
-  box-shadow:0 16px 44px rgba(3,6,5,.32),inset 0 1px 0 rgba(255,255,255,.018);
-}
-
-@media (max-width:1500px){
-  .gameplay-top-shell{--top-nav-width:756px;width:960px}
-  .gameplay-screen .gameplay-top-status__resources>span{min-width:98px;padding:0 8px}
-  .gameplay-top-navigation>button{min-width:68px}
+  box-shadow:0 16px 44px rgba(3,6,5,.32),inset 0 1px 0 rgba(255,255,255,.02);
 }
