@@ -89,7 +89,7 @@ export function GameplayOperationHints({ toolActive, adjustmentMode }: Props) {
   const preset = toolActive ? toolPresets[adjustmentMode] : gameplayPreset;
   return (
     <aside className="gameplay-operation-hints" aria-label="当前操作提示">
-      <div className="operation-hints__task"><span>下一步</span><strong>{preset.task}</strong></div>
+      <div className="operation-hints__task"><strong>{preset.task}</strong></div>
       <div className="operation-hints__group">
         {preset.rows.slice(0, 8).map((row) => <HintRowView key={`${row.binding}-${row.description}`} row={row} />)}
       </div>
