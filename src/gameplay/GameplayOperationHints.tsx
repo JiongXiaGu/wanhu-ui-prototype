@@ -4,23 +4,23 @@ type HintRow = { binding: string; description: string; primary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
 
 const gameplayPreset: HintPreset = {
-  task: '移动镜头查看城市',
+  task: '操作提示',
   rows: [
-    { binding: '鼠标右键', description: '旋转相机', primary: true },
-    { binding: 'W / A / S / D', description: '移动镜头' },
-    { binding: '鼠标滚轮', description: '缩放相机' },
-    { binding: 'Esc', description: '打开菜单' },
+    { binding: '鼠标右键', description: '旋转', primary: true },
+    { binding: 'W / A / S / D', description: '移动' },
+    { binding: '鼠标滚轮', description: '缩放' },
+    { binding: 'Esc', description: '菜单' },
   ],
 };
 
 const toolPresets: Record<AdjustmentMode, HintPreset> = {
   position: {
-    task: '确定建筑起始位置',
+    task: '建筑放置',
     rows: [
       { binding: '鼠标左键', description: '确定位置', primary: true },
-      { binding: '鼠标右键', description: '旋转相机' },
+      { binding: '鼠标右键', description: '旋转镜头' },
       { binding: 'W / A / S / D', description: '移动镜头' },
-      { binding: '鼠标滚轮', description: '缩放相机' },
+      { binding: '鼠标滚轮', description: '缩放镜头' },
       { binding: 'R', description: '顺时针旋转' },
       { binding: 'Shift + R', description: '逆时针旋转' },
       { binding: 'Ctrl + Z', description: '撤销' },
@@ -28,10 +28,10 @@ const toolPresets: Record<AdjustmentMode, HintPreset> = {
     ],
   },
   massing: {
-    task: '调整建筑体量',
+    task: '体量调整',
     rows: [
       { binding: '鼠标左键', description: '确认调整', primary: true },
-      { binding: '鼠标右键', description: '旋转相机' },
+      { binding: '鼠标右键', description: '旋转镜头' },
       { binding: 'W / A / S / D', description: '移动镜头' },
       { binding: 'R', description: '顺时针旋转' },
       { binding: 'Shift + R', description: '逆时针旋转' },
@@ -40,10 +40,10 @@ const toolPresets: Record<AdjustmentMode, HintPreset> = {
     ],
   },
   roof: {
-    task: '调整屋顶形制',
+    task: '屋顶调整',
     rows: [
       { binding: '鼠标左键', description: '确认调整', primary: true },
-      { binding: '鼠标右键', description: '旋转相机' },
+      { binding: '鼠标右键', description: '旋转镜头' },
       { binding: 'W / A / S / D', description: '移动镜头' },
       { binding: 'R', description: '顺时针旋转' },
       { binding: 'Shift + R', description: '逆时针旋转' },
@@ -52,10 +52,10 @@ const toolPresets: Record<AdjustmentMode, HintPreset> = {
     ],
   },
   facade: {
-    task: '调整建筑立面',
+    task: '立面调整',
     rows: [
       { binding: '鼠标左键', description: '确认调整', primary: true },
-      { binding: '鼠标右键', description: '旋转相机' },
+      { binding: '鼠标右键', description: '旋转镜头' },
       { binding: 'W / A / S / D', description: '移动镜头' },
       { binding: 'Ctrl + Z', description: '撤销' },
       { binding: 'Esc', description: '取消调整' },
