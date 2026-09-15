@@ -37,29 +37,41 @@ Gameplay 内部不使用大量互相独立的 Modal 叠加，而是按任务职�
 
 Gameplay Top Shell 是顶部唯一主控制岛，由两层组成：
 
-1. **Persistent Status Row**：钱粮、人口、木材、石料、天气、时间、相机、速度和菜单；
-2. **Management Navigation Row**：纯图标的概况、户籍、财政、政策、商贸、治理、军务、图层入口。
+1. **Persistent Status Row**：左侧天气 / 时间，中间资源，右侧场景入口；
+2. **Control Tray**：左侧 Information Views，中间五个一级管理域，右侧时间控制。
+
+一级管理域收束为：
+
+`城市 / 经济 / 政策 / 军事 / 宫殿`
 
 此前独立的左侧 City Management Rail 与右上 Quick Controls 不再作为运行时结构显示。管理入口、Information Views 入口和轻量场景入口统一收束到顶部，减少左右两侧零散 UI 岛。
 
-Management Navigation Row 不常驻显示文字标签；中文名称由 Hover Tooltip 和 ARIA Label 提供。第二层宽度小于 Persistent Status Row，作为挂接在主状态栏下方的附属命令托盘。
+Control Tray 不常驻显示文字标签；中文名称由 Hover Tooltip 和 ARIA Label 提供。第二层宽度小于 Persistent Status Row，作为挂接在主状态栏下方的附属命令托盘。
 
 World Utility Toolbar 位于右下，是独立于 Main Dock 与 Operation Hints 的全局世界编辑工具条。它只承载跨分类、跨工具仍可能使用的世界级辅助能力，不承载“完成 / 取消 / 确认放置”等当前任务流程按钮。
 
 ### Management
 
-用于财政、户籍、政策、商贸、治理、军务等复杂城市系统。
-
-Management 是 **阻挡世界交互的中央大型管理空间**，不是 Right Edge Flyout。
+复杂城市系统进入**中央大型阻挡式 Management Space**，不是 Right Edge Flyout。
 
 组成：
 
 - Gameplay Top Shell 保留；
-- 顶部 Management Navigation Row 保留并负责系统切换；
+- 顶部 Control Tray 保留并负责一级系统切换；
 - 世界画面作为压暗 / 轻模糊背景；
 - 中央大型 Management Surface。
 
-Management Surface **不再重复概况 / 户籍 / 财政 / 政策 / 商贸 / 治理 / 军务一级导航**。一级系统切换只发生在 Gameplay Top Shell 的 Management Navigation Row；Management Surface 内部只允许当前系统自己的二级内容与局部 Tab。
+Management Surface **不重复一级管理导航**。一级系统切换只发生在 Gameplay Top Shell 的五个管理域；Management Surface 内部只允许当前系统自己的二级内容与局部 Tab。
+
+当前一级映射暂时为：
+
+- 城市 → 现有城市概况内容；
+- 经济 → 现有 Finance 内容；
+- 政策 → 现有 Policy 内容；
+- 军事 → 现有 Military 内容；
+- 宫殿 → 暂接现有 Governance 内容。
+
+这是当前导航重构阶段的临时映射。户籍、商贸、治理等内容不会删除，后续在对应一级域内部重新组织。
 
 进入 Management 后隐藏：
 
@@ -86,7 +98,7 @@ Management Surface **不再重复概况 / 户籍 / 财政 / 政策 / 商贸 / �
 
 进入 Workspace 后隐藏：
 
-- Management Navigation Row；
+- Control Tray；
 - Information View Palette。
 
 World Utility Toolbar 继续保留，因为网格、撤销 / 重做和其它世界级辅助能力属于全局编辑状态，不因为打开建筑目录而被重置。
@@ -105,7 +117,7 @@ World Utility Toolbar 继续保留，因为网格、撤销 / 重做和其它世�
 
 进入 Tool 后隐藏：
 
-- Management Navigation Row；
+- Control Tray；
 - Main Dock；
 - Information View Palette；
 - Management Space。
@@ -130,40 +142,36 @@ Gameplay Top Shell 是 Gameplay 内持续存在的顶部控制结构。
 
 ### Persistent Status Row
 
-常驻：
+第一层采用固定左右槽 + 真正居中的资源槽：
 
-- 钱粮；
-- 人口；
-- 木材；
-- 石料；
-- 天气；
-- 季节 / 时间；
-- Camera 入口；
-- 时间速度；
-- Pause / Menu 入口。
+- 左：天气状态、季节 / 时间；
+- 中：钱粮、人口、木材、石料；
+- 右：Camera、天气预留入口、Pause / Menu。
 
-天气状态本身同时承担 Weather Flyout 入口，不再另放一个重复的“天气”独立块。
+资源必须保持几何居中，不能因为左右按钮数量变化而偏移。
 
-### Management Navigation Row
+天气状态不再打开旧 Weather Adjustment Flyout。右侧天气按钮当前只保留玩家入口的位置与视觉语义，后续用于新的天气 / 天象系统；旧 Weather Adjustment Flyout 仅保留为原型参考状态，不作为 Normal Gameplay 的正式入口。
 
-只在 Normal Gameplay 与 Management Space 中显示以下入口：
+### Control Tray
 
-- 概况；
-- 户籍；
-- 财政；
-- 政策；
-- 商贸；
-- 治理；
-- 军务；
-- 图层。
+只在 Normal Gameplay 与 Management Space 中显示，按以下顺序分组：
+
+`Information Views │ 城市 / 经济 / 政策 / 军事 / 宫殿 │ 暂停 / ×1 / ×2 / ×4`
+
+语义固定为：
+
+- 左：观察城市；
+- 中：管理城市；
+- 右：控制模拟时间。
 
 正式视觉规则：
 
-- 常驻只显示图标，不显示“概况 / 户籍 / 财政”等文字；
+- 一级入口常驻只显示图标；
 - Hover 约 280～400 ms 后显示中文 Tooltip；
 - Selected 使用弱暖金 Tone 与底部细金线；
 - 图标入口保留明确 ARIA Label；
-- 第二层整体收窄并居中挂接在 Persistent Status Row 下方。
+- 第二层整体收窄并居中挂接在 Persistent Status Row 下方；
+- `speed` 支持 `0 / 1 / 2 / 4`，其中 `0` 是真正的模拟暂停状态。
 
 点击复杂管理系统直接进入对应 Management Space；如果已经处于 Management Space，则直接切换当前 Management View，不经过内部重复一级菜单。
 
@@ -221,16 +229,16 @@ Normal Gameplay 与 Workspace 保留 Main Dock；进入 Tool / Management 时隐
 
 Right Edge Flyout 只服务轻量、场景上下文相关的快速工具。
 
-当前：
+当前正式玩家入口：
 
-- Camera；
-- Weather。
+- Camera。
+
+旧 Weather Adjustment Flyout 暂时保留在原型和 Review Scenario 中作为历史参考，但 Normal Gameplay 天气按钮不再打开它。
 
 规则：
 
-- 入口位于 Gameplay Top Shell 的 Persistent Status Row；
+- Camera 入口位于 Gameplay Top Shell 的 Persistent Status Row；
 - Flyout 从屏幕右侧滑入；
-- Camera 与 Weather 互斥；
 - 不承载财政、政策、军务等复杂管理系统；
 - Flyout 是辅助空间，不升级为大型统计 / 管理 Workspace。
 
@@ -252,7 +260,7 @@ Information Views 属于“观察城市”，不属于“管理城市”。
 
 规则：
 
-- 从 Gameplay Top Shell 的图层图标入口打开轻量 Palette；
+- 从 Gameplay Top Shell Control Tray 最左侧的图层图标打开轻量 Palette；
 - Palette 在顶部导航下方出现，不再占用左侧独立工具栏；
 - 选择图层后 Palette 收起，主要变化发生在世界地图；
 - 与 Management Space、Workspace、Tool 互斥；
@@ -302,7 +310,7 @@ Settings 在 Main Menu 与 Pause 中复用同一组件和同一视觉系统。
 
 其它运行状态：
 
-- `speed`
+- `speed`：`0 / 1 / 2 / 4`；
 - `activeCategory`
 - `terrainMode`
 - `adjustmentMode`
@@ -325,7 +333,7 @@ else                      → Gameplay
 
 - 打开 Management → 关闭 Flyout、MapView，并退出 Workspace / Tool；
 - 进入 Workspace / Tool → Management 回到 `none`；
-- 打开 Camera / Weather → Management 回到 `none`，MapView 回默认；
+- 打开 Camera → Management 回到 `none`，MapView 回默认；
 - 打开非默认 MapView → Management 与 Flyout 关闭；
 - Pause → Management / Flyout / MapView 清理为安全状态。
 
@@ -408,15 +416,17 @@ Review Scenario 是测试入口，不是业务路由。
 Gameplay 至少持续覆盖：
 
 - Normal Gameplay 双层 Top Shell；
-- Management Navigation Row 不存在常驻文字标签；
-- 第二层图标导航宽度小于第一层 Persistent Status Row；
+- 第一层资源几何居中；
+- 第二层顺序固定为 `图层 / 五个管理域 / 时间控制`；
+- 一级管理域只显示五个纯图标入口；
+- 天气按钮不得打开旧 Weather Adjustment Flyout；
+- 暂停时间使用 `speed = 0`；
 - Normal Gameplay 右下存在 World Utility Toolbar，且不与 Main Dock / Operation Hints 重叠；
 - 网格吸附状态从 Gameplay 进入 Building Placement 后保持；
 - Workspace 保留 World Utility Toolbar；
 - Building Placement 保留 World Utility Toolbar，并且不再出现局部 Grid / Undo 副本；
-- Finance Management Space + 顶部一级导航；
-- 一个非 Finance 的 Management View；
+- Economy / Policy Management Space + 顶部一级导航；
 - Management Surface 内不存在重复一级 Tab；
-- Information Views 从顶部图层入口展开；
+- Information Views 从第二层最左侧图层入口展开；
 - Workspace 只保留顶部 Persistent Status Row；
 - Building Placement 只保留顶部 Persistent Status Row，且 Main Dock 隐藏。

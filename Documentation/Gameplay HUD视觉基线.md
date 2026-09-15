@@ -4,7 +4,7 @@ Gameplay HUD 的目标是让世界画面始终成为主体，同时让不同操�
 
 ## 空间职责
 
-- Gameplay Top Shell：城市持续状态、城市管理入口、信息视图入口；
+- Gameplay Top Shell：城市持续状态、城市管理入口、信息视图入口与时间控制；
 - Main Dock：回答“我要建造什么”，只承载建造 / 内容分类；
 - World Utility Toolbar：回答“我要如何编辑世界”，承载跨分类、跨 Tool 仍然成立的世界级工具；
 - Operation Hints：只显示当前输入提示，不承担可点击操作；
@@ -16,21 +16,41 @@ World Utility Toolbar 与 Operation Hints 在空间上右对齐，但保持独�
 
 Gameplay 外围 HUD 使用统一安全边距：
 
-- 左 / 右 / 下：`24px`；
+- 左 / 右 / 下：`16px`；
 - 顶部 Top Shell：`16px`；
 - 相邻独立 HUD 模块常用间距：`12px`；
 - Main Dock 与 World Utility Toolbar 在 1920×1080 下保持约 `16px` 的水平间隔。
 
 Main Dock、Top Shell、Management Space 等核心操作结构跟随视觉中心；World Utility Toolbar、Operation Hints 等外围工具跟随 Viewport 边缘。超宽屏中外围工具允许移动到更外侧，不强制贴近视觉中心。
 
-代码中的外围几何统一由 `src/gameplay/gameplay-hud-layout.css` 管理，组件 CSS 只维护内部排版和视觉状态，避免各组件自行维护 `18 / 20 / 22 / 24px` 等近似边距。
+代码中的外围几何统一由 `src/gameplay/gameplay-hud-layout.css` 管理，组件 CSS 只维护内部排版和视觉状态，避免各组件自行维护近似边距。
+
+## Gameplay Top Shell
+
+Top Shell 保持两层，但职责重新拆分。
+
+第一层 **Status Row**：
+
+- 左：天气状态 + 季节 / 时间；
+- 中：钱粮 / 人口 / 木材 / 石料，必须保持几何居中；
+- 右：相机 / 天气预留入口 / 菜单。
+
+天气状态不再打开旧的 Weather Adjustment Flyout。右侧天气入口暂时只保留位置与视觉语义，后续接入新的天气 / 天象用途。
+
+第二层 **Control Tray** 按 `观察 / 管理 / 时间` 排列：
+
+- 左：信息视图 / 图层；
+- 中：城市 / 经济 / 政策 / 军事 / 宫殿；
+- 右：暂停 / ×1 / ×2 / ×4。
+
+一级管理导航继续使用纯图标，名称进入 Hover Tooltip / ARIA Label。现有 Management Space 内容暂不因一级分类缩并而大改；当前“经济”继续进入 Finance，“宫殿”暂接现有 Governance 内容，后续再重构内部信息架构。
 
 ## Surface 层级
 
 HUD 不通过增加装饰来制造层级，而通过 Surface 重量区分职责：
 
 1. **Primary Surface**：Top Status Row、Main Dock。背景最实、边界与阴影最清晰；
-2. **Secondary Surface**：Management Navigation Row、World Utility Toolbar、Tool Bottom Dock。比 Primary 更轻；
+2. **Secondary Surface**：Top Control Tray、World Utility Toolbar、Tool Bottom Dock。比 Primary 更轻；
 3. **Tertiary Surface**：Operation Hints。透明度最高、几乎无阴影，明确是只读辅助信息。
 
 暖金只用于 Selected / Toggle On / Focus，不让所有边框、图标和标题同时发金。

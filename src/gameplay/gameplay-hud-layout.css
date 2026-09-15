@@ -3,7 +3,7 @@
    1920x1080 is the design canvas. Viewport-anchored utilities keep the safe edge on ultrawide screens. */
 
 .gameplay-screen{
-  --hud-edge:24px;
+  --hud-edge:16px;
   --hud-top-edge:16px;
   --hud-gap-xs:4px;
   --hud-gap-sm:8px;
@@ -11,14 +11,12 @@
   --hud-gap-lg:16px;
   --hud-core-width:940px;
   --hud-command-height:82px;
-  --hud-world-tools-width:450px;
+  --hud-world-tools-width:458px;
   --hud-world-tools-height:58px;
 }
 
-/* Core HUD stays centered. */
-.gameplay-screen .gameplay-top-shell{
-  top:var(--hud-top-edge);
-}
+/* Core HUD stays centered on the gameplay composition. */
+.gameplay-screen .gameplay-top-shell{top:var(--hud-top-edge)}
 
 .gameplay-screen .command-bar{
   width:var(--hud-core-width);
@@ -43,7 +41,7 @@
   bottom:calc(var(--hud-edge) + var(--hud-command-height) + var(--hud-gap-md));
 }
 
-/* Tool surfaces share the same outer safe margin instead of maintaining local 18/20/22px variants. */
+/* Tool surfaces share the same outer safe margin instead of local 18/20/22/24px variants. */
 .gameplay-screen .tool-overlay.building-placement-prototype{
   left:var(--hud-edge);
   bottom:var(--hud-edge);

@@ -8,7 +8,7 @@ export type TerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
 export type PauseView = 'menu' | 'save' | 'settings';
-export type Speed = 1 | 2 | 4;
+export type Speed = 0 | 1 | 2 | 4;
 
 export interface GameplayUiState {
   workspace: Workspace;

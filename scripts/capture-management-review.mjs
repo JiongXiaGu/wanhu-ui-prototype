@@ -22,21 +22,37 @@ if (!topShellBox) throw new Error('Unified gameplay top shell must be visible.')
 const topShellCenter = topShellBox.x + topShellBox.width / 2;
 if (Math.abs(topShellCenter - 960) > 2) throw new Error(`Top shell must be centered. center=${topShellCenter.toFixed(1)}`);
 if (topShellBox.x < 0 || topShellBox.x + topShellBox.width > 1920) throw new Error('Top shell must not be clipped.');
-if (topShellBox.height < 92 || topShellBox.height > 100) throw new Error(`Normal gameplay top shell must keep the compact 56+40 proportion. height=${topShellBox.height}`);
+if (topShellBox.height < 95 || topShellBox.height > 101) throw new Error(`Normal gameplay top shell must keep the compact 56+42 proportion. height=${topShellBox.height}`);
 if ((await page.locator('.city-management-rail').count()) !== 0) throw new Error('Legacy left Management Rail must not be rendered.');
 if ((await page.locator('.quick-controls').count()) !== 0) throw new Error('Legacy standalone Quick Controls must not be rendered.');
-if ((await page.locator('.gameplay-top-navigation > button > span').count()) !== 0) throw new Error('Top management navigation must be icon-only with no persistent text labels.');
+
 const statusBox = await page.locator('.gameplay-top-status').boundingBox();
+const resourceBox = await page.locator('.gameplay-top-status__resources').boundingBox();
 const navBox = await page.locator('.gameplay-top-navigation').boundingBox();
-if (!statusBox || !navBox) throw new Error('Both top shell rows must be visible.');
+if (!statusBox || !resourceBox || !navBox) throw new Error('Both top shell rows and centered resources must be visible.');
 if (statusBox.width < 920 || statusBox.width > 960) throw new Error(`Persistent status row must stay near the 940px baseline. width=${statusBox.width}`);
 if (statusBox.height < 54 || statusBox.height > 58) throw new Error(`Persistent status row must stay near the 56px baseline. height=${statusBox.height}`);
-if (navBox.width < 570 || navBox.width > 610) throw new Error(`Icon navigation tray must stay near the 590px baseline. width=${navBox.width}`);
-if (navBox.height < 38 || navBox.height > 42) throw new Error(`Icon navigation tray must stay near the 40px baseline. height=${navBox.height}`);
+if (Math.abs((resourceBox.x + resourceBox.width / 2) - 960) > 2) throw new Error('Resources must remain visually centered in the status row.');
+if (navBox.width < 630 || navBox.width > 670) throw new Error(`Control tray must stay near the 650px baseline. width=${navBox.width}`);
+if (navBox.height < 40 || navBox.height > 44) throw new Error(`Control tray must stay near the 42px baseline. height=${navBox.height}`);
 const navRatio = navBox.width / statusBox.width;
-if (navRatio < .60 || navRatio > .66) throw new Error(`Navigation tray must read as a clearly narrower child of the status row. ratio=${navRatio.toFixed(3)}`);
-const firstNavIcon = await page.locator('.gameplay-top-navigation > button svg').first().boundingBox();
+if (navRatio < .66 || navRatio > .72) throw new Error(`Control tray must remain a narrower child of the status row. ratio=${navRatio.toFixed(3)}`);
+if ((await page.locator('.gameplay-top-navigation__management > button').count()) !== 5) throw new Error('Top management must expose exactly five primary domains.');
+if ((await page.locator('.gameplay-top-navigation__management > button > span').count()) !== 0) throw new Error('Primary management navigation must remain icon-only.');
+const firstNavIcon = await page.locator('.gameplay-top-navigation__button svg').first().boundingBox();
 if (!firstNavIcon || firstNavIcon.width < 18 || firstNavIcon.width > 21) throw new Error('Top navigation icons must remain readable at roughly 18-20px.');
+const viewBox = await page.locator('.gameplay-top-navigation__view').boundingBox();
+const managementNavBox = await page.locator('.gameplay-top-navigation__management').boundingBox();
+const timeBox = await page.locator('.gameplay-top-navigation__time').boundingBox();
+if (!viewBox || !managementNavBox || !timeBox) throw new Error('View, management and simulation groups must all exist in the second row.');
+if (!(viewBox.x < managementNavBox.x && managementNavBox.x < timeBox.x)) throw new Error('Second-row order must be View -> Management -> Simulation.');
+
+// Weather is now only a reserved player-facing entry; it must not open the old adjustment flyout.
+await page.getByRole('button', { name: '天气', exact: true }).click();
+if ((await page.locator('.right-edge-flyout--weather').count()) !== 0) throw new Error('Weather button must not open the legacy weather adjustment flyout.');
+await page.getByRole('button', { name: '暂停时间', exact: true }).click();
+if (!(await page.getByRole('button', { name: '暂停时间', exact: true }).getAttribute('class'))?.includes('is-active')) throw new Error('Simulation pause must be a real speed state.');
+await page.getByRole('button', { name: '1 倍速', exact: true }).click();
 
 const worldTools = page.locator('.world-utility-toolbar');
 if ((await worldTools.count()) !== 1) throw new Error('Normal Gameplay must show one persistent World Utility Toolbar.');
@@ -44,14 +60,14 @@ const worldToolsBox = await worldTools.boundingBox();
 const commandBox = await page.locator('.command-bar').boundingBox();
 const hintsBox = await page.locator('.gameplay-operation-hints').boundingBox();
 if (!worldToolsBox || !commandBox || !hintsBox) throw new Error('Gameplay bottom modules must all be measurable.');
-if (Math.abs((1920 - (worldToolsBox.x + worldToolsBox.width)) - 24) > 2) throw new Error('World Utility Toolbar must keep the 24px right safe edge.');
-if (Math.abs((1080 - (worldToolsBox.y + worldToolsBox.height)) - 24) > 2) throw new Error('World Utility Toolbar must keep the 24px bottom safe edge.');
+if (Math.abs((1920 - (worldToolsBox.x + worldToolsBox.width)) - 16) > 2) throw new Error('World Utility Toolbar must keep the 16px right safe edge.');
+if (Math.abs((1080 - (worldToolsBox.y + worldToolsBox.height)) - 16) > 2) throw new Error('World Utility Toolbar must keep the 16px bottom safe edge.');
 if (worldToolsBox.height < 56 || worldToolsBox.height > 60) throw new Error(`World Utility Toolbar must stay near the 58px action height. height=${worldToolsBox.height}`);
 if (Math.abs((commandBox.x + commandBox.width / 2) - 960) > 2) throw new Error('Main Dock must remain centered.');
 if (commandBox.width < 920 || commandBox.width > 960) throw new Error(`Main Dock must stay near the shared 940px core width. width=${commandBox.width}`);
 const dockUtilityGap = worldToolsBox.x - (commandBox.x + commandBox.width);
-if (dockUtilityGap < 10 || dockUtilityGap > 22) throw new Error(`Main Dock and World Utility Toolbar should keep a small intentional gap. gap=${dockUtilityGap}`);
-if (Math.abs((1920 - (hintsBox.x + hintsBox.width)) - 24) > 2) throw new Error('Operation Hints must align to the same 24px right safe edge.');
+if (dockUtilityGap < 12 || dockUtilityGap > 20) throw new Error(`Main Dock and World Utility Toolbar should keep a small intentional gap. gap=${dockUtilityGap}`);
+if (Math.abs((1920 - (hintsBox.x + hintsBox.width)) - 16) > 2) throw new Error('Operation Hints must align to the same 16px right safe edge.');
 const utilityHintGap = worldToolsBox.y - (hintsBox.y + hintsBox.height);
 if (utilityHintGap < 10 || utilityHintGap > 14) throw new Error(`Operation Hints must remain 12px above World Utility Toolbar. gap=${utilityHintGap}`);
 const firstWorldToolIcon = await worldTools.locator('.world-utility-toolbar__button svg').first().boundingBox();
@@ -78,8 +94,8 @@ if ((await page.locator('.placement-utility-strip').count()) !== 0) throw new Er
 
 await open('gameplay', '.gameplay-top-navigation');
 
-// Complex management systems stay blocking, while the shared icon navigation remains available.
-await page.getByRole('button', { name: '财政税赋', exact: true }).click();
+// Complex management systems stay blocking, while the shared five-domain navigation remains available.
+await page.getByRole('button', { name: '经济', exact: true }).click();
 await page.waitForSelector('.management-space--finance');
 await page.waitForTimeout(140);
 if ((await page.locator('.gameplay-top-navigation').count()) !== 1) throw new Error('Top management navigation must remain visible in Management Space.');
@@ -90,13 +106,12 @@ for (const selector of ['.command-bar', '.world-utility-toolbar', '.gameplay-ope
 const managementBox = await page.locator('.management-space__panel').boundingBox();
 if (!managementBox) throw new Error('Management Space panel must be visible.');
 if (managementBox.width < 1200 || managementBox.height < 700) throw new Error('Management Space must remain a large central workspace.');
-if (managementBox.x < 0 || managementBox.y < 116 || managementBox.x + managementBox.width > 1920 || managementBox.y + managementBox.height > 1080) {
+if (managementBox.x < 0 || managementBox.y < 118 || managementBox.x + managementBox.width > 1920 || managementBox.y + managementBox.height > 1080) {
   throw new Error('Management Space must fit below the unified top shell inside the 1920x1080 canvas.');
 }
 await page.screenshot({ path: `${outDir}/02b-finance-top-navigation.png` });
 
-// Switching systems happens through the shared top icon row, not through duplicate tabs inside the panel.
-await page.getByRole('button', { name: '政令政策', exact: true }).click();
+await page.getByRole('button', { name: '政策', exact: true }).click();
 await page.waitForSelector('.management-space--policy');
 await page.waitForTimeout(100);
 await page.screenshot({ path: `${outDir}/02b2-policy-top-navigation.png` });
@@ -104,7 +119,7 @@ await page.keyboard.press('Escape');
 await page.waitForSelector('.management-space', { state: 'detached' });
 await page.waitForSelector('.gameplay-top-navigation');
 
-// Information views still open below the same top navigation system.
+// Information views now own the left edge of the control tray.
 await page.getByRole('button', { name: '信息视图', exact: true }).click();
 await page.waitForSelector('.gameplay-top-map-panel');
 await page.waitForTimeout(100);
@@ -115,16 +130,16 @@ await page.waitForTimeout(160);
 if ((await page.locator('.gameplay-top-map-panel').count()) !== 0) throw new Error('Information View palette should collapse after choosing a map layer.');
 await page.screenshot({ path: `${outDir}/02d-land-value-view.png` });
 
-// Workspace and Tool keep global world utilities while task-specific navigation changes.
+// Workspace and Tool keep global world utilities while the secondary top control tray is hidden.
 await open('workspace-building', '.workspace');
 if ((await page.locator('.gameplay-top-shell').count()) !== 1) throw new Error('Workspace must retain the persistent top status shell.');
-if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Management navigation must be hidden in Building Workspace.');
+if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Secondary top control tray must be hidden in Building Workspace.');
 if ((await page.locator('.command-bar').count()) !== 1) throw new Error('Building Workspace must retain the Main Dock.');
 if ((await page.locator('.world-utility-toolbar').count()) !== 1) throw new Error('Building Workspace must retain global world utilities.');
 
 await open('building-position', '.tool-overlay');
 if ((await page.locator('.gameplay-top-shell').count()) !== 1) throw new Error('Building Placement must retain the persistent top status shell.');
-if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Management navigation must be hidden while Building Placement is active.');
+if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Secondary top control tray must be hidden while Building Placement is active.');
 if ((await page.locator('.command-bar').count()) !== 0) throw new Error('Main Dock must be hidden while Building Placement is active.');
 if ((await page.locator('.building-placement-toolbar-cluster').count()) !== 1) throw new Error('Building Placement must use its dedicated primary tool toolbar.');
 if ((await page.locator('.world-utility-toolbar').count()) !== 1) throw new Error('Building Placement must retain the global World Utility Toolbar.');
