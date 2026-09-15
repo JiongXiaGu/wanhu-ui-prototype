@@ -1,4 +1,4 @@
-import { FolderOpen, LogOut, Play, Plus, Settings, X } from 'lucide-react';
+import { FolderOpen, LogOut, Play, Plus, Settings } from 'lucide-react';
 
 const menuItems = [
   { key: 'continue', title: '继续游戏', meta: '昭平城 · 第十二年秋', detail: '继续最近一次昭平城存档。', icon: Play },
@@ -12,12 +12,10 @@ export type MainMenuAction = typeof menuItems[number]['key'];
 
 interface MainMenuProps {
   background: string;
-  exitNotice: boolean;
   onAction: (action: MainMenuAction) => void;
-  onCloseNotice: () => void;
 }
 
-export function MainMenu({ background, exitNotice, onAction, onCloseNotice }: MainMenuProps) {
+export function MainMenu({ background, onAction }: MainMenuProps) {
   return (
     <section className="screen main-menu-screen" style={{ backgroundImage: `url(${background})` }}>
       <div className="main-menu-shade" />
@@ -38,13 +36,6 @@ export function MainMenu({ background, exitNotice, onAction, onCloseNotice }: Ma
           );
         })}
       </nav>
-
-      {exitNotice && (
-        <div className="toast">
-          原型环境不会真正退出程序。
-          <button onClick={onCloseNotice} aria-label="关闭提示"><X size={14} /></button>
-        </div>
-      )}
     </section>
   );
 }
