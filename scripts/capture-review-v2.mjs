@@ -32,13 +32,22 @@ const staticScenarios = [
   ['13-pause-save.png', 'pause-save', '.save-game-space'],
   ['14-pause-settings.png', 'pause-settings', '.settings-panel--pause'],
   ['15-menu-load.png', 'load', '.archive-space--load'],
-  ['16-new-game.png', 'new-game', '.flow-frame'],
+  ['16-new-game.png', 'new-game', '.new-game-space'],
 ];
 
 for (const [file, review, waitFor] of staticScenarios) {
   await open(review, waitFor);
   await page.screenshot({ path: `${outDir}/${file}` });
 }
+
+// New Game: random-map state gets its own review frame.
+await open('new-game', '.new-game-space');
+await page.getByRole('button', { name: '随机地图', exact: true }).click();
+const randomMapCard = page.locator('.new-game-map-card[data-map-kind="random"]').first();
+await randomMapCard.click();
+if (!(await randomMapCard.getAttribute('class'))?.includes('is-selected')) throw new Error('Random map card should become selected.');
+if ((await page.locator('.new-game-detail__header h2').textContent())?.trim() !== '随机世界') throw new Error('Random map details should be visible.');
+await page.screenshot({ path: `${outDir}/16b-new-game-random.png` });
 
 // Main-menu exit confirmation.
 await open('menu', '.main-menu-screen');
