@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Milestone, Mountain, Waves } from 'lucide-react';
-import { ArchivePanel } from './archive/ArchivePanel';
+import { LoadGameSpace } from './archive/LoadGameSpace';
 import { resolveReviewBootstrap } from './app/scenarios';
 import type { Screen } from './app/ui-state';
 import { GameplayScreen } from './gameplay/GameplayScreen';
@@ -89,7 +89,7 @@ export default function App() {
 
         {screen === 'load' && (
           <FlowBackdrop background={MAIN_BG}>
-            <ArchivePanel mode="load" context="menu" onBack={() => setScreen('menu')} onLoad={enterGame} />
+            <LoadGameSpace context="menu" onBack={() => setScreen('menu')} onLoad={enterGame} />
           </FlowBackdrop>
         )}
 
