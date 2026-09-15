@@ -172,7 +172,7 @@ const groups: Record<Category, SettingGroup[]> = {
         { id: 'invert-vertical', title: '垂直反转', detail: '反转垂直镜头输入方向。', kind: 'toggle', defaultValue: false },
         { id: 'invert-scroll', title: '滚轮反转', detail: '反转滚轮缩放方向。', kind: 'toggle', defaultValue: false },
         { id: 'keyboard-move-speed', title: '键盘移动速度', detail: '调整使用键盘平移世界相机的速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
-        { id: 'keyboard-yaw-speed', title: '键盘旋转速度', detail: '调整使用键盘旋转世界相机的速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
+        { id: 'keyboard-rotate-speed', title: '键盘旋转速度', detail: '调整使用键盘旋转世界相机的速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
         { id: 'edge-scroll', title: '屏幕边缘滚动', detail: '鼠标接近屏幕边缘时移动世界相机。', kind: 'toggle', defaultValue: true },
         { id: 'edge-scroll-speed', title: '边缘滚动速度', detail: '调整屏幕边缘滚动的相机移动速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
       ],
@@ -189,10 +189,10 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '游戏体验',
       rows: [
-        { id: 'tutorial', title: '显示营造教程', detail: '显示第一次使用营造系统时的教学内容。', kind: 'toggle', defaultValue: true },
+        { id: 'construction-tutorial', title: '显示营造教程', detail: '显示第一次使用营造系统时的教学内容。', kind: 'toggle', defaultValue: true },
         { id: 'operation-hints', title: '操作提示', detail: '显示当前工具的操作方式与快捷键。', kind: 'toggle', defaultValue: true },
-        { id: 'confirm-dangerous', title: '重要操作二次确认', detail: '拆除建筑或覆盖存档前进行二次确认。', kind: 'toggle', defaultValue: true },
-        { id: 'resident-story-hints', title: '居民故事提示', detail: '调整居民出现可交互事件时的提示详细程度。', kind: 'select', defaultValue: '完整', options: ['关闭', '简要', '完整'] },
+        { id: 'danger-confirmation', title: '重要操作二次确认', detail: '拆除建筑或覆盖存档前进行二次确认。', kind: 'toggle', defaultValue: true },
+        { id: 'resident-story-hints', title: '居民故事提示', detail: '调整居民出现可交互事件时的提示详细程度。', kind: 'select', defaultValue: '完整', options: ['关闭', '简洁', '完整'] },
         { id: 'auto-pause-events', title: '重要事件自动暂停', detail: '发生高优先级城市事件时自动暂停模拟。', kind: 'toggle', defaultValue: true },
       ],
     },
@@ -426,7 +426,6 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
   return (
     <section className={`settings-space settings-panel--${context}`} data-active={active} aria-label="游戏设置">
       <header className="global-space-header settings-space__header">
-        <button type="button" className="global-space-back" onClick={onClose}><ChevronLeft size={16} />返回</button>
         <div className="global-space-heading"><h1>游戏设置</h1></div>
       </header>
 
@@ -475,8 +474,12 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
         </div>
       </main>
 
-      <footer className="global-space-footer settings-space__footer settings-space__footer--autosave">
-        <button type="button" className="settings-restore" onClick={restoreCurrentCategory}><RotateCcw size={14} />恢复当前分类默认值</button>
+      <footer className="global-space-footer settings-space__footer settings-space__footer--autosave" aria-label="页面操作">
+        <div className="settings-space__footer-left">
+          <button type="button" className="global-space-secondary settings-footer-back" onClick={onClose}><ChevronLeft size={14} />返回</button>
+          <button type="button" className="settings-restore" onClick={restoreCurrentCategory}><RotateCcw size={14} />恢复当前分类默认值</button>
+        </div>
+        <div className="settings-space__footer-right" aria-hidden="true" />
       </footer>
 
       {safeConfirmation && (
@@ -520,7 +523,19 @@ function SafeDisplayConfirmation({ confirmation, seconds, onRollback, onKeep }: 
   );
 }
 
-function ControlsSettingsView({ rows, values, bindings, openGroups, listening, conflict, onChange, onToggleGroup, onStartListening, onBindingKeyDown, onResetBinding }: {
+function ControlsSettingsView({
+  rows,
+  values,
+  bindings,
+  openGroups,
+  listening,
+  conflict,
+  onChange,
+  onToggleGroup,
+  onStartListening,
+  onBindingKeyDown,
+  onResetBinding,
+}: {
   rows: SettingRow[];
   values: Record<string, SettingValue>;
   bindings: Record<string, BindingValue>;
@@ -538,15 +553,7 @@ function ControlsSettingsView({ rows, values, bindings, openGroups, listening, c
       <section className="settings-section">
         <header className="settings-section__title"><b>鼠标与镜头</b><i /></header>
         <div className="settings-section__rows">
-          {rows.map((row) => (
-            <SettingsRowView
-              key={row.id}
-              row={row}
-              value={values[row.id]}
-              disabled={isSettingDisabled(row.id, values)}
-              onChange={(value) => onChange(row, value)}
-            />
-          ))}
+          {rows.map((row) => <SettingsRowView key={row.id} row={row} value={values[row.id]} disabled={isSettingDisabled(row.id, values)} onChange={(value) => onChange(row, value)} />)}
         </div>
       </section>
 
@@ -621,15 +628,10 @@ function SliderControl({ row, value, disabled, onChange }: { row: SettingRow; va
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (disabled) return;
     const scale = event.shiftKey ? 10 : 1;
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
-      event.preventDefault(); onChange(quantize(value - step * scale));
-    } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
-      event.preventDefault(); onChange(quantize(value + step * scale));
-    } else if (event.key === 'Home') {
-      event.preventDefault(); onChange(min);
-    } else if (event.key === 'End') {
-      event.preventDefault(); onChange(max);
-    }
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') { event.preventDefault(); onChange(quantize(value - step * scale)); }
+    else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') { event.preventDefault(); onChange(quantize(value + step * scale)); }
+    else if (event.key === 'Home') { event.preventDefault(); onChange(min); }
+    else if (event.key === 'End') { event.preventDefault(); onChange(max); }
   }
 
   return (
@@ -651,9 +653,7 @@ function SelectControl({ row, value, disabled, onChange }: { row: SettingRow; va
 
   useEffect(() => {
     if (!open) return;
-    const handleOutside = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
-    };
+    const handleOutside = (event: PointerEvent) => { if (!rootRef.current?.contains(event.target as Node)) setOpen(false); };
     document.addEventListener('pointerdown', handleOutside);
     return () => document.removeEventListener('pointerdown', handleOutside);
   }, [open]);
@@ -667,26 +667,16 @@ function SelectControl({ row, value, disabled, onChange }: { row: SettingRow; va
     setOpen(true);
   }
 
-  function choose(next: string) {
-    onChange(next);
-    setOpen(false);
-  }
+  function choose(next: string) { onChange(next); setOpen(false); }
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (disabled) return;
-    if (!open && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ')) {
-      event.preventDefault(); openMenu(); return;
-    }
+    if (!open && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openMenu(); return; }
     if (!open) return;
-    if (event.key === 'Escape') {
-      event.preventDefault(); event.stopPropagation(); setOpen(false);
-    } else if (event.key === 'ArrowDown') {
-      event.preventDefault(); setHighlighted((current) => (current + 1) % options.length);
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault(); setHighlighted((current) => (current - 1 + options.length) % options.length);
-    } else if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault(); choose(options[highlighted]);
-    }
+    if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
+    else if (event.key === 'ArrowDown') { event.preventDefault(); setHighlighted((current) => (current + 1) % options.length); }
+    else if (event.key === 'ArrowUp') { event.preventDefault(); setHighlighted((current) => (current - 1 + options.length) % options.length); }
+    else if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(options[highlighted]); }
   }
 
   return (
