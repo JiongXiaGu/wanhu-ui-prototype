@@ -185,6 +185,9 @@ function InputDialogView({ request, onDismiss }: { request: InputDialogRequest; 
   useEffect(() => {
     inputRef.current?.focus();
     inputRef.current?.select();
+  }, [request.id]);
+
+  useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); request.onCancel?.(); onDismiss(); }
       else if (event.key === 'Enter' && canConfirm) { event.preventDefault(); event.stopPropagation(); request.onConfirm(value.trim()); onDismiss(); }
