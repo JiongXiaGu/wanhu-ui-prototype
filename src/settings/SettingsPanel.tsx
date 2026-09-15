@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import {
   Check,
   ChevronDown,
@@ -23,13 +23,20 @@ interface SettingsPanelProps {
 
 type Category = '显示' | '图形' | '音频' | '操作' | '游戏';
 type SettingKind = 'select' | 'slider' | 'toggle';
+type SettingValue = string | number | boolean;
+type SliderFormat = 'percent' | 'decimal2' | 'integer';
 
 type SettingRow = {
+  id: string;
   title: string;
   detail: string;
-  value: string;
   kind: SettingKind;
-  pct?: number;
+  defaultValue: SettingValue;
+  options?: string[];
+  min?: number;
+  max?: number;
+  step?: number;
+  format?: SliderFormat;
 };
 
 type SettingGroup = {
@@ -68,20 +75,20 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '显示输出',
       rows: [
-        { title: '显示模式', detail: '选择独占全屏、无边框全屏或窗口模式。', value: '无边框全屏', kind: 'select' },
-        { title: '显示器', detail: '选择游戏输出到的显示设备。', value: '显示器 1', kind: 'select' },
-        { title: '分辨率', detail: '设置游戏最终输出分辨率。', value: '3840 × 2160', kind: 'select' },
-        { title: '屏幕刷新率', detail: '选择当前显示器使用的刷新率。', value: '165 Hz', kind: 'select' },
-        { title: 'HDR 输出', detail: '需要系统与显示设备同时支持 HDR。', value: '开启', kind: 'toggle' },
-        { title: '垂直同步', detail: '将游戏帧输出与显示器刷新率同步。', value: '开启', kind: 'toggle' },
-        { title: '帧率限制', detail: '限制游戏最大输出帧率。', value: '120 FPS', kind: 'select' },
+        { id: 'display-mode', title: '显示模式', detail: '选择独占全屏、无边框全屏或窗口模式。', kind: 'select', defaultValue: '无边框全屏', options: ['独占全屏', '无边框全屏', '窗口'] },
+        { id: 'monitor', title: '显示器', detail: '选择游戏输出到的显示设备。', kind: 'select', defaultValue: '显示器 1', options: ['显示器 1', '显示器 2'] },
+        { id: 'resolution', title: '分辨率', detail: '设置游戏最终输出分辨率。', kind: 'select', defaultValue: '3840 × 2160', options: ['1920 × 1080', '2560 × 1440', '3440 × 1440', '3840 × 2160'] },
+        { id: 'refresh-rate', title: '屏幕刷新率', detail: '选择当前显示器使用的刷新率。', kind: 'select', defaultValue: '165 Hz', options: ['60 Hz', '120 Hz', '144 Hz', '165 Hz', '240 Hz'] },
+        { id: 'hdr-output', title: 'HDR 输出', detail: '需要系统与显示设备同时支持 HDR。', kind: 'toggle', defaultValue: true },
+        { id: 'v-sync', title: '垂直同步', detail: '将游戏帧输出与显示器刷新率同步。', kind: 'toggle', defaultValue: true },
+        { id: 'frame-limit', title: '帧率限制', detail: '限制游戏最大输出帧率。', kind: 'select', defaultValue: '120 FPS', options: ['30 FPS', '60 FPS', '90 FPS', '120 FPS', '144 FPS', '165 FPS', '240 FPS', '无限'] },
       ],
     },
     {
       title: '界面',
       rows: [
-        { title: '界面缩放', detail: '调整 HUD、Workspace 与所有菜单的整体尺寸。', value: '100%', kind: 'slider', pct: 50 },
-        { title: '安全区域', detail: '调整界面与屏幕边缘之间的安全距离。', value: '100%', kind: 'slider', pct: 82 },
+        { id: 'ui-scale', title: '界面缩放', detail: '调整 HUD、Workspace 与所有菜单的整体尺寸。', kind: 'slider', defaultValue: 100, min: 80, max: 120, step: 5, format: 'percent' },
+        { id: 'safe-area', title: '安全区域', detail: '调整界面与屏幕边缘之间的安全距离。', kind: 'slider', defaultValue: 100, min: 80, max: 100, step: 1, format: 'percent' },
       ],
     },
   ],
@@ -89,38 +96,38 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '图形质量',
       rows: [
-        { title: '综合质量', detail: '统一调整常用画质选项；修改单项后会切换为自定义。', value: '自定义', kind: 'select' },
-        { title: '渲染比例', detail: '调整内部渲染分辨率比例。', value: '100%', kind: 'slider', pct: 72 },
-        { title: '抗锯齿', detail: '设置当前画面的边缘平滑方式。', value: 'TAA', kind: 'select' },
-        { title: '超分辨率', detail: '在支持的硬件上使用超分辨率技术提高性能。', value: 'DLSS · 质量', kind: 'select' },
-        { title: '帧生成', detail: '在支持的硬件上启用帧生成。', value: '关闭', kind: 'toggle' },
-        { title: '低延迟模式', detail: '降低输入到画面呈现之间的延迟。', value: '开启', kind: 'toggle' },
+        { id: 'quality-preset', title: '综合质量', detail: '统一调整常用画质选项；修改单项后会切换为自定义。', kind: 'select', defaultValue: '自定义', options: ['低', '中', '高', '极高', '自定义'] },
+        { id: 'render-scale', title: '渲染比例', detail: '调整内部渲染分辨率比例。', kind: 'slider', defaultValue: 100, min: 50, max: 100, step: 1, format: 'percent' },
+        { id: 'anti-aliasing', title: '抗锯齿', detail: '设置当前画面的边缘平滑方式。', kind: 'select', defaultValue: 'TAA', options: ['关闭', 'FXAA', 'SMAA', 'TAA'] },
+        { id: 'super-resolution', title: '超分辨率', detail: '在支持的硬件上使用超分辨率技术提高性能。', kind: 'select', defaultValue: 'DLSS · 质量', options: ['关闭', 'DLSS · 质量', 'DLSS · 平衡', 'DLSS · 性能', 'FSR · 质量', 'XeSS · 质量'] },
+        { id: 'frame-generation', title: '帧生成', detail: '在支持的硬件上启用帧生成。', kind: 'toggle', defaultValue: false },
+        { id: 'low-latency', title: '低延迟模式', detail: '降低输入到画面呈现之间的延迟。', kind: 'toggle', defaultValue: true },
       ],
     },
     {
       title: '城市细节',
       rows: [
-        { title: '建筑细节距离', detail: '控制远处建筑切换细节层级的距离。', value: '82%', kind: 'slider', pct: 82 },
-        { title: '居民显示距离', detail: '控制远处居民与群体的显示距离。', value: '72%', kind: 'slider', pct: 72 },
-        { title: '植被质量', detail: '控制树木、灌木与农田植被细节。', value: '高', kind: 'select' },
-        { title: '植被显示距离', detail: '控制远处植被的显示范围。', value: '78%', kind: 'slider', pct: 78 },
-        { title: '阴影质量', detail: '控制建筑、居民与植被动态阴影质量。', value: '高', kind: 'select' },
-        { title: '阴影距离', detail: '控制动态阴影的最大绘制距离。', value: '68%', kind: 'slider', pct: 68 },
-        { title: '地形质量', detail: '控制地形细分、贴图与远景精度。', value: '高', kind: 'select' },
-        { title: '水体质量', detail: '控制河流、湖泊与水岸效果。', value: '高', kind: 'select' },
+        { id: 'building-distance', title: '建筑细节距离', detail: '控制远处建筑切换细节层级的距离。', kind: 'slider', defaultValue: 82, min: 25, max: 100, step: 1, format: 'percent' },
+        { id: 'resident-distance', title: '居民显示距离', detail: '控制远处居民与群体的显示距离。', kind: 'slider', defaultValue: 72, min: 25, max: 100, step: 1, format: 'percent' },
+        { id: 'vegetation-quality', title: '植被质量', detail: '控制树木、灌木与农田植被细节。', kind: 'select', defaultValue: '高', options: ['低', '中', '高', '极高'] },
+        { id: 'vegetation-distance', title: '植被显示距离', detail: '控制远处植被的显示范围。', kind: 'slider', defaultValue: 78, min: 25, max: 100, step: 1, format: 'percent' },
+        { id: 'shadow-quality', title: '阴影质量', detail: '控制建筑、居民与植被动态阴影质量。', kind: 'select', defaultValue: '高', options: ['低', '中', '高', '极高'] },
+        { id: 'shadow-distance', title: '阴影距离', detail: '控制动态阴影的最大绘制距离。', kind: 'slider', defaultValue: 68, min: 25, max: 100, step: 1, format: 'percent' },
+        { id: 'terrain-quality', title: '地形质量', detail: '控制地形细分、贴图与远景精度。', kind: 'select', defaultValue: '高', options: ['低', '中', '高', '极高'] },
+        { id: 'water-quality', title: '水体质量', detail: '控制河流、湖泊与水岸效果。', kind: 'select', defaultValue: '高', options: ['低', '中', '高', '极高'] },
       ],
     },
     {
       title: '光照与特效',
       rows: [
-        { title: '反射质量', detail: '控制屏幕空间与水面反射质量。', value: '高', kind: 'select' },
-        { title: '环境光遮蔽', detail: '增强建筑接触面与角落的空间层次。', value: '开启', kind: 'toggle' },
-        { title: '体积雾', detail: '控制城市远景和天气中的体积雾效果。', value: '开启', kind: 'toggle' },
-        { title: '云层质量', detail: '控制天气系统中云层的渲染质量。', value: '高', kind: 'select' },
-        { title: '动态云影', detail: '模拟云层在地表与建筑上的动态阴影。', value: '开启', kind: 'toggle' },
-        { title: 'Bloom', detail: '控制高亮区域的泛光效果。', value: '开启', kind: 'toggle' },
-        { title: '景深', detail: '控制摄影视角下的景深效果。', value: '开启', kind: 'toggle' },
-        { title: '动态模糊', detail: '控制镜头快速移动时的动态模糊。', value: '关闭', kind: 'toggle' },
+        { id: 'reflection-quality', title: '反射质量', detail: '控制屏幕空间与水面反射质量。', kind: 'select', defaultValue: '高', options: ['关闭', '低', '中', '高', '极高'] },
+        { id: 'ambient-occlusion', title: '环境光遮蔽', detail: '增强建筑接触面与角落的空间层次。', kind: 'toggle', defaultValue: true },
+        { id: 'volumetric-fog', title: '体积雾', detail: '控制城市远景和天气中的体积雾效果。', kind: 'toggle', defaultValue: true },
+        { id: 'cloud-quality', title: '云层质量', detail: '控制天气系统中云层的渲染质量。', kind: 'select', defaultValue: '高', options: ['低', '中', '高', '极高'] },
+        { id: 'dynamic-cloud-shadow', title: '动态云影', detail: '模拟云层在地表与建筑上的动态阴影。', kind: 'toggle', defaultValue: true },
+        { id: 'bloom', title: 'Bloom', detail: '控制高亮区域的泛光效果。', kind: 'toggle', defaultValue: true },
+        { id: 'depth-of-field', title: '景深', detail: '控制摄影视角下的景深效果。', kind: 'toggle', defaultValue: true },
+        { id: 'motion-blur', title: '动态模糊', detail: '控制镜头快速移动时的动态模糊。', kind: 'toggle', defaultValue: false },
       ],
     },
   ],
@@ -128,20 +135,20 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '音量',
       rows: [
-        { title: '主音量', detail: '控制所有游戏声音的整体音量。', value: '80%', kind: 'slider', pct: 80 },
-        { title: '音乐音量', detail: '控制背景音乐与事件音乐音量。', value: '72%', kind: 'slider', pct: 72 },
-        { title: '游戏音效', detail: '控制营造、居民与模拟反馈音效。', value: '76%', kind: 'slider', pct: 76 },
-        { title: '环境声音', detail: '控制城市、居民与自然环境声音。', value: '68%', kind: 'slider', pct: 68 },
-        { title: '界面声音', detail: '控制按钮、提示与操作反馈音。', value: '65%', kind: 'slider', pct: 65 },
+        { id: 'master-volume', title: '主音量', detail: '控制所有游戏声音的整体音量。', kind: 'slider', defaultValue: 80, min: 0, max: 100, step: 1, format: 'percent' },
+        { id: 'music-volume', title: '音乐音量', detail: '控制背景音乐与事件音乐音量。', kind: 'slider', defaultValue: 72, min: 0, max: 100, step: 1, format: 'percent' },
+        { id: 'effects-volume', title: '游戏音效', detail: '控制营造、居民与模拟反馈音效。', kind: 'slider', defaultValue: 76, min: 0, max: 100, step: 1, format: 'percent' },
+        { id: 'ambient-volume', title: '环境声音', detail: '控制城市、居民与自然环境声音。', kind: 'slider', defaultValue: 68, min: 0, max: 100, step: 1, format: 'percent' },
+        { id: 'ui-volume', title: '界面声音', detail: '控制按钮、提示与操作反馈音。', kind: 'slider', defaultValue: 65, min: 0, max: 100, step: 1, format: 'percent' },
       ],
     },
     {
       title: '播放行为',
       rows: [
-        { title: '失去焦点时静音', detail: '游戏窗口失去焦点时暂停声音输出。', value: '开启', kind: 'toggle' },
-        { title: '界面提示音', detail: '启用菜单、按钮和工具操作反馈音。', value: '开启', kind: 'toggle' },
-        { title: '城市环境声', detail: '启用居民、市场、水岸和自然环境声场。', value: '开启', kind: 'toggle' },
-        { title: '平滑切换场景音乐', detail: '在主菜单、城市与事件音乐之间使用平滑过渡。', value: '开启', kind: 'toggle' },
+        { id: 'mute-unfocused', title: '失去焦点时静音', detail: '游戏窗口失去焦点时暂停声音输出。', kind: 'toggle', defaultValue: true },
+        { id: 'ui-sound', title: '界面提示音', detail: '启用菜单、按钮和工具操作反馈音。', kind: 'toggle', defaultValue: true },
+        { id: 'city-ambience', title: '城市环境声', detail: '启用居民、市场、水岸和自然环境声场。', kind: 'toggle', defaultValue: true },
+        { id: 'music-transition', title: '平滑切换场景音乐', detail: '在主菜单、城市与事件音乐之间使用平滑过渡。', kind: 'toggle', defaultValue: true },
       ],
     },
   ],
@@ -149,15 +156,15 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '鼠标与镜头',
       rows: [
-        { title: '指针灵敏度', detail: '调整鼠标拖拽和指针相关操作的响应速度。', value: '1.00', kind: 'slider', pct: 50 },
-        { title: '滚轮灵敏度', detail: '调整滚轮缩放与分页操作的响应速度。', value: '1.00', kind: 'slider', pct: 50 },
-        { title: '水平反转', detail: '反转水平镜头输入方向。', value: '关闭', kind: 'toggle' },
-        { title: '垂直反转', detail: '反转垂直镜头输入方向。', value: '关闭', kind: 'toggle' },
-        { title: '滚轮反转', detail: '反转滚轮缩放方向。', value: '关闭', kind: 'toggle' },
-        { title: '键盘移动速度', detail: '调整使用键盘平移世界相机的速度。', value: '1.00', kind: 'slider', pct: 50 },
-        { title: '键盘旋转速度', detail: '调整使用键盘旋转世界相机的速度。', value: '1.00', kind: 'slider', pct: 50 },
-        { title: '屏幕边缘滚动', detail: '鼠标接近屏幕边缘时移动世界相机。', value: '开启', kind: 'toggle' },
-        { title: '边缘滚动速度', detail: '调整屏幕边缘滚动的相机移动速度。', value: '1.00', kind: 'slider', pct: 50 },
+        { id: 'pointer-sensitivity', title: '指针灵敏度', detail: '调整鼠标拖拽和指针相关操作的响应速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
+        { id: 'scroll-sensitivity', title: '滚轮灵敏度', detail: '调整滚轮缩放与分页操作的响应速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
+        { id: 'invert-horizontal', title: '水平反转', detail: '反转水平镜头输入方向。', kind: 'toggle', defaultValue: false },
+        { id: 'invert-vertical', title: '垂直反转', detail: '反转垂直镜头输入方向。', kind: 'toggle', defaultValue: false },
+        { id: 'invert-scroll', title: '滚轮反转', detail: '反转滚轮缩放方向。', kind: 'toggle', defaultValue: false },
+        { id: 'keyboard-move-speed', title: '键盘移动速度', detail: '调整使用键盘平移世界相机的速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
+        { id: 'keyboard-yaw-speed', title: '键盘旋转速度', detail: '调整使用键盘旋转世界相机的速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
+        { id: 'edge-scroll', title: '屏幕边缘滚动', detail: '鼠标接近屏幕边缘时移动世界相机。', kind: 'toggle', defaultValue: true },
+        { id: 'edge-scroll-speed', title: '边缘滚动速度', detail: '调整屏幕边缘滚动的相机移动速度。', kind: 'slider', defaultValue: 1, min: 0.1, max: 3, step: 0.1, format: 'decimal2' },
       ],
     },
   ],
@@ -165,25 +172,25 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '存档',
       rows: [
-        { title: '自动保存间隔', detail: '定期写入当前游戏组的自动存档。', value: '10 分钟', kind: 'select' },
-        { title: '自动存档数量', detail: '每个游戏组最多保留的自动存档历史数量。', value: '5', kind: 'select' },
+        { id: 'autosave-interval', title: '自动保存间隔', detail: '定期写入当前游戏组的自动存档。', kind: 'select', defaultValue: '10 分钟', options: ['关闭', '5 分钟', '10 分钟', '20 分钟', '30 分钟'] },
+        { id: 'autosave-count', title: '自动存档数量', detail: '每个游戏组最多保留的自动存档历史数量。', kind: 'select', defaultValue: '5', options: ['3', '5', '10'] },
       ],
     },
     {
       title: '游戏体验',
       rows: [
-        { title: '显示营造教程', detail: '显示第一次使用营造系统时的教学内容。', value: '开启', kind: 'toggle' },
-        { title: '操作提示', detail: '显示当前工具的操作方式与快捷键。', value: '开启', kind: 'toggle' },
-        { title: '重要操作二次确认', detail: '拆除建筑或覆盖存档前进行二次确认。', value: '开启', kind: 'toggle' },
-        { title: '居民故事提示', detail: '调整居民出现可交互事件时的提示详细程度。', value: '完整', kind: 'select' },
-        { title: '重要事件自动暂停', detail: '发生高优先级城市事件时自动暂停模拟。', value: '开启', kind: 'toggle' },
+        { id: 'tutorials', title: '显示营造教程', detail: '显示第一次使用营造系统时的教学内容。', kind: 'toggle', defaultValue: true },
+        { id: 'operation-hints', title: '操作提示', detail: '显示当前工具的操作方式与快捷键。', kind: 'toggle', defaultValue: true },
+        { id: 'danger-confirm', title: '重要操作二次确认', detail: '拆除建筑或覆盖存档前进行二次确认。', kind: 'toggle', defaultValue: true },
+        { id: 'resident-story-hints', title: '居民故事提示', detail: '调整居民出现可交互事件时的提示详细程度。', kind: 'select', defaultValue: '完整', options: ['关闭', '简洁', '完整'] },
+        { id: 'important-event-pause', title: '重要事件自动暂停', detail: '发生高优先级城市事件时自动暂停模拟。', kind: 'toggle', defaultValue: true },
       ],
     },
     {
       title: '语言与菜单',
       rows: [
-        { title: '界面语言', detail: '选择游戏界面使用的语言。', value: '简体中文', kind: 'select' },
-        { title: '主菜单镜头运动', detail: '启用主菜单背景城市的缓慢镜头运动。', value: '开启', kind: 'toggle' },
+        { id: 'language', title: '界面语言', detail: '选择游戏界面使用的语言。', kind: 'select', defaultValue: '简体中文', options: ['简体中文', '繁體中文', 'English'] },
+        { id: 'menu-camera-motion', title: '主菜单镜头运动', detail: '启用主菜单背景城市的缓慢镜头运动。', kind: 'toggle', defaultValue: true },
       ],
     },
   ],
@@ -243,24 +250,80 @@ const bindingGroups: BindingGroup[] = [
   },
 ];
 
+function createDefaultSettings(): Record<string, SettingValue> {
+  return Object.fromEntries(
+    Object.values(groups).flatMap((sections) => sections.flatMap((section) => section.rows.map((row) => [row.id, row.defaultValue] as const))),
+  );
+}
+
 function createDefaultBindings(): Record<string, BindingValue> {
-  const entries = bindingGroups.flatMap((group) => group.bindings.map((binding) => [
+  return Object.fromEntries(bindingGroups.flatMap((group) => group.bindings.map((binding) => [
     binding.id,
     { primary: binding.primary, secondary: binding.secondary ?? '' },
-  ] as const));
-  return Object.fromEntries(entries);
+  ] as const)));
 }
 
 function getBindingItem(id: string) {
   return bindingGroups.flatMap((group) => group.bindings).find((binding) => binding.id === id);
 }
 
+function isSettingDisabled(id: string, values: Record<string, SettingValue>) {
+  if (id === 'frame-generation') return !String(values['super-resolution']).startsWith('DLSS');
+  if (id === 'edge-scroll-speed') return values['edge-scroll'] !== true;
+  return false;
+}
+
+function categorySettingIds(category: Category) {
+  return groups[category].flatMap((group) => group.rows.map((row) => row.id));
+}
+
 export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps) {
+  const defaults = useMemo(createDefaultSettings, []);
+  const defaultBindings = useMemo(createDefaultBindings, []);
   const [active, setActive] = useState<Category>('显示');
-  const [bindings, setBindings] = useState<Record<string, BindingValue>>(createDefaultBindings);
+  const [appliedValues, setAppliedValues] = useState<Record<string, SettingValue>>(defaults);
+  const [draftValues, setDraftValues] = useState<Record<string, SettingValue>>(defaults);
+  const [appliedBindings, setAppliedBindings] = useState<Record<string, BindingValue>>(defaultBindings);
+  const [bindings, setBindings] = useState<Record<string, BindingValue>>(defaultBindings);
   const [openBindingGroups, setOpenBindingGroups] = useState<string[]>(['basic']);
   const [listening, setListening] = useState<ListeningBinding>(null);
   const [bindingConflict, setBindingConflict] = useState<BindingConflict>(null);
+
+  const dirty = useMemo(
+    () => JSON.stringify(appliedValues) !== JSON.stringify(draftValues) || JSON.stringify(appliedBindings) !== JSON.stringify(bindings),
+    [appliedValues, draftValues, appliedBindings, bindings],
+  );
+
+  function setSetting(id: string, value: SettingValue) {
+    setDraftValues((current) => ({ ...current, [id]: value }));
+  }
+
+  function restoreCurrentCategory() {
+    const ids = new Set(categorySettingIds(active));
+    setDraftValues((current) => {
+      const next = { ...current };
+      ids.forEach((id) => { next[id] = defaults[id]; });
+      return next;
+    });
+    if (active === '操作') setBindings(defaultBindings);
+    setBindingConflict(null);
+    setListening(null);
+  }
+
+  function handleApply() {
+    if (!dirty) return;
+    setAppliedValues({ ...draftValues });
+    setAppliedBindings(structuredClone(bindings));
+    onApply();
+  }
+
+  function handleCancel() {
+    setDraftValues({ ...appliedValues });
+    setBindings(structuredClone(appliedBindings));
+    setBindingConflict(null);
+    setListening(null);
+    onClose();
+  }
 
   function toggleBindingGroup(id: string) {
     setOpenBindingGroups((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
@@ -269,10 +332,7 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
   function resetBinding(id: string) {
     const source = getBindingItem(id);
     if (!source) return;
-    setBindings((current) => ({
-      ...current,
-      [id]: { primary: source.primary, secondary: source.secondary ?? '' },
-    }));
+    setBindings((current) => ({ ...current, [id]: { primary: source.primary, secondary: source.secondary ?? '' } }));
     setBindingConflict(null);
     setListening(null);
   }
@@ -318,9 +378,9 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
   }
 
   return (
-    <section className={`settings-space settings-panel--${context}`} data-active={active} aria-label="游戏设置">
+    <section className={`settings-space settings-panel--${context}`} data-active={active} data-dirty={dirty ? 'true' : 'false'} aria-label="游戏设置">
       <header className="global-space-header settings-space__header">
-        <button type="button" className="global-space-back" onClick={onClose}><ChevronLeft size={16} />返回</button>
+        <button type="button" className="global-space-back" onClick={handleCancel}><ChevronLeft size={16} />返回</button>
         <div className="global-space-heading"><h1>游戏设置</h1></div>
       </header>
 
@@ -338,10 +398,12 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
           {active === '操作' ? (
             <ControlsSettingsView
               rows={groups.操作[0].rows}
+              values={draftValues}
               bindings={bindings}
               openGroups={openBindingGroups}
               listening={listening}
               conflict={bindingConflict}
+              onChange={setSetting}
               onToggleGroup={toggleBindingGroup}
               onStartListening={startListening}
               onBindingKeyDown={handleBindingKeyDown}
@@ -352,7 +414,15 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
               <section className="settings-section" key={group.title}>
                 <header className="settings-section__title"><b>{group.title}</b><i /></header>
                 <div className="settings-section__rows">
-                  {group.rows.map((row) => <SettingsRowView key={row.title} row={row} />)}
+                  {group.rows.map((row) => (
+                    <SettingsRowView
+                      key={row.id}
+                      row={row}
+                      value={draftValues[row.id]}
+                      disabled={isSettingDisabled(row.id, draftValues)}
+                      onChange={(value) => setSetting(row.id, value)}
+                    />
+                  ))}
                 </div>
               </section>
             ))
@@ -360,11 +430,11 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
         </div>
       </main>
 
-      <footer className="global-space-footer settings-space__footer">
-        <button type="button" className="settings-restore"><RotateCcw size={14} />恢复当前分类默认值</button>
+      <footer className={`global-space-footer settings-space__footer ${dirty ? 'is-dirty' : ''}`}>
+        <button type="button" className="settings-restore" onClick={restoreCurrentCategory}><RotateCcw size={14} />恢复当前分类默认值</button>
         <div>
-          <button type="button" className="global-space-secondary" onClick={onClose}>取消</button>
-          <button type="button" className="global-space-primary" onClick={onApply}><Check size={14} />应用</button>
+          <button type="button" className="global-space-secondary" onClick={handleCancel}>取消</button>
+          <button type="button" className="global-space-primary settings-apply" disabled={!dirty} onClick={handleApply}><Check size={14} />应用</button>
         </div>
       </footer>
     </section>
@@ -373,20 +443,24 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
 
 function ControlsSettingsView({
   rows,
+  values,
   bindings,
   openGroups,
   listening,
   conflict,
+  onChange,
   onToggleGroup,
   onStartListening,
   onBindingKeyDown,
   onResetBinding,
 }: {
   rows: SettingRow[];
+  values: Record<string, SettingValue>;
   bindings: Record<string, BindingValue>;
   openGroups: string[];
   listening: ListeningBinding;
   conflict: BindingConflict;
+  onChange: (id: string, value: SettingValue) => void;
   onToggleGroup: (id: string) => void;
   onStartListening: (id: string, slot: BindingSlot) => void;
   onBindingKeyDown: (event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) => void;
@@ -397,17 +471,22 @@ function ControlsSettingsView({
       <section className="settings-section">
         <header className="settings-section__title"><b>鼠标与镜头</b><i /></header>
         <div className="settings-section__rows">
-          {rows.map((row) => <SettingsRowView key={row.title} row={row} />)}
+          {rows.map((row) => (
+            <SettingsRowView
+              key={row.id}
+              row={row}
+              value={values[row.id]}
+              disabled={isSettingDisabled(row.id, values)}
+              onChange={(value) => onChange(row.id, value)}
+            />
+          ))}
         </div>
       </section>
 
       <section className="settings-section settings-binding-section">
         <header className="settings-section__title"><b>按键绑定</b><i /></header>
         <div className="settings-binding-table-header" aria-hidden="true">
-          <span>操作</span>
-          <span>主要按键</span>
-          <span>次要按键</span>
-          <i />
+          <span>操作</span><span>主要按键</span><span>次要按键</span><i />
         </div>
 
         <div className="settings-binding-groups">
@@ -416,11 +495,8 @@ function ControlsSettingsView({
             return (
               <section className={`settings-binding-group ${open ? 'is-open' : ''}`} key={group.id}>
                 <button type="button" className="settings-binding-group__header" onClick={() => onToggleGroup(group.id)} aria-expanded={open}>
-                  <ChevronRight size={14} />
-                  <b>{group.title}</b>
-                  <span>{group.bindings.length} 项</span>
+                  <ChevronRight size={14} /><b>{group.title}</b><span>{group.bindings.length} 项</span>
                 </button>
-
                 {open && (
                   <div className="settings-binding-group__rows">
                     {group.bindings.map((binding) => (
@@ -446,15 +522,190 @@ function ControlsSettingsView({
   );
 }
 
-function BindingRow({
-  binding,
-  value,
-  listening,
-  conflict,
-  onStartListening,
-  onKeyDown,
-  onReset,
-}: {
+function SettingsRowView({ row, value, disabled, onChange }: { row: SettingRow; value: SettingValue; disabled?: boolean; onChange: (value: SettingValue) => void }) {
+  return (
+    <div className={`settings-row settings-row--${row.kind} ${disabled ? 'is-disabled' : ''}`} title={row.detail} data-setting-id={row.id}>
+      <span className="settings-row__label"><b>{row.title}</b></span>
+      <div className={`settings-row__control settings-row__control--${row.kind}`}>
+        {row.kind === 'slider' && <SliderControl row={row} value={Number(value)} disabled={disabled} onChange={onChange} />}
+        {row.kind === 'select' && <SelectControl row={row} value={String(value)} disabled={disabled} onChange={onChange} />}
+        {row.kind === 'toggle' && <ToggleControl row={row} value={Boolean(value)} disabled={disabled} onChange={onChange} />}
+      </div>
+    </div>
+  );
+}
+
+function SliderControl({ row, value, disabled, onChange }: { row: SettingRow; value: number; disabled?: boolean; onChange: (value: number) => void }) {
+  const [dragging, setDragging] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const min = row.min ?? 0;
+  const max = row.max ?? 100;
+  const step = row.step ?? 1;
+  const pct = ((value - min) / (max - min)) * 100;
+
+  function quantize(raw: number) {
+    const stepped = min + Math.round((raw - min) / step) * step;
+    const decimals = `${step}`.includes('.') ? `${step}`.split('.')[1].length : 0;
+    return Number(Math.max(min, Math.min(max, stepped)).toFixed(decimals));
+  }
+
+  function updateFromClientX(clientX: number) {
+    const rect = trackRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    onChange(quantize(min + ratio * (max - min)));
+  }
+
+  function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (disabled) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(true);
+    updateFromClientX(event.clientX);
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (disabled) return;
+    const scale = event.shiftKey ? 10 : 1;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      onChange(quantize(value - step * scale));
+    } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      onChange(quantize(value + step * scale));
+    } else if (event.key === 'Home') {
+      event.preventDefault(); onChange(min);
+    } else if (event.key === 'End') {
+      event.preventDefault(); onChange(max);
+    }
+  }
+
+  return (
+    <>
+      <div
+        ref={trackRef}
+        className={`settings-slider ${dragging ? 'is-dragging' : ''}`}
+        role="slider"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled || undefined}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        aria-valuetext={formatSliderValue(row, value)}
+        onPointerDown={handlePointerDown}
+        onPointerMove={(event) => { if (dragging) updateFromClientX(event.clientX); }}
+        onPointerUp={() => setDragging(false)}
+        onPointerCancel={() => setDragging(false)}
+        onKeyDown={handleKeyDown}
+      >
+        <i style={{ width: `${pct}%` }} />
+        <em style={{ left: `${pct}%` }} />
+      </div>
+      <output>{formatSliderValue(row, value)}</output>
+    </>
+  );
+}
+
+function SelectControl({ row, value, disabled, onChange }: { row: SettingRow; value: string; disabled?: boolean; onChange: (value: string) => void }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [highlighted, setHighlighted] = useState(Math.max(0, row.options?.indexOf(value) ?? 0));
+  const [opensUp, setOpensUp] = useState(false);
+  const options = row.options ?? [];
+
+  useEffect(() => {
+    if (!open) return;
+    const handleOutside = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', handleOutside);
+    return () => document.removeEventListener('pointerdown', handleOutside);
+  }, [open]);
+
+  function openMenu() {
+    if (disabled) return;
+    const rect = rootRef.current?.getBoundingClientRect();
+    const menuHeight = Math.min(options.length, 8) * 34 + 8;
+    setOpensUp(Boolean(rect && window.innerHeight - rect.bottom < menuHeight + 18));
+    setHighlighted(Math.max(0, options.indexOf(value)));
+    setOpen(true);
+  }
+
+  function choose(next: string) {
+    onChange(next);
+    setOpen(false);
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    if (disabled) return;
+    if (!open && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault(); openMenu(); return;
+    }
+    if (!open) return;
+    if (event.key === 'Escape') {
+      event.preventDefault(); setOpen(false);
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault(); setHighlighted((current) => (current + 1) % options.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault(); setHighlighted((current) => (current - 1 + options.length) % options.length);
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault(); choose(options[highlighted]);
+    }
+  }
+
+  return (
+    <div ref={rootRef} className={`settings-select-root ${open ? 'is-open' : ''} ${opensUp ? 'opens-up' : ''}`}>
+      <button
+        type="button"
+        className="settings-select-value"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        disabled={disabled}
+        onClick={() => open ? setOpen(false) : openMenu()}
+        onKeyDown={handleKeyDown}
+      >
+        <span>{value}</span><ChevronDown size={14} />
+      </button>
+      {open && (
+        <div className="settings-select-menu" role="listbox" aria-label={row.title}>
+          {options.map((option, index) => (
+            <button
+              type="button"
+              role="option"
+              aria-selected={option === value}
+              key={option}
+              className={`${option === value ? 'is-selected' : ''} ${index === highlighted ? 'is-highlighted' : ''}`}
+              onMouseEnter={() => setHighlighted(index)}
+              onClick={() => choose(option)}
+            >
+              <span>{option}</span>{option === value && <Check size={13} />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ToggleControl({ row, value, disabled, onChange }: { row: SettingRow; value: boolean; disabled?: boolean; onChange: (value: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      className={`settings-toggle ${value ? 'is-on' : ''}`}
+      aria-label={`${row.title}：${value ? '开启' : '关闭'}`}
+      aria-pressed={value}
+      disabled={disabled}
+      onClick={() => onChange(!value)}
+    ><i /></button>
+  );
+}
+
+function formatSliderValue(row: SettingRow, value: number) {
+  if (row.format === 'decimal2') return value.toFixed(2);
+  if (row.format === 'percent') return `${Math.round(value)}%`;
+  return `${Math.round(value)}`;
+}
+
+function BindingRow({ binding, value, listening, conflict, onStartListening, onKeyDown, onReset }: {
   binding: BindingItem;
   value: BindingValue;
   listening: ListeningBinding;
@@ -467,7 +718,6 @@ function BindingRow({
     const isListening = listening?.id === binding.id && listening.slot === slot;
     const isConflict = conflict?.id === binding.id && conflict.slot === slot;
     const text = value?.[slot] ?? '';
-
     return (
       <button
         type="button"
@@ -476,27 +726,16 @@ function BindingRow({
         onClick={() => onStartListening(binding.id, slot)}
         onKeyDown={(event) => onKeyDown(event, binding.id, slot)}
       >
-        {isListening ? (
-          <span>按下新的按键…</span>
-        ) : text ? (
-          <kbd>{text}</kbd>
-        ) : (
-          <span className="settings-binding-cell__empty"><Plus size={12} />添加</span>
-        )}
+        {isListening ? <span>按下新的按键…</span> : text ? <kbd>{text}</kbd> : <span className="settings-binding-cell__empty"><Plus size={12} />添加</span>}
       </button>
     );
   };
-
   const rowConflict = conflict?.id === binding.id ? `与“${conflict.owner}”冲突` : '';
-
   return (
     <div className={`settings-binding-row ${rowConflict ? 'has-conflict' : ''}`} title={binding.detail}>
       <span className="settings-binding-row__label"><b>{binding.label}</b>{rowConflict && <small>{rowConflict}</small>}</span>
-      {renderBindingButton('primary')}
-      {renderBindingButton('secondary')}
-      <button type="button" className="settings-binding-row__reset" aria-label={`恢复${binding.label}默认按键`} onClick={() => onReset(binding.id)}>
-        <RotateCcw size={13} />
-      </button>
+      {renderBindingButton('primary')}{renderBindingButton('secondary')}
+      <button type="button" className="settings-binding-row__reset" aria-label={`恢复${binding.label}默认按键`} onClick={() => onReset(binding.id)}><RotateCcw size={13} /></button>
     </div>
   );
 }
@@ -504,15 +743,7 @@ function BindingRow({
 function formatBindingKey(event: KeyboardEvent<HTMLButtonElement>) {
   const modifierOnly = ['Control', 'Shift', 'Alt', 'Meta'];
   if (modifierOnly.includes(event.key)) return '';
-
-  const aliases: Record<string, string> = {
-    ' ': 'Space',
-    ArrowUp: '↑',
-    ArrowDown: '↓',
-    ArrowLeft: '←',
-    ArrowRight: '→',
-  };
-
+  const aliases: Record<string, string> = { ' ': 'Space', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→' };
   const base = aliases[event.key] ?? (event.key.length === 1 ? event.key.toUpperCase() : event.key);
   const parts: string[] = [];
   if (event.ctrlKey) parts.push('Ctrl');
@@ -521,32 +752,4 @@ function formatBindingKey(event: KeyboardEvent<HTMLButtonElement>) {
   if (event.metaKey) parts.push('Meta');
   parts.push(base);
   return parts.join(' + ');
-}
-
-function SettingsRowView({ row }: { row: SettingRow }) {
-  const isOn = row.value === '开启';
-
-  return (
-    <div className={`settings-row settings-row--${row.kind}`} title={row.detail}>
-      <span className="settings-row__label"><b>{row.title}</b></span>
-      <div className={`settings-row__control settings-row__control--${row.kind}`}>
-        {row.kind === 'slider' && (
-          <>
-            <div className="settings-slider"><i style={{ width: `${row.pct ?? 50}%` }} /><em style={{ left: `${row.pct ?? 50}%` }} /></div>
-            <output>{row.value}</output>
-          </>
-        )}
-        {row.kind === 'select' && (
-          <button type="button" className="settings-select-value">
-            <span>{row.value}</span><ChevronDown size={14} />
-          </button>
-        )}
-        {row.kind === 'toggle' && (
-          <button type="button" className={`settings-toggle ${isOn ? 'is-on' : ''}`} aria-label={`${row.title}：${row.value}`}>
-            <i />
-          </button>
-        )}
-      </div>
-    </div>
-  );
 }
