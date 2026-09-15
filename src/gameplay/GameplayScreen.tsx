@@ -59,7 +59,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
           <BuildingPlacementDock state={state} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
-          <GameplayOperationHints terrainMode={state.terrainMode} adjustmentMode={state.adjustmentMode} flyout={state.flyout} />
+          <GameplayOperationHints adjustmentMode={state.adjustmentMode} />
         </>
       )}
 
