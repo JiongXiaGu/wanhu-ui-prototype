@@ -16,9 +16,21 @@
   background: linear-gradient(180deg, rgba(13, 20, 17, .92), rgba(9, 15, 13, .97));
 }
 
+/* Settings canonical 1920 layout. Wider than the old 900px column so the page
+   reads as a game settings workspace rather than a narrow web form. */
+.settings-space__content {
+  width: 1100px;
+  max-width: none;
+}
+
+.settings-row__control {
+  flex-basis: 420px;
+}
+
 /* SaveGameSpace canonical 1920 layout. */
 .save-game-space__body {
-  width: min(980px, calc(100% - 200px));
+  width: 1140px;
+  max-width: none;
 }
 
 .save-manual-card__select {
@@ -27,7 +39,8 @@
 
 /* LoadGameSpace canonical 1920 layout. */
 .archive-space__layout {
-  width: min(1480px, calc(100% - 128px));
+  width: 1480px;
+  max-width: none;
   gap: 34px;
 }
 

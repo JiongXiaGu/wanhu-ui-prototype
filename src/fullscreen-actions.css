@@ -1,16 +1,19 @@
 /* Shared full-screen action bar semantics.
-   The footer surface spans the fixed 1920 canvas, while actions are inset to a page-specific safe width.
-   Left = object/page management actions. Right = navigation / flow actions. */
+   Footer surfaces span the fixed 1920 canvas, but every action is constrained
+   to the same horizontal bounds as that page's main content. */
 
-/* Page-specific action widths follow each page body with a small amount of breathing room. */
-.settings-space{--page-action-half-width:480px}
-.save-game-space{--page-action-half-width:520px}
-.archive-space--load{--page-action-half-width:760px}
+/* Exact body / footer alignment for the four full-screen workspaces. */
+.settings-space{--page-action-half-width:550px}
+.save-game-space{--page-action-half-width:570px}
+.archive-space--load{--page-action-half-width:740px}
+.new-game-space{--page-action-half-width:740px}
 
 .global-space-footer{
   padding-left:calc(50% - var(--page-action-half-width,560px))!important;
   padding-right:calc(50% - var(--page-action-half-width,560px))!important;
   justify-content:space-between!important;
+  border-top-color:rgba(239,233,221,.065)!important;
+  background:linear-gradient(180deg,rgba(9,14,12,.10),rgba(8,12,10,.26))!important;
 }
 
 /* Optional semantic wrapper for future pages. Existing pages do not need an extra DOM layer. */
@@ -23,10 +26,82 @@
   gap:24px;
 }
 .global-space-footer__left,
-.global-space-footer__right{display:flex;align-items:center;gap:9px;min-width:0}
+.global-space-footer__right{display:flex;align-items:center;gap:10px;min-width:0}
 .global-space-footer__right{margin-left:auto}
 
-/* Settings currently keeps both actions in its left DOM group; visually split them across the safe width. */
+/* Shared button language.
+   Primary = weak warm surface + one structural gold line.
+   Secondary = quiet neutral surface.
+   Utility actions remain text/icon only. */
+.global-space-secondary,
+.global-space-primary{
+  position:relative;
+  height:38px;
+  min-width:96px;
+  padding:0 15px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  overflow:hidden;
+  border:1px solid rgba(239,233,221,.075);
+  border-radius:2px;
+  background:rgba(255,255,255,.008);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.012);
+  color:#9ea39c;
+  font-size:9.5px;
+  font-weight:500;
+  letter-spacing:.018em;
+  cursor:pointer;
+  transition:color .13s ease,border-color .13s ease,background .13s ease,box-shadow .13s ease,transform .08s ease;
+}
+.global-space-secondary svg,
+.global-space-primary svg{stroke-width:1.55}
+.global-space-secondary:hover:not(:disabled){
+  color:#ded9cf;
+  border-color:rgba(239,233,221,.145);
+  background:rgba(255,255,255,.024);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.022);
+}
+.global-space-secondary:active:not(:disabled),
+.global-space-primary:active:not(:disabled){transform:translateY(1px)}
+.global-space-secondary:focus-visible,
+.global-space-primary:focus-visible{outline:1px solid rgba(201,165,95,.34);outline-offset:2px}
+.global-space-secondary:disabled,
+.global-space-primary:disabled{opacity:.30;cursor:default}
+
+.global-space-primary{
+  min-width:124px;
+  border-color:rgba(201,165,95,.18);
+  background:linear-gradient(180deg,rgba(201,165,95,.070),rgba(201,165,95,.038));
+  color:#ddc176;
+  box-shadow:inset 0 1px 0 rgba(230,205,139,.035);
+}
+.global-space-primary::after{
+  content:'';
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#c9a55f 18%,#d7b66b 50%,#c9a55f 82%,transparent);
+  opacity:.82;
+  transition:left .14s ease,right .14s ease,opacity .14s ease,box-shadow .14s ease;
+}
+.global-space-primary:hover:not(:disabled){
+  color:#ead087;
+  border-color:rgba(201,165,95,.30);
+  background:linear-gradient(180deg,rgba(201,165,95,.105),rgba(201,165,95,.055));
+  box-shadow:inset 0 1px 0 rgba(235,211,148,.055);
+}
+.global-space-primary:hover:not(:disabled)::after{
+  left:7px;
+  right:7px;
+  opacity:1;
+  box-shadow:0 -3px 10px rgba(201,165,95,.11);
+}
+
+/* Settings keeps both actions in one DOM group; visually split them across the page width. */
 .settings-space__footer{position:relative;display:flex;align-items:center}
 .settings-space__footer-left{
   width:100%;
@@ -47,26 +122,80 @@
 
 /* Load keeps explicit left/right groups. */
 .archive-space__footer-left,
-.archive-space__footer-right{display:flex;align-items:center;gap:9px}
+.archive-space__footer-right{display:flex;align-items:center;gap:10px}
 .archive-space__footer-right{margin-left:auto}
 
-/* Save keeps a left management group and a direct Back button. */
-.save-game-space__footer-left{display:flex;align-items:center;gap:9px}
-.save-game-space__back{margin-left:auto!important}
+/* Save keeps a left utility group, centered flow actions, and right navigation. */
+.save-game-space__footer-left{display:flex;align-items:center;gap:10px}
+.save-game-space__footer-center{gap:10px!important}
+.save-game-space__back{margin-left:0!important}
 
-/* Keep navigation actions visually stable across Settings / Load / Save. */
+/* Navigation actions share one visual weight across all full-screen pages. */
 .settings-footer-back,
 .archive-footer-back,
-.save-game-space__back{
-  min-width:86px;
+.save-game-space__back,
+.new-game-space__back{
+  min-width:92px;
+  height:38px;
   color:#aaa9a1;
-  border-color:rgba(239,233,221,.105);
-  background:rgba(255,255,255,.012);
+  border-color:rgba(239,233,221,.085);
+  background:rgba(255,255,255,.006);
 }
 .settings-footer-back:hover,
 .archive-footer-back:hover,
-.save-game-space__back:hover{
-  color:#ded9cf;
-  border-color:rgba(239,233,221,.17);
-  background:rgba(255,255,255,.028);
+.save-game-space__back:hover,
+.new-game-space__back:hover{
+  color:#e0dbd1;
+  border-color:rgba(239,233,221,.15);
+  background:rgba(255,255,255,.023);
 }
+
+/* Utility actions: no permanent box. */
+.settings-restore,
+.archive-footer-action,
+.save-group-rename{
+  min-width:0!important;
+  height:38px!important;
+  padding:0 9px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  border:0!important;
+  border-radius:2px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#7e867f!important;
+  font-size:9px!important;
+  font-weight:500!important;
+  letter-spacing:.012em!important;
+  cursor:pointer;
+  transition:color .12s ease,background .12s ease,opacity .12s ease!important;
+}
+.settings-restore:hover,
+.archive-footer-action:hover:not(:disabled),
+.save-group-rename:hover:not(:disabled){
+  color:#c9c6bd!important;
+  background:rgba(255,255,255,.014)!important;
+}
+.archive-footer-action--danger:hover:not(:disabled){
+  color:#c9877d!important;
+  background:rgba(151,65,52,.045)!important;
+}
+.settings-restore:focus-visible,
+.archive-footer-action:focus-visible,
+.save-group-rename:focus-visible{outline:1px solid rgba(201,165,95,.28);outline-offset:1px}
+.archive-footer-action:disabled{opacity:.28!important;cursor:default!important}
+
+/* Keep the two real primary flow actions slightly stronger without turning them into large cards. */
+.new-game-space__start{
+  min-width:176px;
+  height:40px;
+  font-size:10px;
+}
+.save-manual-action{
+  min-width:120px;
+  height:38px;
+  font-size:9.5px;
+}
+.save-quick-action{min-width:108px}
