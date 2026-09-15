@@ -41,6 +41,22 @@ for (const [file, review, waitFor] of staticScenarios) {
   await page.screenshot({ path: `${outDir}/${file}` });
 }
 
+// Continue Game intentionally bypasses the loading screen for fast prototype iteration.
+await open('menu', '.main-menu-screen');
+await page.getByRole('button', { name: '继续游戏', exact: true }).click();
+await page.waitForSelector('.command-utility');
+if ((await page.locator('.loading-space').count()) !== 0) throw new Error('Continue Game should enter gameplay without showing Loading Space.');
+
+// New Game must enter Loading Space, and the loading tip can be changed by the player.
+await open('new-game', '.new-game-space');
+await page.getByRole('button', { name: '开始营造', exact: true }).click();
+await page.waitForSelector('.loading-space');
+const loadingTip = page.getByRole('button', { name: '查看下一条游玩提示', exact: true });
+const tipBefore = (await loadingTip.textContent())?.trim();
+await loadingTip.click();
+const tipAfter = (await loadingTip.textContent())?.trim();
+if (!tipBefore || !tipAfter || tipBefore === tipAfter) throw new Error('Loading tip should advance when clicked.');
+
 // New Game: random-map state gets its own review frame.
 await open('new-game', '.new-game-space');
 await page.getByRole('button', { name: '随机地图', exact: true }).click();
