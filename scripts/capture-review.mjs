@@ -36,6 +36,9 @@ const scenarios = [
   { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save' },
   { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
   { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load' },
+  { file: '15a-menu-load-actions.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-save-actions' },
+  { file: '15b-menu-load-rename.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-save-rename' },
+  { file: '15c-menu-load-delete.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-save-delete' },
   { file: '16-new-game.png', review: 'new-game', waitFor: '.flow-frame' },
 ];
 
@@ -175,12 +178,46 @@ for (const scenario of scenarios) {
     if (!(await scale.textContent())?.includes('125%')) throw new Error('Keeping a safe display change should preserve the selected UI scale.');
   }
 
+  if (scenario.action === 'archive-save-actions') {
+    const card = page.locator('.archive-save-card').nth(1);
+    await card.hover();
+    await page.waitForTimeout(160);
+    if ((await card.locator('.archive-save-card__actions button').count()) !== 3) throw new Error('Load save card should expose rename, load, and delete icon actions.');
+  }
+
+  if (scenario.action === 'archive-save-rename') {
+    const card = page.locator('.archive-save-card').nth(1);
+    await card.hover();
+    await card.getByRole('button', { name: /^重命名 / }).click();
+    if ((await card.getByRole('textbox', { name: '重命名存档' }).count()) !== 1) throw new Error('Rename icon should enter inline save-name editing.');
+    await page.waitForTimeout(160);
+  }
+
+  if (scenario.action === 'archive-save-delete') {
+    const card = page.locator('.archive-save-card').nth(1);
+    await card.hover();
+    await card.getByRole('button', { name: /^删除 / }).click();
+    if ((await card.locator('.archive-save-card__confirm').count()) !== 1) throw new Error('Delete icon should open local save deletion confirmation.');
+    await page.waitForTimeout(160);
+  }
+
   if (scenario.review === 'settings' || scenario.review === 'pause-settings') {
     if (await page.locator('.settings-space__header .global-space-back').count()) throw new Error('Settings Header should not contain Back; page navigation belongs in the footer action bar.');
-    if ((await page.locator('.settings-space__footer .settings-footer-back').count()) !== 1) throw new Error('Settings footer must contain exactly one Back action.');
-    if ((await page.locator('.settings-space__footer .settings-restore').count()) !== 1) throw new Error('Settings footer must contain Restore Defaults beside Back.');
+    const restore = page.locator('.settings-space__footer .settings-restore');
+    const back = page.locator('.settings-space__footer .settings-footer-back');
+    if ((await back.count()) !== 1 || (await restore.count()) !== 1) throw new Error('Settings footer must contain Restore and Back actions.');
+    const restoreBox = await restore.boundingBox();
+    const backBox = await back.boundingBox();
+    if (!restoreBox || !backBox || restoreBox.x >= backBox.x) throw new Error('Settings Restore must stay on the left and Back on the far right.');
     if (await page.getByRole('button', { name: '取消', exact: true }).count()) throw new Error('Settings should not expose a persistent Cancel button.');
     if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Settings should not expose a persistent Apply button.');
+  }
+
+  if (scenario.review === 'load') {
+    if (await page.locator('.archive-preview').count()) throw new Error('Load Archive should not restore the old fixed Preview column.');
+    if ((await page.locator('.archive-space__footer-left .archive-footer-action').count()) < 2) throw new Error('Load footer should expose group rename and delete management actions on the left.');
+    const back = page.locator('.archive-space__footer-right .archive-footer-back');
+    if ((await back.count()) !== 1) throw new Error('Load footer should expose Back on the right.');
   }
 
   if (scenario.review === 'building-camera') {
