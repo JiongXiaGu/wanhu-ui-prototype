@@ -175,16 +175,16 @@
 .new-game-map-card.is-selected .new-game-map-card__copy b{color:#eee6d8}
 .new-game-map-card__size{
   flex:0 0 auto;
-  color:#7d847c;
-  font-size:8.5px;
+  color:#8f968e;
+  font-size:9px;
   line-height:1;
   font-variant-numeric:tabular-nums;
   letter-spacing:.02em;
   white-space:nowrap;
 }
-.new-game-map-card[data-map-kind="random"] .new-game-map-card__size{color:#958967}
-.new-game-map-card.is-selected .new-game-map-card__size{color:#aaa79d}
-.new-game-map-card.is-selected[data-map-kind="random"] .new-game-map-card__size{color:#cbb16e}
+.new-game-map-card[data-map-kind="random"] .new-game-map-card__size{color:#a09167}
+.new-game-map-card.is-selected .new-game-map-card__size{color:#b8b3a8}
+.new-game-map-card.is-selected[data-map-kind="random"] .new-game-map-card__size{color:#d2b66e}
 
 .new-game-detail{
   min-width:0;
