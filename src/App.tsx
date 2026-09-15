@@ -7,6 +7,7 @@ import type { Screen } from './app/ui-state';
 import { GameplayScreen } from './gameplay/GameplayScreen';
 import { MainMenu, type MainMenuAction } from './menu/MainMenu';
 import { SettingsPanel } from './settings/SettingsPanel';
+import { DialogHost, NotificationHost, useDialogSystem } from './ui/dialog/DialogSystem';
 
 const MAIN_BG = '/assets/wanhu-main-menu.png';
 const GAME_BG = '/assets/wanhu-gameplay-city.png';
@@ -16,7 +17,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(reviewBootstrap.screen);
   const [simScale, setSimScale] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [exitNotice, setExitNotice] = useState(false);
+  const dialogs = useDialogSystem();
 
   useEffect(() => {
     const updateScale = () => setSimScale(Math.min(window.innerWidth / 1920, window.innerHeight / 1080));
@@ -42,20 +43,20 @@ export default function App() {
     if (action === 'new') setScreen('newGame');
     if (action === 'load') setScreen('load');
     if (action === 'settings') setScreen('settings');
-    if (action === 'exit') setExitNotice(true);
+    if (action === 'exit') {
+      dialogs.confirm({
+        title: '退出游戏？',
+        message: '确定要退出《万户天工》吗？',
+        confirmText: '退出游戏',
+        onConfirm: () => dialogs.toast('原型环境不会真正退出程序。', 'neutral'),
+      });
+    }
   }
 
   return (
     <div className="viewport-shell">
       <main className="game-canvas" style={canvasStyle}>
-        {screen === 'menu' && (
-          <MainMenu
-            background={MAIN_BG}
-            exitNotice={exitNotice}
-            onAction={handleMenu}
-            onCloseNotice={() => setExitNotice(false)}
-          />
-        )}
+        {screen === 'menu' && <MainMenu background={MAIN_BG} onAction={handleMenu} />}
 
         {screen === 'newGame' && (
           <FlowBackdrop background={MAIN_BG}>
@@ -99,11 +100,11 @@ export default function App() {
           </FlowBackdrop>
         )}
 
-        {screen === 'gameplay' && (
-          <GameplayScreen background={GAME_BG} initialState={reviewBootstrap.gameplay} onMainMenu={() => setScreen('menu')} />
-        )}
+        {screen === 'gameplay' && <GameplayScreen background={GAME_BG} initialState={reviewBootstrap.gameplay} onMainMenu={() => setScreen('menu')} />}
 
         {loading && <div className="loading-layer"><div>万户天工</div><i /><span>正在进入昭平城…</span></div>}
+        <NotificationHost />
+        <DialogHost />
       </main>
     </div>
   );
