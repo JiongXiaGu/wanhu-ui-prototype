@@ -1,47 +1,58 @@
 /* Shared full-screen action bar semantics.
-   Footer surface may span the canvas, but actions stay anchored to a centered page-content container.
+   The footer surface spans the fixed 1920 canvas, while actions are inset to a page-specific safe width.
    Left = object/page management actions. Right = navigation / flow actions. */
 
+/* Page-specific action widths follow each page body with a small amount of breathing room. */
+.settings-space{--page-action-width:960px}
+.save-game-space{--page-action-width:1040px}
+.archive-space--load{--page-action-width:1520px}
+
 .global-space-footer{
-  padding-left:0!important;
-  padding-right:0!important;
-  justify-content:center!important;
+  padding-left:calc((100% - var(--page-action-width,1120px))/2)!important;
+  padding-right:calc((100% - var(--page-action-width,1120px))/2)!important;
+  justify-content:space-between!important;
 }
 
+/* Optional semantic wrapper for future pages. Existing pages do not need an extra DOM layer. */
 .global-space-footer__inner{
-  width:var(--page-action-width,1120px);
+  width:100%;
   height:100%;
-  margin:0 auto;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:24px;
 }
-
 .global-space-footer__left,
-.global-space-footer__right{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  min-width:0;
-}
-
+.global-space-footer__right{display:flex;align-items:center;gap:9px;min-width:0}
 .global-space-footer__right{margin-left:auto}
 
-/* Page-specific safe widths follow the visual body, not the 1920 canvas edge. */
-.settings-space{--page-action-width:960px}
-.save-game-space{--page-action-width:1040px}
-.archive-space--load{--page-action-width:1520px}
-
-/* Settings: management on the left, navigation on the right. */
-.settings-space__footer{
-  position:relative;
-  display:flex;
+/* Settings currently keeps both actions in its left DOM group; visually split them across the safe width. */
+.settings-space__footer{position:relative;display:flex;align-items:center}
+.settings-space__footer-left{
+  width:100%;
+  display:flex!important;
   align-items:center;
+  gap:10px;
 }
-.settings-space__footer-left,
-.settings-space__footer-right{display:flex;align-items:center;gap:10px}
-.settings-space__footer-right{margin-left:auto}
+.settings-space__footer-right{display:none!important}
+.settings-space__footer .settings-restore{order:1}
+.settings-space__footer .settings-footer-back{
+  order:2;
+  position:static!important;
+  right:auto!important;
+  top:auto!important;
+  margin-left:auto;
+  transform:none!important;
+}
+
+/* Load keeps explicit left/right groups. */
+.archive-space__footer-left,
+.archive-space__footer-right{display:flex;align-items:center;gap:9px}
+.archive-space__footer-right{margin-left:auto}
+
+/* Save keeps a left management group and a direct Back button. */
+.save-game-space__footer-left{display:flex;align-items:center;gap:9px}
+.save-game-space__back{margin-left:auto!important}
 
 /* Keep navigation actions visually stable across Settings / Load / Save. */
 .settings-footer-back,
@@ -52,7 +63,6 @@
   border-color:rgba(239,233,221,.105);
   background:rgba(255,255,255,.012);
 }
-
 .settings-footer-back:hover,
 .archive-footer-back:hover,
 .save-game-space__back:hover{
