@@ -1,4 +1,4 @@
-import type { KeyboardEvent, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 export type SaveKind = 'auto' | 'manual' | 'quick';
 export type SaveCompatibility = 'current' | 'outdated' | 'incompatible';
@@ -23,42 +23,13 @@ const kindLabels: Record<SaveKind, string> = {
 type Props = {
   save: SaveEntryCardData;
   selected: boolean;
-  editing?: boolean;
-  nameDraft?: string;
-  onNameDraftChange?: (value: string) => void;
-  onCommitRename?: () => void;
-  onCancelRename?: () => void;
   onSelect: () => void;
   onHover?: () => void;
   onDoubleClick?: () => void;
   actions: ReactNode;
-  confirmation?: ReactNode;
 };
 
-export function SaveEntryCard({
-  save,
-  selected,
-  editing = false,
-  nameDraft = '',
-  onNameDraftChange,
-  onCommitRename,
-  onCancelRename,
-  onSelect,
-  onHover,
-  onDoubleClick,
-  actions,
-  confirmation,
-}: Props) {
-  function handleRenameKey(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      onCommitRename?.();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      onCancelRename?.();
-    }
-  }
-
+export function SaveEntryCard({ save, selected, onSelect, onHover, onDoubleClick, actions }: Props) {
   return (
     <article
       data-save-kind={save.kind}
@@ -70,19 +41,7 @@ export function SaveEntryCard({
       <button type="button" className="archive-save-card__select" aria-label={`选择存档 ${save.name}`} onClick={onSelect}>
         <span className="archive-save-card__image" style={{ backgroundImage: `url(${save.image})` }} />
         <span className="archive-save-card__copy">
-          <span className="archive-save-card__title-row">
-            {editing ? (
-              <input
-                autoFocus
-                value={nameDraft}
-                aria-label="重命名存档"
-                onClick={(event) => event.stopPropagation()}
-                onChange={(event) => onNameDraftChange?.(event.target.value)}
-                onBlur={onCommitRename}
-                onKeyDown={handleRenameKey}
-              />
-            ) : <b>{save.name}</b>}
-          </span>
+          <span className="archive-save-card__title-row"><b>{save.name}</b></span>
           <span className="archive-save-card__time-row"><small>游戏时间</small><span>{save.gameDate}</span></span>
           <span className="archive-save-card__time-row"><small>保存时间</small><span>{save.savedAt}</span></span>
         </span>
@@ -96,7 +55,6 @@ export function SaveEntryCard({
       </div>
 
       <div className="archive-save-card__actions" aria-label="存档操作">{actions}</div>
-      {confirmation}
     </article>
   );
 }
