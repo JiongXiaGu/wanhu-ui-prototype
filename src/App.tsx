@@ -6,6 +6,7 @@ import { resolveReviewBootstrap } from './app/scenarios';
 import type { Screen } from './app/ui-state';
 import { GameplayScreen } from './gameplay/GameplayScreen';
 import { MainMenu, type MainMenuAction } from './menu/MainMenu';
+import { BindingDialogDemo } from './settings/BindingDialogDemo';
 import { SettingsPanel } from './settings/SettingsPanel';
 import { DialogHost, NotificationHost, useDialogSystem } from './ui/dialog/DialogSystem';
 
@@ -105,6 +106,7 @@ export default function App() {
         {loading && <div className="loading-layer"><div>万户天工</div><i /><span>正在进入昭平城…</span></div>}
         <NotificationHost />
         <DialogHost />
+        <BindingDialogDemo />
       </main>
     </div>
   );
