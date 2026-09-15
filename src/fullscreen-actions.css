@@ -2,6 +2,7 @@
    Left = object/page management actions. Right = navigation / flow actions. */
 
 .settings-space__footer{
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:flex-start;
@@ -10,7 +11,12 @@
 .settings-space__footer-left{display:contents}
 .settings-space__footer-right{display:none}
 .settings-space__footer .settings-restore{order:1}
-.settings-space__footer .settings-footer-back{order:3;margin-left:auto}
+.settings-space__footer .settings-footer-back{
+  position:absolute;
+  right:44px;
+  top:50%;
+  transform:translateY(-50%);
+}
 
 /* Keep navigation actions visually stable across Settings / Archive. */
 .settings-footer-back,
