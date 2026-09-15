@@ -3,13 +3,13 @@
    Left = object/page management actions. Right = navigation / flow actions. */
 
 /* Page-specific action widths follow each page body with a small amount of breathing room. */
-.settings-space{--page-action-width:960px}
-.save-game-space{--page-action-width:1040px}
-.archive-space--load{--page-action-width:1520px}
+.settings-space{--page-action-half-width:480px}
+.save-game-space{--page-action-half-width:520px}
+.archive-space--load{--page-action-half-width:760px}
 
 .global-space-footer{
-  padding-left:calc((100% - var(--page-action-width,1120px))/2)!important;
-  padding-right:calc((100% - var(--page-action-width,1120px))/2)!important;
+  padding-left:calc(50% - var(--page-action-half-width,560px))!important;
+  padding-right:calc(50% - var(--page-action-half-width,560px))!important;
   justify-content:space-between!important;
 }
 
