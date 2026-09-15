@@ -22,7 +22,7 @@ if (!topShellBox) throw new Error('Unified gameplay top shell must be visible.')
 const topShellCenter = topShellBox.x + topShellBox.width / 2;
 if (Math.abs(topShellCenter - 960) > 2) throw new Error(`Top shell must be centered. center=${topShellCenter.toFixed(1)}`);
 if (topShellBox.x < 0 || topShellBox.x + topShellBox.width > 1920) throw new Error('Top shell must not be clipped.');
-if (topShellBox.height < 95 || topShellBox.height > 101) throw new Error(`Normal gameplay top shell must keep the compact 56+42 proportion. height=${topShellBox.height}`);
+if (topShellBox.height < 90 || topShellBox.height > 94) throw new Error(`Normal gameplay top shell must keep the compact overlapped 56+38 proportion. height=${topShellBox.height}`);
 if ((await page.locator('.city-management-rail').count()) !== 0) throw new Error('Legacy left Management Rail must not be rendered.');
 if ((await page.locator('.quick-controls').count()) !== 0) throw new Error('Legacy standalone Quick Controls must not be rendered.');
 
@@ -33,26 +33,33 @@ if (!statusBox || !resourceBox || !navBox) throw new Error('Both top shell rows 
 if (statusBox.width < 920 || statusBox.width > 960) throw new Error(`Persistent status row must stay near the 940px baseline. width=${statusBox.width}`);
 if (statusBox.height < 54 || statusBox.height > 58) throw new Error(`Persistent status row must stay near the 56px baseline. height=${statusBox.height}`);
 if (Math.abs((resourceBox.x + resourceBox.width / 2) - 960) > 2) throw new Error('Resources must remain visually centered in the status row.');
-if (navBox.width < 630 || navBox.width > 670) throw new Error(`Control tray must stay near the 650px baseline. width=${navBox.width}`);
-if (navBox.height < 40 || navBox.height > 44) throw new Error(`Control tray must stay near the 42px baseline. height=${navBox.height}`);
-const navRatio = navBox.width / statusBox.width;
-if (navRatio < .66 || navRatio > .72) throw new Error(`Control tray must remain a narrower child of the status row. ratio=${navRatio.toFixed(3)}`);
+if (navBox.width < 468 || navBox.width > 492) throw new Error(`Control tray must stay near the compact 480px baseline. width=${navBox.width}`);
+if (navBox.height < 36 || navBox.height > 40) throw new Error(`Control tray must stay near the 38px baseline. height=${navBox.height}`);
+const rowOverlap = (statusBox.y + statusBox.height) - navBox.y;
+if (rowOverlap < 1 || rowOverlap > 3) throw new Error(`Top shell rows should overlap by about 2px to avoid a bright seam. overlap=${rowOverlap}`);
 if ((await page.locator('.gameplay-top-navigation__management > button').count()) !== 5) throw new Error('Top management must expose exactly five primary domains.');
 if ((await page.locator('.gameplay-top-navigation__management > button > span').count()) !== 0) throw new Error('Primary management navigation must remain icon-only.');
 const firstNavIcon = await page.locator('.gameplay-top-navigation__button svg').first().boundingBox();
-if (!firstNavIcon || firstNavIcon.width < 18 || firstNavIcon.width > 21) throw new Error('Top navigation icons must remain readable at roughly 18-20px.');
+if (!firstNavIcon || firstNavIcon.width < 17 || firstNavIcon.width > 20) throw new Error('Top navigation icons must remain readable at roughly 18px.');
+
 const viewBox = await page.locator('.gameplay-top-navigation__view').boundingBox();
 const managementNavBox = await page.locator('.gameplay-top-navigation__management').boundingBox();
-const timeBox = await page.locator('.gameplay-top-navigation__time').boundingBox();
-if (!viewBox || !managementNavBox || !timeBox) throw new Error('View, management and simulation groups must all exist in the second row.');
-if (!(viewBox.x < managementNavBox.x && managementNavBox.x < timeBox.x)) throw new Error('Second-row order must be View -> Management -> Simulation.');
+const sceneBox = await page.locator('.gameplay-top-navigation__scene').boundingBox();
+if (!viewBox || !managementNavBox || !sceneBox) throw new Error('View, management and scene-tool groups must all exist in the second row.');
+if (!(viewBox.x < managementNavBox.x && managementNavBox.x < sceneBox.x)) throw new Error('Second-row order must be View -> Management -> Scene Tools.');
 
-// Weather is now only a reserved player-facing entry; it must not open the old adjustment flyout.
-await page.getByRole('button', { name: '天气', exact: true }).click();
-if ((await page.locator('.right-edge-flyout--weather').count()) !== 0) throw new Error('Weather button must not open the legacy weather adjustment flyout.');
-await page.getByRole('button', { name: '暂停时间', exact: true }).click();
-if (!(await page.getByRole('button', { name: '暂停时间', exact: true }).getAttribute('class'))?.includes('is-active')) throw new Error('Simulation pause must be a real speed state.');
-await page.getByRole('button', { name: '1 倍速', exact: true }).click();
+const speedControls = page.locator('.gameplay-top-status__time-controls');
+if ((await speedControls.getByRole('button').count()) !== 4) throw new Error('Status row must own four simulation speed controls.');
+if ((await speedControls.locator('button').filter({ hasText: /×|x|X|倍/ }).count()) !== 0) throw new Error('Simulation speed controls must be icon-only.');
+await speedControls.getByRole('button', { name: '暂停时间', exact: true }).click();
+if (!(await speedControls.getByRole('button', { name: '暂停时间', exact: true }).getAttribute('class'))?.includes('is-active')) throw new Error('Simulation pause must be a real speed state.');
+await speedControls.getByRole('button', { name: '正常速度', exact: true }).click();
+
+// Weather is a real scene-tool entry again and opens the Weather Control flyout.
+await page.getByRole('button', { name: '天气控制', exact: true }).click();
+await page.waitForSelector('.right-edge-flyout--weather');
+await page.getByRole('button', { name: '关闭面板', exact: true }).click();
+await page.waitForSelector('.right-edge-flyout--weather', { state: 'detached' });
 
 const worldTools = page.locator('.world-utility-toolbar');
 if ((await worldTools.count()) !== 1) throw new Error('Normal Gameplay must show one persistent World Utility Toolbar.');
@@ -106,7 +113,7 @@ for (const selector of ['.command-bar', '.world-utility-toolbar', '.gameplay-ope
 const managementBox = await page.locator('.management-space__panel').boundingBox();
 if (!managementBox) throw new Error('Management Space panel must be visible.');
 if (managementBox.width < 1200 || managementBox.height < 700) throw new Error('Management Space must remain a large central workspace.');
-if (managementBox.x < 0 || managementBox.y < 118 || managementBox.x + managementBox.width > 1920 || managementBox.y + managementBox.height > 1080) {
+if (managementBox.x < 0 || managementBox.y < 114 || managementBox.x + managementBox.width > 1920 || managementBox.y + managementBox.height > 1080) {
   throw new Error('Management Space must fit below the unified top shell inside the 1920x1080 canvas.');
 }
 await page.screenshot({ path: `${outDir}/02b-finance-top-navigation.png` });
@@ -119,7 +126,7 @@ await page.keyboard.press('Escape');
 await page.waitForSelector('.management-space', { state: 'detached' });
 await page.waitForSelector('.gameplay-top-navigation');
 
-// Information views now own the left edge of the control tray.
+// Information views own the left edge of the control tray.
 await page.getByRole('button', { name: '信息视图', exact: true }).click();
 await page.waitForSelector('.gameplay-top-map-panel');
 await page.waitForTimeout(100);

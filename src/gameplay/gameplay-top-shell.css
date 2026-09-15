@@ -1,9 +1,9 @@
 /* Unified gameplay top shell.
-   Row 1: world state (left), centered resources, scene controls (right).
-   Row 2: information views (left), five primary management domains (center), simulation speed (right). */
+   Row 1: world state (left), centered resources, simulation speed (right).
+   Row 2: information views (left), five primary management domains (center), scene tools (right). */
 
 .gameplay-top-shell{
-  --top-nav-width:650px;
+  --top-nav-width:480px;
   position:absolute;
   left:50%;
   top:16px;
@@ -19,6 +19,7 @@
 /* Primary row: fixed left/right lanes guarantee that resources stay visually centered. */
 .gameplay-top-status{
   position:relative;
+  z-index:2;
   width:100%;
   height:56px;
   flex:0 0 56px;
@@ -33,7 +34,10 @@
   box-shadow:0 15px 38px rgba(5,8,7,.23),inset 0 1px 0 rgba(255,255,255,.022),inset 0 -1px 0 rgba(0,0,0,.16);
   backdrop-filter:blur(12px);
 }
-.gameplay-top-shell.has-navigation .gameplay-top-status{border-radius:11px 11px 7px 7px}
+.gameplay-top-shell.has-navigation .gameplay-top-status{
+  border-radius:11px 11px 6px 6px;
+  border-bottom-color:rgba(239,233,221,.025);
+}
 
 .gameplay-top-status__world-state{
   height:100%;
@@ -101,43 +105,35 @@
   font-variant-numeric:tabular-nums;
 }
 
-.gameplay-top-status__scene-controls{
+.gameplay-top-status__time-controls{
   height:100%;
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  gap:4px;
-  padding-right:4px;
+  gap:2px;
+  padding-right:5px;
 }
-.gameplay-top-status__button,
 .gameplay-top-speed-button{
   position:relative;
-  height:38px;
-  border:0;
-  border-radius:4px;
-  background:transparent;
-  color:#929990;
-  cursor:pointer;
-  transition:background .14s ease,color .14s ease,transform .08s ease;
-}
-.gameplay-top-status__button{
-  width:48px;
-  min-width:48px;
+  width:36px;
+  min-width:36px;
+  height:36px;
   padding:0;
   display:grid;
   place-items:center;
+  border:0;
+  border-radius:4px;
+  background:transparent;
+  color:#8e958d;
+  cursor:pointer;
+  transition:background .14s ease,color .14s ease,transform .08s ease;
 }
-.gameplay-top-status__button svg{width:16px;height:16px;stroke-width:1.6}
-.gameplay-top-status__button:hover,
+.gameplay-top-speed-button svg{width:15px;height:15px;stroke-width:1.7}
 .gameplay-top-speed-button:hover{background:rgba(255,255,255,.038);color:#cfccc3}
-.gameplay-top-status__button.is-active,
 .gameplay-top-speed-button.is-active{background:rgba(201,165,95,.09);color:#ddbf78}
-.gameplay-top-status__button:active,
 .gameplay-top-speed-button:active{transform:translateY(1px)}
-.gameplay-top-status__weather-entry{color:#a89d78}
 
-/* Compact icon tooltips for the scene controls. */
-.gameplay-top-status__button[data-tooltip]::after,
+/* Compact icon tooltips for top controls. */
 .gameplay-top-navigation__button[data-tooltip]::after,
 .gameplay-top-speed-button[data-tooltip]::after{
   content:attr(data-tooltip);
@@ -161,7 +157,6 @@
   transition-delay:0s;
   z-index:75;
 }
-.gameplay-top-status__button[data-tooltip]:hover::after,
 .gameplay-top-navigation__button[data-tooltip]:hover::after,
 .gameplay-top-speed-button[data-tooltip]:hover::after{
   opacity:1;
@@ -170,28 +165,42 @@
   transition-delay:.28s;
 }
 
-/* Secondary row: view / management / simulation form one compact control tray. */
+/* Secondary row: observation / management / scene tools form a denser attached tray. */
 .gameplay-top-navigation{
   position:relative;
+  z-index:1;
   width:var(--top-nav-width);
-  height:42px;
-  flex:0 0 42px;
-  margin-top:-1px;
-  padding:0 8px;
+  height:38px;
+  flex:0 0 38px;
+  margin-top:-2px;
+  padding:0 6px;
   display:grid;
-  grid-template-columns:52px 1px minmax(0,1fr) 1px 178px;
+  grid-template-columns:44px 1px minmax(0,1fr) 1px 126px;
   align-items:stretch;
   pointer-events:auto;
-  background:linear-gradient(180deg,rgba(22,30,26,.965),rgba(16,23,20,.96));
-  border:1px solid rgba(239,233,221,.115);
-  border-top-color:rgba(239,233,221,.065);
+  background:linear-gradient(180deg,rgba(22,30,26,.968),rgba(16,23,20,.963));
+  border:1px solid rgba(239,233,221,.105);
+  border-top:0;
   border-radius:0 0 9px 9px;
-  box-shadow:0 12px 30px rgba(5,8,7,.20),inset 0 1px 0 rgba(255,255,255,.008);
+  box-shadow:0 12px 30px rgba(5,8,7,.20);
   backdrop-filter:blur(12px);
+}
+.gameplay-top-navigation::before{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  top:-2px;
+  height:3px;
+  background:rgba(20,28,24,.97);
+  pointer-events:none;
+  z-index:0;
 }
 .gameplay-top-navigation__view,
 .gameplay-top-navigation__management,
-.gameplay-top-navigation__time{
+.gameplay-top-navigation__scene{
+  position:relative;
+  z-index:1;
   min-width:0;
   height:100%;
   display:flex;
@@ -199,7 +208,7 @@
 }
 .gameplay-top-navigation__view{justify-content:center}
 .gameplay-top-navigation__management{justify-content:center}
-.gameplay-top-navigation__time{justify-content:flex-end;align-items:center;gap:2px;padding-left:8px}
+.gameplay-top-navigation__scene{justify-content:flex-end;align-items:center;gap:0}
 
 .gameplay-top-navigation__button{
   position:relative;
@@ -213,9 +222,10 @@
   cursor:pointer;
   transition:background .14s ease,color .14s ease,transform .08s ease;
 }
-.gameplay-top-navigation__view .gameplay-top-navigation__button{width:44px;flex:0 0 44px}
-.gameplay-top-navigation__management .gameplay-top-navigation__button{width:66px;flex:0 0 66px}
-.gameplay-top-navigation__button svg{width:19px;height:19px;stroke-width:1.55;pointer-events:none}
+.gameplay-top-navigation__view .gameplay-top-navigation__button{width:42px;flex:0 0 42px}
+.gameplay-top-navigation__management .gameplay-top-navigation__button{width:50px;flex:0 0 50px}
+.gameplay-top-navigation__scene .gameplay-top-navigation__button{width:42px;flex:0 0 42px}
+.gameplay-top-navigation__button svg{width:18px;height:18px;stroke-width:1.55;pointer-events:none}
 .gameplay-top-navigation__button:hover{background:rgba(255,255,255,.028);color:#c9c7be}
 .gameplay-top-navigation__button:active{transform:translateY(1px)}
 .gameplay-top-navigation__button.is-active{color:#dec17b;background:linear-gradient(180deg,rgba(201,165,95,.10),rgba(201,165,95,.028))}
@@ -231,31 +241,21 @@
 }
 .gameplay-top-navigation__separator{
   width:1px;
-  height:20px;
+  height:18px;
   align-self:center;
   margin:0;
-  background:rgba(239,233,221,.085);
+  background:rgba(239,233,221,.075);
 }
 .gameplay-top-navigation__dot{
   position:absolute;
-  right:8px;
-  top:8px;
+  right:7px;
+  top:7px;
   width:4px;
   height:4px;
   border-radius:50%;
   background:#d6b36c;
   box-shadow:0 0 7px rgba(201,165,95,.38);
 }
-
-.gameplay-top-speed-button{
-  width:38px;
-  min-width:38px;
-  padding:0;
-  display:grid;
-  place-items:center;
-  font-size:9.5px;
-}
-.gameplay-top-speed-button svg{width:14px;height:14px;stroke-width:1.7}
 
 /* Information views drop from the left observation slot of the attached tray. */
 .gameplay-top-map-panel{
@@ -299,7 +299,7 @@
 @keyframes gameplay-top-map-enter{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
 /* Management starts below the shared top shell and never repeats first-level navigation. */
-.gameplay-screen--management .management-space__panel{top:124px;height:830px}
+.gameplay-screen--management .management-space__panel{top:120px;height:834px}
 .gameplay-screen--management .management-space__header{height:64px;flex:0 0 64px;padding:0 18px 0 24px;grid-template-columns:1fr 36px;gap:16px}
 .gameplay-screen--management .management-space__heading{gap:11px}
 .gameplay-screen--management .management-space__heading h2{font-size:20px}

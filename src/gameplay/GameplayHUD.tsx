@@ -5,14 +5,17 @@ import {
   Box,
   Building2,
   Camera,
+  ChevronsRight,
   CloudSun,
   Coins,
   Droplets,
   Eye,
+  FastForward,
   Landmark,
   Layers3,
   Menu as MenuIcon,
   Pause,
+  Play,
   Route,
   ScrollText,
   Shield,
@@ -32,6 +35,12 @@ interface MapViewItem {
 
 interface ManagementPrimaryItem {
   id: Exclude<ManagementView, 'none'>;
+  label: string;
+  icon: LucideIcon;
+}
+
+interface SpeedControlItem {
+  value: Speed;
   label: string;
   icon: LucideIcon;
 }
@@ -67,6 +76,13 @@ const MANAGEMENT_PRIMARY: ManagementPrimaryItem[] = [
   { id: 'governance', label: '宫殿', icon: Landmark },
 ];
 
+const SPEED_CONTROLS: SpeedControlItem[] = [
+  { value: 0, label: '暂停时间', icon: Pause },
+  { value: 1, label: '正常速度', icon: Play },
+  { value: 2, label: '加速时间', icon: ChevronsRight },
+  { value: 4, label: '高速时间', icon: FastForward },
+];
+
 export function GameplayHUD({
   flyout,
   management,
@@ -95,12 +111,6 @@ export function GameplayHUD({
     setMapPanelOpen((open) => !open);
   }
 
-  function useReservedWeatherEntry() {
-    // Weather adjustment is no longer a player-facing action. Keep the slot reserved
-    // for the future weather / almanac system and only close an already-open legacy flyout.
-    if (flyout === 'weather') onFlyoutChange('none');
-  }
-
   return (
     <div className={`gameplay-top-shell ${showManagementNavigation ? 'has-navigation' : ''}`}>
       <div className="gameplay-top-status">
@@ -119,34 +129,19 @@ export function GameplayHUD({
           <ResourceValue icon={<Layers3 size={13} />} label="石料" value="2,780" />
         </div>
 
-        <div className="gameplay-top-status__scene-controls" aria-label="场景控制">
-          <button
-            type="button"
-            className={`gameplay-top-status__button ${flyout === 'camera' ? 'is-active' : ''}`}
-            aria-label="相机"
-            data-tooltip="相机"
-            onClick={() => onFlyoutChange(flyout === 'camera' ? 'none' : 'camera')}
-          >
-            <Camera />
-          </button>
-          <button
-            type="button"
-            className="gameplay-top-status__button gameplay-top-status__weather-entry"
-            aria-label="天气"
-            data-tooltip="天气"
-            onClick={useReservedWeatherEntry}
-          >
-            <CloudSun />
-          </button>
-          <button
-            type="button"
-            className="gameplay-top-status__button"
-            aria-label="菜单"
-            data-tooltip="菜单"
-            onClick={onPause}
-          >
-            <MenuIcon />
-          </button>
+        <div className="gameplay-top-status__time-controls" aria-label="时间控制">
+          {SPEED_CONTROLS.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              type="button"
+              className={`gameplay-top-speed-button ${speed === value ? 'is-active' : ''}`}
+              aria-label={label}
+              data-tooltip={label}
+              onClick={() => onSpeedChange(value)}
+            >
+              <Icon />
+            </button>
+          ))}
         </div>
       </div>
 
@@ -187,27 +182,34 @@ export function GameplayHUD({
 
           <i className="gameplay-top-navigation__separator" />
 
-          <div className="gameplay-top-navigation__time" aria-label="时间控制">
+          <div className="gameplay-top-navigation__scene" aria-label="场景工具">
             <button
               type="button"
-              className={`gameplay-top-speed-button ${speed === 0 ? 'is-active' : ''}`}
-              aria-label="暂停时间"
-              data-tooltip="暂停"
-              onClick={() => onSpeedChange(0)}
+              className={`gameplay-top-navigation__button ${flyout === 'camera' ? 'is-active' : ''}`}
+              aria-label="相机"
+              data-tooltip="相机"
+              onClick={() => onFlyoutChange(flyout === 'camera' ? 'none' : 'camera')}
             >
-              <Pause />
+              <Camera />
             </button>
-            {([1, 2, 4] as Speed[]).map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={`gameplay-top-speed-button ${speed === value ? 'is-active' : ''}`}
-                aria-label={`${value} 倍速`}
-                onClick={() => onSpeedChange(value)}
-              >
-                ×{value}
-              </button>
-            ))}
+            <button
+              type="button"
+              className={`gameplay-top-navigation__button ${flyout === 'weather' ? 'is-active' : ''}`}
+              aria-label="天气控制"
+              data-tooltip="天气控制"
+              onClick={() => onFlyoutChange(flyout === 'weather' ? 'none' : 'weather')}
+            >
+              <CloudSun />
+            </button>
+            <button
+              type="button"
+              className="gameplay-top-navigation__button"
+              aria-label="菜单"
+              data-tooltip="菜单"
+              onClick={onPause}
+            >
+              <MenuIcon />
+            </button>
           </div>
         </nav>
       )}
