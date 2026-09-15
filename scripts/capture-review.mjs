@@ -33,7 +33,8 @@ const scenarios = [
   { file: '12k-settings-safe-confirmation.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-safe-confirmation' },
   { file: '12l-settings-safe-rollback.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-safe-rollback' },
   { file: '12m-settings-safe-kept.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-safe-keep' },
-  { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save' },
+  { file: '13-pause-save.png', review: 'pause-save', waitFor: '.save-game-space' },
+  { file: '13a-pause-save-group-rename.png', review: 'pause-save', waitFor: '.save-game-space', action: 'save-group-rename' },
   { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
   { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load' },
   { file: '15a-menu-load-actions.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-save-actions' },
@@ -181,6 +182,15 @@ for (const scenario of scenarios) {
     if (!(await scale.textContent())?.includes('125%')) throw new Error('Keeping a safe display change should preserve the selected UI scale.');
   }
 
+  if (scenario.action === 'save-group-rename') {
+    await page.getByRole('button', { name: '更改存档组名称', exact: true }).click();
+    const input = page.getByRole('textbox', { name: '更改存档组名称' });
+    if ((await input.count()) !== 1) throw new Error('Save Space group rename should enter inline editing.');
+    await input.fill('昭平城测试组');
+    await page.keyboard.press('Enter');
+    if ((await page.locator('.save-current-game h2').textContent())?.trim() !== '昭平城测试组') throw new Error('Save Space should commit the edited save-group name.');
+  }
+
   if (scenario.action === 'archive-save-actions') {
     const card = page.locator('.archive-save-card').nth(1);
     await card.hover();
@@ -252,6 +262,13 @@ for (const scenario of scenarios) {
     if (!restoreBox || !backBox || restoreBox.x >= backBox.x) throw new Error('Settings Restore must stay on the left and Back on the far right.');
     if (await page.getByRole('button', { name: '取消', exact: true }).count()) throw new Error('Settings should not expose a persistent Cancel button.');
     if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Settings should not expose a persistent Apply button.');
+  }
+
+  if (scenario.review === 'pause-save') {
+    if ((await page.locator('.save-game-space').count()) !== 1) throw new Error('Pause save flow should use the dedicated SaveGameSpace.');
+    if (await page.locator('.archive-groups').count()) throw new Error('Save Space must not expose Load Space game-group browser UI.');
+    if ((await page.getByRole('button', { name: '更改存档组名称', exact: true }).count()) !== 1) throw new Error('Save Space footer should expose the save-group rename action on the left.');
+    if ((await page.getByRole('button', { name: '返回', exact: true }).count()) !== 1) throw new Error('Save Space footer should expose Back on the right.');
   }
 
   if (scenario.review === 'load') {
