@@ -1,37 +1,36 @@
-/* Context shortcut rail — read-only hints, never styled like clickable buttons. */
+/* Context shortcut rail — read-only tertiary surface, never styled like clickable controls.
+   Geometry is owned by gameplay-hud-layout.css. */
 .gameplay-operation-hints{
-  right:12px;
-  bottom:12px;
   box-sizing:border-box;
   width:232px;
   height:auto;
   min-height:0;
   max-height:none;
-  padding:9px 10px 10px;
-  border:1px solid rgba(239,233,221,.045);
+  padding:8px 10px 9px;
+  border:1px solid rgba(239,233,221,.040);
   border-radius:2px;
-  background:linear-gradient(180deg,rgba(20,27,24,.54),rgba(17,23,20,.48));
+  background:linear-gradient(180deg,rgba(20,27,24,.50),rgba(17,23,20,.44));
   box-shadow:none;
-  backdrop-filter:blur(4px);
+  backdrop-filter:blur(5px);
 }
 
 .operation-hints__task{
-  min-height:23px;
+  min-height:22px;
   height:auto;
-  margin:0 0 4px;
-  padding:0 0 6px;
+  margin:0 0 3px;
+  padding:0 0 5px;
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  border-bottom:1px solid rgba(239,233,221,.045);
+  border-bottom:1px solid rgba(239,233,221,.040);
   text-align:right;
   white-space:nowrap;
 }
 .operation-hints__task>strong{
-  color:#c9c6bd;
-  font-size:10.5px;
-  font-weight:550;
-  letter-spacing:.012em;
+  color:#a9aca3;
+  font-size:9.8px;
+  font-weight:520;
+  letter-spacing:.014em;
 }
 
 .operation-hints__group{
@@ -43,10 +42,10 @@
   margin:0;
 }
 .operation-hints__row{
-  min-height:23px;
+  min-height:22px;
   height:auto;
   display:grid;
-  grid-template-columns:104px 1fr;
+  grid-template-columns:96px 1fr;
   align-items:center;
   column-gap:10px;
   background:transparent;
@@ -54,7 +53,7 @@
 .operation-hints__binding{
   min-width:0;
   display:block;
-  color:#a69b78;
+  color:#938d77;
   white-space:nowrap;
 }
 .operation-hints__binding kbd{
@@ -68,16 +67,16 @@
   color:inherit;
   font-family:inherit;
   font-size:8.5px;
-  font-weight:540;
+  font-weight:530;
   line-height:1;
   letter-spacing:.01em;
   box-shadow:none;
 }
-.operation-hints__binding kbd::before{content:'[';color:#847957}
-.operation-hints__binding kbd::after{content:']';color:#847957}
+.operation-hints__binding kbd::before{content:'[';color:#77725f}
+.operation-hints__binding kbd::after{content:']';color:#77725f}
 .operation-hints__description{
   min-width:0;
-  color:#858c84;
+  color:#7f867f;
   font-size:8.8px;
   line-height:1;
   text-align:right;
@@ -85,10 +84,10 @@
 }
 .operation-hints__row.is-primary .operation-hints__binding,
 .operation-hints__row.is-primary .operation-hints__binding kbd{
-  color:#c4a866;
+  color:#b79d62;
 }
 .operation-hints__row.is-primary .operation-hints__description{
-  color:#aaa79e;
+  color:#9e9d95;
 }
 
 /* Only modal/pause states hide the rail. Scene parameter panels never alter it. */
