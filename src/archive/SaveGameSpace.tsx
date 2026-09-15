@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
-import { ChevronLeft, Pencil, Save, Trash2, X, Zap } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, Pencil, Save, Trash2, Zap } from 'lucide-react';
+import { useDialogSystem } from '../ui/dialog/DialogSystem';
 import { SaveEntryCard, type SaveCompatibility, type SaveEntryCardData, type SaveKind } from './SaveEntryCard';
 
 interface SaveGameSpaceProps {
@@ -78,20 +79,12 @@ function nextSerial(saves: SaveEntry[], kind: SaveKind) {
 }
 
 export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
+  const dialogs = useDialogSystem();
   const [groupName, setGroupName] = useState(INITIAL_GROUP_NAME);
-  const [editingGroupName, setEditingGroupName] = useState(false);
-  const [groupNameDraft, setGroupNameDraft] = useState(INITIAL_GROUP_NAME);
   const [saves, setSaves] = useState<SaveEntry[]>(() => structuredClone(initialSaves));
   const [filter, setFilter] = useState<SaveFilter>('all');
   const [hideOutdated, setHideOutdated] = useState(false);
   const [selectedId, setSelectedId] = useState(saves[0]?.id ?? '');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [nameDraft, setNameDraft] = useState('');
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [newNameDraft, setNewNameDraft] = useState('');
-  const [pendingOverwriteId, setPendingOverwriteId] = useState<string | null>(null);
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [toast, setToast] = useState('');
 
   const visibleSaves = useMemo(() => [...saves]
     .sort((a, b) => b.order - a.order)
@@ -106,159 +99,132 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
     if (!visibleSaves.some((save) => save.id === selectedId)) setSelectedId(visibleSaves[0].id);
   }, [visibleSaves, selectedId]);
 
-  useEffect(() => {
-    if (!toast) return;
-    const timer = window.setTimeout(() => setToast(''), 1800);
-    return () => window.clearTimeout(timer);
-  }, [toast]);
-
-  useEffect(() => {
-    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      if (editingGroupName || editingId || saveDialogOpen || pendingOverwriteId || pendingDeleteId) {
-        event.preventDefault();
-        event.stopPropagation();
-        setEditingGroupName(false);
-        setEditingId(null);
-        setSaveDialogOpen(false);
-        setPendingOverwriteId(null);
-        setPendingDeleteId(null);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown, true);
-    return () => window.removeEventListener('keydown', handleKeyDown, true);
-  }, [editingGroupName, editingId, saveDialogOpen, pendingOverwriteId, pendingDeleteId]);
-
-  function closeTransientActions() {
-    setEditingId(null);
-    setSaveDialogOpen(false);
-    setPendingOverwriteId(null);
-    setPendingDeleteId(null);
-  }
-
-  function startGroupRename() {
-    setGroupNameDraft(groupName);
-    setEditingGroupName(true);
-    closeTransientActions();
-  }
-
-  function commitGroupRename() {
-    const next = groupNameDraft.trim();
-    if (next) setGroupName(next);
-    setEditingGroupName(false);
-  }
-
-  function openSaveDialog() {
-    setNewNameDraft(`手动存档.${nextSerial(saves, 'manual')}`);
-    setSaveDialogOpen(true);
-    setEditingGroupName(false);
-    setEditingId(null);
-    setPendingOverwriteId(null);
-    setPendingDeleteId(null);
-  }
-
-  function createEntry(kind: 'manual' | 'quick', name: string): SaveEntry {
+  function buildCurrentEntry(kind: 'manual' | 'quick', name: string, current: SaveEntry[]) {
     return {
-      id: `${kind}-new-${Date.now()}`,
+      id: `${kind}-new-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       name,
       kind,
       gameDate: CURRENT_GAME_DATE,
       savedAt: CURRENT_SAVED_AT,
       image: '/assets/wanhu-gameplay-city.png',
       version: CURRENT_VERSION,
-      compatibility: 'current',
-      order: Math.max(...saves.map((save) => save.order), 0) + 1,
+      compatibility: 'current' as const,
+      order: Math.max(...current.map((save) => save.order), 0) + 1,
     };
   }
 
-  function commitManualSave() {
-    const name = newNameDraft.trim() || `手动存档.${nextSerial(saves, 'manual')}`;
-    const next = createEntry('manual', name);
-    setSaves((current) => [next, ...current]);
-    setSelectedId(next.id);
-    setFilter('all');
-    setSaveDialogOpen(false);
-    setToast(`已保存 ${next.name}`);
+  function startGroupRename() {
+    dialogs.input({
+      title: '更改存档组名称',
+      label: '名称',
+      initialValue: groupName,
+      confirmText: '确认',
+      onConfirm: setGroupName,
+    });
+  }
+
+  function openSaveDialog() {
+    const defaultName = `手动存档.${nextSerial(saves, 'manual')}`;
+    dialogs.input({
+      title: '保存存档',
+      label: '存档名称',
+      initialValue: defaultName,
+      confirmText: '保存',
+      onConfirm: (name) => {
+        let created: SaveEntry | null = null;
+        setSaves((current) => {
+          created = buildCurrentEntry('manual', name || defaultName, current);
+          return [created, ...current];
+        });
+        window.setTimeout(() => {
+          if (!created) return;
+          setSelectedId(created.id);
+          setFilter('all');
+          dialogs.toast(`已保存 ${created.name}`, 'success');
+        }, 0);
+      },
+    });
   }
 
   function quickSave() {
     const name = `快速存档.${nextSerial(saves, 'quick')}`;
-    const next = createEntry('quick', name);
+    let created: SaveEntry | null = null;
     setSaves((current) => {
+      created = buildCurrentEntry('quick', name, current);
       const quick = current.filter((save) => save.kind === 'quick').sort((a, b) => b.order - a.order);
       const removeId = quick.length >= QUICK_SAVE_LIMIT ? quick[quick.length - 1]?.id : null;
       const remaining = removeId ? current.filter((save) => save.id !== removeId) : current;
-      return [next, ...remaining];
+      return [created, ...remaining];
     });
-    setSelectedId(next.id);
-    setFilter('all');
-    setToast(`已创建 ${name}`);
+    window.setTimeout(() => {
+      if (!created) return;
+      setSelectedId(created.id);
+      setFilter('all');
+      dialogs.toast(`已创建 ${created.name}`, 'success');
+    }, 0);
   }
 
   function startRename(save: SaveEntry) {
     if (save.kind !== 'manual') return;
     setSelectedId(save.id);
-    setNameDraft(save.name);
-    setEditingId(save.id);
-    setEditingGroupName(false);
-    setPendingOverwriteId(null);
-    setPendingDeleteId(null);
+    dialogs.input({
+      title: '重命名存档',
+      label: '名称',
+      initialValue: save.name,
+      confirmText: '确认',
+      onConfirm: (name) => setSaves((current) => current.map((item) => item.id === save.id ? { ...item, name } : item)),
+    });
   }
 
-  function commitRename(saveId: string) {
-    const name = nameDraft.trim();
-    if (name) setSaves((current) => current.map((save) => save.id === saveId ? { ...save, name } : save));
-    setEditingId(null);
+  function requestOverwrite(save: SaveEntry) {
+    setSelectedId(save.id);
+    dialogs.confirm({
+      title: '覆盖存档？',
+      message: `当前游戏状态将替换“${save.name}”。`,
+      confirmText: '覆盖存档',
+      onConfirm: () => {
+        setSaves((current) => {
+          const nextOrder = Math.max(...current.map((item) => item.order), 0) + 1;
+          return current.map((item) => item.id === save.id ? {
+            ...item,
+            gameDate: CURRENT_GAME_DATE,
+            savedAt: CURRENT_SAVED_AT,
+            image: '/assets/wanhu-gameplay-city.png',
+            version: CURRENT_VERSION,
+            compatibility: 'current',
+            order: nextOrder,
+          } : item);
+        });
+        dialogs.toast(`已覆盖 ${save.name}`, 'success');
+      },
+    });
   }
 
-  function overwriteSave(saveId: string) {
-    const nextOrder = Math.max(...saves.map((save) => save.order), 0) + 1;
-    setSaves((current) => current.map((save) => save.id === saveId ? {
-      ...save,
-      gameDate: CURRENT_GAME_DATE,
-      savedAt: CURRENT_SAVED_AT,
-      image: '/assets/wanhu-gameplay-city.png',
-      version: CURRENT_VERSION,
-      compatibility: 'current',
-      order: nextOrder,
-    } : save));
-    setSelectedId(saveId);
-    setPendingOverwriteId(null);
-    const target = saves.find((save) => save.id === saveId);
-    setToast(`已覆盖 ${target?.name ?? '手动存档'}`);
-  }
-
-  function deleteSave(saveId: string) {
-    const remaining = saves.filter((save) => save.id !== saveId);
-    setSaves(remaining);
-    if (selectedId === saveId) setSelectedId([...remaining].sort((a, b) => b.order - a.order)[0]?.id ?? '');
-    setPendingDeleteId(null);
-  }
-
-  function handleRenameKey(event: KeyboardEvent<HTMLInputElement>, commit: () => void, cancel: () => void) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      commit();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      cancel();
-    }
+  function requestDelete(save: SaveEntry) {
+    setSelectedId(save.id);
+    dialogs.confirm({
+      title: '删除存档？',
+      message: `“${save.name}”将被永久删除。`,
+      confirmText: '删除',
+      tone: 'danger',
+      onConfirm: () => {
+        setSaves((current) => {
+          const remaining = current.filter((item) => item.id !== save.id);
+          if (selectedId === save.id) setSelectedId([...remaining].sort((a, b) => b.order - a.order)[0]?.id ?? '');
+          return remaining;
+        });
+        dialogs.toast(`已删除 ${save.name}`, 'neutral');
+      },
+    });
   }
 
   return (
     <section className={`save-game-space save-game-space--${context}`} aria-label="保存游戏">
-      <header className="global-space-header save-game-space__header">
-        <div className="global-space-heading"><h1>保存游戏</h1></div>
-      </header>
+      <header className="global-space-header save-game-space__header"><div className="global-space-heading"><h1>保存游戏</h1></div></header>
 
       <main className="save-game-space__body">
         <section className="save-current-game" aria-label="当前游戏">
-          <div>
-            {editingGroupName ? (
-              <input autoFocus className="save-current-game__name-input" value={groupNameDraft} aria-label="更改存档组名称" onChange={(event) => setGroupNameDraft(event.target.value)} onBlur={commitGroupRename} onKeyDown={(event) => handleRenameKey(event, commitGroupRename, () => setEditingGroupName(false))} />
-            ) : <h2>{groupName}</h2>}
-            <p>当前版本 v{CURRENT_VERSION}<i />已游玩 {CURRENT_PLAY_TIME}</p>
-          </div>
+          <div><h2>{groupName}</h2><p>当前版本 v{CURRENT_VERSION}<i />已游玩 {CURRENT_PLAY_TIME}</p></div>
           <span>当前游戏</span>
         </section>
 
@@ -266,51 +232,20 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
           <nav className="archive-save-type-tabs" aria-label="存档类型筛选">
             {filterItems.map((item) => <button key={item.key} type="button" className={filter === item.key ? 'is-active' : ''} aria-pressed={filter === item.key} onClick={() => setFilter(item.key)}>{item.label}</button>)}
           </nav>
-          <button type="button" className={`archive-hide-outdated ${hideOutdated ? 'is-on' : ''}`} role="switch" aria-checked={hideOutdated} onClick={() => setHideOutdated((current) => !current)}>
-            <span>隐藏过时存档</span><i><em /></i>
-          </button>
+          <button type="button" className={`archive-hide-outdated ${hideOutdated ? 'is-on' : ''}`} role="switch" aria-checked={hideOutdated} onClick={() => setHideOutdated((current) => !current)}><span>隐藏过时存档</span><i><em /></i></button>
         </header>
 
         <div className="archive-save-list save-game-space__list">
           {visibleSaves.map((save) => {
-            const selected = selectedId === save.id;
-            const editing = editingId === save.id;
-            const confirmingOverwrite = pendingOverwriteId === save.id;
-            const confirmingDelete = pendingDeleteId === save.id;
             const manual = save.kind === 'manual';
-
             return (
               <SaveEntryCard
                 key={save.id}
                 save={save}
-                selected={selected}
-                editing={editing}
-                nameDraft={nameDraft}
-                onNameDraftChange={setNameDraft}
-                onCommitRename={() => commitRename(save.id)}
-                onCancelRename={() => setEditingId(null)}
+                selected={selectedId === save.id}
                 onSelect={() => setSelectedId(save.id)}
                 onHover={() => setSelectedId(save.id)}
-                actions={(
-                  <>
-                    {manual && <button type="button" title="重命名存档" aria-label={`重命名 ${save.name}`} onClick={() => startRename(save)}><Pencil size={15} /></button>}
-                    {manual && <button type="button" className="is-primary" title="覆盖此存档" aria-label={`覆盖 ${save.name}`} onClick={() => { setSelectedId(save.id); setPendingOverwriteId(save.id); setPendingDeleteId(null); }}><Save size={16} /></button>}
-                    <button type="button" className="is-danger" title="删除存档" aria-label={`删除 ${save.name}`} onClick={() => { setSelectedId(save.id); setPendingDeleteId(save.id); setPendingOverwriteId(null); }}><Trash2 size={15} /></button>
-                  </>
-                )}
-                confirmation={confirmingOverwrite ? (
-                  <div className="archive-save-card__confirm save-entry-confirm--overwrite">
-                    <span>覆盖“{save.name}”？当前游戏状态将替换这个存档。</span>
-                    <button type="button" aria-label="取消覆盖" onClick={() => setPendingOverwriteId(null)}><X size={13} /></button>
-                    <button type="button" className="is-primary" aria-label="确认覆盖存档" onClick={() => overwriteSave(save.id)}><Save size={13} /></button>
-                  </div>
-                ) : confirmingDelete ? (
-                  <div className="archive-save-card__confirm">
-                    <span>删除“{save.name}”？</span>
-                    <button type="button" aria-label="取消删除" onClick={() => setPendingDeleteId(null)}><X size={13} /></button>
-                    <button type="button" className="is-danger" aria-label="确认删除存档" onClick={() => deleteSave(save.id)}><Trash2 size={13} /></button>
-                  </div>
-                ) : undefined}
+                actions={<>{manual && <button type="button" title="重命名存档" aria-label={`重命名 ${save.name}`} onClick={() => startRename(save)}><Pencil size={15} /></button>}{manual && <button type="button" className="is-primary" title="覆盖此存档" aria-label={`覆盖 ${save.name}`} onClick={() => requestOverwrite(save)}><Save size={16} /></button>}<button type="button" className="is-danger" title="删除存档" aria-label={`删除 ${save.name}`} onClick={() => requestDelete(save)}><Trash2 size={15} /></button></>}
               />
             );
           })}
@@ -319,30 +254,10 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
       </main>
 
       <footer className="global-space-footer save-game-space__footer" aria-label="页面操作">
-        <div className="save-game-space__footer-left">
-          <button type="button" className="global-space-secondary save-group-rename" onClick={startGroupRename}><Pencil size={14} />更改存档组名称</button>
-        </div>
-        <div className="save-game-space__footer-center">
-          <button type="button" className="global-space-secondary save-quick-action" onClick={quickSave}><Zap size={14} />快速保存</button>
-          <button type="button" className="global-space-primary save-manual-action" onClick={openSaveDialog}><Save size={14} />保存存档</button>
-        </div>
+        <div className="save-game-space__footer-left"><button type="button" className="global-space-secondary save-group-rename" onClick={startGroupRename}><Pencil size={14} />更改存档组名称</button></div>
+        <div className="save-game-space__footer-center"><button type="button" className="global-space-secondary save-quick-action" onClick={quickSave}><Zap size={14} />快速保存</button><button type="button" className="global-space-primary save-manual-action" onClick={openSaveDialog}><Save size={14} />保存存档</button></div>
         <button type="button" className="global-space-secondary save-game-space__back" onClick={onBack}><ChevronLeft size={14} />返回</button>
       </footer>
-
-      {saveDialogOpen && (
-        <div className="save-name-layer" role="dialog" aria-modal="true" aria-label="保存存档">
-          <section className="save-name-dialog">
-            <header><h2>保存存档</h2></header>
-            <label><span>存档名称</span><input autoFocus value={newNameDraft} aria-label="存档名称" onChange={(event) => setNewNameDraft(event.target.value)} onKeyDown={(event) => handleRenameKey(event, commitManualSave, () => setSaveDialogOpen(false))} /></label>
-            <footer>
-              <button type="button" className="global-space-secondary" onClick={() => setSaveDialogOpen(false)}>取消</button>
-              <button type="button" className="global-space-primary" onClick={commitManualSave}><Save size={14} />保存</button>
-            </footer>
-          </section>
-        </div>
-      )}
-
-      {toast && <div className="save-toast" role="status">{toast}</div>}
     </section>
   );
 }
