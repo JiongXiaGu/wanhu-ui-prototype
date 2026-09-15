@@ -22,15 +22,21 @@ if (!topShellBox) throw new Error('Unified gameplay top shell must be visible.')
 const topShellCenter = topShellBox.x + topShellBox.width / 2;
 if (Math.abs(topShellCenter - 960) > 2) throw new Error(`Top shell must be centered. center=${topShellCenter.toFixed(1)}`);
 if (topShellBox.x < 0 || topShellBox.x + topShellBox.width > 1920) throw new Error('Top shell must not be clipped.');
-if (topShellBox.height < 98 || topShellBox.height > 112) throw new Error(`Normal gameplay top shell must contain two integrated rows. height=${topShellBox.height}`);
+if (topShellBox.height < 92 || topShellBox.height > 100) throw new Error(`Normal gameplay top shell must keep the compact 56+40 proportion. height=${topShellBox.height}`);
 if ((await page.locator('.city-management-rail').count()) !== 0) throw new Error('Legacy left Management Rail must not be rendered.');
 if ((await page.locator('.quick-controls').count()) !== 0) throw new Error('Legacy standalone Quick Controls must not be rendered.');
 if ((await page.locator('.gameplay-top-navigation > button > span').count()) !== 0) throw new Error('Top management navigation must be icon-only with no persistent text labels.');
 const statusBox = await page.locator('.gameplay-top-status').boundingBox();
 const navBox = await page.locator('.gameplay-top-navigation').boundingBox();
 if (!statusBox || !navBox) throw new Error('Both top shell rows must be visible.');
-if (navBox.width >= statusBox.width) throw new Error('Icon navigation tray must remain narrower than the persistent status row.');
-if (navBox.width < 740 || navBox.width > 840) throw new Error(`Icon navigation tray width is outside the intended range. width=${navBox.width}`);
+if (statusBox.width < 920 || statusBox.width > 960) throw new Error(`Persistent status row must stay near the 940px baseline. width=${statusBox.width}`);
+if (statusBox.height < 54 || statusBox.height > 58) throw new Error(`Persistent status row must stay near the 56px baseline. height=${statusBox.height}`);
+if (navBox.width < 570 || navBox.width > 610) throw new Error(`Icon navigation tray must stay near the 590px baseline. width=${navBox.width}`);
+if (navBox.height < 38 || navBox.height > 42) throw new Error(`Icon navigation tray must stay near the 40px baseline. height=${navBox.height}`);
+const navRatio = navBox.width / statusBox.width;
+if (navRatio < .60 || navRatio > .66) throw new Error(`Navigation tray must read as a clearly narrower child of the status row. ratio=${navRatio.toFixed(3)}`);
+const firstNavIcon = await page.locator('.gameplay-top-navigation > button svg').first().boundingBox();
+if (!firstNavIcon || firstNavIcon.width < 18 || firstNavIcon.width > 21) throw new Error('Top navigation icons must remain readable at roughly 18-20px.');
 await page.screenshot({ path: `${outDir}/02a-gameplay-top-shell.png` });
 
 // Complex management systems stay blocking, while the shared icon navigation remains available.
@@ -45,7 +51,7 @@ for (const selector of ['.command-bar', '.command-utility', '.gameplay-operation
 const managementBox = await page.locator('.management-space__panel').boundingBox();
 if (!managementBox) throw new Error('Management Space panel must be visible.');
 if (managementBox.width < 1200 || managementBox.height < 700) throw new Error('Management Space must remain a large central workspace.');
-if (managementBox.x < 0 || managementBox.y < 124 || managementBox.x + managementBox.width > 1920 || managementBox.y + managementBox.height > 1080) {
+if (managementBox.x < 0 || managementBox.y < 116 || managementBox.x + managementBox.width > 1920 || managementBox.y + managementBox.height > 1080) {
   throw new Error('Management Space must fit below the unified top shell inside the 1920x1080 canvas.');
 }
 await page.screenshot({ path: `${outDir}/02b-finance-top-navigation.png` });
