@@ -191,7 +191,7 @@
 .operation-hints__description{color:#7f877f;font-size:8.5px}
 .operation-hints__row.is-primary .operation-hints__binding kbd{border-color:rgba(201,165,95,.16);background:rgba(201,165,95,.040);color:#cbb273}
 .operation-hints__row.is-primary .operation-hints__description{color:#aaa79e}
-.gameplay-screen:has(.flyout)>.gameplay-operation-hints{opacity:.70;visibility:visible;pointer-events:auto;transform:none}
+.gameplay-screen:has(.flyout)>.gameplay-operation-hints{opacity:.82;visibility:visible;pointer-events:auto;transform:none}
 .gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(5px)}
 
 @keyframes game-context-enter-right{
