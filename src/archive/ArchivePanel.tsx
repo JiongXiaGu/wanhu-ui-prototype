@@ -1,16 +1,11 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
 import {
-  Bookmark,
-  Check,
   ChevronLeft,
-  Clock3,
   FolderOpen,
   Pencil,
-  RefreshCw,
   Save,
   Trash2,
   X,
-  Zap,
 } from 'lucide-react';
 
 export type ArchiveMode = 'load' | 'save';
@@ -30,8 +25,7 @@ type SaveEntry = {
   id: string;
   name: string;
   kind: SaveKind;
-  dateLabel: string;
-  meta: string;
+  gameDate: string;
   savedAt: string;
   image: string;
   version: string;
@@ -42,14 +36,9 @@ type SaveEntry = {
 type GameGroup = {
   id: string;
   city: string;
-  era: string;
-  season: string;
   playTime: string;
-  lastPlayed: string;
-  population: string;
-  wealth: string;
-  seed: string;
-  version: string;
+  lastSavedAt: string;
+  latestVersion: string;
   image: string;
   saves: SaveEntry[];
 };
@@ -58,10 +47,10 @@ const CURRENT_VERSION = '0.8.4';
 const cityNames = ['昭平城', '临川府', '南陵', '云津府', '江州', '湾陵', '上阳府', '澄江郡', '洛川', '平宁府', '归安县', '青溪县'];
 const assetPool = ['/assets/wanhu-gameplay-city.png', '/assets/wanhu-gameplay-lake.png', '/assets/wanhu-main-menu.png'];
 
-const saveKindMeta: Record<SaveKind, { label: string; prefix: string; Icon: typeof RefreshCw }> = {
-  auto: { label: '自动存档', prefix: '自动存档', Icon: RefreshCw },
-  quick: { label: '快速存档', prefix: '快速存档', Icon: Zap },
-  manual: { label: '玩家存档', prefix: '玩家存档', Icon: Bookmark },
+const saveKindMeta: Record<SaveKind, { label: string; prefix: string }> = {
+  auto: { label: '自动存档', prefix: '自动存档' },
+  quick: { label: '快速存档', prefix: '快速存档' },
+  manual: { label: '手动存档', prefix: '手动存档' },
 };
 
 function compatibilityForVersion(version: string): Compatibility {
@@ -94,23 +83,36 @@ function serialFor(index: number) {
   return index + 26;
 }
 
-function buildSaves(groupIndex: number, count: number, era: string, season: string): SaveEntry[] {
+function gameDateFor(groupIndex: number, saveIndex: number) {
+  const year = Math.max(1, 12 - Math.min(groupIndex, 8) - Math.floor(saveIndex / 18));
+  const month = Math.max(1, 8 - Math.floor((saveIndex % 18) / 3));
+  const day = Math.max(1, 17 - (saveIndex % 3) * 4);
+  return `第${year}年 ${month}月${day}日`;
+}
+
+function realSavedAtFor(groupIndex: number, saveIndex: number) {
+  const base = Date.UTC(2026, 8, 15, 16, 58);
+  const offsetMinutes = groupIndex * 24 * 60 + saveIndex * 17;
+  const date = new Date(base - offsetMinutes * 60_000);
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(date.getUTCDate()).padStart(2, '0');
+  const hh = String(date.getUTCHours()).padStart(2, '0');
+  const min = String(date.getUTCMinutes()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+}
+
+function buildSaves(groupIndex: number, count: number): SaveEntry[] {
   return Array.from({ length: count }, (_, index) => {
     const kind = kindFor(index);
     const serial = String(serialFor(index)).padStart(3, '0');
     const version = versionFor(groupIndex, index);
-    const minutes = index * 9 + groupIndex * 4;
-    const dayOffset = Math.floor(minutes / 360);
-    const hour = Math.max(0, 16 - Math.floor((minutes % 360) / 60));
-    const minute = Math.max(0, 58 - (minutes % 60));
-    const dateLabel = dayOffset === 0 ? '今天' : dayOffset === 1 ? '昨天' : `9 月 ${Math.max(1, 15 - dayOffset)} 日`;
     return {
       id: `g${groupIndex}-s${index}`,
       name: `${saveKindMeta[kind].prefix}.${serial}`,
       kind,
-      dateLabel,
-      meta: `${era} · ${season}`,
-      savedAt: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+      gameDate: gameDateFor(groupIndex, index),
+      savedAt: realSavedAtFor(groupIndex, index),
       image: assetPool[(groupIndex + index) % assetPool.length],
       version,
       compatibility: compatibilityForVersion(version),
@@ -121,21 +123,13 @@ function buildSaves(groupIndex: number, count: number, era: string, season: stri
 
 function buildGroups(): GameGroup[] {
   return cityNames.map((city, index) => {
-    const era = `第${12 - Math.min(index, 9)}年`;
-    const seasons = ['秋 · 晴', '夏 · 多云', '春 · 小雨', '冬 · 阴'];
-    const season = seasons[index % seasons.length];
-    const saves = buildSaves(index, index === 0 ? 32 : 18 + (index % 5) * 3, era, season);
+    const saves = buildSaves(index, index === 0 ? 32 : 18 + (index % 5) * 3);
     return {
       id: `group-${index}`,
       city,
-      era,
-      season,
       playTime: `${Math.max(5, 46 - index * 3)}h ${String((18 + index * 7) % 60).padStart(2, '0')}m`,
-      lastPlayed: index === 0 ? '今天 16:58' : index === 1 ? '今天 13:21' : index === 2 ? '昨天 22:16' : `9 月 ${Math.max(1, 15 - index)} 日`,
-      population: (8426 - index * 421).toLocaleString('zh-CN'),
-      wealth: (24680 - index * 960).toLocaleString('zh-CN'),
-      seed: String(268041 + index * 11731),
-      version: saves[0].version,
+      lastSavedAt: saves[0].savedAt,
+      latestVersion: saves[0].version,
       image: assetPool[index % assetPool.length],
       saves,
     };
@@ -146,8 +140,8 @@ const initialGameGroups = buildGroups();
 const filterItems: { key: SaveFilter; label: string }[] = [
   { key: 'all', label: '全部' },
   { key: 'auto', label: '自动存档' },
+  { key: 'manual', label: '手动存档' },
   { key: 'quick', label: '快速存档' },
-  { key: 'manual', label: '玩家存档' },
 ];
 
 export function ArchivePanel({ mode, context, onBack, onLoad }: ArchivePanelProps) {
@@ -272,19 +266,24 @@ export function ArchivePanel({ mode, context, onBack, onLoad }: ArchivePanelProp
   function createManualSave() {
     const manualCount = group.saves.filter((save) => save.kind === 'manual').length;
     const serial = String(manualCount + 100).padStart(3, '0');
+    const latest = [...group.saves].sort((a, b) => b.order - a.order)[0];
     const next: SaveEntry = {
       id: `${group.id}-new-${Date.now()}`,
-      name: `玩家存档.${serial}`,
+      name: `手动存档.${serial}`,
       kind: 'manual',
-      dateLabel: '现在',
-      meta: `${group.era} · ${group.season}`,
-      savedAt: '当前',
+      gameDate: latest?.gameDate ?? '第1年 1月1日',
+      savedAt: '2026-09-15 17:00',
       image: group.image,
       version: CURRENT_VERSION,
       compatibility: 'current',
       order: Math.max(...group.saves.map((save) => save.order), 0) + 1,
     };
-    updateGroup((item) => ({ ...item, saves: [next, ...item.saves] }));
+    updateGroup((item) => ({
+      ...item,
+      lastSavedAt: next.savedAt,
+      latestVersion: next.version,
+      saves: [next, ...item.saves],
+    }));
     setFilter('all');
     setSaveId(next.id);
     setSaved(true);
@@ -300,43 +299,34 @@ export function ArchivePanel({ mode, context, onBack, onLoad }: ArchivePanelProp
         <aside className="archive-groups">
           <div className="archive-column-heading"><b>{isLoad ? '游戏组' : '当前游戏'}</b><span>{groups.length} 组</span></div>
           <div className="archive-group-list">
-            {groups.map((item) => {
-              const oldCount = item.saves.filter((save) => save.compatibility !== 'current').length;
-              const incompatibleCount = item.saves.filter((save) => save.compatibility === 'incompatible').length;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`archive-group-card ${item.id === group.id ? 'is-selected' : ''}`}
-                  onClick={() => selectGroup(item.id)}
-                  title={`游戏时间 ${item.playTime} · 最近 ${item.lastPlayed}`}
-                >
-                  <span className="archive-group-card__image" style={{ backgroundImage: `url(${item.image})` }} />
-                  <span className="archive-group-card__body">
-                    <span className="archive-group-card__title">
-                      {item.id === group.id && editingGroup ? (
-                        <input
-                          autoFocus
-                          value={groupNameDraft}
-                          aria-label="重命名存档组"
-                          onClick={(event) => event.stopPropagation()}
-                          onChange={(event) => setGroupNameDraft(event.target.value)}
-                          onBlur={commitGroupRename}
-                          onKeyDown={(event) => handleRenameKey(event, commitGroupRename, () => setEditingGroup(false))}
-                        />
-                      ) : <b>{item.city}</b>}
-                      <small>{item.saves.length} 个存档</small>
-                    </span>
-                    <span>{item.era} · {item.season}</span>
-                    <span className="archive-group-card__version-row">
-                      <small>v{item.version}</small>
-                      {oldCount > 0 && <em className={incompatibleCount > 0 ? 'is-incompatible' : ''}>{incompatibleCount > 0 ? '含不兼容存档' : '含旧版存档'}</em>}
-                    </span>
-                    <small><Clock3 size={11} />{item.playTime}<i />{item.lastPlayed}</small>
+            {groups.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`archive-group-card ${item.id === group.id ? 'is-selected' : ''}`}
+                onClick={() => selectGroup(item.id)}
+                title={`游玩时间 ${item.playTime} · 最后保存 ${item.lastSavedAt} · 最新版本 v${item.latestVersion}`}
+              >
+                <span className="archive-group-card__image" style={{ backgroundImage: `url(${item.image})` }} />
+                <span className="archive-group-card__body">
+                  <span className="archive-group-card__title">
+                    {item.id === group.id && editingGroup ? (
+                      <input
+                        autoFocus
+                        value={groupNameDraft}
+                        aria-label="重命名存档组"
+                        onClick={(event) => event.stopPropagation()}
+                        onChange={(event) => setGroupNameDraft(event.target.value)}
+                        onBlur={commitGroupRename}
+                        onKeyDown={(event) => handleRenameKey(event, commitGroupRename, () => setEditingGroup(false))}
+                      />
+                    ) : <b>{item.city}</b>}
                   </span>
-                </button>
-              );
-            })}
+                  <span className="archive-group-card__meta"><small>{item.playTime}</small><i /><small>最后保存 {item.lastSavedAt}</small></span>
+                  <span className="archive-group-card__latest-version">最新版本 v{item.latestVersion}</span>
+                </span>
+              </button>
+            ))}
           </div>
         </aside>
 
@@ -369,7 +359,6 @@ export function ArchivePanel({ mode, context, onBack, onLoad }: ArchivePanelProp
               const selected = selectedSave?.id === save.id;
               const editing = editingSaveId === save.id;
               const confirmingDelete = pendingDeleteSaveId === save.id;
-              const { Icon, label } = saveKindMeta[save.kind];
               const incompatible = save.compatibility === 'incompatible';
               return (
                 <article
@@ -401,16 +390,16 @@ export function ArchivePanel({ mode, context, onBack, onLoad }: ArchivePanelProp
                           />
                         ) : <b>{save.name}</b>}
                       </span>
-                      <span>{save.meta}</span>
-                      <small>{save.dateLabel} · {save.savedAt}</small>
+                      <span className="archive-save-card__time-row"><small>游戏时间</small><span>{save.gameDate}</span></span>
+                      <span className="archive-save-card__time-row"><small>保存时间</small><span>{save.savedAt}</span></span>
                     </span>
                   </button>
 
-                  <div className="archive-save-card__status" title={`${label} · 版本 ${save.version}`}>
-                    <span className={`archive-save-card__kind is-${save.kind}`}><Icon size={14} /></span>
-                    <span className="archive-save-card__version">v{save.version}</span>
-                    {save.compatibility === 'outdated' && <em className="is-outdated">旧版</em>}
+                  <div className="archive-save-card__status" aria-label={`${saveKindMeta[save.kind].label} · 版本 ${save.version}`}>
+                    {save.compatibility === 'outdated' && <em className="is-outdated">过时</em>}
                     {save.compatibility === 'incompatible' && <em className="is-incompatible">不兼容</em>}
+                    <span className={`archive-save-card__type is-${save.kind}`}>{saveKindMeta[save.kind].label}</span>
+                    <span className="archive-save-card__version">v{save.version}</span>
                   </div>
 
                   <div className="archive-save-card__actions" aria-label="存档操作">
@@ -418,8 +407,8 @@ export function ArchivePanel({ mode, context, onBack, onLoad }: ArchivePanelProp
                     <button
                       type="button"
                       className="is-primary"
-                      disabled={isLoad && incompatible}
-                      title={incompatible ? '当前版本无法读取此存档' : isLoad ? '读取存档' : '保存到此存档'}
+                      disabled={(isLoad && incompatible) || (!isLoad && save.kind === 'auto')}
+                      title={incompatible ? '当前版本无法读取此存档' : isLoad ? '读取存档' : save.kind === 'auto' ? '自动存档由系统管理' : '保存到此存档'}
                       aria-label={`${isLoad ? '读取' : '保存'} ${save.name}`}
                       onClick={() => activateSave(save)}
                     >{isLoad ? <FolderOpen size={16} /> : <Save size={16} />}</button>
@@ -439,7 +428,7 @@ export function ArchivePanel({ mode, context, onBack, onLoad }: ArchivePanelProp
 
             {!isLoad && (filter === 'all' || filter === 'manual') && (
               <button type="button" className="archive-create-save" onClick={createManualSave}>
-                <Save size={16} /><span><b>创建玩家存档</b><small>保存当前城市进度</small></span>
+                <Save size={16} /><span><b>创建手动存档</b><small>保存当前城市进度</small></span>
               </button>
             )}
 
