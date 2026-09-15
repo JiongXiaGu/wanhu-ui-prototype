@@ -67,7 +67,7 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
   const randomizeSeed = () => setSeed(String(Math.floor(10000000 + Math.random() * 89999999)));
 
   return (
-    <section className="new-game-space" aria-label="新建游戏">
+    <section className="new-game-space flow-frame" aria-label="新建游戏">
       <header className="global-space-header new-game-space__header">
         <div className="global-space-heading"><h1>新建游戏</h1></div>
       </header>
