@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import type { PauseView } from '../app/ui-state';
 import { SaveGameSpace } from '../archive/SaveGameSpace';
 import { SettingsPanel } from '../settings/SettingsPanel';
+import { useDialogSystem } from '../ui/dialog/DialogSystem';
 
 interface PauseLayerProps {
   view: PauseView;
@@ -18,6 +19,8 @@ const items = [
 ] as const;
 
 export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLayerProps) {
+  const dialogs = useDialogSystem();
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) return;
@@ -27,6 +30,15 @@ export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLa
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [view, onResume, onViewChange]);
+
+  function confirmReturnToMainMenu() {
+    dialogs.confirm({
+      title: '返回主菜单？',
+      message: '将结束当前游戏并返回主菜单。',
+      confirmText: '返回主菜单',
+      onConfirm: onMainMenu,
+    });
+  }
 
   return (
     <div className="pause-layer" role="dialog" aria-label="暂停菜单">
@@ -51,7 +63,7 @@ export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLa
                   item.action === 'resume' ? onResume :
                   item.action === 'save' ? () => onViewChange('save') :
                   item.action === 'settings' ? () => onViewChange('settings') :
-                  onMainMenu
+                  confirmReturnToMainMenu
                 }
               >
                 <b>{item.label}</b>
@@ -59,23 +71,12 @@ export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLa
             ))}
           </nav>
 
-          <footer className="pause-footer">
-            <span><kbd>Esc</kbd>继续游戏</span>
-          </footer>
+          <footer className="pause-footer"><span><kbd>Esc</kbd>继续游戏</span></footer>
         </section>
       )}
 
-      {view === 'save' && (
-        <div className="pause-secondary-surface">
-          <SaveGameSpace context="pause" onBack={() => onViewChange('menu')} />
-        </div>
-      )}
-
-      {view === 'settings' && (
-        <div className="pause-secondary-surface">
-          <SettingsPanel context="pause" onClose={() => onViewChange('menu')} onApply={() => onViewChange('menu')} />
-        </div>
-      )}
+      {view === 'save' && <div className="pause-secondary-surface"><SaveGameSpace context="pause" onBack={() => onViewChange('menu')} /></div>}
+      {view === 'settings' && <div className="pause-secondary-surface"><SettingsPanel context="pause" onClose={() => onViewChange('menu')} onApply={() => onViewChange('menu')} /></div>}
     </div>
   );
 }
