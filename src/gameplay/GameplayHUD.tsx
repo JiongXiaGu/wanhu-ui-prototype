@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
   Archive,
@@ -49,10 +48,12 @@ interface GameplayHUDProps {
   flyout: Flyout;
   management: ManagementView;
   mapView: MapView;
+  mapPanelOpen: boolean;
   speed: Speed;
-  showManagementNavigation: boolean;
+  showControlTray: boolean;
   onFlyoutChange: (flyout: Flyout) => void;
   onManagementChange: (management: ManagementView) => void;
+  onToggleMapPanel: () => void;
   onMapViewChange: (mapView: MapView) => void;
   onSpeedChange: (speed: Speed) => void;
   onPause: () => void;
@@ -87,32 +88,18 @@ export function GameplayHUD({
   flyout,
   management,
   mapView,
+  mapPanelOpen,
   speed,
-  showManagementNavigation,
+  showControlTray,
   onFlyoutChange,
   onManagementChange,
+  onToggleMapPanel,
   onMapViewChange,
   onSpeedChange,
   onPause,
 }: GameplayHUDProps) {
-  const [mapPanelOpen, setMapPanelOpen] = useState(false);
-
-  useEffect(() => {
-    if (!showManagementNavigation) setMapPanelOpen(false);
-  }, [showManagementNavigation]);
-
-  function openManagement(next: Exclude<ManagementView, 'none'>) {
-    setMapPanelOpen(false);
-    onManagementChange(next);
-  }
-
-  function toggleMapViews() {
-    if (management !== 'none') onManagementChange('none');
-    setMapPanelOpen((open) => !open);
-  }
-
   return (
-    <div className={`gameplay-top-shell ${showManagementNavigation ? 'has-navigation' : ''}`}>
+    <div className={`gameplay-top-shell ${showControlTray ? 'has-navigation' : ''}`}>
       <div className="gameplay-top-status">
         <div className="gameplay-top-status__world-state" aria-label="天气与时间">
           <span className="gameplay-top-status__weather-state">
@@ -145,7 +132,7 @@ export function GameplayHUD({
         </div>
       </div>
 
-      {showManagementNavigation && (
+      {showControlTray && (
         <nav className="gameplay-top-navigation" aria-label="城市控制">
           <div className="gameplay-top-navigation__view">
             <button
@@ -153,7 +140,7 @@ export function GameplayHUD({
               className={`gameplay-top-navigation__button gameplay-top-navigation__map ${mapPanelOpen || mapView !== 'default' ? 'is-active' : ''}`}
               aria-label="信息视图"
               data-tooltip="信息视图"
-              onClick={toggleMapViews}
+              onClick={onToggleMapPanel}
             >
               <Layers3 />
               {mapView !== 'default' && <i className="gameplay-top-navigation__dot" />}
@@ -172,7 +159,7 @@ export function GameplayHUD({
                   className={`gameplay-top-navigation__button ${management === item.id ? 'is-active' : ''}`}
                   aria-label={item.label}
                   data-tooltip={item.label}
-                  onClick={() => openManagement(item.id)}
+                  onClick={() => onManagementChange(item.id)}
                 >
                   <Icon />
                 </button>
@@ -188,7 +175,7 @@ export function GameplayHUD({
               className={`gameplay-top-navigation__button ${flyout === 'camera' ? 'is-active' : ''}`}
               aria-label="相机"
               data-tooltip="相机"
-              onClick={() => onFlyoutChange(flyout === 'camera' ? 'none' : 'camera')}
+              onClick={() => onFlyoutChange('camera')}
             >
               <Camera />
             </button>
@@ -197,7 +184,7 @@ export function GameplayHUD({
               className={`gameplay-top-navigation__button ${flyout === 'weather' ? 'is-active' : ''}`}
               aria-label="天气控制"
               data-tooltip="天气控制"
-              onClick={() => onFlyoutChange(flyout === 'weather' ? 'none' : 'weather')}
+              onClick={() => onFlyoutChange('weather')}
             >
               <CloudSun />
             </button>
@@ -214,7 +201,7 @@ export function GameplayHUD({
         </nav>
       )}
 
-      {showManagementNavigation && mapPanelOpen && (
+      {showControlTray && mapPanelOpen && (
         <aside className="gameplay-top-map-panel">
           <header><b>信息视图</b></header>
           <div className="gameplay-top-map-grid">
@@ -225,10 +212,7 @@ export function GameplayHUD({
                   key={item.id}
                   type="button"
                   className={mapView === item.id ? 'is-active' : ''}
-                  onClick={() => {
-                    onMapViewChange(item.id);
-                    setMapPanelOpen(false);
-                  }}
+                  onClick={() => onMapViewChange(item.id)}
                 >
                   <Icon />
                   <span>{item.label}</span>
