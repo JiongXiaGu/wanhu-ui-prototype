@@ -61,6 +61,16 @@ type BindingGroup = {
 
 type ListeningBinding = { id: string; slot: BindingSlot } | null;
 type BindingConflict = { id: string; slot: BindingSlot; owner: string } | null;
+type SafeConfirmation = {
+  previousValues: Record<string, SettingValue>;
+  changedId: string;
+  changedTitle: string;
+  previousValue: SettingValue;
+  nextValue: SettingValue;
+} | null;
+
+const SAFE_CONFIRM_SECONDS = 15;
+const SAFE_DISPLAY_SETTING_IDS = new Set(['display-mode', 'monitor', 'resolution', 'refresh-rate', 'hdr-output', 'ui-scale']);
 
 const categories: { key: Category; icon: typeof Monitor; detail: string }[] = [
   { key: '显示', icon: Monitor, detail: '显示输出、分辨率与界面缩放' },
@@ -87,7 +97,7 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '界面',
       rows: [
-        { id: 'ui-scale', title: '界面缩放', detail: '调整 HUD、Workspace 与所有菜单的整体尺寸。', kind: 'slider', defaultValue: 100, min: 80, max: 120, step: 5, format: 'percent' },
+        { id: 'ui-scale', title: '界面缩放', detail: '调整 HUD、Workspace 与所有菜单的整体尺寸。', kind: 'select', defaultValue: '100%', options: ['80%', '90%', '100%', '110%', '125%', '150%'] },
         { id: 'safe-area', title: '安全区域', detail: '调整界面与屏幕边缘之间的安全距离。', kind: 'slider', defaultValue: 100, min: 80, max: 100, step: 1, format: 'percent' },
       ],
     },
@@ -179,11 +189,11 @@ const groups: Record<Category, SettingGroup[]> = {
     {
       title: '游戏体验',
       rows: [
-        { id: 'tutorials', title: '显示营造教程', detail: '显示第一次使用营造系统时的教学内容。', kind: 'toggle', defaultValue: true },
+        { id: 'tutorial', title: '显示营造教程', detail: '显示第一次使用营造系统时的教学内容。', kind: 'toggle', defaultValue: true },
         { id: 'operation-hints', title: '操作提示', detail: '显示当前工具的操作方式与快捷键。', kind: 'toggle', defaultValue: true },
-        { id: 'danger-confirm', title: '重要操作二次确认', detail: '拆除建筑或覆盖存档前进行二次确认。', kind: 'toggle', defaultValue: true },
-        { id: 'resident-story-hints', title: '居民故事提示', detail: '调整居民出现可交互事件时的提示详细程度。', kind: 'select', defaultValue: '完整', options: ['关闭', '简洁', '完整'] },
-        { id: 'important-event-pause', title: '重要事件自动暂停', detail: '发生高优先级城市事件时自动暂停模拟。', kind: 'toggle', defaultValue: true },
+        { id: 'confirm-dangerous', title: '重要操作二次确认', detail: '拆除建筑或覆盖存档前进行二次确认。', kind: 'toggle', defaultValue: true },
+        { id: 'resident-story-hints', title: '居民故事提示', detail: '调整居民出现可交互事件时的提示详细程度。', kind: 'select', defaultValue: '完整', options: ['关闭', '简要', '完整'] },
+        { id: 'auto-pause-events', title: '重要事件自动暂停', detail: '发生高优先级城市事件时自动暂停模拟。', kind: 'toggle', defaultValue: true },
       ],
     },
     {
@@ -198,9 +208,7 @@ const groups: Record<Category, SettingGroup[]> = {
 
 const bindingGroups: BindingGroup[] = [
   {
-    id: 'basic',
-    title: '基础操作',
-    bindings: [
+    id: 'basic', title: '基础操作', bindings: [
       { id: 'camera-move', label: '移动镜头', detail: '移动城市观察视角。', primary: 'W / A / S / D', secondary: '↑ / ↓ / ← / →' },
       { id: 'confirm', label: '确认操作', detail: '放置建筑或确认当前工具。', primary: '鼠标左键', secondary: 'Enter' },
       { id: 'cancel', label: '取消操作', detail: '关闭当前工具或返回上一层。', primary: 'Esc', secondary: '鼠标右键' },
@@ -208,9 +216,7 @@ const bindingGroups: BindingGroup[] = [
     ],
   },
   {
-    id: 'construction',
-    title: '营造与道路',
-    bindings: [
+    id: 'construction', title: '营造与道路', bindings: [
       { id: 'rotate', label: '旋转构件', detail: '旋转当前正在放置或调整的构件。', primary: 'R' },
       { id: 'rotate-reverse', label: '反向旋转', detail: '向相反方向旋转当前构件。', primary: 'Shift + R' },
       { id: 'undo', label: '撤销', detail: '撤销最近一次营造操作。', primary: 'Ctrl + Z' },
@@ -219,9 +225,7 @@ const bindingGroups: BindingGroup[] = [
     ],
   },
   {
-    id: 'time',
-    title: '时间控制',
-    bindings: [
+    id: 'time', title: '时间控制', bindings: [
       { id: 'speed-1', label: '正常速度', detail: '切换到正常模拟速度。', primary: '1' },
       { id: 'speed-2', label: '二倍速度', detail: '切换到二倍模拟速度。', primary: '2' },
       { id: 'speed-4', label: '四倍速度', detail: '切换到四倍模拟速度。', primary: '3' },
@@ -229,9 +233,7 @@ const bindingGroups: BindingGroup[] = [
     ],
   },
   {
-    id: 'camera',
-    title: '镜头操作',
-    bindings: [
+    id: 'camera', title: '镜头操作', bindings: [
       { id: 'camera-yaw-left', label: '向左旋转镜头', detail: '围绕当前观察中心向左旋转。', primary: 'Q' },
       { id: 'camera-yaw-right', label: '向右旋转镜头', detail: '围绕当前观察中心向右旋转。', primary: 'E' },
       { id: 'camera-reset', label: '恢复默认视角', detail: '恢复默认经营镜头。', primary: 'Home' },
@@ -239,9 +241,7 @@ const bindingGroups: BindingGroup[] = [
     ],
   },
   {
-    id: 'quickbar',
-    title: '快捷栏',
-    bindings: [
+    id: 'quickbar', title: '快捷栏', bindings: [
       { id: 'tool-road', label: '道路', detail: '快速进入道路营造。', primary: 'Alt + 1' },
       { id: 'tool-wall', label: '城墙', detail: '快速进入城墙营造。', primary: 'Alt + 2' },
       { id: 'tool-building', label: '建筑', detail: '快速打开建筑 Workspace。', primary: 'Alt + 3' },
@@ -251,16 +251,11 @@ const bindingGroups: BindingGroup[] = [
 ];
 
 function createDefaultSettings(): Record<string, SettingValue> {
-  return Object.fromEntries(
-    Object.values(groups).flatMap((sections) => sections.flatMap((section) => section.rows.map((row) => [row.id, row.defaultValue] as const))),
-  );
+  return Object.fromEntries(Object.values(groups).flatMap((sections) => sections.flatMap((section) => section.rows.map((row) => [row.id, row.defaultValue] as const))));
 }
 
 function createDefaultBindings(): Record<string, BindingValue> {
-  return Object.fromEntries(bindingGroups.flatMap((group) => group.bindings.map((binding) => [
-    binding.id,
-    { primary: binding.primary, secondary: binding.secondary ?? '' },
-  ] as const)));
+  return Object.fromEntries(bindingGroups.flatMap((group) => group.bindings.map((binding) => [binding.id, { primary: binding.primary, secondary: binding.secondary ?? '' }] as const)));
 }
 
 function getBindingItem(id: string) {
@@ -277,52 +272,106 @@ function categorySettingIds(category: Category) {
   return groups[category].flatMap((group) => group.rows.map((row) => row.id));
 }
 
+function displaySettingValue(value: SettingValue) {
+  if (typeof value === 'boolean') return value ? '开启' : '关闭';
+  return String(value);
+}
+
 export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps) {
+  void onApply;
   const defaults = useMemo(createDefaultSettings, []);
   const defaultBindings = useMemo(createDefaultBindings, []);
   const [active, setActive] = useState<Category>('显示');
-  const [appliedValues, setAppliedValues] = useState<Record<string, SettingValue>>(defaults);
-  const [draftValues, setDraftValues] = useState<Record<string, SettingValue>>(defaults);
-  const [appliedBindings, setAppliedBindings] = useState<Record<string, BindingValue>>(defaultBindings);
+  const [values, setValues] = useState<Record<string, SettingValue>>(defaults);
   const [bindings, setBindings] = useState<Record<string, BindingValue>>(defaultBindings);
   const [openBindingGroups, setOpenBindingGroups] = useState<string[]>(['basic']);
   const [listening, setListening] = useState<ListeningBinding>(null);
   const [bindingConflict, setBindingConflict] = useState<BindingConflict>(null);
+  const [safeConfirmation, setSafeConfirmation] = useState<SafeConfirmation>(null);
+  const [safeSeconds, setSafeSeconds] = useState(SAFE_CONFIRM_SECONDS);
 
-  const dirty = useMemo(
-    () => JSON.stringify(appliedValues) !== JSON.stringify(draftValues) || JSON.stringify(appliedBindings) !== JSON.stringify(bindings),
-    [appliedValues, draftValues, appliedBindings, bindings],
-  );
+  function rollbackSafeSettings() {
+    if (!safeConfirmation) return;
+    setValues(safeConfirmation.previousValues);
+    setSafeConfirmation(null);
+    setSafeSeconds(SAFE_CONFIRM_SECONDS);
+  }
 
-  function setSetting(id: string, value: SettingValue) {
-    setDraftValues((current) => ({ ...current, [id]: value }));
+  function keepSafeSettings() {
+    setSafeConfirmation(null);
+    setSafeSeconds(SAFE_CONFIRM_SECONDS);
+  }
+
+  useEffect(() => {
+    if (!safeConfirmation) return;
+    setSafeSeconds(SAFE_CONFIRM_SECONDS);
+    const timer = window.setInterval(() => setSafeSeconds((current) => current - 1), 1000);
+    return () => window.clearInterval(timer);
+  }, [safeConfirmation]);
+
+  useEffect(() => {
+    if (safeConfirmation && safeSeconds <= 0) rollbackSafeSettings();
+  }, [safeSeconds, safeConfirmation]);
+
+  useEffect(() => {
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      if (safeConfirmation) {
+        event.preventDefault();
+        rollbackSafeSettings();
+        return;
+      }
+      if (listening) return;
+      onClose();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [safeConfirmation, listening, onClose]);
+
+  function setSetting(row: SettingRow, value: SettingValue) {
+    const previousValue = values[row.id];
+    if (Object.is(previousValue, value)) return;
+
+    if (SAFE_DISPLAY_SETTING_IDS.has(row.id)) {
+      const previousValues = { ...values };
+      setValues((current) => ({ ...current, [row.id]: value }));
+      setSafeConfirmation({
+        previousValues,
+        changedId: row.id,
+        changedTitle: row.title,
+        previousValue,
+        nextValue: value,
+      });
+      return;
+    }
+
+    setValues((current) => ({ ...current, [row.id]: value }));
   }
 
   function restoreCurrentCategory() {
-    const ids = new Set(categorySettingIds(active));
-    setDraftValues((current) => {
-      const next = { ...current };
-      ids.forEach((id) => { next[id] = defaults[id]; });
-      return next;
-    });
-    if (active === '操作') setBindings(defaultBindings);
-    setBindingConflict(null);
-    setListening(null);
-  }
+    const ids = categorySettingIds(active);
+    const previousValues = { ...values };
+    const nextValues = { ...values };
+    ids.forEach((id) => { nextValues[id] = defaults[id]; });
 
-  function handleApply() {
-    if (!dirty) return;
-    setAppliedValues({ ...draftValues });
-    setAppliedBindings(structuredClone(bindings));
-    onApply();
-  }
+    if (active === '操作') {
+      setBindings(defaultBindings);
+      setBindingConflict(null);
+      setListening(null);
+    }
 
-  function handleCancel() {
-    setDraftValues({ ...appliedValues });
-    setBindings(structuredClone(appliedBindings));
-    setBindingConflict(null);
-    setListening(null);
-    onClose();
+    const hasDangerousDisplayChange = active === '显示' && ids.some((id) => SAFE_DISPLAY_SETTING_IDS.has(id) && !Object.is(values[id], defaults[id]));
+    setValues(nextValues);
+
+    if (hasDangerousDisplayChange) {
+      setSafeConfirmation({
+        previousValues,
+        changedId: 'display-defaults',
+        changedTitle: '显示设置默认值',
+        previousValue: '当前设置',
+        nextValue: '默认设置',
+      });
+    }
   }
 
   function toggleBindingGroup(id: string) {
@@ -363,10 +412,7 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
     const nextBinding = formatBindingKey(event);
     if (!nextBinding) return;
 
-    const conflictOwner = bindingGroups
-      .flatMap((group) => group.bindings)
-      .find((binding) => binding.id !== id && (bindings[binding.id]?.primary === nextBinding || bindings[binding.id]?.secondary === nextBinding));
-
+    const conflictOwner = bindingGroups.flatMap((group) => group.bindings).find((binding) => binding.id !== id && (bindings[binding.id]?.primary === nextBinding || bindings[binding.id]?.secondary === nextBinding));
     if (conflictOwner) {
       setBindingConflict({ id, slot, owner: conflictOwner.label });
       return;
@@ -378,17 +424,16 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
   }
 
   return (
-    <section className={`settings-space settings-panel--${context}`} data-active={active} data-dirty={dirty ? 'true' : 'false'} aria-label="游戏设置">
+    <section className={`settings-space settings-panel--${context}`} data-active={active} aria-label="游戏设置">
       <header className="global-space-header settings-space__header">
-        <button type="button" className="global-space-back" onClick={handleCancel}><ChevronLeft size={16} />返回</button>
+        <button type="button" className="global-space-back" onClick={onClose}><ChevronLeft size={16} />返回</button>
         <div className="global-space-heading"><h1>游戏设置</h1></div>
       </header>
 
       <nav className="settings-space__tabs" aria-label="设置分类">
         {categories.map(({ key, icon: Icon, detail }) => (
           <button key={key} type="button" className={active === key ? 'is-active' : ''} title={detail} onClick={() => setActive(key)}>
-            <Icon size={16} />
-            <span>{key}</span>
+            <Icon size={16} /><span>{key}</span>
           </button>
         ))}
       </nav>
@@ -398,12 +443,12 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
           {active === '操作' ? (
             <ControlsSettingsView
               rows={groups.操作[0].rows}
-              values={draftValues}
+              values={values}
               bindings={bindings}
               openGroups={openBindingGroups}
               listening={listening}
               conflict={bindingConflict}
-              onChange={setSetting}
+              onChange={(row, value) => setSetting(row, value)}
               onToggleGroup={toggleBindingGroup}
               onStartListening={startListening}
               onBindingKeyDown={handleBindingKeyDown}
@@ -418,9 +463,9 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
                     <SettingsRowView
                       key={row.id}
                       row={row}
-                      value={draftValues[row.id]}
-                      disabled={isSettingDisabled(row.id, draftValues)}
-                      onChange={(value) => setSetting(row.id, value)}
+                      value={values[row.id]}
+                      disabled={isSettingDisabled(row.id, values)}
+                      onChange={(value) => setSetting(row, value)}
                     />
                   ))}
                 </div>
@@ -430,37 +475,59 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
         </div>
       </main>
 
-      <footer className={`global-space-footer settings-space__footer ${dirty ? 'is-dirty' : ''}`}>
+      <footer className="global-space-footer settings-space__footer settings-space__footer--autosave">
         <button type="button" className="settings-restore" onClick={restoreCurrentCategory}><RotateCcw size={14} />恢复当前分类默认值</button>
-        <div>
-          <button type="button" className="global-space-secondary" onClick={handleCancel}>取消</button>
-          <button type="button" className="global-space-primary settings-apply" disabled={!dirty} onClick={handleApply}><Check size={14} />应用</button>
-        </div>
       </footer>
+
+      {safeConfirmation && (
+        <SafeDisplayConfirmation
+          confirmation={safeConfirmation}
+          seconds={safeSeconds}
+          onRollback={rollbackSafeSettings}
+          onKeep={keepSafeSettings}
+        />
+      )}
     </section>
   );
 }
 
-function ControlsSettingsView({
-  rows,
-  values,
-  bindings,
-  openGroups,
-  listening,
-  conflict,
-  onChange,
-  onToggleGroup,
-  onStartListening,
-  onBindingKeyDown,
-  onResetBinding,
-}: {
+function SafeDisplayConfirmation({ confirmation, seconds, onRollback, onKeep }: {
+  confirmation: NonNullable<SafeConfirmation>;
+  seconds: number;
+  onRollback: () => void;
+  onKeep: () => void;
+}) {
+  return (
+    <div className="settings-safe-layer" role="dialog" aria-modal="true" aria-label="保留显示设置">
+      <div className="settings-safe-layer__shade" />
+      <section className="settings-safe-dialog">
+        <header>
+          <h2>保留这些显示设置？</h2>
+          <p>如果画面或界面显示异常，设置将在倒计时结束后自动恢复。</p>
+        </header>
+        <div className="settings-safe-dialog__change">
+          <span>{confirmation.changedTitle}</span>
+          <b>{displaySettingValue(confirmation.previousValue)} <i>→</i> {displaySettingValue(confirmation.nextValue)}</b>
+        </div>
+        <div className="settings-safe-dialog__countdown" aria-live="polite">{Math.max(0, seconds)}</div>
+        <footer>
+          <button type="button" className="settings-safe-dialog__rollback" onClick={onRollback}>恢复原设置</button>
+          <button type="button" className="settings-safe-dialog__keep" onClick={onKeep}><Check size={14} />保留设置</button>
+        </footer>
+        <small><kbd>Esc</kbd> 恢复原设置</small>
+      </section>
+    </div>
+  );
+}
+
+function ControlsSettingsView({ rows, values, bindings, openGroups, listening, conflict, onChange, onToggleGroup, onStartListening, onBindingKeyDown, onResetBinding }: {
   rows: SettingRow[];
   values: Record<string, SettingValue>;
   bindings: Record<string, BindingValue>;
   openGroups: string[];
   listening: ListeningBinding;
   conflict: BindingConflict;
-  onChange: (id: string, value: SettingValue) => void;
+  onChange: (row: SettingRow, value: SettingValue) => void;
   onToggleGroup: (id: string) => void;
   onStartListening: (id: string, slot: BindingSlot) => void;
   onBindingKeyDown: (event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) => void;
@@ -477,7 +544,7 @@ function ControlsSettingsView({
               row={row}
               value={values[row.id]}
               disabled={isSettingDisabled(row.id, values)}
-              onChange={(value) => onChange(row.id, value)}
+              onChange={(value) => onChange(row, value)}
             />
           ))}
         </div>
@@ -485,10 +552,7 @@ function ControlsSettingsView({
 
       <section className="settings-section settings-binding-section">
         <header className="settings-section__title"><b>按键绑定</b><i /></header>
-        <div className="settings-binding-table-header" aria-hidden="true">
-          <span>操作</span><span>主要按键</span><span>次要按键</span><i />
-        </div>
-
+        <div className="settings-binding-table-header" aria-hidden="true"><span>操作</span><span>主要按键</span><span>次要按键</span><i /></div>
         <div className="settings-binding-groups">
           {bindingGroups.map((group) => {
             const open = openGroups.includes(group.id);
@@ -500,16 +564,7 @@ function ControlsSettingsView({
                 {open && (
                   <div className="settings-binding-group__rows">
                     {group.bindings.map((binding) => (
-                      <BindingRow
-                        key={binding.id}
-                        binding={binding}
-                        value={bindings[binding.id]}
-                        listening={listening}
-                        conflict={conflict}
-                        onStartListening={onStartListening}
-                        onKeyDown={onBindingKeyDown}
-                        onReset={onResetBinding}
-                      />
+                      <BindingRow key={binding.id} binding={binding} value={bindings[binding.id]} listening={listening} conflict={conflict} onStartListening={onStartListening} onKeyDown={onBindingKeyDown} onReset={onResetBinding} />
                     ))}
                   </div>
                 )}
@@ -567,11 +622,9 @@ function SliderControl({ row, value, disabled, onChange }: { row: SettingRow; va
     if (disabled) return;
     const scale = event.shiftKey ? 10 : 1;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
-      event.preventDefault();
-      onChange(quantize(value - step * scale));
+      event.preventDefault(); onChange(quantize(value - step * scale));
     } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      onChange(quantize(value + step * scale));
+      event.preventDefault(); onChange(quantize(value + step * scale));
     } else if (event.key === 'Home') {
       event.preventDefault(); onChange(min);
     } else if (event.key === 'End') {
@@ -581,24 +634,8 @@ function SliderControl({ row, value, disabled, onChange }: { row: SettingRow; va
 
   return (
     <>
-      <div
-        ref={trackRef}
-        className={`settings-slider ${dragging ? 'is-dragging' : ''}`}
-        role="slider"
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled || undefined}
-        aria-valuemin={min}
-        aria-valuemax={max}
-        aria-valuenow={value}
-        aria-valuetext={formatSliderValue(row, value)}
-        onPointerDown={handlePointerDown}
-        onPointerMove={(event) => { if (dragging) updateFromClientX(event.clientX); }}
-        onPointerUp={() => setDragging(false)}
-        onPointerCancel={() => setDragging(false)}
-        onKeyDown={handleKeyDown}
-      >
-        <i style={{ width: `${pct}%` }} />
-        <em style={{ left: `${pct}%` }} />
+      <div ref={trackRef} className={`settings-slider ${dragging ? 'is-dragging' : ''}`} role="slider" tabIndex={disabled ? -1 : 0} aria-disabled={disabled || undefined} aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-valuetext={formatSliderValue(row, value)} onPointerDown={handlePointerDown} onPointerMove={(event) => { if (dragging) updateFromClientX(event.clientX); }} onPointerUp={() => setDragging(false)} onPointerCancel={() => setDragging(false)} onKeyDown={handleKeyDown}>
+        <i style={{ width: `${pct}%` }} /><em style={{ left: `${pct}%` }} />
       </div>
       <output>{formatSliderValue(row, value)}</output>
     </>
@@ -642,7 +679,7 @@ function SelectControl({ row, value, disabled, onChange }: { row: SettingRow; va
     }
     if (!open) return;
     if (event.key === 'Escape') {
-      event.preventDefault(); setOpen(false);
+      event.preventDefault(); event.stopPropagation(); setOpen(false);
     } else if (event.key === 'ArrowDown') {
       event.preventDefault(); setHighlighted((current) => (current + 1) % options.length);
     } else if (event.key === 'ArrowUp') {
@@ -654,29 +691,13 @@ function SelectControl({ row, value, disabled, onChange }: { row: SettingRow; va
 
   return (
     <div ref={rootRef} className={`settings-select-root ${open ? 'is-open' : ''} ${opensUp ? 'opens-up' : ''}`}>
-      <button
-        type="button"
-        className="settings-select-value"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        disabled={disabled}
-        onClick={() => open ? setOpen(false) : openMenu()}
-        onKeyDown={handleKeyDown}
-      >
+      <button type="button" className="settings-select-value" aria-haspopup="listbox" aria-expanded={open} disabled={disabled} onClick={() => open ? setOpen(false) : openMenu()} onKeyDown={handleKeyDown}>
         <span>{value}</span><ChevronDown size={14} />
       </button>
       {open && (
         <div className="settings-select-menu" role="listbox" aria-label={row.title}>
           {options.map((option, index) => (
-            <button
-              type="button"
-              role="option"
-              aria-selected={option === value}
-              key={option}
-              className={`${option === value ? 'is-selected' : ''} ${index === highlighted ? 'is-highlighted' : ''}`}
-              onMouseEnter={() => setHighlighted(index)}
-              onClick={() => choose(option)}
-            >
+            <button type="button" role="option" aria-selected={option === value} key={option} className={`${option === value ? 'is-selected' : ''} ${index === highlighted ? 'is-highlighted' : ''}`} onMouseEnter={() => setHighlighted(index)} onClick={() => choose(option)}>
               <span>{option}</span>{option === value && <Check size={13} />}
             </button>
           ))}
@@ -687,16 +708,7 @@ function SelectControl({ row, value, disabled, onChange }: { row: SettingRow; va
 }
 
 function ToggleControl({ row, value, disabled, onChange }: { row: SettingRow; value: boolean; disabled?: boolean; onChange: (value: boolean) => void }) {
-  return (
-    <button
-      type="button"
-      className={`settings-toggle ${value ? 'is-on' : ''}`}
-      aria-label={`${row.title}：${value ? '开启' : '关闭'}`}
-      aria-pressed={value}
-      disabled={disabled}
-      onClick={() => onChange(!value)}
-    ><i /></button>
-  );
+  return <button type="button" className={`settings-toggle ${value ? 'is-on' : ''}`} aria-label={`${row.title}：${value ? '开启' : '关闭'}`} aria-pressed={value} disabled={disabled} onClick={() => onChange(!value)}><i /></button>;
 }
 
 function formatSliderValue(row: SettingRow, value: number) {
@@ -719,13 +731,7 @@ function BindingRow({ binding, value, listening, conflict, onStartListening, onK
     const isConflict = conflict?.id === binding.id && conflict.slot === slot;
     const text = value?.[slot] ?? '';
     return (
-      <button
-        type="button"
-        className={`settings-binding-cell ${slot === 'primary' ? 'settings-binding-cell--primary' : 'settings-binding-cell--secondary'} ${isListening ? 'is-listening' : ''} ${isConflict ? 'is-conflict' : ''} ${!text ? 'is-empty' : ''}`}
-        aria-label={`${binding.label}${slot === 'primary' ? '主要按键' : '次要按键'}：${text || '未设置'}`}
-        onClick={() => onStartListening(binding.id, slot)}
-        onKeyDown={(event) => onKeyDown(event, binding.id, slot)}
-      >
+      <button type="button" className={`settings-binding-cell ${slot === 'primary' ? 'settings-binding-cell--primary' : 'settings-binding-cell--secondary'} ${isListening ? 'is-listening' : ''} ${isConflict ? 'is-conflict' : ''} ${!text ? 'is-empty' : ''}`} aria-label={`${binding.label}${slot === 'primary' ? '主要按键' : '次要按键'}：${text || '未设置'}`} onClick={() => onStartListening(binding.id, slot)} onKeyDown={(event) => onKeyDown(event, binding.id, slot)}>
         {isListening ? <span>按下新的按键…</span> : text ? <kbd>{text}</kbd> : <span className="settings-binding-cell__empty"><Plus size={12} />添加</span>}
       </button>
     );
