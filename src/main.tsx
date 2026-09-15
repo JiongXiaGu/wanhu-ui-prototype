@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import { DialogProvider } from './ui/dialog/DialogSystem';
 import './styles.css';
 import './workspace.css';
 import './tool-overlay.css';
@@ -18,10 +19,13 @@ import './settings/settings-bindings.css';
 import './settings/settings-safe-confirmation.css';
 import './fullscreen-actions.css';
 import './tools/building-placement/building-placement.css';
+import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <DialogProvider>
+      <App />
+    </DialogProvider>
   </React.StrictMode>,
 );
