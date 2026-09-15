@@ -9,6 +9,7 @@ import './backgrounds.css';
 import './gameplay-refine.css';
 import './operation-hints.css';
 import './archive/archive-panel.css';
+import './archive/archive-info-refine.css';
 import './gameplay/right-edge-flyout.css';
 import './gameplay/pause-layer.css';
 import './settings/settings-panel.css';
