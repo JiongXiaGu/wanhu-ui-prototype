@@ -20,7 +20,7 @@ const items = [
 export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLayerProps) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
+      if (event.key !== 'Escape' || event.defaultPrevented) return;
       if (view === 'menu') onResume();
       else onViewChange('menu');
     };
