@@ -39,14 +39,9 @@ const rowOverlap = (statusBox.y + statusBox.height) - navBox.y;
 if (rowOverlap < 1 || rowOverlap > 3) throw new Error(`Top shell rows should overlap by about 2px to avoid a bright seam. overlap=${rowOverlap}`);
 if ((await page.locator('.gameplay-top-navigation__management > button').count()) !== 5) throw new Error('Top management must expose exactly five primary domains.');
 if ((await page.locator('.gameplay-top-navigation__management > button > span').count()) !== 0) throw new Error('Primary management navigation must remain icon-only.');
+if ((await page.locator('.gameplay-top-navigation__scene > button').count()) !== 3) throw new Error('Control tray must expose camera, weather and menu scene tools.');
 const firstNavIcon = await page.locator('.gameplay-top-navigation__button svg').first().boundingBox();
 if (!firstNavIcon || firstNavIcon.width < 17 || firstNavIcon.width > 20) throw new Error('Top navigation icons must remain readable at roughly 18px.');
-
-const viewBox = await page.locator('.gameplay-top-navigation__view').boundingBox();
-const managementNavBox = await page.locator('.gameplay-top-navigation__management').boundingBox();
-const sceneBox = await page.locator('.gameplay-top-navigation__scene').boundingBox();
-if (!viewBox || !managementNavBox || !sceneBox) throw new Error('View, management and scene-tool groups must all exist in the second row.');
-if (!(viewBox.x < managementNavBox.x && managementNavBox.x < sceneBox.x)) throw new Error('Second-row order must be View -> Management -> Scene Tools.');
 
 const speedControls = page.locator('.gameplay-top-status__time-controls');
 if ((await speedControls.getByRole('button').count()) !== 4) throw new Error('Status row must own four simulation speed controls.');
@@ -55,11 +50,48 @@ await speedControls.getByRole('button', { name: '暂停时间', exact: true }).c
 if (!(await speedControls.getByRole('button', { name: '暂停时间', exact: true }).getAttribute('class'))?.includes('is-active')) throw new Error('Simulation pause must be a real speed state.');
 await speedControls.getByRole('button', { name: '正常速度', exact: true }).click();
 
-// Weather is a real scene-tool entry again and opens the Weather Control flyout.
-await page.getByRole('button', { name: '天气控制', exact: true }).click();
+// Scene launchers toggle their flyouts, and flyouts attach directly to the top screen edge.
+const weatherButton = page.getByRole('button', { name: '天气控制', exact: true });
+await weatherButton.click();
 await page.waitForSelector('.right-edge-flyout--weather');
-await page.getByRole('button', { name: '关闭面板', exact: true }).click();
+const weatherBox = await page.locator('.right-edge-flyout--weather').boundingBox();
+if (!weatherBox || Math.abs(weatherBox.y) > 1) throw new Error('Weather flyout must attach to the top screen edge.');
+await weatherButton.click();
 await page.waitForSelector('.right-edge-flyout--weather', { state: 'detached' });
+
+const cameraButton = page.getByRole('button', { name: '相机', exact: true });
+await cameraButton.click();
+await page.waitForSelector('.right-edge-flyout--camera');
+const cameraBox = await page.locator('.right-edge-flyout--camera').boundingBox();
+if (!cameraBox || Math.abs(cameraBox.y) > 1) throw new Error('Camera flyout must attach to the top screen edge.');
+
+// Building Workspace coexists with the top control tray and lightweight camera/weather panels.
+await page.getByRole('button', { name: '建筑', exact: true }).click();
+await page.waitForSelector('.workspace--building');
+if ((await page.locator('.gameplay-top-navigation').count()) !== 1) throw new Error('Building Workspace must keep the top control tray visible.');
+if ((await page.locator('.right-edge-flyout--camera').count()) !== 1) throw new Error('Opening Building Workspace must not close Camera/Weather flyouts.');
+await cameraButton.click();
+await page.waitForSelector('.right-edge-flyout--camera', { state: 'detached' });
+if ((await page.locator('.workspace--building').count()) !== 1) throw new Error('Closing a scene flyout must not close Building Workspace.');
+
+// Re-clicking the same launcher closes the surface it owns.
+await page.getByRole('button', { name: '建筑', exact: true }).click();
+await page.waitForSelector('.workspace--building', { state: 'detached' });
+await page.getByRole('button', { name: '城市', exact: true }).click();
+await page.waitForSelector('.management-space--city');
+await page.getByRole('button', { name: '城市', exact: true }).click();
+await page.waitForSelector('.management-space--city', { state: 'detached' });
+
+// Escape closes the most local surface first: flyout -> workspace -> normal gameplay.
+await page.getByRole('button', { name: '建筑', exact: true }).click();
+await page.waitForSelector('.workspace--building');
+await weatherButton.click();
+await page.waitForSelector('.right-edge-flyout--weather');
+await page.keyboard.press('Escape');
+await page.waitForSelector('.right-edge-flyout--weather', { state: 'detached' });
+if ((await page.locator('.workspace--building').count()) !== 1) throw new Error('First Escape should close the flyout while leaving Workspace open.');
+await page.keyboard.press('Escape');
+await page.waitForSelector('.workspace--building', { state: 'detached' });
 
 const worldTools = page.locator('.world-utility-toolbar');
 if ((await worldTools.count()) !== 1) throw new Error('Normal Gameplay must show one persistent World Utility Toolbar.');
@@ -126,7 +158,11 @@ await page.keyboard.press('Escape');
 await page.waitForSelector('.management-space', { state: 'detached' });
 await page.waitForSelector('.gameplay-top-navigation');
 
-// Information views own the left edge of the control tray.
+// Information-view launcher also toggles its transient palette.
+await page.getByRole('button', { name: '信息视图', exact: true }).click();
+await page.waitForSelector('.gameplay-top-map-panel');
+await page.getByRole('button', { name: '信息视图', exact: true }).click();
+await page.waitForSelector('.gameplay-top-map-panel', { state: 'detached' });
 await page.getByRole('button', { name: '信息视图', exact: true }).click();
 await page.waitForSelector('.gameplay-top-map-panel');
 await page.waitForTimeout(100);
@@ -137,10 +173,10 @@ await page.waitForTimeout(160);
 if ((await page.locator('.gameplay-top-map-panel').count()) !== 0) throw new Error('Information View palette should collapse after choosing a map layer.');
 await page.screenshot({ path: `${outDir}/02d-land-value-view.png` });
 
-// Workspace and Tool keep global world utilities while the secondary top control tray is hidden.
+// Workspace keeps the shared top tray; Tool hides it to protect the active editing task.
 await open('workspace-building', '.workspace');
 if ((await page.locator('.gameplay-top-shell').count()) !== 1) throw new Error('Workspace must retain the persistent top status shell.');
-if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Secondary top control tray must be hidden in Building Workspace.');
+if ((await page.locator('.gameplay-top-navigation').count()) !== 1) throw new Error('Building Workspace must retain the top control tray.');
 if ((await page.locator('.command-bar').count()) !== 1) throw new Error('Building Workspace must retain the Main Dock.');
 if ((await page.locator('.world-utility-toolbar').count()) !== 1) throw new Error('Building Workspace must retain global world utilities.');
 
