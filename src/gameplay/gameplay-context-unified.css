@@ -1,0 +1,200 @@
+/* Unified Gameplay Context Panels
+   One edge rhythm, one surface language, three visual weights:
+   context panels > HUD/toolbars > shortcut hints. */
+
+.gameplay-screen{
+  --game-edge:14px;
+  --game-context-width:410px;
+  --game-context-surface-top:rgba(27,35,31,.945);
+  --game-context-surface-bottom:rgba(21,28,25,.935);
+  --game-context-border:rgba(239,233,221,.105);
+  --game-context-rule:rgba(239,233,221,.065);
+}
+
+/* Keep the whole gameplay frame on one edge rhythm. */
+.gameplay-screen .hud-group{left:var(--game-edge);top:var(--game-edge)}
+.gameplay-screen .quick-controls{right:var(--game-edge);top:var(--game-edge)}
+.gameplay-screen .command-bar{bottom:var(--game-edge)}
+.gameplay-screen .building-placement-toolbar-cluster,
+.gameplay-screen .tool-bottom-cluster{bottom:var(--game-edge)}
+
+/* Right scene context panel: floating, not glued to the viewport edge. */
+.gameplay-screen .right-edge-flyout,
+.gameplay-screen .right-edge-flyout--camera,
+.gameplay-screen .right-edge-flyout--weather{
+  right:var(--game-edge);
+  top:72px;
+  bottom:auto;
+  width:var(--game-context-width);
+  max-height:calc(100% - 86px);
+  border:1px solid var(--game-context-border);
+  border-radius:2px;
+  background:linear-gradient(180deg,var(--game-context-surface-top),var(--game-context-surface-bottom));
+  box-shadow:0 18px 42px rgba(5,8,7,.22),inset 0 1px 0 rgba(255,255,255,.014);
+  backdrop-filter:blur(10px);
+  animation:game-context-enter-right .18s cubic-bezier(.2,.75,.25,1) both;
+}
+.gameplay-screen .right-edge-flyout--camera{max-height:520px}
+.gameplay-screen .right-edge-flyout--weather{max-height:700px}
+.gameplay-screen .right-edge-flyout--weather .right-edge-flyout__body{max-height:646px}
+
+.gameplay-screen .right-edge-flyout>header{
+  height:54px;
+  padding:0 12px 0 14px;
+  border-bottom:1px solid var(--game-context-rule);
+  background:linear-gradient(180deg,rgba(255,255,255,.010),rgba(255,255,255,.002));
+}
+.right-edge-flyout__heading{gap:9px}
+.right-edge-flyout__heading-icon{
+  width:22px;
+  height:22px;
+  border:0;
+  background:transparent;
+  color:#989f97;
+}
+.right-edge-flyout__heading-icon svg{width:15px;height:15px;stroke-width:1.55}
+.right-edge-flyout__title{color:#e8e2d7;font-size:16px;font-weight:560;letter-spacing:.018em}
+.gameplay-screen .right-edge-flyout>header .icon-button{width:28px;height:28px}
+.right-edge-flyout__body{max-height:calc(100% - 54px);padding:10px 14px 14px}
+.right-edge-flyout__status{height:30px;padding:0 2px 6px;color:#bda465;font-size:8.5px}
+
+.right-edge-flyout__section{padding:7px 0 12px}
+.right-edge-flyout__section + .right-edge-flyout__section{padding-top:12px;border-top:1px solid var(--game-context-rule)}
+.right-edge-flyout__section-title{min-height:24px;margin-bottom:5px;gap:9px}
+.right-edge-flyout__section-title::after{
+  content:'';
+  height:1px;
+  flex:1;
+  background:linear-gradient(90deg,rgba(239,233,221,.075),transparent 82%);
+}
+.right-edge-flyout__section-title b{color:#bdbab1;font-size:10px;font-weight:540;letter-spacing:.03em;white-space:nowrap}
+
+.right-edge-flyout .segment{min-height:33px;border-color:rgba(239,233,221,.075);background:rgba(255,255,255,.006)}
+.right-edge-flyout .segment button{height:32px;color:#838a82;font-size:9px}
+.right-edge-flyout .segment button.is-active{background:linear-gradient(180deg,rgba(201,165,95,.075),rgba(201,165,95,.018));color:#d6ba73}
+.right-edge-flyout .parameter-row{min-height:42px;grid-template-columns:74px 28px minmax(92px,1fr) 28px 58px;gap:6px}
+.right-edge-flyout .parameter-row>span{color:#929890;font-size:9.5px}
+.right-edge-flyout .parameter-row>button{width:28px;height:28px;border-color:rgba(239,233,221,.075);background:rgba(255,255,255,.010);color:#999f97}
+.right-edge-flyout .parameter-row>button:hover{background:rgba(255,255,255,.035);color:#d0cdc4}
+.right-edge-flyout .parameter-row output{height:28px;border-color:rgba(239,233,221,.075);background:rgba(255,255,255,.008);color:#c3bfb5;font-size:9px}
+.right-edge-flyout .track{height:3px;background:rgba(235,228,211,.105)}
+.right-edge-flyout .track i{background:linear-gradient(90deg,#9f8756,#c2a363)}
+.right-edge-flyout__action-row{margin-top:4px;padding-top:10px;border-top:1px solid var(--game-context-rule)}
+.right-edge-flyout .reset-button{height:30px;border:0;background:transparent;color:#777f78}
+.right-edge-flyout .reset-button:hover{background:rgba(255,255,255,.018);color:#c4c1b8}
+
+/* Building tool panel uses the exact same shell and edge rhythm. */
+.gameplay-screen .tool-overlay.building-placement-prototype{
+  left:var(--game-edge);
+  bottom:var(--game-edge);
+  width:var(--game-context-width);
+  max-height:calc(100% - 92px);
+  border:1px solid var(--game-context-border);
+  border-radius:2px;
+  background:linear-gradient(180deg,var(--game-context-surface-top),var(--game-context-surface-bottom));
+  box-shadow:0 18px 42px rgba(5,8,7,.22),inset 0 1px 0 rgba(255,255,255,.014);
+  backdrop-filter:blur(10px);
+}
+.gameplay-screen .tool-overlay.building-placement-prototype::before{display:none}
+.gameplay-screen .tool-overlay.building-placement-prototype>header{
+  height:54px;
+  min-height:54px;
+  padding:0 12px 0 14px;
+  border-bottom:1px solid var(--game-context-rule);
+  background:linear-gradient(180deg,rgba(255,255,255,.010),rgba(255,255,255,.002));
+  box-shadow:none;
+}
+.gameplay-screen .tool-overlay.building-placement-prototype>header::after{display:none}
+.gameplay-screen .tool-overlay.building-placement-prototype>header>div{gap:8px}
+.gameplay-screen .tool-overlay.building-placement-prototype>header b{font-size:16px;font-weight:560;color:#e8e2d7;letter-spacing:.018em}
+.gameplay-screen .tool-overlay.building-placement-prototype>header span{font-size:9px;color:#888f87}
+.gameplay-screen .tool-overlay.building-placement-prototype>header .icon-button{width:28px;height:28px}
+.gameplay-screen .tool-overlay.building-placement-prototype .tool-body{max-height:calc(100vh - 150px);padding:10px 14px 14px}
+.bp-context-panel{gap:0}
+
+/* Flatten nested cards into sections. */
+.bp-terrain-summary{
+  min-height:auto;
+  padding:6px 2px 12px;
+  border:0;
+  border-bottom:1px solid var(--game-context-rule);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.bp-terrain-summary::after{display:none}
+.bp-terrain-summary__top{min-height:23px}
+.bp-terrain-summary__top b{color:#c9c5bb;font-size:10px;font-weight:540}
+.bp-terrain-metrics{gap:14px;margin-top:4px;color:#858c84;font-size:8.5px}
+.bp-terrain-metrics b{color:#bcb8ae}
+
+.bp-mode-content{
+  padding:10px 2px 0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.bp-mode-content::before{display:none}
+.bp-mode-heading{min-height:28px;padding:0 0 6px;margin:0 0 3px;gap:9px}
+.bp-mode-heading::before{display:none}
+.bp-mode-heading::after{
+  content:'';
+  height:1px;
+  flex:1;
+  background:linear-gradient(90deg,rgba(239,233,221,.075),transparent 82%);
+}
+.bp-mode-heading b{color:#d5d0c5;font-size:11px;font-weight:550;white-space:nowrap}
+.bp-parameter-row{min-height:44px;padding:0;grid-template-columns:80px 28px minmax(90px,1fr) 28px 58px;gap:6px}
+.bp-parameter-row:hover{background:rgba(255,255,255,.010);transform:none}
+.bp-parameter-row>span{color:#959b93;font-size:9.5px}
+.bp-parameter-row>button{width:28px;height:28px;background:rgba(255,255,255,.010);color:#999f97;box-shadow:none}
+.bp-parameter-row>button:hover{background:rgba(255,255,255,.035);color:#d0cdc4;transform:none}
+.bp-parameter-row output{height:28px;color:#c3bfb5;font-size:9px}
+.bp-track{height:3px;background:rgba(235,228,211,.105);box-shadow:none}
+.bp-track i{background:linear-gradient(90deg,#9f8756,#c2a363)}
+.bp-track i::after{width:8px;height:8px;right:-4px;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.bp-segment-row{min-height:44px;padding:0;grid-template-columns:80px minmax(0,1fr)}
+.bp-segment-row:hover{background:transparent}
+.bp-segment-row>span{color:#959b93;font-size:9.5px}
+.bp-segment{min-height:32px;background:rgba(255,255,255,.010);box-shadow:none}
+.bp-segment button{height:30px;color:#858c84;font-size:9px}
+.bp-segment button:hover{transform:none}
+.bp-segment button.is-active{background:linear-gradient(180deg,rgba(201,165,95,.080),rgba(201,165,95,.020));color:#d7bb75;box-shadow:none}
+
+/* Shortcut rail: persistent while a tool is active, deliberately quieter than context panels. */
+.gameplay-operation-hints{
+  right:var(--game-edge);
+  bottom:var(--game-edge);
+  width:264px;
+  padding:9px 10px 8px;
+  border:1px solid rgba(239,233,221,.055);
+  border-radius:2px;
+  background:linear-gradient(180deg,rgba(22,29,26,.58),rgba(18,24,21,.52));
+  box-shadow:none;
+  backdrop-filter:blur(5px);
+}
+.operation-hints__task{
+  min-height:22px;
+  margin-bottom:5px;
+  display:flex;
+  align-items:center;
+  color:#c9c6bd;
+  font-size:11px;
+  font-weight:540;
+  letter-spacing:.012em;
+  white-space:nowrap;
+}
+.operation-hints__group{gap:1px;margin:0}
+.operation-hints__row{min-height:23px;grid-template-columns:minmax(82px,auto) 1fr;gap:7px}
+.operation-hints__binding kbd{min-width:20px;height:18px;padding:0 5px;border-color:rgba(239,233,221,.085);background:rgba(255,255,255,.012);color:#949b93;font-size:7.5px}
+.operation-hints__binding i{color:#555d56;font-size:7px}
+.operation-hints__description{color:#7f877f;font-size:8.5px}
+.operation-hints__row.is-primary .operation-hints__binding kbd{border-color:rgba(201,165,95,.16);background:rgba(201,165,95,.040);color:#cbb273}
+.operation-hints__row.is-primary .operation-hints__description{color:#aaa79e}
+.gameplay-screen:has(.flyout)>.gameplay-operation-hints{opacity:.70;visibility:visible;pointer-events:auto;transform:none}
+.gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(5px)}
+
+@keyframes game-context-enter-right{
+  from{transform:translateX(18px);opacity:.72}
+  to{transform:translateX(0);opacity:1}
+}
