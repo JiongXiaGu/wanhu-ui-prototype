@@ -8,6 +8,14 @@
  * across browser sizes/zoom levels; only the outer canvas scale may change.
  */
 
+/* NewGameSpace keeps the old .flow-frame review selector without inheriting the legacy inset frame. */
+.new-game-space.flow-frame {
+  inset: 0;
+  border: 0;
+  box-shadow: none;
+  background: linear-gradient(180deg, rgba(13, 20, 17, .92), rgba(9, 15, 13, .97));
+}
+
 /* SaveGameSpace canonical 1920 layout. */
 .save-game-space__body {
   width: min(980px, calc(100% - 200px));
