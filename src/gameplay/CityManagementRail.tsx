@@ -1,28 +1,8 @@
 import { useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import {
-  Building2,
-  Coins,
-  Droplets,
-  Eye,
-  Layers3,
-  Route,
-  Scale,
-  ScrollText,
-  Shield,
-  ShieldCheck,
-  Store,
-  Users,
-} from 'lucide-react';
-import type { Flyout, MapView } from '../app/ui-state';
-
-type ManagementFlyout = Exclude<Flyout, 'none' | 'camera' | 'weather'>;
-
-interface ManagementItem {
-  id: ManagementFlyout;
-  label: string;
-  icon: LucideIcon;
-}
+import { Coins, Droplets, Eye, Layers3, Route, ShieldCheck, Store, Users } from 'lucide-react';
+import type { ManagementView, MapView } from '../app/ui-state';
+import { MANAGEMENT_NAV_ITEMS } from './management-model';
 
 interface MapViewItem {
   id: MapView;
@@ -31,21 +11,11 @@ interface MapViewItem {
 }
 
 interface Props {
-  flyout: Flyout;
+  management: ManagementView;
   mapView: MapView;
-  onFlyoutChange: (flyout: Flyout) => void;
+  onManagementChange: (management: ManagementView) => void;
   onMapViewChange: (mapView: MapView) => void;
 }
-
-const MANAGEMENT_ITEMS: ManagementItem[] = [
-  { id: 'city', label: '城市概况', icon: Building2 },
-  { id: 'population', label: '户籍民生', icon: Users },
-  { id: 'finance', label: '财政税赋', icon: Coins },
-  { id: 'policy', label: '政令政策', icon: ScrollText },
-  { id: 'commerce', label: '商贸物流', icon: Store },
-  { id: 'governance', label: '城市治理', icon: Scale },
-  { id: 'military', label: '军务', icon: Shield },
-];
 
 const MAP_VIEWS: MapViewItem[] = [
   { id: 'default', label: '默认', icon: Eye },
@@ -57,28 +27,26 @@ const MAP_VIEWS: MapViewItem[] = [
   { id: 'water', label: '水利', icon: Droplets },
 ];
 
-export function CityManagementRail({ flyout, mapView, onFlyoutChange, onMapViewChange }: Props) {
+export function CityManagementRail({ management, mapView, onManagementChange, onMapViewChange }: Props) {
   const [mapPanelOpen, setMapPanelOpen] = useState(false);
   const activeMapView = MAP_VIEWS.find((item) => item.id === mapView) ?? MAP_VIEWS[0];
-
-  function toggleManagement(item: ManagementItem) {
-    setMapPanelOpen(false);
-    onFlyoutChange(flyout === item.id ? 'none' : item.id);
-  }
 
   return (
     <div className="city-management-shell">
       <nav className="city-management-rail" aria-label="城市管理">
-        {MANAGEMENT_ITEMS.map((item) => {
+        {MANAGEMENT_NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           return (
             <button
               key={item.id}
               type="button"
-              className={`city-management-button ${flyout === item.id ? 'is-active' : ''}`}
+              className={`city-management-button ${management === item.id ? 'is-active' : ''}`}
               data-tooltip={item.label}
               aria-label={item.label}
-              onClick={() => toggleManagement(item)}
+              onClick={() => {
+                setMapPanelOpen(false);
+                onManagementChange(item.id);
+              }}
             >
               <Icon />
             </button>

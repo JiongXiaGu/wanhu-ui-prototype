@@ -8,6 +8,9 @@ export type ReviewScenario =
   | 'settings'
   | 'loading'
   | 'gameplay'
+  | 'management-finance'
+  | 'management-policy'
+  | 'map-land-value'
   | 'workspace-building'
   | 'building-position'
   | 'building-massing'
@@ -42,6 +45,12 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'loading', gameplay, loadingProgress: 62 };
     case 'gameplay':
       return { screen: 'gameplay', gameplay };
+    case 'management-finance':
+      return { screen: 'gameplay', gameplay: { ...gameplay, management: 'finance' } };
+    case 'management-policy':
+      return { screen: 'gameplay', gameplay: { ...gameplay, management: 'policy' } };
+    case 'map-land-value':
+      return { screen: 'gameplay', gameplay: { ...gameplay, mapView: 'land-value' } };
     case 'workspace-building':
       return { screen: 'gameplay', gameplay: { ...gameplay, workspace: 'building', activeCategory: '建筑' } };
     case 'building-position':

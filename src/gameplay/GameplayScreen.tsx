@@ -8,7 +8,7 @@ import { CityManagementRail } from './CityManagementRail';
 import { CommandBar, UtilityToolbar } from './CommandBar';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
-import { ManagementFlyout } from './ManagementFlyout';
+import { ManagementSpace } from './ManagementSpace';
 import { PauseLayer } from './PauseLayer';
 import { QuickControls } from './QuickControls';
 import { RightEdgeFlyout } from './RightEdgeFlyout';
@@ -29,29 +29,32 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   }
 
   return (
-    <section className="screen gameplay-screen" style={{ backgroundImage: `url(${background})` }}>
+    <section className={`screen gameplay-screen gameplay-screen--${space}`} style={{ backgroundImage: `url(${background})` }}>
       <div className="game-vignette" />
       <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
       <GameplayHUD />
-      <QuickControls
-        flyout={state.flyout}
-        speed={state.speed}
-        onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
-        onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
-        onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
-      />
+
+      {space !== 'management' && (
+        <QuickControls
+          flyout={state.flyout}
+          speed={state.speed}
+          onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
+          onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
+          onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
+        />
+      )}
 
       {space === 'gameplay' && (
         <CityManagementRail
-          flyout={state.flyout}
+          management={state.management}
           mapView={state.mapView}
-          onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
+          onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
           onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
         />
       )}
 
       {space === 'gameplay' && <UtilityToolbar />}
-      {!toolOpen && !state.paused && (
+      {(space === 'gameplay' || space === 'workspace') && (
         <CommandBar activeCategory={state.activeCategory} onCategoryChange={(category) => dispatch({ type: 'SET_CATEGORY', category })} />
       )}
 
@@ -74,16 +77,20 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         </>
       )}
 
-      {!state.paused && (
+      {space !== 'management' && !state.paused && (
         <GameplayOperationHints toolActive={toolOpen} adjustmentMode={state.adjustmentMode} />
       )}
 
-      {(state.flyout === 'camera' || state.flyout === 'weather') && !state.paused && (
+      {state.flyout !== 'none' && !state.paused && (
         <RightEdgeFlyout flyout={state.flyout} onClose={() => dispatch({ type: 'SET_FLYOUT', flyout: 'none' })} />
       )}
 
-      {state.flyout !== 'none' && state.flyout !== 'camera' && state.flyout !== 'weather' && !state.paused && (
-        <ManagementFlyout flyout={state.flyout} onClose={() => dispatch({ type: 'SET_FLYOUT', flyout: 'none' })} />
+      {space === 'management' && state.management !== 'none' && (
+        <ManagementSpace
+          view={state.management}
+          onViewChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
+          onClose={() => dispatch({ type: 'SET_MANAGEMENT', management: 'none' })}
+        />
       )}
 
       {state.paused && (

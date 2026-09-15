@@ -1,11 +1,12 @@
 export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'loading' | 'gameplay';
-export type Flyout = 'none' | 'camera' | 'weather' | 'city' | 'population' | 'finance' | 'policy' | 'commerce' | 'governance' | 'military';
+export type Flyout = 'none' | 'camera' | 'weather';
+export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'building';
 export type Tool = 'none' | 'building-placement';
 export type TerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
-export type GameplaySpace = 'gameplay' | 'workspace' | 'tool' | 'pause';
+export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
 export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 1 | 2 | 4;
 
@@ -13,6 +14,7 @@ export interface GameplayUiState {
   workspace: Workspace;
   tool: Tool;
   flyout: Flyout;
+  management: ManagementView;
   mapView: MapView;
   paused: boolean;
   pauseView: PauseView;
@@ -30,6 +32,7 @@ export const initialGameplayUiState: GameplayUiState = {
   workspace: 'none',
   tool: 'none',
   flyout: 'none',
+  management: 'none',
   mapView: 'default',
   paused: false,
   pauseView: 'menu',
@@ -49,6 +52,7 @@ export type GameplayUiAction =
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_FLYOUT'; flyout: Flyout }
+  | { type: 'SET_MANAGEMENT'; management: ManagementView }
   | { type: 'SET_MAP_VIEW'; mapView: MapView }
   | { type: 'SET_PAUSED'; paused: boolean }
   | { type: 'SET_PAUSE_VIEW'; view: PauseView }
@@ -69,6 +73,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         activeCategory: action.category,
         workspace: building ? (state.workspace === 'building' ? 'none' : 'building') : 'none',
+        management: 'none',
         flyout: 'none',
         mapView: 'default',
       };
@@ -80,6 +85,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         workspace: 'none',
         tool: 'building-placement',
+        management: 'none',
         flyout: 'none',
         mapView: 'default',
         terrainMode: 'balanced-earthwork',
@@ -93,6 +99,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         tool: 'none',
         workspace: 'building',
         activeCategory: '建筑',
+        management: 'none',
         flyout: 'none',
         mapView: 'default',
         canUndo: false,
@@ -102,12 +109,23 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         flyout: action.flyout,
+        management: action.flyout === 'none' ? state.management : 'none',
         mapView: action.flyout === 'none' ? state.mapView : 'default',
+      };
+    case 'SET_MANAGEMENT':
+      return {
+        ...state,
+        management: action.management,
+        workspace: action.management === 'none' ? state.workspace : 'none',
+        tool: action.management === 'none' ? state.tool : 'none',
+        flyout: 'none',
+        mapView: 'default',
       };
     case 'SET_MAP_VIEW':
       return {
         ...state,
         mapView: action.mapView,
+        management: action.mapView === 'default' ? state.management : 'none',
         flyout: action.mapView === 'default' ? state.flyout : 'none',
       };
     case 'SET_PAUSED':
@@ -115,6 +133,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         paused: action.paused,
         pauseView: 'menu',
+        management: action.paused ? 'none' : state.management,
         flyout: action.paused ? 'none' : state.flyout,
         mapView: action.paused ? 'default' : state.mapView,
       };
@@ -145,5 +164,6 @@ export function selectGameplaySpace(state: GameplayUiState): GameplaySpace {
   if (state.paused) return 'pause';
   if (state.tool !== 'none') return 'tool';
   if (state.workspace !== 'none') return 'workspace';
+  if (state.management !== 'none') return 'management';
   return 'gameplay';
 }
