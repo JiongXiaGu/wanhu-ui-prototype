@@ -133,7 +133,6 @@
   font-size:7px;
 }
 
-.gameplay-screen:has(.flyout)>.gameplay-operation-hints,
 .gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{
   opacity:0;
   visibility:hidden;
