@@ -8,9 +8,7 @@
   background: linear-gradient(180deg, rgba(13, 22, 18, 0.94), rgba(8, 15, 13, 0.96));
 }
 
-.save-game-space__header {
-  flex: 0 0 86px;
-}
+.save-game-space__header { flex: 0 0 86px; }
 
 .save-game-space__body {
   width: min(980px, calc(100% - 200px));
@@ -35,6 +33,21 @@
 
 .save-current-game h2 {
   margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+}
+
+.save-current-game__name-input {
+  width: min(420px, 68vw);
+  margin: 0 0 8px;
+  padding: 2px 1px 5px;
+  border: 0;
+  border-bottom: 1px solid rgba(207, 174, 94, 0.58);
+  outline: 0;
+  color: var(--paper, #e8e4d6);
+  background: rgba(207, 174, 94, 0.025);
+  font: inherit;
   font-size: 22px;
   font-weight: 650;
   letter-spacing: 0.03em;
@@ -96,29 +109,11 @@
   background: rgba(207, 174, 94, 0.045);
 }
 
-.save-create-entry:active {
-  transform: translateY(1px);
-}
-
-.save-create-entry > svg {
-  color: rgba(214, 181, 96, 0.85);
-}
-
-.save-create-entry span {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.save-create-entry b {
-  font-size: 13px;
-  font-weight: 620;
-}
-
-.save-create-entry small {
-  color: rgba(222, 225, 214, 0.48);
-  font-size: 10px;
-}
+.save-create-entry:active { transform: translateY(1px); }
+.save-create-entry > svg { color: rgba(214, 181, 96, 0.85); }
+.save-create-entry span { display: flex; flex-direction: column; gap: 5px; }
+.save-create-entry b { font-size: 13px; font-weight: 620; }
+.save-create-entry small { color: rgba(222, 225, 214, 0.48); font-size: 10px; }
 
 .save-create-editor {
   display: flex;
@@ -130,17 +125,8 @@
   background: rgba(207, 174, 94, 0.04);
 }
 
-.save-create-editor__copy {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex: 1 1 auto;
-}
-
-.save-create-editor__copy b {
-  white-space: nowrap;
-  font-size: 12px;
-}
+.save-create-editor__copy { display: flex; align-items: center; gap: 18px; flex: 1 1 auto; }
+.save-create-editor__copy b { white-space: nowrap; font-size: 12px; }
 
 .save-create-editor__copy input,
 .save-manual-card__title input {
@@ -154,10 +140,7 @@
   font: inherit;
 }
 
-.save-create-editor__actions {
-  display: flex;
-  gap: 8px;
-}
+.save-create-editor__actions { display: flex; gap: 8px; }
 
 .save-create-editor__actions button,
 .save-manual-card__actions button,
@@ -172,11 +155,7 @@
   transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
 }
 
-.save-create-editor__actions button {
-  min-height: 32px;
-  padding: 0 13px;
-  gap: 6px;
-}
+.save-create-editor__actions button { min-height: 32px; padding: 0 13px; gap: 6px; }
 
 .save-create-editor__actions button:hover,
 .save-manual-card__actions button:hover,
@@ -194,12 +173,7 @@
   background: rgba(207, 174, 94, 0.075);
 }
 
-.save-manual-section {
-  min-height: 0;
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
+.save-manual-section { min-height: 0; flex: 1 1 auto; display: flex; flex-direction: column; }
 
 .save-manual-section__header {
   flex: 0 0 auto;
@@ -211,15 +185,8 @@
   color: rgba(229, 230, 219, 0.72);
 }
 
-.save-manual-section__header b {
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.save-manual-section__header span {
-  color: rgba(222, 225, 214, 0.35);
-  font-size: 10px;
-}
+.save-manual-section__header b { font-size: 11px; font-weight: 600; }
+.save-manual-section__header span { color: rgba(222, 225, 214, 0.35); font-size: 10px; }
 
 .save-manual-list {
   min-height: 0;
@@ -277,22 +244,10 @@
 }
 
 .save-manual-card:hover .save-manual-card__image,
-.save-manual-card.is-selected .save-manual-card__image {
-  filter: saturate(0.88) brightness(0.9);
-}
+.save-manual-card.is-selected .save-manual-card__image { filter: saturate(0.88) brightness(0.9); }
 
-.save-manual-card__copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.save-manual-card__title {
-  min-height: 21px;
-  color: rgba(242, 240, 226, 0.92);
-  font-size: 13px;
-}
+.save-manual-card__copy { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+.save-manual-card__title { min-height: 21px; color: rgba(242, 240, 226, 0.92); font-size: 13px; }
 
 .save-manual-card__time {
   display: flex;
@@ -302,11 +257,7 @@
   font-size: 10px;
 }
 
-.save-manual-card__time small {
-  width: 54px;
-  color: rgba(222, 225, 214, 0.32);
-  font-size: 9px;
-}
+.save-manual-card__time small { width: 54px; color: rgba(222, 225, 214, 0.32); font-size: 9px; }
 
 .save-manual-card__status {
   position: absolute;
@@ -347,11 +298,7 @@
 }
 
 .save-manual-card__actions button,
-.save-manual-card__confirm button {
-  width: 34px;
-  height: 32px;
-  padding: 0;
-}
+.save-manual-card__confirm button { width: 34px; height: 32px; padding: 0; }
 
 .save-manual-card__actions .is-danger:hover,
 .save-manual-card__confirm .is-danger:hover {
@@ -377,9 +324,7 @@
   font-size: 10px;
 }
 
-.save-manual-card__confirm--delete {
-  border-color: rgba(188, 101, 86, 0.26);
-}
+.save-manual-card__confirm--delete { border-color: rgba(188, 101, 86, 0.26); }
 
 .save-game-space__footer {
   flex: 0 0 72px;
@@ -389,16 +334,11 @@
   padding: 0 36px;
 }
 
-.save-game-space__back {
-  margin-left: auto;
-}
+.save-game-space__footer-left { display: flex; align-items: center; gap: 10px; }
+.save-group-rename { min-width: 142px; }
+.save-game-space__back { margin-left: auto; }
 
 @media (max-width: 1280px) {
-  .save-game-space__body {
-    width: calc(100% - 120px);
-  }
-
-  .save-manual-card__select {
-    padding-right: 142px;
-  }
+  .save-game-space__body { width: calc(100% - 120px); }
+  .save-manual-card__select { padding-right: 142px; }
 }
