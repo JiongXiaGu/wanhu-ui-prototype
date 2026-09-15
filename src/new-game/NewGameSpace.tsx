@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
-import { ChevronLeft, Dices, RefreshCw } from 'lucide-react';
+import { ChevronLeft, Dices } from 'lucide-react';
 import './new-game-space.css';
 
 type MapKind = 'preset' | 'random';
 type MapFilter = 'all' | MapKind;
-type SeedMode = 'random' | 'fixed';
 
 type MapOption = {
   id: string;
@@ -15,6 +14,13 @@ type MapOption = {
   size: string;
   terrain: string;
   water: string;
+};
+
+type RandomProfile = {
+  style: string;
+  coast: string;
+  river: string;
+  lakes: string;
 };
 
 interface NewGameSpaceProps {
@@ -92,20 +98,34 @@ const FILTERS: { key: MapFilter; label: string }[] = [
 ];
 const SIZES = ['小型', '中型', '大型'];
 const GAME_MODES = ['低配', '造景', '完整'];
+const CITY_NAMES = ['昭平城', '临江城', '云津城', '南陵城', '清河城', '澄江府', '上阳城', '归安县'];
+const RANDOM_PROFILES: RandomProfile[] = [
+  { style: '江河平原', coast: '无海岸', river: '有主河道', lakes: '少量湖泊' },
+  { style: '海湾丘陵', coast: '临海', river: '短河流', lakes: '少量湖泊' },
+  { style: '湖沼水乡', coast: '无海岸', river: '河网密集', lakes: '湖泊较多' },
+  { style: '山间盆地', coast: '无海岸', river: '支流穿行', lakes: '少量湖泊' },
+  { style: '沿海平原', coast: '长海岸线', river: '有入海河', lakes: '零散湖泊' },
+];
+
+function randomProfileFor(seed: string) {
+  const digits = seed.replace(/\D/g, '');
+  const value = Number(digits.slice(-6)) || 0;
+  return RANDOM_PROFILES[value % RANDOM_PROFILES.length];
+}
 
 export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
   const [filter, setFilter] = useState<MapFilter>('all');
   const [selectedMapId, setSelectedMapId] = useState(MAPS[0].id);
   const [size, setSize] = useState('大型');
   const [gameMode, setGameMode] = useState('完整');
-  const [seedMode, setSeedMode] = useState<SeedMode>('random');
   const [seed, setSeed] = useState('20260824');
   const [cityName, setCityName] = useState('新建城市');
 
   const selectedMap = useMemo(() => MAPS.find((item) => item.id === selectedMapId) ?? MAPS[0], [selectedMapId]);
   const visibleMaps = useMemo(() => filter === 'all' ? MAPS : MAPS.filter((item) => item.kind === filter), [filter]);
+  const randomProfile = useMemo(() => randomProfileFor(seed), [seed]);
   const isRandom = selectedMap.kind === 'random';
-  const canStart = cityName.trim().length > 0 && (!isRandom || seedMode === 'random' || seed.trim().length > 0);
+  const canStart = cityName.trim().length > 0 && (!isRandom || seed.trim().length > 0);
 
   function chooseFilter(next: MapFilter) {
     setFilter(next);
@@ -114,7 +134,14 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
     if (first) setSelectedMapId(first.id);
   }
 
-  const randomizeSeed = () => setSeed(String(Math.floor(10000000 + Math.random() * 89999999)));
+  function randomizeSeed() {
+    setSeed(String(Math.floor(10000000 + Math.random() * 89999999)));
+  }
+
+  function randomizeCityName() {
+    const candidates = CITY_NAMES.filter((name) => name !== cityName.trim());
+    setCityName(candidates[Math.floor(Math.random() * candidates.length)] ?? CITY_NAMES[0]);
+  }
 
   return (
     <section className="new-game-space flow-frame" aria-label="新建游戏">
@@ -143,12 +170,11 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
                 aria-pressed={map.id === selectedMap.id}
                 onClick={() => setSelectedMapId(map.id)}
               >
-                <span className="new-game-map-card__image" style={{ backgroundImage: `url(${map.image})` }}>
-                  {map.kind === 'random' && <span className="new-game-map-card__random"><Dices size={18} /><em>随机生成</em></span>}
-                </span>
+                {map.kind === 'random' && <span className="new-game-map-card__badge"><Dices size={12} /><em>随机地图</em></span>}
+                <span className="new-game-map-card__image" style={{ backgroundImage: `url(${map.image})` }} />
                 <span className="new-game-map-card__copy">
                   <b>{map.name}</b>
-                  <small>{map.kind === 'random' ? '尺寸与种子可调整' : `${map.size} · ${map.terrain} · ${map.water}`}</small>
+                  <small>{map.kind === 'random' ? '运行时生成 · 参数可调' : `${map.size} · ${map.terrain} · ${map.water}`}</small>
                 </span>
               </button>
             ))}
@@ -159,14 +185,25 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
           <header className="new-game-detail__header">
             <span>{isRandom ? '随机地图' : '预定义地图'}</span>
             <h2>{selectedMap.name}</h2>
-            <p>{selectedMap.description}</p>
+            <p>{isRandom ? '地图特征由随机种子决定。更换种子即可快速获得另一组世界条件。' : selectedMap.description}</p>
           </header>
 
-          <div className="new-game-detail__facts" aria-label="地图信息">
-            <div><span>地图尺寸</span><b>{isRandom ? size : selectedMap.size}</b></div>
-            <div><span>主要地貌</span><b>{selectedMap.terrain}</b></div>
-            <div><span>水系</span><b>{selectedMap.water}</b></div>
-            <div><span>来源</span><b>{isRandom ? '运行时生成' : '预定义'}</b></div>
+          <div className={`new-game-detail__facts ${isRandom ? 'is-random' : ''}`} aria-label="地图信息">
+            {isRandom ? (
+              <>
+                <div><span>地图风格</span><b>{randomProfile.style}</b></div>
+                <div><span>海岸</span><b>{randomProfile.coast}</b></div>
+                <div><span>河流</span><b>{randomProfile.river}</b></div>
+                <div><span>湖泊</span><b>{randomProfile.lakes}</b></div>
+              </>
+            ) : (
+              <>
+                <div><span>地图尺寸</span><b>{selectedMap.size}</b></div>
+                <div><span>主要地貌</span><b>{selectedMap.terrain}</b></div>
+                <div><span>水系</span><b>{selectedMap.water}</b></div>
+                <div><span>来源</span><b>预定义</b></div>
+              </>
+            )}
           </div>
 
           <section className="new-game-plan" aria-label="开局方案">
@@ -177,25 +214,18 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
 
             <label className="new-game-plan__field">
               <span>城市名称</span>
-              <input value={cityName} maxLength={18} placeholder="请输入城市名称" onChange={(event) => setCityName(event.target.value)} />
+              <div className="new-game-input-row">
+                <input aria-label="城市名称" value={cityName} maxLength={18} placeholder="请输入城市名称" onChange={(event) => setCityName(event.target.value)} />
+                <button type="button" className="new-game-randomize-button" aria-label="随机城市名称" title="随机城市名称" onClick={randomizeCityName}><Dices size={14} /></button>
+              </div>
             </label>
 
             {isRandom && (
-              <section className="new-game-plan__group">
-                <span>随机种子</span>
-                <div className="new-game-segmented">
-                  <button type="button" className={seedMode === 'random' ? 'is-active' : ''} onClick={() => setSeedMode('random')}>每次随机</button>
-                  <button type="button" className={seedMode === 'fixed' ? 'is-active' : ''} onClick={() => setSeedMode('fixed')}>固定种子</button>
-                </div>
-              </section>
-            )}
-
-            {isRandom && seedMode === 'fixed' && (
               <label className="new-game-plan__field">
-                <span>固定种子</span>
-                <div className="new-game-seed-row">
-                  <input aria-label="固定种子" value={seed} inputMode="numeric" onChange={(event) => setSeed(event.target.value.replace(/\D/g, '').slice(0, 10))} />
-                  <button type="button" onClick={randomizeSeed}><RefreshCw size={13} />换一个</button>
+                <span>随机种子</span>
+                <div className="new-game-input-row">
+                  <input aria-label="随机种子" value={seed} inputMode="numeric" onChange={(event) => setSeed(event.target.value.replace(/\D/g, '').slice(0, 10))} />
+                  <button type="button" className="new-game-randomize-button" aria-label="随机地图种子" title="随机地图种子" onClick={randomizeSeed}><Dices size={14} /></button>
                 </div>
               </label>
             )}
