@@ -17,6 +17,7 @@
 .settings-panel--pause{position:absolute;inset:0;z-index:2}
 .settings-space>*{position:relative;z-index:1}
 .settings-space__header{flex:0 0 92px}
+.settings-space__header .global-space-heading{grid-column:2}
 
 .settings-space__tabs{flex:0 0 66px;display:flex;align-items:stretch;justify-content:center;gap:12px;padding:8px 44px 6px;border-bottom:1px solid rgba(239,233,221,.045);background:rgba(11,16,13,.10)}
 .settings-space__tabs button{position:relative;width:124px;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:9px;border:0;background:transparent;color:#737b74;font-size:11px;font-weight:500;letter-spacing:.015em;cursor:pointer;transition:color .14s ease,background .14s ease,transform .10s ease}
@@ -66,8 +67,17 @@
 .settings-toggle:hover>i{border-color:rgba(239,233,221,.24);background:rgba(255,255,255,.030)}.settings-toggle:active>i::after{transform:scale(.88)}.settings-toggle:focus-visible>i{box-shadow:0 0 0 3px rgba(201,165,95,.07);border-color:rgba(201,165,95,.34)}
 .settings-toggle.is-on>i{border-color:rgba(201,165,95,.32);background:rgba(201,165,95,.065)}.settings-toggle.is-on>i::after{left:21px;background:#c9a55f;box-shadow:0 0 8px rgba(201,165,95,.13)}.settings-toggle.is-on:hover>i{border-color:rgba(201,165,95,.48);background:rgba(201,165,95,.085)}.settings-toggle:disabled{cursor:default}
 
-.settings-space__footer{flex:0 0 72px}.settings-restore{height:36px;padding:0 11px;display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:#727a73;font-size:9px;cursor:pointer;transition:color .12s ease,background .12s ease}.settings-restore:hover{color:#bbb8af;background:rgba(255,255,255,.015)}.settings-restore:active{color:#e0dbcf}.settings-restore:focus-visible{outline:1px solid rgba(201,165,95,.28)}
-.settings-space__footer .global-space-secondary,.settings-space__footer .global-space-primary{font-size:9.5px}.settings-apply{transition:opacity .12s ease,background .12s ease,border-color .12s ease,color .12s ease}.settings-apply:disabled{opacity:.26;cursor:default;filter:saturate(.2)}.settings-space__footer.is-dirty .settings-apply:not(:disabled){box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 18px rgba(201,165,95,.055)}
+/* Full-screen page action bar. Settings uses only the left navigation/tool group. */
+.settings-space__footer{flex:0 0 72px}
+.settings-space__footer-left{display:flex;align-items:center;gap:10px}
+.settings-space__footer-right{min-width:1px;min-height:1px}
+.settings-footer-back{min-width:86px;height:36px;padding:0 13px;color:#aaa9a1;border-color:rgba(239,233,221,.105);background:rgba(255,255,255,.012);transition:color .12s ease,background .12s ease,border-color .12s ease}
+.settings-footer-back:hover{color:#ded9cf;border-color:rgba(239,233,221,.17);background:rgba(255,255,255,.028)}
+.settings-footer-back:active{background:rgba(255,255,255,.016)}
+.settings-footer-back svg{color:#858c84;stroke-width:1.6}
+.settings-footer-back:hover svg{color:#bfc0b8}
+.settings-restore{height:36px;padding:0 11px;display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:#727a73;font-size:9px;cursor:pointer;transition:color .12s ease,background .12s ease}
+.settings-restore:hover{color:#bbb8af;background:rgba(255,255,255,.015)}.settings-restore:active{color:#e0dbcf}.settings-restore:focus-visible{outline:1px solid rgba(201,165,95,.28)}
 
 @keyframes settings-content-enter{from{opacity:.42;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@keyframes settings-select-open{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 @media (max-width:1500px){.settings-space__content{width:min(840px,calc(100% - 120px))}.settings-row__control{flex-basis:330px}.settings-select-root,.settings-select-value,.settings-select-menu{width:214px}}
