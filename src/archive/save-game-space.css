@@ -17,7 +17,7 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  padding: 18px 0 18px;
+  padding: 18px 0;
 }
 
 .save-current-game {
@@ -31,21 +31,6 @@
 
 .save-current-game h2 {
   margin: 0 0 8px;
-  font-size: 22px;
-  font-weight: 650;
-  letter-spacing: 0.03em;
-}
-
-.save-current-game__name-input {
-  width: 420px;
-  margin: 0 0 8px;
-  padding: 2px 1px 5px;
-  border: 0;
-  border-bottom: 1px solid rgba(207, 174, 94, 0.58);
-  outline: 0;
-  color: var(--paper, #e8e4d6);
-  background: rgba(207, 174, 94, 0.025);
-  font: inherit;
   font-size: 22px;
   font-weight: 650;
   letter-spacing: 0.03em;
@@ -108,84 +93,3 @@
 .save-quick-action { min-width: 108px; }
 .save-manual-action { min-width: 116px; }
 .save-game-space__back { justify-self: end; margin-left: 0; }
-
-.save-name-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 60;
-  display: grid;
-  place-items: center;
-  background: rgba(5, 8, 7, 0.70);
-}
-
-.save-name-dialog {
-  width: 460px;
-  padding: 26px 26px 22px;
-  border: 1px solid rgba(239, 233, 221, 0.105);
-  border-radius: 2px;
-  background: #18201c;
-  box-shadow: 0 28px 70px rgba(3, 5, 4, 0.46);
-}
-
-.save-name-dialog h2 {
-  margin: 0 0 22px;
-  color: #e4ded3;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.save-name-dialog label {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: rgba(222, 225, 214, 0.52);
-  font-size: 9px;
-}
-
-.save-name-dialog input {
-  width: 100%;
-  height: 38px;
-  border: 0;
-  border-bottom: 1px solid rgba(207, 174, 94, 0.48);
-  outline: 0;
-  padding: 0 8px;
-  color: #e7e1d6;
-  background: rgba(207, 174, 94, 0.035);
-  font: inherit;
-  font-size: 12px;
-}
-
-.save-name-dialog footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 24px;
-}
-
-.save-name-dialog footer button {
-  min-width: 92px;
-}
-
-.save-toast {
-  position: absolute;
-  left: 50%;
-  bottom: 88px;
-  z-index: 55;
-  transform: translateX(-50%);
-  min-width: 220px;
-  padding: 10px 16px;
-  border: 1px solid rgba(207, 174, 94, 0.18);
-  border-radius: 2px;
-  color: rgba(231, 225, 211, 0.86);
-  background: rgba(22, 30, 26, 0.96);
-  box-shadow: 0 12px 30px rgba(3, 5, 4, 0.30);
-  text-align: center;
-  font-size: 9px;
-  pointer-events: none;
-  animation: save-toast-enter 140ms ease-out both;
-}
-
-@keyframes save-toast-enter {
-  from { opacity: 0; transform: translate(-50%, 5px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
