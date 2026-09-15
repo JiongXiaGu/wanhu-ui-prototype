@@ -1,0 +1,180 @@
+/* System-safe confirmation for display settings. This layer intentionally does not inherit preview UI scaling. */
+.settings-space__footer--autosave{
+  justify-content:flex-start;
+}
+
+.settings-safe-layer{
+  position:absolute;
+  inset:0;
+  z-index:60;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:36px;
+  isolation:isolate;
+}
+
+.settings-safe-layer__shade{
+  position:absolute;
+  inset:0;
+  background:rgba(4,8,6,.72);
+}
+
+.settings-safe-dialog{
+  position:relative;
+  z-index:1;
+  width:460px;
+  min-height:308px;
+  padding:30px 32px 24px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  border:1px solid rgba(235,229,216,.085);
+  border-radius:3px;
+  background:#111915;
+  box-shadow:0 28px 80px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.025);
+  color:#ddd8ce;
+}
+
+.settings-safe-dialog>header{
+  text-align:center;
+}
+
+.settings-safe-dialog>header h2{
+  margin:0;
+  color:#e8e2d7;
+  font-size:20px;
+  font-weight:560;
+  letter-spacing:.025em;
+}
+
+.settings-safe-dialog>header p{
+  width:340px;
+  max-width:100%;
+  margin:12px auto 0;
+  color:#818982;
+  font-size:10.5px;
+  line-height:1.7;
+}
+
+.settings-safe-dialog__change{
+  min-height:54px;
+  margin:22px 0 0;
+  padding:0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  border-top:1px solid rgba(235,229,216,.045);
+  border-bottom:1px solid rgba(235,229,216,.045);
+}
+
+.settings-safe-dialog__change span{
+  color:#8f968f;
+  font-size:10px;
+}
+
+.settings-safe-dialog__change b{
+  min-width:0;
+  color:#cbc7bd;
+  font-size:10.5px;
+  font-weight:500;
+  text-align:right;
+}
+
+.settings-safe-dialog__change b i{
+  margin:0 6px;
+  color:#666e68;
+  font-style:normal;
+}
+
+.settings-safe-dialog__countdown{
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#d5b66d;
+  font-size:34px;
+  font-weight:450;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 22px rgba(201,165,95,.08);
+}
+
+.settings-safe-dialog>footer{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+.settings-safe-dialog>footer button{
+  min-width:140px;
+  height:38px;
+  padding:0 16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border-radius:2px;
+  font:inherit;
+  font-size:10px;
+  cursor:pointer;
+  transition:background .12s ease,border-color .12s ease,color .12s ease,transform .08s ease;
+}
+
+.settings-safe-dialog>footer button:active{
+  transform:translateY(1px);
+}
+
+.settings-safe-dialog__rollback{
+  border:1px solid rgba(235,229,216,.09);
+  background:rgba(255,255,255,.018);
+  color:#a6aaa3;
+}
+
+.settings-safe-dialog__rollback:hover,
+.settings-safe-dialog__rollback:focus-visible{
+  border-color:rgba(235,229,216,.18);
+  background:rgba(255,255,255,.035);
+  color:#ddd8ce;
+  outline:none;
+}
+
+.settings-safe-dialog__keep{
+  border:1px solid rgba(201,165,95,.28);
+  background:rgba(201,165,95,.095);
+  color:#dcc17a;
+}
+
+.settings-safe-dialog__keep:hover,
+.settings-safe-dialog__keep:focus-visible{
+  border-color:rgba(201,165,95,.46);
+  background:rgba(201,165,95,.145);
+  color:#f0d58e;
+  outline:none;
+}
+
+.settings-safe-dialog>small{
+  margin-top:17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  color:#626a64;
+  font-size:8.5px;
+}
+
+.settings-safe-dialog>small kbd{
+  min-width:29px;
+  height:22px;
+  padding:0 6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(235,229,216,.08);
+  border-radius:2px;
+  background:rgba(255,255,255,.012);
+  color:#8b918b;
+  font:inherit;
+  font-size:8px;
+}
