@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Check, Trash2 } from 'lucide-react';
+import { Check, CircleX, Info, Trash2, TriangleAlert } from 'lucide-react';
 
 type DialogTone = 'primary' | 'danger';
-type ToastTone = 'neutral' | 'success' | 'danger';
+type NotificationTone = 'neutral' | 'success' | 'warning' | 'error';
+type ToastTone = NotificationTone | 'danger';
 
 type ConfirmDialogRequest = {
   kind: 'confirm';
@@ -48,7 +49,8 @@ type DialogRequest = ConfirmDialogRequest | InputDialogRequest | TimedDialogRequ
 type ToastItem = {
   id: number;
   text: string;
-  tone: ToastTone;
+  tone: NotificationTone;
+  exiting: boolean;
 };
 
 type ConfirmOptions = Omit<ConfirmDialogRequest, 'kind' | 'id' | 'cancelText' | 'tone'> & {
@@ -70,6 +72,7 @@ type DialogContextValue = {
   confirm: (options: ConfirmOptions) => void;
   input: (options: InputOptions) => void;
   timed: (options: TimedOptions) => void;
+  notify: (text: string, tone?: NotificationTone, duration?: number) => void;
   toast: (text: string, tone?: ToastTone, duration?: number) => void;
   dismissDialog: (invokeCancel?: boolean) => void;
 };
@@ -80,10 +83,10 @@ let nextId = 1;
 export function DialogProvider({ children }: { children: ReactNode }) {
   const [dialog, setDialog] = useState<DialogRequest | null>(null);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
-  const toastTimers = useRef(new Map<number, number>());
+  const toastTimers = useRef(new Map<number, number[]>());
 
   useEffect(() => () => {
-    toastTimers.current.forEach((timer) => window.clearTimeout(timer));
+    toastTimers.current.forEach((timers) => timers.forEach((timer) => window.clearTimeout(timer)));
     toastTimers.current.clear();
   }, []);
 
@@ -106,17 +109,32 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     setDialog({ ...options, id: nextId++, kind: 'timed', cancelText: options.cancelText ?? '恢复原设置' });
   }, []);
 
-  const toast = useCallback((text: string, tone: ToastTone = 'neutral', duration = 1800) => {
+  const pushNotification = useCallback((text: string, tone: NotificationTone, duration: number) => {
     const id = nextId++;
-    setToasts((current) => [...current.slice(-2), { id, text, tone }]);
-    const timer = window.setTimeout(() => {
-      setToasts((current) => current.filter((item) => item.id !== id));
-      toastTimers.current.delete(id);
+    setToasts((current) => [...current.filter((item) => !item.exiting).slice(-2), { id, text, tone, exiting: false }]);
+
+    const beginExit = window.setTimeout(() => {
+      setToasts((current) => current.map((item) => item.id === id ? { ...item, exiting: true } : item));
+      const remove = window.setTimeout(() => {
+        setToasts((current) => current.filter((item) => item.id !== id));
+        toastTimers.current.delete(id);
+      }, 220);
+      const timers = toastTimers.current.get(id) ?? [];
+      toastTimers.current.set(id, [...timers, remove]);
     }, duration);
-    toastTimers.current.set(id, timer);
+
+    toastTimers.current.set(id, [beginExit]);
   }, []);
 
-  const value = useMemo(() => ({ dialog, toasts, confirm, input, timed, toast, dismissDialog }), [dialog, toasts, confirm, input, timed, toast, dismissDialog]);
+  const notify = useCallback((text: string, tone: NotificationTone = 'neutral', duration = 2200) => {
+    pushNotification(text, tone, duration);
+  }, [pushNotification]);
+
+  const toast = useCallback((text: string, tone: ToastTone = 'neutral', duration = 2200) => {
+    pushNotification(text, tone === 'danger' ? 'error' : tone, duration);
+  }, [pushNotification]);
+
+  const value = useMemo(() => ({ dialog, toasts, confirm, input, timed, notify, toast, dismissDialog }), [dialog, toasts, confirm, input, timed, notify, toast, dismissDialog]);
   return <DialogContext.Provider value={value}>{children}</DialogContext.Provider>;
 }
 
@@ -138,7 +156,20 @@ export function NotificationHost() {
   const { toasts } = useDialogSystem();
   return (
     <div className="notification-host" aria-live="polite" aria-atomic="false">
-      {toasts.map((toast) => <div key={toast.id} className={`ui-toast is-${toast.tone}`} role="status">{toast.tone === 'success' && <Check size={14} />}<span>{toast.text}</span></div>)}
+      {toasts.map((toast, index) => {
+        const offset = (toasts.length - 1 - index) * 46;
+        const Icon = toast.tone === 'success' ? Check : toast.tone === 'warning' ? TriangleAlert : toast.tone === 'error' ? CircleX : Info;
+        return (
+          <div
+            key={toast.id}
+            className={`ui-toast ui-notification is-${toast.tone} ${toast.exiting ? 'is-exiting' : ''}`}
+            style={{ transform: `translate(-50%, -${offset}px)` }}
+            role={toast.tone === 'warning' || toast.tone === 'error' ? 'alert' : 'status'}
+          >
+            <div className="ui-toast__surface"><Icon size={14} /><span>{toast.text}</span></div>
+          </div>
+        );
+      })}
     </div>
   );
 }
