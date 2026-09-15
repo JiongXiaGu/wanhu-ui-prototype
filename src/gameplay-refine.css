@@ -1,6 +1,6 @@
 /* Gameplay bottom command system refinement.
    Geometry tokens live in gameplay/gameplay-hud-layout.css.
-   This file now owns only Main Dock and generic Tool Bottom Dock visuals; retired HUD/QuickControls styles are intentionally removed. */
+   This file owns Main Dock, Workspace shell refinements and generic Tool Bottom Dock visuals; retired HUD/QuickControls styles are intentionally removed. */
 
 /* Main Dock is the primary bottom surface: same family as the Top Status Row, but shorter and denser. */
 .gameplay-screen .command-bar{
@@ -61,10 +61,35 @@
   background:var(--hud-accent,#c9a55f);
 }
 
-/* Workspace clears the Main Dock according to the shared HUD geometry contract. */
+/* Workspace is a larger child surface of the bottom system, not a separate visual language. */
 .gameplay-screen .workspace{
   bottom:calc(var(--hud-edge,16px) + var(--hud-command-height,76px) + var(--hud-gap-md,12px));
+  border-color:var(--hud-border-strong,rgba(239,233,221,.14));
+  border-radius:var(--hud-radius-lg,18px);
+  background:
+    radial-gradient(ellipse at 78% 18%,rgba(201,165,95,.025),transparent 30%),
+    linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
+  box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
+  backdrop-filter:blur(11px);
 }
+.gameplay-screen .workspace-header{
+  border-bottom-color:var(--hud-rule,rgba(239,233,221,.065));
+  background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.002));
+}
+.gameplay-screen .workspace-header .icon-button{border-radius:9px}
+.gameplay-screen .workspace-primary-rail{border-right-color:var(--hud-rule,rgba(239,233,221,.065))}
+.gameplay-screen .workspace-primary-rail button{border-radius:9px}
+.gameplay-screen .workspace-context-filter{border-bottom-color:rgba(239,233,221,.045)}
+.gameplay-screen .building-card{
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(255,255,255,.016),rgba(255,255,255,.005));
+}
+.gameplay-screen .building-card:hover{
+  background:linear-gradient(90deg,rgba(201,165,95,.048),rgba(255,255,255,.010) 72%,rgba(255,255,255,.003));
+}
+.gameplay-screen .card-thumb{border-radius:9px}
+.gameplay-screen .workspace-search__field,
+.gameplay-screen .workspace-search__trigger{border-radius:9px 9px 0 0}
 
 /* Tool state: dedicated contextual dock replaces the Main Dock; World Utility remains global. */
 .tool-bottom-cluster{
