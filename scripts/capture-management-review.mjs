@@ -54,6 +54,7 @@ await speedControls.getByRole('button', { name: '正常速度', exact: true }).c
 const weatherButton = page.getByRole('button', { name: '天气控制', exact: true });
 await weatherButton.click();
 await page.waitForSelector('.right-edge-flyout--weather');
+await page.waitForTimeout(260);
 const weatherBox = await page.locator('.right-edge-flyout--weather').boundingBox();
 if (!weatherBox || Math.abs(weatherBox.y - 16) > 2) throw new Error(`Weather flyout must keep the 16px top safe edge. y=${weatherBox?.y}`);
 if (!weatherBox || Math.abs((1920 - (weatherBox.x + weatherBox.width)) - 16) > 2) throw new Error('Weather flyout must keep the 16px right safe edge.');
@@ -63,6 +64,7 @@ await page.waitForSelector('.right-edge-flyout--weather', { state: 'detached' })
 const cameraButton = page.getByRole('button', { name: '相机', exact: true });
 await cameraButton.click();
 await page.waitForSelector('.right-edge-flyout--camera');
+await page.waitForTimeout(260);
 const cameraBox = await page.locator('.right-edge-flyout--camera').boundingBox();
 if (!cameraBox || Math.abs(cameraBox.y - 16) > 2) throw new Error(`Camera flyout must keep the 16px top safe edge. y=${cameraBox?.y}`);
 if (!cameraBox || Math.abs((1920 - (cameraBox.x + cameraBox.width)) - 16) > 2) throw new Error('Camera flyout must keep the 16px right safe edge.');
