@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { PauseView } from '../app/ui-state';
-import { ArchivePanel } from '../archive/ArchivePanel';
+import { SaveGameSpace } from '../archive/SaveGameSpace';
 import { SettingsPanel } from '../settings/SettingsPanel';
 
 interface PauseLayerProps {
@@ -67,7 +67,7 @@ export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLa
 
       {view === 'save' && (
         <div className="pause-secondary-surface">
-          <ArchivePanel mode="save" context="pause" onBack={() => onViewChange('menu')} />
+          <SaveGameSpace context="pause" onBack={() => onViewChange('menu')} />
         </div>
       )}
 
