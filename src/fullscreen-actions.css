@@ -1,0 +1,29 @@
+/* Shared full-screen action bar semantics.
+   Left = object/page management actions. Right = navigation / flow actions. */
+
+.settings-space__footer{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+}
+
+.settings-space__footer-left{display:contents}
+.settings-space__footer-right{display:none}
+.settings-space__footer .settings-restore{order:1}
+.settings-space__footer .settings-footer-back{order:3;margin-left:auto}
+
+/* Keep navigation actions visually stable across Settings / Archive. */
+.settings-footer-back,
+.archive-footer-back{
+  min-width:86px;
+  color:#aaa9a1;
+  border-color:rgba(239,233,221,.105);
+  background:rgba(255,255,255,.012);
+}
+
+.settings-footer-back:hover,
+.archive-footer-back:hover{
+  color:#ded9cf;
+  border-color:rgba(239,233,221,.17);
+  background:rgba(255,255,255,.028);
+}
