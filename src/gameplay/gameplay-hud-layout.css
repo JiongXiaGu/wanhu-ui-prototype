@@ -1,0 +1,55 @@
+/* Gameplay HUD geometry contract.
+   Outer screen spacing and stable HUD slots live here; component styles own their internal visuals.
+   1920x1080 is the design canvas. Viewport-anchored utilities keep the safe edge on ultrawide screens. */
+
+.gameplay-screen{
+  --hud-edge:24px;
+  --hud-top-edge:16px;
+  --hud-gap-xs:4px;
+  --hud-gap-sm:8px;
+  --hud-gap-md:12px;
+  --hud-gap-lg:16px;
+  --hud-core-width:940px;
+  --hud-command-height:82px;
+  --hud-world-tools-width:450px;
+  --hud-world-tools-height:58px;
+}
+
+/* Core HUD stays centered. */
+.gameplay-screen .gameplay-top-shell{
+  top:var(--hud-top-edge);
+}
+
+.gameplay-screen .command-bar{
+  width:var(--hud-core-width);
+  bottom:var(--hud-edge);
+}
+
+/* Viewport utilities stay attached to the physical screen edge, including ultrawide layouts. */
+.gameplay-screen > .world-utility-toolbar.command-utility{
+  right:var(--hud-edge);
+  bottom:var(--hud-edge);
+  width:var(--hud-world-tools-width);
+  height:var(--hud-world-tools-height);
+}
+
+.gameplay-screen .gameplay-operation-hints{
+  right:var(--hud-edge);
+  bottom:calc(var(--hud-edge) + var(--hud-world-tools-height) + var(--hud-gap-md));
+}
+
+/* Workspace clears the centered Main Dock with the same spacing rhythm. */
+.gameplay-screen .workspace{
+  bottom:calc(var(--hud-edge) + var(--hud-command-height) + var(--hud-gap-md));
+}
+
+/* Tool surfaces share the same outer safe margin instead of maintaining local 18/20/22px variants. */
+.gameplay-screen .tool-overlay.building-placement-prototype{
+  left:var(--hud-edge);
+  bottom:var(--hud-edge);
+}
+
+.gameplay-screen .tool-bottom-cluster,
+.gameplay-screen .building-placement-toolbar-cluster{
+  bottom:var(--hud-edge);
+}
