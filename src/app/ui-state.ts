@@ -16,6 +16,7 @@ export interface GameplayUiState {
   flyout: Flyout;
   management: ManagementView;
   mapView: MapView;
+  mapPanelOpen: boolean;
   paused: boolean;
   pauseView: PauseView;
   speed: Speed;
@@ -34,6 +35,7 @@ export const initialGameplayUiState: GameplayUiState = {
   flyout: 'none',
   management: 'none',
   mapView: 'default',
+  mapPanelOpen: false,
   paused: false,
   pauseView: 'menu',
   speed: 1,
@@ -53,6 +55,8 @@ export type GameplayUiAction =
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_FLYOUT'; flyout: Flyout }
   | { type: 'SET_MANAGEMENT'; management: ManagementView }
+  | { type: 'TOGGLE_MAP_PANEL' }
+  | { type: 'CLOSE_MAP_PANEL' }
   | { type: 'SET_MAP_VIEW'; mapView: MapView }
   | { type: 'SET_PAUSED'; paused: boolean }
   | { type: 'SET_PAUSE_VIEW'; view: PauseView }
@@ -65,21 +69,37 @@ export type GameplayUiAction =
   | { type: 'UNDO' }
   | { type: 'REDO' };
 
+function togglePanel<T>(current: T, requested: T, closed: T): T {
+  if (requested === closed) return closed;
+  return current === requested ? closed : requested;
+}
+
+function workspaceForCategory(category: string): Workspace {
+  return category === '建筑' ? 'building' : 'none';
+}
+
 export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiAction): GameplayUiState {
   switch (action.type) {
     case 'SET_CATEGORY': {
-      const building = action.category === '建筑';
+      const targetWorkspace = workspaceForCategory(action.category);
+      const closingSameWorkspace = targetWorkspace !== 'none'
+        && state.workspace === targetWorkspace
+        && state.activeCategory === action.category;
+
       return {
         ...state,
-        activeCategory: action.category,
-        workspace: building ? (state.workspace === 'building' ? 'none' : 'building') : 'none',
+        activeCategory: closingSameWorkspace ? '全部' : action.category,
+        workspace: closingSameWorkspace ? 'none' : targetWorkspace,
         management: 'none',
-        flyout: 'none',
-        mapView: 'default',
+        mapPanelOpen: false,
       };
     }
     case 'CLOSE_WORKSPACE':
-      return { ...state, workspace: 'none' };
+      return {
+        ...state,
+        workspace: 'none',
+        activeCategory: state.workspace === 'building' && state.activeCategory === '建筑' ? '全部' : state.activeCategory,
+      };
     case 'ENTER_BUILDING_PLACEMENT':
       return {
         ...state,
@@ -88,6 +108,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management: 'none',
         flyout: 'none',
         mapView: 'default',
+        mapPanelOpen: false,
         terrainMode: 'balanced-earthwork',
         adjustmentMode: 'position',
         canUndo: false,
@@ -102,29 +123,49 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management: 'none',
         flyout: 'none',
         mapView: 'default',
+        mapPanelOpen: false,
         canUndo: false,
         canRedo: false,
       };
-    case 'SET_FLYOUT':
+    case 'SET_FLYOUT': {
+      const flyout = togglePanel(state.flyout, action.flyout, 'none' as Flyout);
       return {
         ...state,
-        flyout: action.flyout,
-        management: action.flyout === 'none' ? state.management : 'none',
-        mapView: action.flyout === 'none' ? state.mapView : 'default',
+        flyout,
+        management: flyout === 'none' ? state.management : 'none',
+        mapPanelOpen: flyout === 'none' ? state.mapPanelOpen : false,
+        mapView: flyout === 'none' ? state.mapView : 'default',
       };
-    case 'SET_MANAGEMENT':
+    }
+    case 'SET_MANAGEMENT': {
+      const management = togglePanel(state.management, action.management, 'none' as ManagementView);
+      const opening = management !== 'none';
       return {
         ...state,
-        management: action.management,
-        workspace: action.management === 'none' ? state.workspace : 'none',
-        tool: action.management === 'none' ? state.tool : 'none',
-        flyout: 'none',
-        mapView: 'default',
+        management,
+        workspace: opening ? 'none' : state.workspace,
+        tool: opening ? 'none' : state.tool,
+        activeCategory: opening && state.workspace === 'building' ? '全部' : state.activeCategory,
+        flyout: opening ? 'none' : state.flyout,
+        mapView: opening ? 'default' : state.mapView,
+        mapPanelOpen: false,
       };
+    }
+    case 'TOGGLE_MAP_PANEL': {
+      const mapPanelOpen = !state.mapPanelOpen;
+      return {
+        ...state,
+        mapPanelOpen,
+        management: mapPanelOpen ? 'none' : state.management,
+      };
+    }
+    case 'CLOSE_MAP_PANEL':
+      return { ...state, mapPanelOpen: false };
     case 'SET_MAP_VIEW':
       return {
         ...state,
         mapView: action.mapView,
+        mapPanelOpen: false,
         management: action.mapView === 'default' ? state.management : 'none',
         flyout: action.mapView === 'default' ? state.flyout : 'none',
       };
@@ -136,6 +177,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management: action.paused ? 'none' : state.management,
         flyout: action.paused ? 'none' : state.flyout,
         mapView: action.paused ? 'default' : state.mapView,
+        mapPanelOpen: false,
       };
     case 'SET_PAUSE_VIEW':
       return state.paused ? { ...state, pauseView: action.view } : state;
