@@ -27,6 +27,7 @@ const staticScenarios = [
   ['08-camera-flyout.png', 'camera', '.right-edge-flyout--camera'],
   ['09-weather-flyout.png', 'weather', '.right-edge-flyout--weather'],
   ['10-tool-camera.png', 'building-camera', '.right-edge-flyout--camera'],
+  ['10b-tool-weather.png', 'building-weather', '.right-edge-flyout--weather'],
   ['11-pause-layer.png', 'pause', '.pause-command-surface'],
   ['12-menu-settings.png', 'settings', '.settings-panel--menu'],
   ['13-pause-save.png', 'pause-save', '.save-game-space'],
@@ -40,6 +41,9 @@ for (const [file, review, waitFor] of staticScenarios) {
   await open(review, waitFor);
   await page.screenshot({ path: `${outDir}/${file}` });
 }
+
+await open('building-weather', '.right-edge-flyout--weather');
+if ((await page.locator('.gameplay-operation-hints').count()) !== 1) throw new Error('Tool hints should remain visible while the weather panel is open.');
 
 // Continue Game intentionally bypasses the loading screen for fast prototype iteration.
 await open('menu', '.main-menu-screen');
