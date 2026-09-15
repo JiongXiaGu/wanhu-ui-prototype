@@ -39,6 +39,9 @@ const scenarios = [
   { file: '15a-menu-load-actions.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-save-actions' },
   { file: '15b-menu-load-rename.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-save-rename' },
   { file: '15c-menu-load-delete.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-save-delete' },
+  { file: '15d-menu-load-quick-filter.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-filter-quick' },
+  { file: '15e-menu-load-hide-outdated.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-hide-outdated' },
+  { file: '15f-menu-load-scroll-density.png', review: 'load', waitFor: '.archive-space--load', action: 'archive-scroll-density' },
   { file: '16-new-game.png', review: 'new-game', waitFor: '.flow-frame' },
 ];
 
@@ -201,6 +204,44 @@ for (const scenario of scenarios) {
     await page.waitForTimeout(160);
   }
 
+  if (scenario.action === 'archive-filter-quick') {
+    await page.locator('.archive-save-type-tabs').getByRole('button', { name: '快速存档', exact: true }).click();
+    await page.waitForTimeout(160);
+    const cards = page.locator('.archive-save-card');
+    if ((await cards.count()) < 2) throw new Error('Quick-save filter should still leave multiple saves for density testing.');
+    const kinds = await cards.evaluateAll((items) => items.map((item) => item.getAttribute('data-save-kind')));
+    if (kinds.some((kind) => kind !== 'quick')) throw new Error('Quick-save filter must only show quick saves.');
+  }
+
+  if (scenario.action === 'archive-hide-outdated') {
+    const oldBefore = await page.locator('.archive-save-card[data-compatibility="outdated"], .archive-save-card[data-compatibility="incompatible"]').count();
+    if (oldBefore === 0) throw new Error('Archive review data should contain outdated saves before toggling the filter.');
+    const toggle = page.getByRole('switch', { name: '隐藏过时存档' });
+    if ((await toggle.getAttribute('aria-checked')) !== 'false') throw new Error('Hide outdated saves must be off by default.');
+    await toggle.click();
+    await page.waitForTimeout(160);
+    if ((await toggle.getAttribute('aria-checked')) !== 'true') throw new Error('Hide outdated saves toggle should turn on.');
+    const oldAfter = await page.locator('.archive-save-card[data-compatibility="outdated"], .archive-save-card[data-compatibility="incompatible"]').count();
+    if (oldAfter !== 0) throw new Error('Hide outdated saves should remove old and incompatible saves from the visible list.');
+  }
+
+  if (scenario.action === 'archive-scroll-density') {
+    const groupList = page.locator('.archive-group-list');
+    const saveList = page.locator('.archive-save-list');
+    if ((await page.locator('.archive-group-card').count()) < 10) throw new Error('Archive review must include at least 10 save groups.');
+    if ((await page.locator('.archive-save-card').count()) < 20) throw new Error('Archive review must include at least 20 saves in the current group.');
+    await groupList.hover();
+    await page.mouse.wheel(0, 720);
+    await page.waitForTimeout(120);
+    const groupScrollTop = await groupList.evaluate((node) => node.scrollTop);
+    if (groupScrollTop <= 0) throw new Error('Game-group list must be independently scrollable.');
+    await saveList.hover();
+    await page.mouse.wheel(0, 960);
+    await page.waitForTimeout(120);
+    const saveScrollTop = await saveList.evaluate((node) => node.scrollTop);
+    if (saveScrollTop <= 0) throw new Error('Save-card list must be independently scrollable.');
+  }
+
   if (scenario.review === 'settings' || scenario.review === 'pause-settings') {
     if (await page.locator('.settings-space__header .global-space-back').count()) throw new Error('Settings Header should not contain Back; page navigation belongs in the footer action bar.');
     const restore = page.locator('.settings-space__footer .settings-restore');
@@ -218,6 +259,13 @@ for (const scenario of scenarios) {
     if ((await page.locator('.archive-space__footer-left .archive-footer-action').count()) < 2) throw new Error('Load footer should expose group rename and delete management actions on the left.');
     const back = page.locator('.archive-space__footer-right .archive-footer-back');
     if ((await back.count()) !== 1) throw new Error('Load footer should expose Back on the right.');
+    if ((await page.locator('.archive-save-type-tabs button').count()) !== 4) throw new Error('Load Archive should expose exactly four save-type filters.');
+    if ((await page.getByRole('switch', { name: '隐藏过时存档' }).count()) !== 1) throw new Error('Load Archive should expose the hide-outdated toggle.');
+    if (await page.getByText('排序', { exact: true }).count()) throw new Error('Load Archive should not expose manual sorting controls.');
+    if (await page.getByPlaceholder(/搜索/).count()) throw new Error('Load Archive should not expose search controls.');
+    const firstName = await page.locator('.archive-save-card__title-row b').first().textContent();
+    if (firstName?.trim() !== '自动存档.001') throw new Error('Latest save should be first in the default ordering.');
+    if ((await page.locator('.archive-save-card__status').first().count()) !== 1) throw new Error('Save card should expose type/version status in its top-right corner.');
   }
 
   if (scenario.review === 'building-camera') {
