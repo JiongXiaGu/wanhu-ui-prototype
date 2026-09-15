@@ -13,7 +13,9 @@ type MapOption = {
   description: string;
   dimensions: string;
   terrain: string;
-  water: string;
+  coast: string;
+  river: string;
+  lakes: string;
 };
 
 type RandomProfile = {
@@ -36,8 +38,10 @@ const MAPS: MapOption[] = [
     image: '/assets/wanhu-gameplay-city.png',
     description: '开阔平原被主河道贯穿，城市扩张空间充足，适合作为标准开局地图。',
     dimensions: '350 × 640',
-    terrain: '平原',
-    water: '主河道',
+    terrain: '开阔平原',
+    coast: '无海岸',
+    river: '主河道',
+    lakes: '少量湖泊',
   },
   {
     id: 'water-town',
@@ -46,8 +50,10 @@ const MAPS: MapOption[] = [
     image: '/assets/wanhu-gameplay-lake.png',
     description: '河港、湖塘与支流交错，水运、桥梁和临水营造会更早进入城市发展。',
     dimensions: '480 × 480',
-    terrain: '平缓',
-    water: '水网密集',
+    terrain: '平缓水乡',
+    coast: '无海岸',
+    river: '河网密集',
+    lakes: '湖塘较多',
   },
   {
     id: 'northern-hills',
@@ -57,7 +63,9 @@ const MAPS: MapOption[] = [
     description: '地势起伏更明显，可用平地更集中，城市需要顺应山形逐步展开。',
     dimensions: '420 × 600',
     terrain: '丘陵',
-    water: '溪谷',
+    coast: '无海岸',
+    river: '溪谷支流',
+    lakes: '少量湖泊',
   },
   {
     id: 'lake-plain',
@@ -66,8 +74,10 @@ const MAPS: MapOption[] = [
     image: '/assets/wanhu-gameplay-lake.png',
     description: '大面积湖岸与平缓腹地并存，适合发展湖港、沿岸街区和跨水连接。',
     dimensions: '400 × 520',
-    terrain: '平原',
-    water: '湖岸',
+    terrain: '湖滨平原',
+    coast: '无海岸',
+    river: '少量支流',
+    lakes: '大型湖泊',
   },
   {
     id: 'foothill-basin',
@@ -76,18 +86,22 @@ const MAPS: MapOption[] = [
     image: '/assets/wanhu-gameplay-city.png',
     description: '山地围合出较完整的盆地空间，中心区平缓，外围地势逐步抬升。',
     dimensions: '512 × 512',
-    terrain: '盆地',
-    water: '支流',
+    terrain: '山前盆地',
+    coast: '无海岸',
+    river: '山间支流',
+    lakes: '少量湖泊',
   },
   {
     id: 'random-world',
     kind: 'random',
     name: '随机世界',
     image: '/assets/wanhu-gameplay-city.png',
-    description: '根据地图尺寸与随机种子在开始游戏时生成一个新的世界。',
+    description: '根据地图尺寸与随机种子，在开始游戏时生成一个新的世界。',
     dimensions: '',
-    terrain: '随机生成',
-    water: '随机生成',
+    terrain: '',
+    coast: '',
+    river: '',
+    lakes: '',
   },
 ];
 
@@ -97,6 +111,7 @@ const FILTERS: { key: MapFilter; label: string }[] = [
   { key: 'random', label: '随机地图' },
 ];
 const SIZES = ['小型', '中型', '大型'];
+const RANDOM_SIZE_SUMMARY = SIZES.join(' · ');
 const GAME_MODES = ['低配', '造景', '完整'];
 const CITY_NAMES = ['昭平城', '临江城', '云津城', '南陵城', '清河城', '澄江府', '上阳城', '归安县'];
 const RANDOM_PROFILES: RandomProfile[] = [
@@ -174,7 +189,7 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
                 <span className="new-game-map-card__image" style={{ backgroundImage: `url(${map.image})` }} />
                 <span className="new-game-map-card__copy">
                   <b>{map.name}</b>
-                  <span className="new-game-map-card__size">{map.kind === 'random' ? size : map.dimensions}</span>
+                  <span className="new-game-map-card__size">{map.kind === 'random' ? RANDOM_SIZE_SUMMARY : map.dimensions}</span>
                 </span>
               </button>
             ))}
@@ -198,10 +213,10 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
               </>
             ) : (
               <>
-                <div><span>地图尺寸</span><b>{selectedMap.dimensions}</b></div>
                 <div><span>主要地貌</span><b>{selectedMap.terrain}</b></div>
-                <div><span>水系</span><b>{selectedMap.water}</b></div>
-                <div><span>来源</span><b>预定义</b></div>
+                <div><span>海岸</span><b>{selectedMap.coast}</b></div>
+                <div><span>河流</span><b>{selectedMap.river}</b></div>
+                <div><span>湖泊</span><b>{selectedMap.lakes}</b></div>
               </>
             )}
           </div>
@@ -209,8 +224,8 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
           <section className="new-game-plan" aria-label="开局方案">
             <h3>开局方案</h3>
 
-            {isRandom && <GeneratorGroup label="地图尺寸" values={SIZES} value={size} onChange={setSize} />}
             <GeneratorGroup label="游戏模式" values={GAME_MODES} value={gameMode} onChange={setGameMode} />
+            {isRandom && <GeneratorGroup label="地图尺寸" values={SIZES} value={size} onChange={setSize} />}
 
             <label className="new-game-plan__field">
               <span>城市名称</span>

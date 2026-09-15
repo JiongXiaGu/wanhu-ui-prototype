@@ -72,7 +72,7 @@
   flex:1 1 auto;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  grid-auto-rows:226px;
+  grid-auto-rows:214px;
   gap:12px;
   align-content:start;
   padding:14px 8px 4px 0;
@@ -89,7 +89,7 @@
 .new-game-map-card{
   position:relative;
   min-width:0;
-  height:226px;
+  height:214px;
   padding:0;
   display:flex;
   flex-direction:column;
@@ -130,7 +130,7 @@
   background-position:center;
   filter:saturate(.82) brightness(.80);
   box-shadow:inset 0 0 0 1px rgba(239,233,221,.03);
-  transition:filter .13s ease,transform .18s ease;
+  transition:filter .13s ease;
 }
 .new-game-map-card:hover .new-game-map-card__image{filter:saturate(.92) brightness(.89)}
 .new-game-map-card.is-selected .new-game-map-card__image{filter:saturate(.96) brightness(.94)}
@@ -139,51 +139,52 @@
   z-index:5;
   top:10px;
   right:10px;
-  height:24px;
+  height:22px;
   padding:0 7px;
   display:inline-flex;
   align-items:center;
   gap:5px;
-  border:1px solid rgba(201,165,95,.24);
+  border:1px solid rgba(201,165,95,.18);
   border-radius:2px;
-  background:rgba(11,17,14,.88);
-  box-shadow:0 6px 18px rgba(0,0,0,.22);
-  color:#d9bd75;
+  background:rgba(11,17,14,.82);
+  box-shadow:0 5px 14px rgba(0,0,0,.18);
+  color:#ccb36f;
   backdrop-filter:blur(5px);
 }
 .new-game-map-card__badge svg{stroke-width:1.5}
-.new-game-map-card__badge em{font-size:8px;font-style:normal;letter-spacing:.06em;white-space:nowrap}
+.new-game-map-card__badge em{font-size:7.8px;font-style:normal;letter-spacing:.05em;white-space:nowrap}
 .new-game-map-card__copy{
   min-width:0;
   flex:1 1 auto;
-  padding:9px 12px 8px;
+  padding:0 12px;
   display:flex;
-  flex-direction:column;
-  align-items:stretch;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
 }
 .new-game-map-card__copy b{
+  min-width:0;
   color:#cfcbc1;
   font-size:12.5px;
   font-weight:520;
-  line-height:1.2;
+  line-height:1;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 .new-game-map-card.is-selected .new-game-map-card__copy b{color:#eee6d8}
 .new-game-map-card__size{
-  margin-top:auto;
-  align-self:flex-end;
-  color:#798178;
+  flex:0 0 auto;
+  color:#7d847c;
   font-size:8.5px;
   line-height:1;
   font-variant-numeric:tabular-nums;
   letter-spacing:.02em;
   white-space:nowrap;
 }
-.new-game-map-card[data-map-kind="random"] .new-game-map-card__size{color:#988b67}
+.new-game-map-card[data-map-kind="random"] .new-game-map-card__size{color:#958967}
 .new-game-map-card.is-selected .new-game-map-card__size{color:#aaa79d}
-.new-game-map-card.is-selected[data-map-kind="random"] .new-game-map-card__size{color:#d1b66f}
+.new-game-map-card.is-selected[data-map-kind="random"] .new-game-map-card__size{color:#cbb16e}
 
 .new-game-detail{
   min-width:0;
@@ -195,14 +196,14 @@
   scrollbar-color:rgba(159,159,149,.18) transparent;
 }
 .new-game-detail__header{
-  padding:7px 0 23px;
-  border-bottom:1px solid rgba(239,233,221,.065);
+  padding:7px 0 21px;
+  border-bottom:1px solid rgba(239,233,221,.06);
 }
 .new-game-detail__header>span{
   display:inline-block;
   margin-bottom:12px;
   padding:3px 6px;
-  border:1px solid rgba(239,233,221,.085);
+  border:1px solid rgba(239,233,221,.08);
   border-radius:1px;
   color:#858d86;
   font-size:8px;
@@ -224,26 +225,24 @@
 .new-game-detail__facts{
   display:grid;
   grid-template-columns:1fr 1fr;
-  border-bottom:1px solid rgba(239,233,221,.065);
+  column-gap:26px;
+  row-gap:15px;
+  padding:16px 0 17px;
+  border-bottom:1px solid rgba(239,233,221,.06);
 }
 .new-game-detail__facts>div{
-  min-height:68px;
-  padding:14px 12px 13px 0;
+  min-width:0;
   display:flex;
   flex-direction:column;
-  justify-content:center;
-  gap:7px;
-  border-bottom:1px solid rgba(239,233,221,.045);
+  gap:6px;
 }
-.new-game-detail__facts>div:nth-child(even){padding-left:14px;border-left:1px solid rgba(239,233,221,.045)}
-.new-game-detail__facts>div:nth-last-child(-n+2){border-bottom:0}
 .new-game-detail__facts span{color:#707870;font-size:8px}
-.new-game-detail__facts b{color:#c2beb5;font-size:10px;font-weight:500}
+.new-game-detail__facts b{color:#c2beb5;font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .new-game-detail__facts.is-random b{color:#d0c7b4}
 
-.new-game-plan{padding-top:22px}
+.new-game-plan{padding-top:20px}
 .new-game-plan h3{
-  margin:0 0 10px;
+  margin:0 0 8px;
   color:#d0ccc1;
   font-size:10.5px;
   font-weight:520;
