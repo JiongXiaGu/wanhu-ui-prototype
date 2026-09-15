@@ -30,6 +30,9 @@ const scenarios = [
   { file: '12h-settings-toggle-changed.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-toggle-change' },
   { file: '12i-settings-disabled-state.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-disabled-state' },
   { file: '12j-settings-restored.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-restore-defaults' },
+  { file: '12k-settings-safe-confirmation.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-safe-confirmation' },
+  { file: '12l-settings-safe-rollback.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-safe-rollback' },
+  { file: '12m-settings-safe-kept.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-safe-keep' },
   { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save' },
   { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
   { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load' },
@@ -73,7 +76,8 @@ for (const scenario of scenarios) {
     if (activeContextFilter?.trim() !== '歇山') throw new Error('Primary category changes must not reset the top context filter.');
   }
 
-  if (scenario.action?.startsWith('settings-') && !['settings-select-open','settings-slider-change','settings-toggle-change','settings-disabled-state','settings-restore-defaults','settings-bindings','settings-binding-listening'].includes(scenario.action)) {
+  const simpleSettingsActions = ['settings-显示', 'settings-图形', 'settings-音频', 'settings-操作', 'settings-游戏'];
+  if (scenario.action && simpleSettingsActions.includes(scenario.action)) {
     const tab = scenario.action.replace('settings-', '');
     await page.locator('.settings-space__tabs').getByRole('button', { name: tab, exact: true }).click();
     await page.waitForTimeout(220);
@@ -100,24 +104,25 @@ for (const scenario of scenarios) {
   }
 
   if (scenario.action === 'settings-slider-change') {
-    const slider = page.locator('[data-setting-id="ui-scale"] .settings-slider');
+    const slider = page.locator('[data-setting-id="safe-area"] .settings-slider');
     const box = await slider.boundingBox();
-    if (!box) throw new Error('UI scale slider was not measurable.');
-    await page.mouse.move(box.x + box.width * 0.50, box.y + box.height / 2);
+    if (!box) throw new Error('Safe area slider was not measurable.');
+    await page.mouse.move(box.x + box.width * 0.95, box.y + box.height / 2);
     await page.mouse.down();
-    await page.mouse.move(box.x + box.width * 0.75, box.y + box.height / 2, { steps: 5 });
+    await page.mouse.move(box.x + box.width * 0.55, box.y + box.height / 2, { steps: 5 });
     await page.mouse.up();
     const value = Number(await slider.getAttribute('aria-valuenow'));
-    if (value <= 100) throw new Error('Dragging the slider should increase UI scale.');
-    if (await page.locator('.settings-apply').isDisabled()) throw new Error('Changing a slider should enable Apply.');
+    if (value >= 100) throw new Error('Dragging the safe area slider should lower its value.');
+    if (await page.locator('.settings-safe-layer').count()) throw new Error('Normal sliders should save immediately without safe display confirmation.');
+    if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Modern Settings footer should not contain Apply.');
     await page.waitForTimeout(150);
   }
 
   if (scenario.action === 'settings-toggle-change') {
-    const toggle = page.locator('[data-setting-id="hdr-output"] .settings-toggle');
+    const toggle = page.locator('[data-setting-id="v-sync"] .settings-toggle');
     await toggle.click();
-    if ((await toggle.getAttribute('aria-pressed')) !== 'false') throw new Error('HDR toggle should switch off when clicked.');
-    if (await page.locator('.settings-apply').isDisabled()) throw new Error('Changing a toggle should enable Apply.');
+    if ((await toggle.getAttribute('aria-pressed')) !== 'false') throw new Error('V-Sync toggle should switch off when clicked.');
+    if (await page.locator('.settings-safe-layer').count()) throw new Error('Normal toggles should save immediately without safe display confirmation.');
     await page.waitForTimeout(150);
   }
 
@@ -133,13 +138,48 @@ for (const scenario of scenarios) {
   }
 
   if (scenario.action === 'settings-restore-defaults') {
-    const toggle = page.locator('[data-setting-id="hdr-output"] .settings-toggle');
+    const toggle = page.locator('[data-setting-id="v-sync"] .settings-toggle');
     await toggle.click();
-    if (await page.locator('.settings-apply').isDisabled()) throw new Error('A modified setting should make Apply active before restore.');
+    if ((await toggle.getAttribute('aria-pressed')) !== 'false') throw new Error('V-Sync should be changed before restore.');
     await page.getByRole('button', { name: '恢复当前分类默认值', exact: true }).click();
-    if ((await toggle.getAttribute('aria-pressed')) !== 'true') throw new Error('Restore should return HDR to its default value.');
-    if (!(await page.locator('.settings-apply').isDisabled())) throw new Error('Restoring an untouched category to applied defaults should clear Dirty state.');
+    if ((await toggle.getAttribute('aria-pressed')) !== 'true') throw new Error('Restore should return V-Sync to its default value.');
+    if (await page.locator('.settings-safe-layer').count()) throw new Error('Restoring only normal changed values should not show safe confirmation.');
     await page.waitForTimeout(150);
+  }
+
+  if (scenario.action === 'settings-safe-confirmation') {
+    await page.locator('[data-setting-id="ui-scale"] .settings-select-value').click();
+    await page.getByRole('option', { name: '125%', exact: true }).click();
+    await page.waitForSelector('.settings-safe-layer');
+    const countdown = Number((await page.locator('.settings-safe-dialog__countdown').textContent())?.trim());
+    if (!(countdown > 0 && countdown <= 15)) throw new Error('Safe confirmation should show a live countdown.');
+    if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Safe confirmation replaces the old Apply workflow.');
+  }
+
+  if (scenario.action === 'settings-safe-rollback') {
+    const resolution = page.locator('[data-setting-id="resolution"] .settings-select-value');
+    await resolution.click();
+    await page.getByRole('option', { name: '2560 × 1440', exact: true }).click();
+    await page.waitForSelector('.settings-safe-layer');
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('.settings-safe-layer', { state: 'detached' });
+    if ((await resolution.textContent())?.includes('2560 × 1440')) throw new Error('Esc should roll back the temporary resolution change.');
+    if (!(await resolution.textContent())?.includes('3840 × 2160')) throw new Error('Resolution should return to its previous safe value.');
+  }
+
+  if (scenario.action === 'settings-safe-keep') {
+    const scale = page.locator('[data-setting-id="ui-scale"] .settings-select-value');
+    await scale.click();
+    await page.getByRole('option', { name: '125%', exact: true }).click();
+    await page.waitForSelector('.settings-safe-layer');
+    await page.getByRole('button', { name: /保留设置/ }).click();
+    await page.waitForSelector('.settings-safe-layer', { state: 'detached' });
+    if (!(await scale.textContent())?.includes('125%')) throw new Error('Keeping a safe display change should preserve the selected UI scale.');
+  }
+
+  if (scenario.review === 'settings' || scenario.review === 'pause-settings') {
+    if (await page.getByRole('button', { name: '取消', exact: true }).count()) throw new Error('Settings should not expose a persistent Cancel button.');
+    if (await page.getByRole('button', { name: '应用', exact: true }).count()) throw new Error('Settings should not expose a persistent Apply button.');
   }
 
   if (scenario.review === 'building-camera') {
