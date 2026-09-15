@@ -1,0 +1,404 @@
+.save-game-space {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  color: var(--paper, #e8e4d6);
+  background: linear-gradient(180deg, rgba(13, 22, 18, 0.94), rgba(8, 15, 13, 0.96));
+}
+
+.save-game-space__header {
+  flex: 0 0 86px;
+}
+
+.save-game-space__body {
+  width: min(980px, calc(100% - 200px));
+  margin: 0 auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 0 20px;
+}
+
+.save-current-game {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 70px;
+  padding: 0 2px 14px;
+  border-bottom: 1px solid rgba(196, 206, 190, 0.11);
+}
+
+.save-current-game h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+}
+
+.save-current-game p {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: rgba(222, 225, 214, 0.58);
+  font-size: 11px;
+}
+
+.save-current-game p i {
+  width: 1px;
+  height: 10px;
+  background: rgba(222, 225, 214, 0.17);
+}
+
+.save-current-game > span {
+  margin-bottom: 2px;
+  color: rgba(222, 225, 214, 0.34);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
+.save-create-zone {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  flex: 0 0 auto;
+  padding: 1px 0 4px;
+  background: linear-gradient(180deg, rgba(12, 20, 17, 0.98) 0%, rgba(12, 20, 17, 0.98) 78%, rgba(12, 20, 17, 0) 100%);
+}
+
+.save-create-entry,
+.save-create-editor {
+  width: 100%;
+  min-height: 68px;
+  border: 1px solid rgba(192, 202, 186, 0.12);
+  background: rgba(192, 202, 186, 0.026);
+}
+
+.save-create-entry {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 18px;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.save-create-entry:hover,
+.save-create-entry:focus-visible {
+  border-color: rgba(207, 174, 94, 0.35);
+  background: rgba(207, 174, 94, 0.045);
+}
+
+.save-create-entry:active {
+  transform: translateY(1px);
+}
+
+.save-create-entry > svg {
+  color: rgba(214, 181, 96, 0.85);
+}
+
+.save-create-entry span {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.save-create-entry b {
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.save-create-entry small {
+  color: rgba(222, 225, 214, 0.48);
+  font-size: 10px;
+}
+
+.save-create-editor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 10px 12px 10px 18px;
+  border-color: rgba(207, 174, 94, 0.32);
+  background: rgba(207, 174, 94, 0.04);
+}
+
+.save-create-editor__copy {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1 1 auto;
+}
+
+.save-create-editor__copy b {
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.save-create-editor__copy input,
+.save-manual-card__title input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(207, 174, 94, 0.55);
+  outline: 0;
+  padding: 6px 2px;
+  color: var(--paper, #e8e4d6);
+  background: transparent;
+  font: inherit;
+}
+
+.save-create-editor__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.save-create-editor__actions button,
+.save-manual-card__actions button,
+.save-manual-card__confirm button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(194, 204, 188, 0.14);
+  color: rgba(231, 232, 221, 0.72);
+  background: rgba(194, 204, 188, 0.03);
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
+}
+
+.save-create-editor__actions button {
+  min-height: 32px;
+  padding: 0 13px;
+  gap: 6px;
+}
+
+.save-create-editor__actions button:hover,
+.save-manual-card__actions button:hover,
+.save-manual-card__confirm button:hover {
+  border-color: rgba(218, 219, 207, 0.28);
+  color: rgba(244, 241, 226, 0.96);
+  background: rgba(218, 219, 207, 0.055);
+}
+
+.save-create-editor__actions .is-primary,
+.save-manual-card__actions .is-primary,
+.save-manual-card__confirm .is-primary {
+  border-color: rgba(207, 174, 94, 0.35);
+  color: rgba(229, 198, 115, 0.95);
+  background: rgba(207, 174, 94, 0.075);
+}
+
+.save-manual-section {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.save-manual-section__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 0 2px 8px;
+  color: rgba(229, 230, 219, 0.72);
+}
+
+.save-manual-section__header b {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.save-manual-section__header span {
+  color: rgba(222, 225, 214, 0.35);
+  font-size: 10px;
+}
+
+.save-manual-list {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(216, 217, 203, 0.18) transparent;
+}
+
+.save-manual-card {
+  position: relative;
+  min-height: 112px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(193, 203, 187, 0.105);
+  background: rgba(195, 205, 188, 0.018);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.save-manual-card:hover,
+.save-manual-card.is-selected {
+  border-color: rgba(207, 174, 94, 0.26);
+  background: rgba(207, 174, 94, 0.028);
+}
+
+.save-manual-card.is-selected::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 -1px;
+  width: 2px;
+  background: rgba(207, 174, 94, 0.92);
+}
+
+.save-manual-card__select {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 110px;
+  border: 0;
+  padding: 12px 158px 12px 12px;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.save-manual-card__image {
+  flex: 0 0 132px;
+  height: 76px;
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(203, 211, 197, 0.1);
+  filter: saturate(0.78) brightness(0.78);
+}
+
+.save-manual-card:hover .save-manual-card__image,
+.save-manual-card.is-selected .save-manual-card__image {
+  filter: saturate(0.88) brightness(0.9);
+}
+
+.save-manual-card__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.save-manual-card__title {
+  min-height: 21px;
+  color: rgba(242, 240, 226, 0.92);
+  font-size: 13px;
+}
+
+.save-manual-card__time {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(222, 225, 214, 0.58);
+  font-size: 10px;
+}
+
+.save-manual-card__time small {
+  width: 54px;
+  color: rgba(222, 225, 214, 0.32);
+  font-size: 9px;
+}
+
+.save-manual-card__status {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(222, 225, 214, 0.4);
+  font-size: 9px;
+}
+
+.save-manual-card__status em {
+  border: 1px solid rgba(200, 173, 108, 0.24);
+  padding: 2px 5px;
+  color: rgba(210, 181, 112, 0.68);
+  font-style: normal;
+}
+
+.save-manual-card__actions {
+  position: absolute;
+  right: 12px;
+  bottom: 13px;
+  display: flex;
+  gap: 7px;
+  opacity: 0;
+  transform: translateY(2px);
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.save-manual-card:hover .save-manual-card__actions,
+.save-manual-card.is-selected .save-manual-card__actions,
+.save-manual-card:focus-within .save-manual-card__actions {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.save-manual-card__actions button,
+.save-manual-card__confirm button {
+  width: 34px;
+  height: 32px;
+  padding: 0;
+}
+
+.save-manual-card__actions .is-danger:hover,
+.save-manual-card__confirm .is-danger:hover {
+  border-color: rgba(194, 104, 88, 0.5);
+  color: rgba(226, 139, 119, 0.95);
+  background: rgba(176, 83, 68, 0.08);
+}
+
+.save-manual-card__confirm {
+  position: absolute;
+  inset: auto 10px 10px auto;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  max-width: 490px;
+  border: 1px solid rgba(207, 174, 94, 0.24);
+  padding: 3px 4px 3px 12px;
+  color: rgba(234, 233, 221, 0.77);
+  background: rgba(16, 24, 20, 0.98);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+  font-size: 10px;
+}
+
+.save-manual-card__confirm--delete {
+  border-color: rgba(188, 101, 86, 0.26);
+}
+
+.save-game-space__footer {
+  flex: 0 0 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+}
+
+.save-game-space__back {
+  margin-left: auto;
+}
+
+@media (max-width: 1280px) {
+  .save-game-space__body {
+    width: calc(100% - 120px);
+  }
+
+  .save-manual-card__select {
+    padding-right: 142px;
+  }
+}
