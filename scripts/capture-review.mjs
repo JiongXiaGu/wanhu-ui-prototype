@@ -20,6 +20,9 @@ const scenarios = [
   { file: '10-tool-camera-flyout-hints-hidden.png', review: 'building-camera', waitFor: '.right-edge-flyout--camera' },
   { file: '11-pause-layer.png', review: 'pause', waitFor: '.pause-command-surface' },
   { file: '12-menu-settings.png', review: 'settings', waitFor: '.settings-panel--menu' },
+  { file: '12a-settings-graphics.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-图形' },
+  { file: '12b-settings-controls.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-操作' },
+  { file: '12c-settings-gameplay.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-游戏' },
   { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save' },
   { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
   { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load' },
@@ -61,6 +64,12 @@ for (const scenario of scenarios) {
     await page.waitForTimeout(180);
     const activeContextFilter = await page.locator('.workspace-context-filter__scroll > button.is-active').textContent();
     if (activeContextFilter?.trim() !== '歇山') throw new Error('Primary category changes must not reset the top context filter.');
+  }
+
+  if (scenario.action?.startsWith('settings-')) {
+    const tab = scenario.action.replace('settings-', '');
+    await page.locator('.settings-space__tabs').getByRole('button', { name: tab, exact: true }).click();
+    await page.waitForTimeout(220);
   }
 
   if (scenario.review === 'building-camera') {
