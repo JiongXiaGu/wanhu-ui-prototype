@@ -23,6 +23,8 @@ const scenarios = [
   { file: '12a-settings-graphics.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-图形' },
   { file: '12b-settings-controls.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-操作' },
   { file: '12c-settings-gameplay.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'settings-游戏' },
+  { file: '12d-settings-bindings.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'controls-bindings' },
+  { file: '12e-settings-binding-listening.png', review: 'settings', waitFor: '.settings-panel--menu', action: 'controls-binding-listening' },
   { file: '13-pause-save.png', review: 'pause-save', waitFor: '.archive-space--save' },
   { file: '14-pause-settings.png', review: 'pause-settings', waitFor: '.settings-panel--pause' },
   { file: '15-menu-load.png', review: 'load', waitFor: '.archive-space--load' },
@@ -70,6 +72,22 @@ for (const scenario of scenarios) {
     const tab = scenario.action.replace('settings-', '');
     await page.locator('.settings-space__tabs').getByRole('button', { name: tab, exact: true }).click();
     await page.waitForTimeout(220);
+  }
+
+  if (scenario.action === 'controls-bindings' || scenario.action === 'controls-binding-listening') {
+    await page.locator('.settings-space__tabs').getByRole('button', { name: '操作', exact: true }).click();
+    await page.waitForTimeout(220);
+    await page.locator('.settings-binding-section').evaluate((element) => element.scrollIntoView({ block: 'start' }));
+    await page.waitForTimeout(180);
+  }
+
+  if (scenario.action === 'controls-binding-listening') {
+    await page.getByRole('button', { name: /营造与道路/ }).click();
+    await page.waitForTimeout(120);
+    await page.getByRole('button', { name: '旋转构件次要按键：未设置' }).click();
+    await page.waitForTimeout(120);
+    const listeningCount = await page.locator('.settings-binding-cell.is-listening').count();
+    if (listeningCount !== 1) throw new Error('Exactly one key binding should be listening for input.');
   }
 
   if (scenario.review === 'building-camera') {
