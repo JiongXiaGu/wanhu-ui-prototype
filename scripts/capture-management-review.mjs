@@ -50,12 +50,13 @@ await speedControls.getByRole('button', { name: '暂停时间', exact: true }).c
 if (!(await speedControls.getByRole('button', { name: '暂停时间', exact: true }).getAttribute('class'))?.includes('is-active')) throw new Error('Simulation pause must be a real speed state.');
 await speedControls.getByRole('button', { name: '正常速度', exact: true }).click();
 
-// Scene launchers toggle their flyouts, and flyouts attach directly to the top screen edge.
+// Scene launchers toggle their flyouts, and flyouts use the same 16px screen-safe edge as the HUD.
 const weatherButton = page.getByRole('button', { name: '天气控制', exact: true });
 await weatherButton.click();
 await page.waitForSelector('.right-edge-flyout--weather');
 const weatherBox = await page.locator('.right-edge-flyout--weather').boundingBox();
-if (!weatherBox || Math.abs(weatherBox.y) > 1) throw new Error('Weather flyout must attach to the top screen edge.');
+if (!weatherBox || Math.abs(weatherBox.y - 16) > 2) throw new Error(`Weather flyout must keep the 16px top safe edge. y=${weatherBox?.y}`);
+if (!weatherBox || Math.abs((1920 - (weatherBox.x + weatherBox.width)) - 16) > 2) throw new Error('Weather flyout must keep the 16px right safe edge.');
 await weatherButton.click();
 await page.waitForSelector('.right-edge-flyout--weather', { state: 'detached' });
 
@@ -63,7 +64,8 @@ const cameraButton = page.getByRole('button', { name: '相机', exact: true });
 await cameraButton.click();
 await page.waitForSelector('.right-edge-flyout--camera');
 const cameraBox = await page.locator('.right-edge-flyout--camera').boundingBox();
-if (!cameraBox || Math.abs(cameraBox.y) > 1) throw new Error('Camera flyout must attach to the top screen edge.');
+if (!cameraBox || Math.abs(cameraBox.y - 16) > 2) throw new Error(`Camera flyout must keep the 16px top safe edge. y=${cameraBox?.y}`);
+if (!cameraBox || Math.abs((1920 - (cameraBox.x + cameraBox.width)) - 16) > 2) throw new Error('Camera flyout must keep the 16px right safe edge.');
 
 // Building Workspace coexists with the top control tray and lightweight camera/weather panels.
 await page.getByRole('button', { name: '建筑', exact: true }).click();
@@ -101,9 +103,10 @@ const hintsBox = await page.locator('.gameplay-operation-hints').boundingBox();
 if (!worldToolsBox || !commandBox || !hintsBox) throw new Error('Gameplay bottom modules must all be measurable.');
 if (Math.abs((1920 - (worldToolsBox.x + worldToolsBox.width)) - 16) > 2) throw new Error('World Utility Toolbar must keep the 16px right safe edge.');
 if (Math.abs((1080 - (worldToolsBox.y + worldToolsBox.height)) - 16) > 2) throw new Error('World Utility Toolbar must keep the 16px bottom safe edge.');
-if (worldToolsBox.height < 56 || worldToolsBox.height > 60) throw new Error(`World Utility Toolbar must stay near the 58px action height. height=${worldToolsBox.height}`);
+if (worldToolsBox.height < 54 || worldToolsBox.height > 58) throw new Error(`World Utility Toolbar must stay near the 56px action height. height=${worldToolsBox.height}`);
 if (Math.abs((commandBox.x + commandBox.width / 2) - 960) > 2) throw new Error('Main Dock must remain centered.');
 if (commandBox.width < 920 || commandBox.width > 960) throw new Error(`Main Dock must stay near the shared 940px core width. width=${commandBox.width}`);
+if (commandBox.height < 74 || commandBox.height > 78) throw new Error(`Main Dock must stay near the compact 76px height. height=${commandBox.height}`);
 const dockUtilityGap = worldToolsBox.x - (commandBox.x + commandBox.width);
 if (dockUtilityGap < 12 || dockUtilityGap > 20) throw new Error(`Main Dock and World Utility Toolbar should keep a small intentional gap. gap=${dockUtilityGap}`);
 if (Math.abs((1920 - (hintsBox.x + hintsBox.width)) - 16) > 2) throw new Error('Operation Hints must align to the same 16px right safe edge.');
@@ -112,6 +115,11 @@ if (utilityHintGap < 10 || utilityHintGap > 14) throw new Error(`Operation Hints
 const firstWorldToolIcon = await worldTools.locator('.world-utility-toolbar__button svg').first().boundingBox();
 if (!firstWorldToolIcon || firstWorldToolIcon.width < 19 || firstWorldToolIcon.width > 22) throw new Error('World Utility icons must remain around 20px.');
 if ((await worldTools.getByRole('button').count()) < 10) throw new Error('World Utility Toolbar should expose the complete global tool set.');
+
+const mainDockRadius = Number.parseFloat(await page.locator('.command-bar').evaluate((element) => getComputedStyle(element).borderTopLeftRadius));
+const worldToolsRadius = Number.parseFloat(await worldTools.evaluate((element) => getComputedStyle(element).borderTopLeftRadius));
+const hintsRadius = Number.parseFloat(await page.locator('.gameplay-operation-hints').evaluate((element) => getComputedStyle(element).borderTopLeftRadius));
+if (mainDockRadius < 12 || worldToolsRadius < 12 || hintsRadius < 12) throw new Error('Bottom HUD surfaces must share the rounded 14px visual family.');
 
 const gridSnap = worldTools.getByRole('button', { name: '网格吸附', exact: true });
 if ((await gridSnap.getAttribute('aria-pressed')) !== 'true') throw new Error('Grid snap should start enabled globally.');
@@ -179,6 +187,8 @@ if ((await page.locator('.gameplay-top-shell').count()) !== 1) throw new Error('
 if ((await page.locator('.gameplay-top-navigation').count()) !== 1) throw new Error('Building Workspace must retain the top control tray.');
 if ((await page.locator('.command-bar').count()) !== 1) throw new Error('Building Workspace must retain the Main Dock.');
 if ((await page.locator('.world-utility-toolbar').count()) !== 1) throw new Error('Building Workspace must retain global world utilities.');
+const workspaceRadius = Number.parseFloat(await page.locator('.workspace--building').evaluate((element) => getComputedStyle(element).borderTopLeftRadius));
+if (workspaceRadius < 16) throw new Error('Workspace must use the larger rounded context-surface family.');
 
 await open('building-position', '.tool-overlay');
 if ((await page.locator('.gameplay-top-shell').count()) !== 1) throw new Error('Building Placement must retain the persistent top status shell.');
