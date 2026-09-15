@@ -47,13 +47,17 @@ export function ManagementSpace({ view, onViewChange, onClose }: Props) {
         <header className="management-space__header">
           <div className="management-space__heading">
             <span className="management-space__heading-icon"><HeadingIcon /></span>
-            <div>
-              <small>昭平城</small>
-              <h2>{panel.title}</h2>
-            </div>
+            <h2>{panel.title}</h2>
           </div>
-          <div className="management-space__header-status">{panel.status}</div>
-          <button type="button" className="management-space__close icon-button" aria-label="关闭城市管理" onClick={onClose}><X /></button>
+          <button
+            type="button"
+            className="management-space__close icon-button"
+            style={{ gridColumn: 3 }}
+            aria-label="关闭城市管理"
+            onClick={onClose}
+          >
+            <X />
+          </button>
         </header>
 
         <nav className="management-space__tabs" aria-label="城市管理分类">
