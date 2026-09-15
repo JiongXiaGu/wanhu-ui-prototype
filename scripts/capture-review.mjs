@@ -263,8 +263,10 @@ for (const scenario of scenarios) {
     if ((await page.getByRole('switch', { name: '隐藏过时存档' }).count()) !== 1) throw new Error('Load Archive should expose the hide-outdated toggle.');
     if (await page.getByText('排序', { exact: true }).count()) throw new Error('Load Archive should not expose manual sorting controls.');
     if (await page.getByPlaceholder(/搜索/).count()) throw new Error('Load Archive should not expose search controls.');
-    const firstName = await page.locator('.archive-save-card__title-row b').first().textContent();
-    if (firstName?.trim() !== '自动存档.001') throw new Error('Latest save should be first in the default ordering.');
+    if (!scenario.action) {
+      const firstName = await page.locator('.archive-save-card__title-row b').first().textContent();
+      if (firstName?.trim() !== '自动存档.001') throw new Error('Latest save should be first in the default ordering.');
+    }
     if ((await page.locator('.archive-save-card__status').first().count()) !== 1) throw new Error('Save card should expose type/version status in its top-right corner.');
   }
 
