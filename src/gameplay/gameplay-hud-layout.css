@@ -1,6 +1,6 @@
-/* Gameplay HUD geometry contract.
-   Outer screen spacing and stable HUD slots live here; component styles own their internal visuals.
-   1920x1080 is the design canvas. Viewport-anchored utilities keep the safe edge on ultrawide screens. */
+/* Gameplay HUD geometry + visual token contract.
+   Outer screen spacing and stable HUD slots live here; component styles own their internal layout.
+   1920x1080 is the design canvas. Viewport-anchored utilities keep the same safe edge on ultrawide screens. */
 
 .gameplay-screen{
   --hud-edge:16px;
@@ -9,10 +9,35 @@
   --hud-gap-sm:8px;
   --hud-gap-md:12px;
   --hud-gap-lg:16px;
+
+  --hud-radius-sm:10px;
+  --hud-radius-md:14px;
+  --hud-radius-lg:18px;
+
   --hud-core-width:940px;
-  --hud-command-height:82px;
-  --hud-world-tools-width:458px;
-  --hud-world-tools-height:58px;
+  --hud-command-height:76px;
+  --hud-world-tools-width:450px;
+  --hud-world-tools-height:56px;
+
+  --hud-surface-primary-top:rgba(31,40,36,.955);
+  --hud-surface-primary-bottom:rgba(23,31,27,.945);
+  --hud-surface-secondary-top:rgba(27,35,31,.925);
+  --hud-surface-secondary-bottom:rgba(20,28,24,.905);
+  --hud-surface-tertiary-top:rgba(20,27,24,.62);
+  --hud-surface-tertiary-bottom:rgba(17,23,20,.54);
+
+  --hud-border-strong:rgba(239,233,221,.14);
+  --hud-border-soft:rgba(239,233,221,.085);
+  --hud-rule:rgba(239,233,221,.065);
+  --hud-shadow-primary:0 18px 44px rgba(5,8,7,.25),inset 0 1px 0 rgba(255,255,255,.018);
+  --hud-shadow-secondary:0 12px 30px rgba(5,8,7,.19),inset 0 1px 0 rgba(255,255,255,.012);
+
+  --hud-text:#e5dfd4;
+  --hud-text-secondary:#949b93;
+  --hud-icon:#858d85;
+  --hud-accent:#c9a55f;
+  --hud-accent-text:#dec17a;
+  --hud-accent-bg:rgba(201,165,95,.085);
 }
 
 /* Core HUD stays centered on the gameplay composition. */
@@ -41,7 +66,7 @@
   bottom:calc(var(--hud-edge) + var(--hud-command-height) + var(--hud-gap-md));
 }
 
-/* Tool surfaces share the same outer safe margin instead of local 18/20/22/24px variants. */
+/* Tool surfaces share the same outer safe margin. */
 .gameplay-screen .tool-overlay.building-placement-prototype{
   left:var(--hud-edge);
   bottom:var(--hud-edge);
