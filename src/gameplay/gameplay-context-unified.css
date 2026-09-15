@@ -1,59 +1,40 @@
-/* Unified Gameplay Context Panels
-   Shared context-panel visual language. Outer geometry is owned by the
-   dedicated component/layout styles so stale rules cannot override current slots. */
+/* Building Tool Context Visuals
+   Gameplay-level geometry/tokens come from gameplay-hud-layout.css.
+   This file owns only the Building Placement context panel and its task dock.
+   Camera/Weather, persistent HUD, World Utility and Operation Hints are intentionally owned elsewhere. */
 
-.gameplay-screen{
-  --game-edge:16px;
-  --game-context-width:410px;
-  --game-context-surface-top:rgba(27,35,31,.945);
-  --game-context-surface-bottom:rgba(21,28,25,.935);
-  --game-context-border:rgba(239,233,221,.105);
-  --game-context-rule:rgba(239,233,221,.065);
-}
-
-/* Legacy core positions still use the shared edge token; gameplay-hud-layout.css owns
-   the final persistent HUD geometry. */
-.gameplay-screen .hud-group{left:var(--game-edge);top:var(--game-edge)}
-.gameplay-screen .quick-controls{right:var(--game-edge);top:var(--game-edge)}
-.gameplay-screen .command-bar{bottom:var(--game-edge)}
-.gameplay-screen .building-placement-toolbar-cluster,
-.gameplay-screen .tool-bottom-cluster{bottom:var(--game-edge)}
-
-/* Building tool panel uses the shared context surface language. */
 .gameplay-screen .tool-overlay.building-placement-prototype{
-  left:var(--game-edge);
-  bottom:var(--game-edge);
-  width:var(--game-context-width);
+  width:410px;
   max-height:calc(100% - 92px);
-  border:1px solid var(--game-context-border);
-  border-radius:2px;
-  background:linear-gradient(180deg,var(--game-context-surface-top),var(--game-context-surface-bottom));
-  box-shadow:0 18px 42px rgba(5,8,7,.22),inset 0 1px 0 rgba(255,255,255,.014);
-  backdrop-filter:blur(10px);
+  border:1px solid var(--hud-border-strong,rgba(239,233,221,.14));
+  border-radius:var(--hud-radius-lg,18px);
+  background:linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
+  box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
+  backdrop-filter:blur(11px);
 }
 .gameplay-screen .tool-overlay.building-placement-prototype::before{display:none}
 .gameplay-screen .tool-overlay.building-placement-prototype>header{
   height:54px;
   min-height:54px;
   padding:0 12px 0 14px;
-  border-bottom:1px solid var(--game-context-rule);
-  background:linear-gradient(180deg,rgba(255,255,255,.010),rgba(255,255,255,.002));
+  border-bottom:1px solid var(--hud-rule,rgba(239,233,221,.065));
+  background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.002));
   box-shadow:none;
 }
 .gameplay-screen .tool-overlay.building-placement-prototype>header::after{display:none}
 .gameplay-screen .tool-overlay.building-placement-prototype>header>div{gap:8px}
-.gameplay-screen .tool-overlay.building-placement-prototype>header b{font-size:16px;font-weight:560;color:#e8e2d7;letter-spacing:.018em}
+.gameplay-screen .tool-overlay.building-placement-prototype>header b{font-size:16px;font-weight:560;color:var(--hud-text,#e5dfd4);letter-spacing:.018em}
 .gameplay-screen .tool-overlay.building-placement-prototype>header span{font-size:9px;color:#888f87}
-.gameplay-screen .tool-overlay.building-placement-prototype>header .icon-button{width:28px;height:28px}
+.gameplay-screen .tool-overlay.building-placement-prototype>header .icon-button{width:28px;height:28px;border-radius:9px}
 .gameplay-screen .tool-overlay.building-placement-prototype .tool-body{max-height:calc(100vh - 150px);padding:10px 14px 14px}
 .bp-context-panel{gap:0}
 
-/* Flatten nested cards into sections. */
+/* Flatten nested cards into quiet sections. */
 .bp-terrain-summary{
   min-height:auto;
   padding:6px 2px 12px;
   border:0;
-  border-bottom:1px solid var(--game-context-rule);
+  border-bottom:1px solid var(--hud-rule,rgba(239,233,221,.065));
   border-radius:0;
   background:transparent;
   box-shadow:none;
@@ -77,13 +58,13 @@
   content:'';
   height:1px;
   flex:1;
-  background:linear-gradient(90deg,rgba(239,233,221,.075),transparent 82%);
+  background:linear-gradient(90deg,var(--hud-rule,rgba(239,233,221,.065)),transparent 82%);
 }
 .bp-mode-heading b{color:#d5d0c5;font-size:11px;font-weight:550;white-space:nowrap}
 .bp-parameter-row{min-height:44px;padding:0;grid-template-columns:80px 28px minmax(90px,1fr) 28px 58px;gap:6px}
 .bp-parameter-row:hover{background:rgba(255,255,255,.010);transform:none}
 .bp-parameter-row>span{color:#959b93;font-size:9.5px}
-.bp-parameter-row>button{width:28px;height:28px;background:rgba(255,255,255,.010);color:#999f97;box-shadow:none}
+.bp-parameter-row>button{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.010);color:#999f97;box-shadow:none}
 .bp-parameter-row>button:hover{background:rgba(255,255,255,.035);color:#d0cdc4;transform:none}
 .bp-parameter-row output{height:28px;color:#c3bfb5;font-size:9px}
 .bp-track{height:3px;background:rgba(235,228,211,.105);box-shadow:none}
@@ -92,40 +73,36 @@
 .bp-segment-row{min-height:44px;padding:0;grid-template-columns:80px minmax(0,1fr)}
 .bp-segment-row:hover{background:transparent}
 .bp-segment-row>span{color:#959b93;font-size:9.5px}
-.bp-segment{min-height:32px;background:rgba(255,255,255,.010);box-shadow:none}
-.bp-segment button{height:30px;color:#858c84;font-size:9px}
+.bp-segment{min-height:32px;border-radius:10px;background:rgba(255,255,255,.010);box-shadow:none;overflow:hidden}
+.bp-segment button{height:30px;border-radius:8px;color:#858c84;font-size:9px}
 .bp-segment button:hover{transform:none}
 .bp-segment button.is-active{background:linear-gradient(180deg,rgba(201,165,95,.080),rgba(201,165,95,.020));color:#d7bb75;box-shadow:none}
 
-/* Shortcut rail: persistent while a tool is active, deliberately quieter than context panels. */
-.gameplay-operation-hints{
-  right:var(--game-edge);
-  bottom:var(--game-edge);
-  width:264px;
-  padding:9px 10px 8px;
-  border:1px solid rgba(239,233,221,.055);
-  border-radius:2px;
-  background:linear-gradient(180deg,rgba(22,29,26,.58),rgba(18,24,21,.52));
-  box-shadow:none;
-  backdrop-filter:blur(5px);
+/* Building Placement task dock follows the same secondary-surface language as World Utility. */
+.gameplay-screen .building-placement-toolbar-cluster .tool-bottom-cluster__primary{
+  height:50px;
+  padding:5px;
+  gap:3px;
+  border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
+  border-radius:var(--hud-radius-md,14px);
+  background:linear-gradient(180deg,var(--hud-surface-secondary-top,rgba(27,35,31,.925)),var(--hud-surface-secondary-bottom,rgba(20,28,24,.905)));
+  box-shadow:var(--hud-shadow-secondary,0 12px 30px rgba(5,8,7,.19));
+  backdrop-filter:blur(9px);
 }
-.operation-hints__task{
-  min-height:22px;
-  margin-bottom:5px;
-  display:flex;
-  align-items:center;
-  color:#c9c6bd;
-  font-size:11px;
-  font-weight:540;
-  letter-spacing:.012em;
-  white-space:nowrap;
+.bp-mode-action,.bp-icon-action{
+  border-radius:9px;
+  color:var(--hud-icon,#858d85);
 }
-.operation-hints__group{gap:1px;margin:0}
-.operation-hints__row{min-height:23px;grid-template-columns:minmax(82px,auto) 1fr;gap:7px}
-.operation-hints__binding kbd{min-width:20px;height:18px;padding:0 5px;border-color:rgba(239,233,221,.085);background:rgba(255,255,255,.012);color:#949b93;font-size:7.5px}
-.operation-hints__binding i{color:#555d56;font-size:7px}
-.operation-hints__description{color:#7f877f;font-size:8.5px}
-.operation-hints__row.is-primary .operation-hints__binding kbd{border-color:rgba(201,165,95,.16);background:rgba(201,165,95,.040);color:#cbb273}
-.operation-hints__row.is-primary .operation-hints__description{color:#aaa79e}
-.gameplay-screen:has(.flyout)>.gameplay-operation-hints{opacity:.82;visibility:visible;pointer-events:auto;transform:none}
-.gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(5px)}
+.bp-mode-action:hover,.bp-icon-action:hover{background:rgba(255,255,255,.035);color:#c9c8c0}
+.bp-mode-action.is-active,.bp-icon-action.is-active{background:var(--hud-accent-bg,rgba(201,165,95,.085));color:var(--hud-accent-text,#dec17a);box-shadow:none}
+.bp-mode-action.is-active::before{background:var(--hud-accent,#c9a55f);box-shadow:none}
+.bp-divider{background:var(--hud-rule,rgba(239,233,221,.065))}
+.bp-submit{
+  border-color:var(--hud-border-soft,rgba(239,233,221,.085));
+  border-radius:9px;
+  background:rgba(255,255,255,.010);
+  color:#9a9f97;
+}
+.bp-submit:hover{background:rgba(255,255,255,.03);border-color:rgba(239,233,221,.14);color:#d0cec6}
+.bp-submit--complete{border-color:rgba(201,165,95,.26);background:rgba(201,165,95,.09);color:var(--hud-accent-text,#dec17a);box-shadow:none}
+.bp-submit--complete:hover{border-color:rgba(201,165,95,.38);background:rgba(201,165,95,.13);color:#e2c984}
