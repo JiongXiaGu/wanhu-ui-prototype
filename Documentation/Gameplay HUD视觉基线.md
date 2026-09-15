@@ -4,7 +4,7 @@ Gameplay HUD 的目标是让世界画面始终成为主体，同时让不同操�
 
 ## 空间职责
 
-- Gameplay Top Shell：城市持续状态、城市管理入口、信息视图入口与时间控制；
+- Gameplay Top Shell：城市持续状态、城市管理入口、信息视图入口、场景工具与时间控制；
 - Main Dock：回答“我要建造什么”，只承载建造 / 内容分类；
 - World Utility Toolbar：回答“我要如何编辑世界”，承载跨分类、跨 Tool 仍然成立的世界级工具；
 - Operation Hints：只显示当前输入提示，不承担可点击操作；
@@ -27,23 +27,46 @@ Main Dock、Top Shell、Management Space 等核心操作结构跟随视觉中心
 
 ## Gameplay Top Shell
 
-Top Shell 保持两层，但职责重新拆分。
+Top Shell 保持两层，但职责明确分开。
 
 第一层 **Status Row**：
 
 - 左：天气状态 + 季节 / 时间；
 - 中：钱粮 / 人口 / 木材 / 石料，必须保持几何居中；
-- 右：相机 / 天气预留入口 / 菜单。
+- 右：模拟时间控制。
 
-天气状态不再打开旧的 Weather Adjustment Flyout。右侧天气入口暂时只保留位置与视觉语义，后续接入新的天气 / 天象用途。
+时间控制全部使用图标，不显示 `×1 / ×2 / ×4` 文本：
 
-第二层 **Control Tray** 按 `观察 / 管理 / 时间` 排列：
+- Pause：暂停模拟；
+- Play：正常速度；
+- Chevrons：加速；
+- Fast Forward：高速。
+
+`speed` 仍使用 `0 / 1 / 2 / 4` 状态，其中 `0` 是模拟暂停，不等同于打开 Pause Menu。
+
+第二层 **Control Tray** 按 `观察 / 管理 / 场景工具` 排列：
 
 - 左：信息视图 / 图层；
 - 中：城市 / 经济 / 政策 / 军事 / 宫殿；
-- 右：暂停 / ×1 / ×2 / ×4。
+- 右：相机 / 天气控制 / 菜单。
 
-一级管理导航继续使用纯图标，名称进入 Hover Tooltip / ARIA Label。现有 Management Space 内容暂不因一级分类缩并而大改；当前“经济”继续进入 Finance，“宫殿”暂接现有 Governance 内容，后续再重构内部信息架构。
+一级管理导航和场景入口继续使用纯图标，名称进入 Hover Tooltip / ARIA Label。现有 Management Space 内容暂不因一级分类缩并而大改；当前“经济”继续进入 Finance，“宫殿”暂接现有 Governance 内容，后续再重构内部信息架构。
+
+### Top Shell 接缝
+
+两层 Top Shell 不能使用两条明亮边框直接相接。Control Tray 必须轻微向上覆盖 Status Row，当前约 `2px`，并取消自身顶边框；连接处不得出现浏览器缩放或 DPR 变化时可见的亮白 seam。
+
+当前 1920×1080 参考比例：
+
+- Status Row：约 `940 × 56px`；
+- Control Tray：约 `480 × 38px`；
+- Control Tray 保持明显更窄、更紧凑，不作为第二条大导航栏。
+
+### Weather Control
+
+左侧 `晴 / 秋 · 14:30` 只表示当前世界状态，不作为控制入口。
+
+Control Tray 右侧天气图标是玩家的天气控制入口，点击后打开 `Weather Right Edge Flyout`。天气控制继续属于场景级轻量工具，不进入 Management Space。
 
 ## Surface 层级
 
