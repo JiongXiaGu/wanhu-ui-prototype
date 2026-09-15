@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ChevronRight, X } from 'lucide-react';
 import { MANAGEMENT_PANELS, type ManagementSection } from './management-model';
 
@@ -27,16 +27,6 @@ export function ManagementSpace({ view, onClose }: Props) {
   const panel = MANAGEMENT_PANELS[view];
   const HeadingIcon = panel.icon;
   const [taxRates, setTaxRates] = useState({ field: 12, commerce: 8, market: 6 });
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
 
   return (
     <div className={`management-space management-space--${view}`}>
