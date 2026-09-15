@@ -4,9 +4,11 @@ import { gameplayUiReducer, selectGameplaySpace } from '../app/ui-state';
 import { BuildingWorkspace } from '../workspace/BuildingWorkspace';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
+import { CityManagementRail } from './CityManagementRail';
 import { CommandBar, UtilityToolbar } from './CommandBar';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
+import { ManagementFlyout } from './ManagementFlyout';
 import { PauseLayer } from './PauseLayer';
 import { QuickControls } from './QuickControls';
 import { RightEdgeFlyout } from './RightEdgeFlyout';
@@ -29,6 +31,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   return (
     <section className="screen gameplay-screen" style={{ backgroundImage: `url(${background})` }}>
       <div className="game-vignette" />
+      <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
       <GameplayHUD />
       <QuickControls
         flyout={state.flyout}
@@ -37,6 +40,15 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
         onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
       />
+
+      {space === 'gameplay' && (
+        <CityManagementRail
+          flyout={state.flyout}
+          mapView={state.mapView}
+          onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
+          onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
+        />
+      )}
 
       {space === 'gameplay' && <UtilityToolbar />}
       {!toolOpen && !state.paused && (
@@ -66,8 +78,12 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         <GameplayOperationHints toolActive={toolOpen} adjustmentMode={state.adjustmentMode} />
       )}
 
-      {state.flyout !== 'none' && !state.paused && (
+      {(state.flyout === 'camera' || state.flyout === 'weather') && !state.paused && (
         <RightEdgeFlyout flyout={state.flyout} onClose={() => dispatch({ type: 'SET_FLYOUT', flyout: 'none' })} />
+      )}
+
+      {state.flyout !== 'none' && state.flyout !== 'camera' && state.flyout !== 'weather' && !state.paused && (
+        <ManagementFlyout flyout={state.flyout} onClose={() => dispatch({ type: 'SET_FLYOUT', flyout: 'none' })} />
       )}
 
       {state.paused && (

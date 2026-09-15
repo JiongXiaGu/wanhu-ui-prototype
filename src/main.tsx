@@ -13,6 +13,7 @@ import './archive/archive-panel.css';
 import './archive/archive-info-refine.css';
 import './archive/save-game-space.css';
 import './gameplay/right-edge-flyout.css';
+import './gameplay/city-management.css';
 import './gameplay/pause-layer.css';
 import './settings/settings-panel.css';
 import './settings/settings-bindings.css';

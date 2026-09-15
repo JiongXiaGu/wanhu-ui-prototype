@@ -1,5 +1,6 @@
 export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'loading' | 'gameplay';
-export type Flyout = 'none' | 'camera' | 'weather';
+export type Flyout = 'none' | 'camera' | 'weather' | 'city' | 'population' | 'finance' | 'policy' | 'commerce' | 'governance' | 'military';
+export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'building';
 export type Tool = 'none' | 'building-placement';
 export type TerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
@@ -12,6 +13,7 @@ export interface GameplayUiState {
   workspace: Workspace;
   tool: Tool;
   flyout: Flyout;
+  mapView: MapView;
   paused: boolean;
   pauseView: PauseView;
   speed: Speed;
@@ -28,6 +30,7 @@ export const initialGameplayUiState: GameplayUiState = {
   workspace: 'none',
   tool: 'none',
   flyout: 'none',
+  mapView: 'default',
   paused: false,
   pauseView: 'menu',
   speed: 1,
@@ -46,6 +49,7 @@ export type GameplayUiAction =
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_FLYOUT'; flyout: Flyout }
+  | { type: 'SET_MAP_VIEW'; mapView: MapView }
   | { type: 'SET_PAUSED'; paused: boolean }
   | { type: 'SET_PAUSE_VIEW'; view: PauseView }
   | { type: 'SET_SPEED'; speed: Speed }
@@ -66,6 +70,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         activeCategory: action.category,
         workspace: building ? (state.workspace === 'building' ? 'none' : 'building') : 'none',
         flyout: 'none',
+        mapView: 'default',
       };
     }
     case 'CLOSE_WORKSPACE':
@@ -76,6 +81,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         workspace: 'none',
         tool: 'building-placement',
         flyout: 'none',
+        mapView: 'default',
         terrainMode: 'balanced-earthwork',
         adjustmentMode: 'position',
         canUndo: false,
@@ -88,17 +94,29 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         workspace: 'building',
         activeCategory: '建筑',
         flyout: 'none',
+        mapView: 'default',
         canUndo: false,
         canRedo: false,
       };
     case 'SET_FLYOUT':
-      return { ...state, flyout: action.flyout };
+      return {
+        ...state,
+        flyout: action.flyout,
+        mapView: action.flyout === 'none' ? state.mapView : 'default',
+      };
+    case 'SET_MAP_VIEW':
+      return {
+        ...state,
+        mapView: action.mapView,
+        flyout: action.mapView === 'default' ? state.flyout : 'none',
+      };
     case 'SET_PAUSED':
       return {
         ...state,
         paused: action.paused,
         pauseView: 'menu',
         flyout: action.paused ? 'none' : state.flyout,
+        mapView: action.paused ? 'default' : state.mapView,
       };
     case 'SET_PAUSE_VIEW':
       return state.paused ? { ...state, pauseView: action.view } : state;
