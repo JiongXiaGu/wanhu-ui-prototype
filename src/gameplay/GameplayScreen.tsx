@@ -28,9 +28,8 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
     function handleGameplayEscape(event: KeyboardEvent) {
       if (event.key !== 'Escape' || event.defaultPrevented || state.paused) return;
 
-      // Management owns its own Escape listener, and nested workspace inputs get first chance
-      // to consume Escape before the enclosing workspace is closed.
-      if (state.management !== 'none') return;
+      // A focused workspace search owns its first Escape so the query can collapse
+      // without also dismissing the whole workspace in the same key press.
       if (state.workspace !== 'none' && document.activeElement instanceof HTMLElement && document.activeElement.closest('.workspace-search')) return;
 
       event.preventDefault();
@@ -49,6 +48,10 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
       }
       if (state.workspace !== 'none') {
         dispatch({ type: 'CLOSE_WORKSPACE' });
+        return;
+      }
+      if (state.management !== 'none') {
+        dispatch({ type: 'SET_MANAGEMENT', management: 'none' });
         return;
       }
       if (state.mapView !== 'default') {
