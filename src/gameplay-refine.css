@@ -1,8 +1,9 @@
 /* Gameplay HUD + bottom command system refinement.
+   Outer screen geometry is centralized in gameplay/gameplay-hud-layout.css.
    State model:
-   Gameplay  -> Utility Toolbar + Main Dock
-   Workspace -> Workspace + Main Dock
-   Tool      -> ToolOverlay + Tool Bottom Cluster */
+   Gameplay  -> Main Dock + World Utility Toolbar
+   Workspace -> Workspace + Main Dock + World Utility Toolbar
+   Tool      -> ToolOverlay + Tool Bottom Dock + World Utility Toolbar */
 
 .gameplay-screen .hud-group{
   left:22px;
@@ -46,15 +47,13 @@
 .gameplay-screen .quick-controls button:hover{background:rgba(255,255,255,.04)}
 .gameplay-screen .quick-controls button.is-active{background:rgba(201,165,95,.105);color:#e0c17c}
 
-/* Main Dock remains compact; global utility tools float above it instead of stretching it. */
+/* Main Dock is the primary bottom surface: stronger material than World Utility / Operation Hints. */
 .gameplay-screen .command-bar{
-  width:960px;
-  height:82px;
-  bottom:18px;
+  height:var(--hud-command-height,82px);
   padding:5px;
   background:linear-gradient(180deg,rgba(29,36,33,.965),rgba(24,31,28,.95));
   border-color:rgba(239,233,221,.15);
-  box-shadow:0 18px 48px rgba(7,10,9,.28);
+  box-shadow:0 18px 48px rgba(7,10,9,.28),inset 0 1px 0 rgba(255,255,255,.012);
   backdrop-filter:blur(10px);
   z-index:12;
 }
@@ -65,59 +64,20 @@
 .gameplay-screen .command-bar>i{margin:8px 7px;background:rgba(239,233,221,.085)}
 .gameplay-screen .category-row{min-width:0;padding-right:2px}
 .gameplay-screen .category-row button{min-width:0;gap:6px;color:#80877f;font-size:9px;letter-spacing:.02em}
-.gameplay-screen .category-row button svg{width:18px;height:18px;stroke-width:1.65}
+.gameplay-screen .category-row button svg{width:19px;height:19px;stroke-width:1.6}
 .gameplay-screen .category-row button:hover{background:rgba(255,255,255,.03);color:#c6c5bc}
 .gameplay-screen .category-row button.is-active{color:#dfc078;background:linear-gradient(180deg,rgba(201,165,95,.09),rgba(201,165,95,.018))}
 .gameplay-screen .category-row button.is-active::before{left:22%;right:22%;height:2px;background:#c9a55f}
 
-/* Compact Utility Toolbar: right-aligned to the Main Dock, 8px above it. */
-.command-utility{
-  position:absolute;
-  right:calc(50% - 480px);
-  bottom:108px;
-  width:326px;
-  height:38px;
-  padding:3px 4px;
-  z-index:13;
-  display:flex;
-  align-items:center;
-  background:linear-gradient(180deg,rgba(31,39,35,.89),rgba(25,32,29,.84));
-  border:1px solid rgba(239,233,221,.13);
-  box-shadow:0 10px 28px rgba(7,10,9,.22);
-  backdrop-filter:blur(9px);
-  transition:opacity .14s ease,transform .14s ease,visibility .14s ease;
-}
-
-.command-utility__buttons{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:4px}
-.command-utility__button{position:relative;width:34px;height:30px;flex:0 0 34px;padding:0;border:0;border-radius:1px;background:transparent;color:#828981;display:grid;place-items:center;cursor:pointer;transition:background .14s ease,color .14s ease,transform .08s ease}
-.command-utility__button svg{width:15px;height:15px;pointer-events:none}
-.command-utility__button:hover{background:rgba(255,255,255,.045);color:#cbc9c0}
-.command-utility__button.is-active{color:#dfc078;background:rgba(201,165,95,.085)}
-.command-utility__button.is-active::before{content:'';position:absolute;left:8px;right:8px;top:-4px;height:1px;background:#c9a55f}
-.command-utility__button.is-pressed{transform:translateY(1px);background:rgba(201,165,95,.08);color:#d9bf83}
-.command-utility__separator{width:1px;height:18px;flex:0 0 1px;margin:0 2px;background:rgba(239,233,221,.09)}
-.command-utility__button::after{content:attr(data-tooltip);position:absolute;left:50%;bottom:38px;transform:translate(-50%,4px);padding:6px 8px;min-width:max-content;pointer-events:none;opacity:0;visibility:hidden;white-space:nowrap;background:rgba(19,25,22,.98);border:1px solid rgba(239,233,221,.14);box-shadow:0 8px 24px rgba(5,8,7,.25);color:#d8d5cb;font-size:9px;letter-spacing:.02em;transition:opacity .12s ease,transform .12s ease,visibility .12s ease;z-index:30}
-.command-utility__button:hover::after{opacity:1;visibility:visible;transform:translate(-50%,0)}
-
-/* Workspace state: Utility Toolbar disappears and Workspace sits directly over the Main Dock. */
-.gameplay-screen:has(.workspace) > .command-utility,
-.gameplay-screen:has(.tool-overlay) > .command-utility,
-.gameplay-screen:not(:has(.command-bar)) > .command-utility{
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  transform:translateY(6px);
-}
-
+/* Workspace clears the Main Dock according to the shared HUD geometry contract. */
 .gameplay-screen .workspace{
-  bottom:108px;
+  bottom:calc(var(--hud-edge,24px) + var(--hud-command-height,82px) + var(--hud-gap-md,12px));
 }
 
-/* Tool state: dedicated contextual bottom cluster replaces Main Dock + Utility Toolbar. */
+/* Tool state: dedicated contextual dock replaces the Main Dock; World Utility remains global. */
 .tool-bottom-cluster{
   position:absolute;
   left:50%;
-  bottom:20px;
   transform:translateX(-50%);
   z-index:24;
   display:flex;
