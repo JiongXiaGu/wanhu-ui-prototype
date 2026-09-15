@@ -1,0 +1,51 @@
+/*
+ * Fixed 1920x1080 virtual-canvas guards.
+ *
+ * The prototype is authored on a fixed 1920x1080 logical canvas and the
+ * entire canvas is scaled in App.tsx to fit the browser viewport.
+ * Viewport media queries must therefore not re-layout content inside that
+ * logical canvas. These rules keep full-screen spaces visually identical
+ * across browser sizes/zoom levels; only the outer canvas scale may change.
+ */
+
+/* SaveGameSpace canonical 1920 layout. */
+.save-game-space__body {
+  width: min(980px, calc(100% - 200px));
+}
+
+.save-manual-card__select {
+  padding-right: 158px;
+}
+
+/* LoadGameSpace canonical 1920 layout. */
+.archive-space__layout {
+  width: min(1480px, calc(100% - 128px));
+  gap: 34px;
+}
+
+.archive-groups {
+  flex-basis: 344px;
+  padding-right: 28px;
+}
+
+.archive-group-card__image {
+  flex-basis: 98px;
+}
+
+.archive-save-card__image {
+  flex-basis: 146px;
+}
+
+.archive-save-card__select {
+  padding-right: 290px;
+}
+
+.archive-save-type-tabs button {
+  min-width: 86px;
+}
+
+.archive-save-card__type,
+.archive-save-card__status > em {
+  padding-left: 7px;
+  padding-right: 7px;
+}
