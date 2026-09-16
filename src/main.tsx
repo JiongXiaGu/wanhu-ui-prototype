@@ -30,8 +30,9 @@ import './gameplay/gameplay-top-shell.css';
 import './gameplay/operation-hints-refined.css';
 import './gameplay/world-utility-toolbar.css';
 import './gameplay/gameplay-hud-layout.css';
-import './gameplay/advanced-parameter-panels.css';
 import './ui/ui-visual-system.css';
+import './ui/ui-control-system.css';
+import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
 
