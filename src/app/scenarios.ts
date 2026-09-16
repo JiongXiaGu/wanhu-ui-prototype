@@ -52,15 +52,15 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
     case 'map-land-value':
       return { screen: 'gameplay', gameplay: { ...gameplay, mapView: 'land-value' } };
     case 'workspace-building':
-      return { screen: 'gameplay', gameplay: { ...gameplay, workspace: 'building', activeCategory: '建筑' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, workspace: 'building', dockMode: 'design', dockCategory: 'building' } };
     case 'building-position':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building' } };
     case 'building-massing':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', adjustmentMode: 'massing' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', adjustmentMode: 'massing' } };
     case 'building-roof':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', adjustmentMode: 'roof' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', adjustmentMode: 'roof' } };
     case 'building-height':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', terrainMode: 'manual-elevation' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', terrainMode: 'manual-elevation' } };
     case 'camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'camera' } };
     case 'weather':
@@ -72,9 +72,9 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
     case 'pause-settings':
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'settings' } };
     case 'building-camera':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'camera' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', flyout: 'camera' } };
     case 'building-weather':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'weather' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', flyout: 'weather' } };
     case 'menu':
     default:
       return { screen: 'menu', gameplay };
