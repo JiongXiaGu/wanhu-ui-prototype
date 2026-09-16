@@ -20,6 +20,7 @@
   --hud-world-tools-height:56px;
   --hud-context-weather-width:400px;
   --hud-context-camera-width:360px;
+  --hud-left-context-max-height:720px;
 
   --hud-surface-primary-top:rgba(31,40,36,.955);
   --hud-surface-primary-bottom:rgba(23,31,27,.945);
@@ -44,7 +45,7 @@
 
 .gameplay-screen .gameplay-top-shell{top:var(--hud-top-edge)}
 
-.gameplay-screen .gameplay-navigation-hud{
+.gameplay-screen .gameplay-compass-hud{
   left:var(--hud-edge);
   top:var(--hud-top-edge);
 }
@@ -75,10 +76,12 @@
   bottom:calc(var(--hud-edge) + var(--hud-command-height) + var(--hud-gap-md));
 }
 
-.gameplay-screen .gameplay-context-panel{
+/* All full lower-left context surfaces share the same screen anchor as the placement tool overlay.
+   Their width is chosen so the centered Main Dock can coexist horizontally; vertical growth is capped at 2/3 of the 1080p logical canvas. */
+.gameplay-screen .gameplay-left-context-surface{
   left:var(--hud-edge);
-  bottom:calc(var(--hud-edge) + var(--hud-command-height) + var(--hud-gap-md));
-  max-height:50vh;
+  bottom:var(--hud-edge);
+  max-height:var(--hud-left-context-max-height);
 }
 .gameplay-screen .gameplay-context-panel--camera{width:var(--hud-context-camera-width)}
 .gameplay-screen .gameplay-context-panel--weather{width:var(--hud-context-weather-width)}
