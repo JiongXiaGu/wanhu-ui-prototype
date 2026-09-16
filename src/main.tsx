@@ -32,6 +32,7 @@ import './gameplay/world-utility-toolbar.css';
 import './gameplay/gameplay-hud-layout.css';
 import './ui/ui-visual-system.css';
 import './ui/ui-control-system.css';
+import './workspace/workspace-world-first-glass.css';
 import './gameplay/weather-mist-glass.css';
 import './gameplay/weather-visual-controls.css';
 import './gameplay/weather-art-pass.css';
