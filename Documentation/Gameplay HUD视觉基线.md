@@ -40,8 +40,10 @@ Gameplay HUD 统一使用同一套现代东方深墨 Surface，不再让顶部�
 ### Surface
 
 - Primary：Top Status Row、Main Dock、大 Context Surface；
-- Secondary：Top Control Tray、World Utility、Tool Bottom Dock；
+- Secondary：Top Control Tray、World Utility；
 - Tertiary：Operation Hints。
+
+当前 Tool 若处于玩家的强任务上下文，其任务主控条允许升级为 Primary Surface，而不是机械地套用 Secondary。Building Placement Bottom Dock 就属于这一类。
 
 Primary 最实，Secondary 稍轻，Tertiary 最透明。边框统一使用低对比暖灰纸色；阴影用于悬浮关系，不制造厚重卡片感。
 
@@ -152,9 +154,13 @@ Camera / Weather 是场景级轻量 Context Surface：
 
 ## Building Placement
 
-Building Placement Context Panel 与任务 Dock 使用同一视觉家族：
+Building Placement Context Panel 与任务 Dock 使用同一视觉家族，但任务层级不同：
 
-- Context Panel 使用 Primary Surface + `R3 = 18px`；
-- Tool Bottom Dock 使用 Secondary Surface + `R2 = 14px`；
+- Context Panel 使用 Primary Surface + `R3 = 18px`，承载当前对象参数；
+- 中央 Tool Bottom Dock 是当前放置任务的**主控**，使用 Primary Surface + `R2 = 14px`，视觉权重必须高于右下 World Utility；
+- 1920×1080 下 Tool Bottom Dock 高度约 `66px`；模式按钮约 `48 × 48px`；“完成”按钮宽度不小于约 `90px`；
+- 地形模式和调整对象使用明确单选语义，UI 层应暴露 `aria-pressed` / Unity 对应的 selected state；
 - 内部参数仍保持扁平 Section，不重新堆 Card；
 - 网格 / Undo 等全局能力继续由 World Utility Toolbar 持有。
+
+Building Placement 的视觉与交互样式只由 `src/tools/building-placement/building-placement.css` 维护；不再额外通过 Gameplay 级 Override 文件重复覆盖同一组件。
