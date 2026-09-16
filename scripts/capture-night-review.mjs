@@ -28,6 +28,30 @@ async function setRangeValue(locator, value) {
 await openWeather();
 
 const screen = page.locator('.gameplay-screen');
+const panel = page.locator('.gameplay-context-panel--weather');
+const footer = panel.locator('.gameplay-context-panel__footer--weather-mode');
+
+// Weather uses a bottom-anchored Header / Body / Footer layout. Mode content may shrink upward,
+// but the fixed mode footer must not move on screen.
+const sceneFooterBox = await footer.boundingBox();
+if (!sceneFooterBox) throw new Error('Weather mode footer must be visible in scene simulation mode.');
+
+await page.getByRole('button', { name: '跟随世界', exact: true }).click();
+await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-context-mode') === '跟随世界');
+await page.waitForSelector('.weather-world-summary');
+await page.waitForTimeout(120);
+
+const followFooterBox = await footer.boundingBox();
+if (!followFooterBox) throw new Error('Weather mode footer must stay visible in follow-world mode.');
+if (Math.abs(sceneFooterBox.y - followFooterBox.y) > 1 || Math.abs(sceneFooterBox.x - followFooterBox.x) > 1) {
+  throw new Error(`Weather footer must stay fixed while mode content changes. scene=${JSON.stringify(sceneFooterBox)} follow=${JSON.stringify(followFooterBox)}`);
+}
+await page.screenshot({ path: `${outDir}/34-weather-follow-world.png` });
+
+await page.getByRole('button', { name: '场景模拟', exact: true }).click();
+await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-context-mode') === '场景模拟');
+await page.waitForSelector('[aria-label="日内时间"]');
+
 const dayTime = page.getByRole('slider', { name: '日内时间' });
 
 // Web prototype only: moving the scene-preview time into the night range hard-switches the background asset.
