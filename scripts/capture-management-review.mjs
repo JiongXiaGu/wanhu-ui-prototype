@@ -199,6 +199,21 @@ if ((await page.locator('.command-bar').count()) !== 0) throw new Error('Main Do
 if ((await page.locator('.building-placement-toolbar-cluster').count()) !== 1) throw new Error('Building Placement must use its dedicated primary tool toolbar.');
 if ((await page.locator('.world-utility-toolbar').count()) !== 1) throw new Error('Building Placement must retain the global World Utility Toolbar.');
 if ((await page.locator('.placement-utility-strip').count()) !== 0) throw new Error('Grid/history controls must exist only in the global toolbar.');
+
+const placementDock = page.locator('.building-placement-toolbar-cluster .tool-bottom-cluster__primary');
+const placementDockBox = await placementDock.boundingBox();
+if (!placementDockBox) throw new Error('Building Placement primary dock must be measurable.');
+if (Math.abs((placementDockBox.x + placementDockBox.width / 2) - 960) > 2) throw new Error('Building Placement primary dock must remain centered.');
+if (placementDockBox.height < 64 || placementDockBox.height > 68) throw new Error(`Building Placement primary dock must stay near 66px. height=${placementDockBox.height}`);
+const placementModeBox = await placementDock.locator('.bp-mode-action').first().boundingBox();
+if (!placementModeBox || placementModeBox.width < 46 || placementModeBox.height < 46) throw new Error('Building Placement mode buttons must use the larger primary-control hit target.');
+const placementCompleteBox = await placementDock.locator('.bp-submit--complete').boundingBox();
+if (!placementCompleteBox || placementCompleteBox.height < 46 || placementCompleteBox.width < 88) throw new Error('Building Placement complete action must be visually prominent.');
+const placementDockRadius = Number.parseFloat(await placementDock.evaluate((element) => getComputedStyle(element).borderTopLeftRadius));
+if (placementDockRadius < 12) throw new Error('Building Placement primary dock must use the shared rounded HUD family.');
+if ((await placementDock.locator('.bp-terrain-group .bp-mode-action[aria-pressed="true"]').count()) !== 1) throw new Error('Terrain mode must expose one selected control semantically.');
+if ((await placementDock.locator('.bp-adjustment-group .bp-mode-action[aria-pressed="true"]').count()) !== 1) throw new Error('Adjustment mode must expose one selected control semantically.');
+
 await page.screenshot({ path: `${outDir}/02e-building-placement-top-shell.png` });
 
 await browser.close();
