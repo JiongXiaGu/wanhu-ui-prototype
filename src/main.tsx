@@ -36,7 +36,7 @@ import './workspace/workspace-world-first-glass.css';
 import './gameplay/weather-mist-glass.css';
 import './gameplay/weather-visual-controls.css';
 import './gameplay/weather-art-pass.css';
-import './ui/wanhu-glass-study.css';
+import './ui/wanhu-mist-glass.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
