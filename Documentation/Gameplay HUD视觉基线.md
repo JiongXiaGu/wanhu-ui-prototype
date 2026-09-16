@@ -107,11 +107,50 @@ Main Dock、World Utility Toolbar 与 Operation Hints 不合并成一个整屏�
 
 ### Main Dock
 
-- 1920×1080 核心宽度约 `940px`；
+Main Dock 是“模式选择器 + 当前模式分类带”，不是一排平级分类按钮。
+
+1920×1080 基线：
+
+- 核心宽度约 `940px`；
 - 高度约 `76px`；
 - 使用 Primary Surface 与 `R2 = 14px`；
-- 分类按钮圆角更小，只在 Hover / Selected 时出现局部 Tone；
-- Selected 使用暖金 Icon / 文本与细金线，不使用整块高饱和金底。
+- 左侧约 `96px` 为 `设计 / 蓝图` Exclusive Selector；
+- 右侧分类平均分配可用宽度，图标约 `21px`，标签约 `10px`；
+- 分类按钮默认不画独立卡片边框，只在 Hover / Selected 时出现局部 Tone；
+- Selected 使用暖金 Icon / 文本与短金线，不使用整块高饱和金底。
+
+#### 设计模式
+
+固定分类：
+
+`道路 / 桥梁 / 建筑 / 台基 / 城墙 / 围墙 / 装饰 / 树木`
+
+其中“台基”指宫殿、大型建筑所使用的高台基 / 台地建造系统，不是普通地基概念。
+
+当前原型已经实现“建筑 → Building Workspace”；其余设计分类后续分别接入对应 Workspace / Tool，不为了占位而伪造无意义面板。
+
+#### 蓝图模式
+
+固定分类：
+
+`全部 / 民居 / 商业 / 工坊 / 管理 / 科学 / 信仰 / 军事 / 宫殿`
+
+蓝图分类属于同一 Blueprint 内容域，后续应由同一个 Blueprint Workspace 根据分类筛选内容，而不是复制九套 Workspace。
+
+#### Main Dock 状态规则
+
+`设计 / 蓝图` 是 Exclusive Selector；右侧分类是玩家显式选择。
+
+必须允许 **没有任何分类被选中**：
+
+- 初始 Gameplay：`dockMode = design`，`dockCategory = null`；
+- 切换 `设计 ↔ 蓝图`：切换内容集合，同时将分类恢复为 `null`；
+- 不分别记住两个模式上一次选择的分类；
+- 返回某个模式后，只有玩家重新点击分类才出现 Selected；
+- Building Workspace 被关闭后，“建筑”也回到未选中；
+- 同一个 Surface Launcher 再次点击关闭 Surface 时，关联分类同时清空。
+
+因此 Selected 表示**玩家当前明确选择 / 正在使用的分类**，不是历史记忆，也不是默认推荐项。
 
 ### World Utility Toolbar
 
