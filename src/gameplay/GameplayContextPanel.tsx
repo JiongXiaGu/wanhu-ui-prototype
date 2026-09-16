@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Camera, CloudSun, RotateCcw, X } from 'lucide-react';
+import { Camera, Cloud, CloudFog, CloudRain, CloudSnow, CloudSun, RotateCcw, Sun, X } from 'lucide-react';
 import type { ContextPanel } from '../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../ui/Controls';
 
@@ -11,7 +11,63 @@ interface Props {
 }
 
 const CAMERA_DEFAULTS = { fov: 60, height: 42, pitch: 38 };
-const WEATHER_DEFAULTS = { cloud: 42, snow: 0, windDirection: 135, windStrength: 1.2, gust: 0.35, season: 0.48 };
+const WEATHER_DEFAULTS = {
+  cloud: 42,
+  precipitation: 0,
+  snow: 0,
+  fog: 4,
+  windDirection: 135,
+  windStrength: 1.2,
+  gust: 0.35,
+  season: 0.48,
+};
+
+const WEATHER_PRESETS = [
+  {
+    id: 'clear',
+    label: '晴天',
+    icon: Sun,
+    settings: { cloud: 12, precipitation: 0, snow: 0, fog: 0, windDirection: 120, windStrength: 0.8, gust: 0.12 },
+  },
+  {
+    id: 'cloudy',
+    label: '多云',
+    icon: CloudSun,
+    settings: { cloud: 42, precipitation: 0, snow: 0, fog: 4, windDirection: 135, windStrength: 1.2, gust: 0.35 },
+  },
+  {
+    id: 'overcast',
+    label: '阴天',
+    icon: Cloud,
+    settings: { cloud: 78, precipitation: 0, snow: 0, fog: 12, windDirection: 150, windStrength: 1.0, gust: 0.28 },
+  },
+  {
+    id: 'light-rain',
+    label: '小雨',
+    icon: CloudRain,
+    settings: { cloud: 76, precipitation: 35, snow: 0, fog: 16, windDirection: 150, windStrength: 1.5, gust: 0.42 },
+  },
+  {
+    id: 'heavy-rain',
+    label: '大雨',
+    icon: CloudRain,
+    settings: { cloud: 94, precipitation: 78, snow: 0, fog: 22, windDirection: 165, windStrength: 2.0, gust: 0.65 },
+  },
+  {
+    id: 'snow',
+    label: '雪天',
+    icon: CloudSnow,
+    settings: { cloud: 88, precipitation: 20, snow: 72, fog: 12, windDirection: 140, windStrength: 1.3, gust: 0.30 },
+  },
+  {
+    id: 'fog',
+    label: '雾天',
+    icon: CloudFog,
+    settings: { cloud: 56, precipitation: 0, snow: 0, fog: 82, windDirection: 110, windStrength: 0.55, gust: 0.10 },
+  },
+] as const;
+
+type WeatherPresetId = (typeof WEATHER_PRESETS)[number]['id'];
 
 function formatTime(value: number) {
   const totalMinutes = Math.round(value * 60) % (24 * 60);
@@ -20,10 +76,14 @@ function formatTime(value: number) {
   return `${hours}:${minutes}`;
 }
 
-function formatWeatherState(cloud: number) {
-  if (cloud >= 72) return '阴';
-  if (cloud >= 28) return '晴间多云';
-  return '晴';
+function formatWeatherState(weather: typeof WEATHER_DEFAULTS) {
+  if (weather.fog >= 55) return '雾天';
+  if (weather.snow >= 35) return '雪天';
+  if (weather.precipitation >= 60) return '大雨';
+  if (weather.precipitation >= 15) return '小雨';
+  if (weather.cloud >= 72) return '阴天';
+  if (weather.cloud >= 28) return '多云';
+  return '晴天';
 }
 
 export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose }: Props) {
@@ -31,15 +91,33 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
   const [weatherMode, setWeatherMode] = useState('场景模拟');
   const [camera, setCamera] = useState(CAMERA_DEFAULTS);
   const [weather, setWeather] = useState(WEATHER_DEFAULTS);
+  const [weatherPreset, setWeatherPreset] = useState<WeatherPresetId>('cloudy');
+  const [weatherPresetDirty, setWeatherPresetDirty] = useState(false);
   const isCamera = panel === 'camera';
   const weatherLocked = weatherMode === '跟随世界';
   const HeadingIcon = isCamera ? Camera : CloudSun;
+  const activeWeatherPreset = WEATHER_PRESETS.find((preset) => preset.id === weatherPreset)!;
+
+  const updateWeather = (key: keyof typeof WEATHER_DEFAULTS, value: number) => {
+    setWeather((current) => ({ ...current, [key]: value }));
+    if (key !== 'season') setWeatherPresetDirty(true);
+  };
+
+  const applyWeatherPreset = (presetId: WeatherPresetId) => {
+    const preset = WEATHER_PRESETS.find((item) => item.id === presetId);
+    if (!preset) return;
+    setWeather((current) => ({ ...current, ...preset.settings }));
+    setWeatherPreset(presetId);
+    setWeatherPresetDirty(false);
+  };
 
   return (
     <aside
       className={`gameplay-left-context-surface gameplay-context-panel gameplay-context-panel--${panel}`}
       aria-label={isCamera ? '相机面板' : '天气面板'}
       data-context-mode={isCamera ? cameraMode : weatherMode}
+      data-weather-preset={isCamera ? undefined : weatherPreset}
+      data-weather-preset-modified={isCamera ? undefined : String(weatherPresetDirty)}
     >
       <header>
         <div className="gameplay-context-panel__heading">
@@ -77,7 +155,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
               <section className="gameplay-context-panel__section weather-world-summary" aria-label="当前世界天气">
                 <div className="gameplay-context-panel__section-title"><b>当前世界天气</b></div>
                 <div className="weather-world-summary__rows">
-                  <div><span>天气状态</span><b>{formatWeatherState(weather.cloud)}</b></div>
+                  <div><span>天气状态</span><b>{formatWeatherState(weather)}</b></div>
                   <div><span>云量</span><b>{weather.cloud.toFixed(0)}%</b></div>
                   <div><span>风场</span><b>{weather.windDirection.toFixed(0)}° · {weather.windStrength.toFixed(1)}</b></div>
                   <div><span>日内时间</span><b>{formatTime(dayTime)}</b></div>
@@ -87,17 +165,46 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
               </section>
             ) : (
               <>
+                <section className="gameplay-context-panel__section weather-preset-section" aria-label="天气预设">
+                  <div className="weather-preset-section__heading">
+                    <b>天气预设</b>
+                    <span>当前：{activeWeatherPreset.label}{weatherPresetDirty ? ' · 已微调' : ''}</span>
+                  </div>
+                  <div className="weather-preset-grid">
+                    {WEATHER_PRESETS.map((preset) => {
+                      const PresetIcon = preset.icon;
+                      const isActive = preset.id === weatherPreset;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          className={`weather-preset-card ${isActive ? 'is-active' : ''}`}
+                          data-preset-id={preset.id}
+                          aria-label={`${preset.label}天气预设`}
+                          aria-pressed={isActive}
+                          onClick={() => applyWeatherPreset(preset.id)}
+                        >
+                          <PresetIcon className="weather-preset-card__icon" />
+                          <span>{preset.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+
                 <section className="gameplay-context-panel__section">
-                  <div className="gameplay-context-panel__section-title"><b>天气</b></div>
-                  <RuntimeParameterRow label="云量" value={weather.cloud} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => setWeather((current) => ({ ...current, cloud: value }))} />
-                  <RuntimeParameterRow label="积雪量" value={weather.snow} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => setWeather((current) => ({ ...current, snow: value }))} />
+                  <div className="gameplay-context-panel__section-title"><b>天气参数</b></div>
+                  <RuntimeParameterRow label="云量" value={weather.cloud} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateWeather('cloud', value)} />
+                  <RuntimeParameterRow label="降水强度" value={weather.precipitation} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateWeather('precipitation', value)} />
+                  <RuntimeParameterRow label="积雪量" value={weather.snow} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateWeather('snow', value)} />
+                  <RuntimeParameterRow label="雾量" value={weather.fog} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateWeather('fog', value)} />
                 </section>
 
                 <section className="gameplay-context-panel__section">
                   <div className="gameplay-context-panel__section-title"><b>风场</b></div>
-                  <RuntimeParameterRow label="风向" value={weather.windDirection} min={0} max={360} step={5} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => setWeather((current) => ({ ...current, windDirection: value }))} />
-                  <RuntimeParameterRow label="风力" value={weather.windStrength} min={0} max={5} step={0.1} format={(value) => value.toFixed(1)} onChange={(value) => setWeather((current) => ({ ...current, windStrength: value }))} />
-                  <RuntimeParameterRow label="阵风" value={weather.gust} min={0} max={1} step={0.05} format={(value) => value.toFixed(2)} onChange={(value) => setWeather((current) => ({ ...current, gust: value }))} />
+                  <RuntimeParameterRow label="风向" value={weather.windDirection} min={0} max={360} step={5} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => updateWeather('windDirection', value)} />
+                  <RuntimeParameterRow label="风力" value={weather.windStrength} min={0} max={5} step={0.1} format={(value) => value.toFixed(1)} onChange={(value) => updateWeather('windStrength', value)} />
+                  <RuntimeParameterRow label="阵风" value={weather.gust} min={0} max={1} step={0.05} format={(value) => value.toFixed(2)} onChange={(value) => updateWeather('gust', value)} />
                 </section>
 
                 <section className="gameplay-context-panel__section">
