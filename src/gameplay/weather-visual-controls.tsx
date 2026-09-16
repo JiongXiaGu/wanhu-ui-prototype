@@ -104,12 +104,14 @@ export function SeasonTrack({ value, onChange }: SeasonTrackProps) {
       <div className="weather-visual-row__heading"><span>季节进度</span><b>{value.toFixed(2)}</b></div>
       <div className="weather-season-track" style={{ '--weather-track-position': `${position}%` } as CSSProperties}>
         <div className="weather-season-track__segments" aria-hidden="true">
-          <i className="is-spring" /><i className="is-summer" /><i className="is-autumn" /><i className="is-winter" />
+          <i className="is-spring"><span>春</span></i>
+          <i className="is-summer"><span>夏</span></i>
+          <i className="is-autumn"><span>秋</span></i>
+          <i className="is-winter"><span>冬</span></i>
         </div>
         <div className="weather-season-track__thumb" aria-hidden="true" />
         <input aria-label="季节进度" type="range" min={0} max={1} step={0.01} value={value} onChange={(event) => onChange(Number(event.target.value))} />
       </div>
-      <div className="weather-season-track__labels"><span>春</span><span>夏</span><span>秋</span><span>冬</span></div>
     </div>
   );
 }
