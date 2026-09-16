@@ -7,7 +7,7 @@ import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPl
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
 import { CommandBar, WorldUtilityToolbar } from './CommandBar';
 import { GameplayContextPanel } from './GameplayContextPanel';
-import { GameplayNavigationHud, GameplaySystemMenuButton } from './GameplayCornerHud';
+import { GameplayCompassHud, GameplaySystemMenuButton } from './GameplayCornerHud';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
 import { ManagementSpace } from './ManagementSpace';
@@ -25,7 +25,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   const toolOpen = state.tool === 'building-placement';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
   const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
-  const showNavigationHud = !state.paused && space !== 'management';
+  const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
     ? DESIGN_WORKSPACES[state.dockCategory]
@@ -82,7 +82,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
       <div className="game-vignette" />
       <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
 
-      {showNavigationHud && <GameplayNavigationHud background={background} />}
+      {showCompassHud && <GameplayCompassHud buildMode={toolOpen} />}
       {!state.paused && <GameplaySystemMenuButton onClick={() => dispatch({ type: 'SET_PAUSED', paused: true })} />}
 
       <GameplayHUD
