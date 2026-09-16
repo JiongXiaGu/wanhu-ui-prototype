@@ -8,7 +8,7 @@ await mkdir(outDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
 
-async function openWeather() {
+async function openEnvironment() {
   const url = new URL(baseUrl);
   url.searchParams.set('review', 'weather');
   await page.goto(url.toString(), { waitUntil: 'networkidle' });
@@ -25,11 +25,18 @@ async function setRangeValue(locator, value) {
   }, value);
 }
 
-await openWeather();
+await openEnvironment();
 
 const screen = page.locator('.gameplay-screen');
 const panel = page.locator('.gameplay-context-panel--weather');
 const footer = panel.locator('.gameplay-context-panel__footer--weather-mode');
+
+if ((await panel.getAttribute('aria-label')) !== '环境面板') {
+  throw new Error(`Context panel should present itself as the environment panel. aria=${await panel.getAttribute('aria-label')}`);
+}
+if ((await panel.locator('.gameplay-context-panel__title').textContent())?.trim() !== '环境') {
+  throw new Error('Environment panel title must read “环境”.');
+}
 
 const sceneFooterBox = await footer.boundingBox();
 if (!sceneFooterBox) throw new Error('Environment mode footer must be visible in scene simulation mode.');
@@ -60,17 +67,17 @@ if ((await page.locator('.weather-wind-compass').count()) !== 0) {
 await page.locator('.weather-time-track').waitFor();
 await page.locator('.weather-season-track').waitFor();
 
-const timeTrackArt = await page.locator('.weather-time-track__segments').evaluate((node) => getComputedStyle(node).backgroundImage);
-if (!timeTrackArt.includes('weather-time-track.png')) {
-  throw new Error(`Time-of-day control must use the rectangular art strip. background=${timeTrackArt}`);
+const timeTrackVisual = await page.locator('.weather-time-track__segments').evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!timeTrackVisual.includes('linear-gradient') || timeTrackVisual.includes('url(')) {
+  throw new Error(`Time-of-day control must use an abstract gradient with no scene artwork. background=${timeTrackVisual}`);
 }
-const seasonTrackArt = await page.locator('.weather-season-track__segments').evaluate((node) => getComputedStyle(node).backgroundImage);
-if (!seasonTrackArt.includes('weather-season-track.png')) {
-  throw new Error(`Season control must use the rectangular art strip. background=${seasonTrackArt}`);
+const seasonTrackVisual = await page.locator('.weather-season-track__segments').evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!seasonTrackVisual.includes('linear-gradient') || seasonTrackVisual.includes('url(')) {
+  throw new Error(`Season control must use an abstract gradient with no scene artwork. background=${seasonTrackVisual}`);
 }
 const glassTexture = await panel.evaluate((node) => getComputedStyle(node).backgroundImage);
 if (!glassTexture.includes('glass-noise-soft.png')) {
-  throw new Error(`Environment glass must use the soft material texture. background=${glassTexture}`);
+  throw new Error(`Environment glass must retain the soft material texture. background=${glassTexture}`);
 }
 
 const windDirection = page.getByRole('slider', { name: '风向', exact: true });
@@ -98,7 +105,7 @@ await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detache
 await page.waitForTimeout(120);
 await page.screenshot({ path: `${outDir}/36-gameplay-night.png` });
 
-await page.getByRole('button', { name: '天气控制', exact: true }).click();
+await page.getByRole('button', { name: '环境控制', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather');
 await setRangeValue(page.getByRole('slider', { name: '日内时间' }), 14.5);
 await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.getAttribute('data-time-of-day') === 'day');
