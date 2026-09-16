@@ -164,7 +164,7 @@ await page.screenshot({ path: `${outDir}/02e-building-placement-action-bar.png` 
 
 // Road placement uses the same action-bar shell, but owns road-specific modes and parameters.
 await open('workspace-road', '.workspace[data-design-category="road"]');
-await page.locator('.building-card').first().click();
+await page.locator('.design-item-card').first().click();
 await page.waitForSelector('.road-placement-prototype');
 const roadActionBar = page.locator('.road-placement-toolbar-cluster .placement-action-bar');
 const roadActionBarBox = await roadActionBar.boundingBox();
