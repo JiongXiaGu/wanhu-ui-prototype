@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Camera, Cloud, CloudFog, CloudRain, CloudSnow, CloudSun, RotateCcw, Sun, X } from 'lucide-react';
 import type { ContextPanel } from '../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../ui/Controls';
-import { SeasonTrack, TimeOfDayTrack, WindCompass } from './weather-visual-controls';
+import { SeasonTrack, TimeOfDayTrack } from './weather-visual-controls';
 
 interface Props {
   panel: Exclude<ContextPanel, 'none'>;
@@ -199,13 +199,9 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
 
                 <section className="gameplay-context-panel__section weather-wind-section">
                   <div className="gameplay-context-panel__section-title"><b>风场</b></div>
-                  <div className="weather-wind-layout">
-                    <WindCompass value={weather.windDirection} onChange={(value) => updateWeather('windDirection', value)} />
-                    <div className="weather-wind-sliders">
-                      <RuntimeParameterRow label="风力" value={weather.windStrength} min={0} max={5} step={0.1} format={(value) => value.toFixed(1)} onChange={(value) => updateWeather('windStrength', value)} />
-                      <RuntimeParameterRow label="阵风" value={weather.gust} min={0} max={1} step={0.05} format={(value) => value.toFixed(2)} onChange={(value) => updateWeather('gust', value)} />
-                    </div>
-                  </div>
+                  <RuntimeParameterRow label="风向" value={weather.windDirection} min={0} max={360} step={5} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => updateWeather('windDirection', value)} />
+                  <RuntimeParameterRow label="风力" value={weather.windStrength} min={0} max={5} step={0.1} format={(value) => value.toFixed(1)} onChange={(value) => updateWeather('windStrength', value)} />
+                  <RuntimeParameterRow label="阵风" value={weather.gust} min={0} max={1} step={0.05} format={(value) => value.toFixed(2)} onChange={(value) => updateWeather('gust', value)} />
                 </section>
 
                 <section className="gameplay-context-panel__section weather-time-season-section">
