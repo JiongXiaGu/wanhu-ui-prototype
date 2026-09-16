@@ -182,13 +182,14 @@ export function AssetInspectorPopover({
   const portalHost = gameplayHost ?? (typeof document !== 'undefined' ? document.body : null);
 
   useLayoutEffect(() => {
-    const inspector = inspectorRef.current;
-    const activeAnchor = anchor;
-    const activePortalHost = portalHost;
-    if (!open || !activeAnchor || !activePortalHost || !inspector) {
+    if (!open || !anchor || !portalHost || !inspectorRef.current) {
       setPosition((current) => current.ready ? { ...current, ready: false } : current);
       return;
     }
+
+    const activeAnchor: HTMLElement = anchor;
+    const activePortalHost: HTMLElement = portalHost;
+    const inspector: HTMLDivElement = inspectorRef.current;
 
     function reposition() {
       const anchorRect = activeAnchor.getBoundingClientRect();
