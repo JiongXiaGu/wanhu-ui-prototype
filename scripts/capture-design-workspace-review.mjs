@@ -58,7 +58,28 @@ for (const [id, label] of designCategories) {
   if ((await workspace.locator('.workspace-context-filter__scroll > button[aria-pressed="true"]').count()) !== 1) {
     throw new Error(`${label} Workspace must expose exactly one active context filter.`);
   }
-  if ((await workspace.locator('.design-item-card').count()) < 1) throw new Error(`${label} Workspace must show content items.`);
+
+  const cards = workspace.locator('.design-item-card');
+  const cardCount = await cards.count();
+  if (cardCount < 1 || cardCount > 8) throw new Error(`${label} Workspace must show between one and eight items on a page. count=${cardCount}`);
+
+  const previewBox = await cards.first().locator('.card-thumb').boundingBox();
+  if (!previewBox || Math.abs(previewBox.width - previewBox.height) > 1) {
+    throw new Error(`${label} item previews must remain square. size=${previewBox?.width}x${previewBox?.height}`);
+  }
+  if (previewBox.width < 68 || previewBox.width > 74) throw new Error(`${label} item previews should remain near the 72px baseline.`);
+
+  if (id === 'road' || id === 'bridge') {
+    if (cardCount !== 8) throw new Error(`${label} prototype should fill one complete eight-item page.`);
+    const boxes = await Promise.all(Array.from({ length: 5 }, (_, index) => cards.nth(index).boundingBox()));
+    if (boxes.some((box) => !box)) throw new Error(`${label} first five cards must be measurable.`);
+    const [first, second, third, fourth, fifth] = boxes;
+    if (Math.max(first.y, second.y, third.y, fourth.y) - Math.min(first.y, second.y, third.y, fourth.y) > 2) {
+      throw new Error(`${label} first four cards must occupy the first row.`);
+    }
+    if (!(first.x < second.x && second.x < third.x && third.x < fourth.x)) throw new Error(`${label} first row must contain four columns.`);
+    if (fifth.y <= first.y + 20) throw new Error(`${label} fifth card must begin the second row.`);
+  }
 
   if (id === 'road' || id === 'bridge' || id === 'building' || id === 'city-wall') {
     await page.waitForTimeout(80);
