@@ -153,8 +153,8 @@ export function GameplayHUD({
             <button
               type="button"
               className={`gameplay-top-navigation__button ${contextPanel === 'weather' ? 'is-active' : ''}`}
-              aria-label="天气控制"
-              data-tooltip="天气控制"
+              aria-label="环境控制"
+              data-tooltip="环境控制"
               onClick={() => onContextPanelChange('weather')}
             >
               <CloudSun />
