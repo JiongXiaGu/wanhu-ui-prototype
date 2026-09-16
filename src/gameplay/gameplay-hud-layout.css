@@ -14,10 +14,37 @@
   --hud-radius-md:14px;
   --hud-radius-lg:18px;
 
+  /* Bottom Command Visual System.
+     Main Dock / Placement Action Bar / World Utility share one USS-friendly visual family.
+     Size and shadow tiers establish hierarchy; material/state tokens stay identical. */
+  --command-radius:14px;
+  --command-control-radius:10px;
+  --command-height-lg:76px;
+  --command-height-md:68px;
+  --command-height-sm:56px;
+  --command-control-md:46px;
+  --command-control-sm:42px;
+  --command-icon-size:20px;
+  --command-divider-height:24px;
+  --command-surface-top:rgba(28,37,32,.94);
+  --command-surface-bottom:rgba(21,29,25,.925);
+  --command-border:rgba(239,233,221,.10);
+  --command-divider:rgba(239,233,221,.060);
+  --command-hover:rgba(255,255,255,.030);
+  --command-active-top:rgba(201,165,95,.082);
+  --command-active-bottom:rgba(201,165,95,.016);
+  --command-icon:#858d85;
+  --command-icon-hover:#d1cec5;
+  --command-icon-active:#dec17a;
+  --command-shadow-lg:0 16px 38px rgba(5,8,7,.23),inset 0 1px 0 rgba(255,255,255,.014);
+  --command-shadow-md:0 14px 34px rgba(5,8,7,.21),inset 0 1px 0 rgba(255,255,255,.013);
+  --command-shadow-sm:0 12px 30px rgba(5,8,7,.18),inset 0 1px 0 rgba(255,255,255,.012);
+  --command-blur:10px;
+
   --hud-core-width:940px;
-  --hud-command-height:76px;
+  --hud-command-height:var(--command-height-lg);
   --hud-world-tools-width:458px;
-  --hud-world-tools-height:56px;
+  --hud-world-tools-height:var(--command-height-sm);
   --hud-context-weather-width:400px;
   --hud-context-camera-width:360px;
   --hud-left-context-max-height:720px;
