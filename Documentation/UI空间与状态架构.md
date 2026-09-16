@@ -37,7 +37,7 @@ else                      → Gameplay
 
 除了这些主 Space，还存在几个稳定的 HUD 槽位：
 
-- 左上：Navigation HUD；
+- 左上：Compass HUD；
 - 顶部中央：Gameplay Top Shell；
 - 右上：低存在感 System Menu，以及未来 Notification / Objective Stack；
 - 左下：Context Surface；
@@ -50,7 +50,7 @@ Gameplay 外围 HUD 默认遵守 `16px` Safe Edge；同级 Surface 常用间距�
 
 默认经营状态显示：
 
-- 左上 Navigation HUD；
+- 左上 Compass HUD；
 - Gameplay Top Shell 两层；
 - 右上独立 System Menu；
 - Main Dock；
@@ -117,20 +117,29 @@ Menu 不再属于 Control Tray。
 
 当前内容映射仍处于重构期：城市→City、经济→Finance、政策→Policy、军事→Military、宫殿→Governance；旧户籍、商贸、治理等内容后续进入对应一级域内部重新组织。
 
-## 5. 左上 Navigation HUD
+## 5. 左上 Compass HUD
 
-左上角保留独立 Navigation HUD 槽位，不把导航信息塞进 Top Shell。
+左上角只保留一个独立 Compass HUD，不再使用城市缩略图 / 小地图占据该槽位。
 
-当前 Web Prototype 使用低存在感城市缩略图 + 指南针 / 北向提示验证构图；正式游戏可替换为真正的城市小地图、简化道路水系图或其它导航 RenderTexture。
+原因：Gameplay 主要使用高机位俯视视角，建筑朝向、南北轴线和院落朝向比持续查看局部小地图更重要，尤其适用于中国古代宫殿、宅院、祠庙、牌坊与街巷布局。
 
-规则：
+当前视觉基准：
 
-- 位置遵守 `16px` 左 / 上 Safe Edge；
-- 默认存在感低于 Top Shell；
-- 不承载复杂管理参数；
-- Normal Gameplay、Workspace、Tool 中可保留；
-- Management / Pause 等重空间中隐藏；
-- 指南针可以整合进小地图，不需要与小地图重复占据两个独立大 Surface。
+- 约 `76 × 76px` 圆形罗盘式仪表；
+- `16px` 左 / 上 Safe Edge；
+- 四向使用中文 `东 / 南 / 西 / 北`；
+- `北` 使用克制暖金强调，`南` 次级强调，东西保持低对比；
+- 内部只保留方向环、刻度、南北轴、指针与轴心，不复制真实风水罗盘的复杂层级、八卦或装饰纹样；
+- Surface 透明度和阴影低于 Top Shell，避免抢占主画面；
+- Building Placement 等需要方向判断的 Tool 中增强南北轴和整体清晰度，但不改变位置与尺寸。
+
+交互 / 数据规则：
+
+- Compass 本身不拦截世界输入；
+- Normal Gameplay、Workspace、Tool 中保留；
+- Management / Pause 中隐藏；
+- 当前 Web Prototype 先验证静态视觉；正式游戏应将相机水平旋转角绑定到 Compass heading，使方向盘随镜头朝向正确变化；
+- 不在 Compass 内塞入管理、天气、地图图层等其它入口。
 
 ## 6. 右上 System / Notification Zone
 
@@ -158,7 +167,7 @@ Menu 不再属于 Control Tray。
 
 ## 7. Context Surface（左下上下文面板）
 
-旧 `RightEdgeFlyout` 已退出运行结构。Camera / Weather 统一进入左下 **Context Surface** 槽位。
+Camera / Weather 统一进入左下 **Context Surface** 槽位。
 
 当前 Consumer：
 
@@ -170,14 +179,19 @@ Menu 不再属于 Control Tray。
 - Selection Inspector：选中建筑 / 居民 / 道路 / 地块详情；
 - 其它场景级只读或轻参数面板。
 
+所有完整左下上下文面板使用统一 `gameplay-left-context-surface` 几何契约；具体业务组件只负责内容、宽度档位和内部视觉。
+
 ### 7.1 几何规则
 
 - 左侧距屏幕 `16px`；
-- 底部位于 Main Dock 上方约 `12px`；
+- **底部直接锚定屏幕 `16px` Safe Edge**，与 Building Placement 左侧 ToolOverlay 使用同一底部锚点；
+- 不再为了 Main Dock 人为向上抬升一整段空白；当前 Context Surface 最大宽度 `400px`，而 Main Dock 居中起点约在 `490px`，两者可以水平共存；
 - Camera 当前约 `360px` 宽；
 - Weather 当前约 `400px` 宽；
-- 高度由内容决定，但最大约 `50vh`；
-- 内容超过可用高度时由面板内部滚动，而不是继续侵入顶部 / 底部其它稳定槽位。
+- 高度由内容自然决定；
+- 最大高度为 1080p 逻辑画布约 **2/3**，当前 Token 为 `720px`；
+- 内容超过最大高度时仅 Body 内部滚动，Header 与外框锚点保持稳定；
+- 新增长面板优先复用同一 2/3 高度上限，不为单个 Consumer 自行发明新的屏幕高度规则。
 
 ### 7.2 互斥规则
 
@@ -213,7 +227,7 @@ Tool / Management / Pause 打开时 Context Surface 关闭。
 未来选中世界中的建筑 / 居民等对象时，推荐采用双层表达：
 
 - 世界 Anchor：只显示名称、状态图标、警告等极轻信息，用于指向“选中了谁”；
-- 左下 Selection Inspector：承载完整详情与动作。
+- 左下 Selection Inspector：承载完整详情与动作，并复用同一左下锚点 / 2/3 高度框架。
 
 Selection Inspector 是否在 Design Workspace 打开时压缩成 Compact Summary，待实现对象选择系统时再验证；不要现在用 Camera / Weather 的互斥规则机械限制未来 Selection Inspector。
 
@@ -254,7 +268,7 @@ Information Views 属于“观察城市”，不是“管理城市”。
 
 进入 Management 后隐藏：
 
-- Navigation HUD；
+- Compass HUD；
 - Main Dock；
 - World Utility Toolbar；
 - Operation Hints；
@@ -276,7 +290,7 @@ Workspace 用于浏览和选择具体内容，例如 Design Workspace。
 
 组成：
 
-- Navigation HUD；
+- Compass HUD；
 - Gameplay Top Shell 两层；
 - Workspace；
 - Main Dock；
@@ -343,7 +357,7 @@ Tool 用于具体编辑任务，例如 Building Placement。
 
 组成：
 
-- Navigation HUD；
+- Compass HUD；
 - Persistent Status Row；
 - ToolOverlay；
 - Tool Bottom Dock；
@@ -420,7 +434,7 @@ Pause 内包括：
 - Pause Save；
 - Pause Settings。
 
-世界仍作为压暗 / Blur 背景存在。Pause 中隐藏 Navigation HUD、Context Surface、Main Dock、World Utility Toolbar、Operation Hints 和 System Menu 自身。
+世界仍作为压暗 / Blur 背景存在。Pause 中隐藏 Compass HUD、Context Surface、Main Dock、World Utility Toolbar、Operation Hints 和 System Menu 自身。
 
 ## 17. Gameplay 状态模型
 
@@ -541,17 +555,20 @@ Settings 在 Main Menu 与 Pause 复用同一组件与视觉系统，分类：
 
 Gameplay Visual Review 至少覆盖：
 
-- Normal Gameplay：左上 Navigation HUD、双层 Top Shell、右上 System Menu、Main Dock、右下 World Utility；
+- Normal Gameplay：左上 Compass HUD、双层 Top Shell、右上 System Menu、Main Dock、右下 World Utility；
+- Compass HUD 固定在 16px 左上 Safe Edge，约 76px 圆形，并显示中文东南西北；
+- Building Placement 保留 Compass HUD，并增强建造态南北轴视觉；
 - Top Row 资源保持几何居中；
 - Control Tray 顺序固定为 `Camera / Weather │ 五个管理域 │ Information Views`；
 - System Menu 独立于 Control Tray，并位于 16px 右上 Safe Edge；
 - Camera / Weather 共用左下 Context Surface；
-- Context Surface 高度不超过约半屏，并位于 Main Dock 上方；
+- Context Surface 底部固定在 16px Safe Edge，最大高度约 720px / 2⁄3 屏幕；
+- Context Surface 与居中的 Main Dock 水平不重叠；
 - Camera / Weather 重复点击关闭，彼此切换；
 - Context Surface 与 Design Workspace 双向互斥；
-- Design Workspace 保留 Top Control Tray / Navigation HUD / Main Dock / World Utility；
+- Design Workspace 保留 Top Control Tray / Compass HUD / Main Dock / World Utility；
 - Information Views 从 Control Tray 最右侧打开并右对齐；
-- Management 保留 Top Shell，隐藏 Navigation HUD / Main Dock / Context Surface / World Utility；
-- Tool 只保留 Persistent Status Row，保留 Navigation HUD / System Menu / World Utility，并隐藏 Control Tray / Main Dock / Context Surface；
+- Management 保留 Top Shell，隐藏 Compass HUD / Main Dock / Context Surface / World Utility；
+- Tool 只保留 Persistent Status Row，保留 Compass HUD / System Menu / World Utility，并隐藏 Control Tray / Main Dock / Context Surface；
 - 全局 Grid 状态进入 Building Placement 后保持；
 - Esc 按 Context Surface → Palette → Tool → Workspace → Management → Map View → Pause 的局部到全局顺序退栈。
