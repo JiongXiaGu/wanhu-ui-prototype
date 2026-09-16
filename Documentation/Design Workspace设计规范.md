@@ -31,7 +31,7 @@ Design Workspace 是同一个 Workspace Surface，不为八类内容复制八套
 - Primary Rail：当前类别的主要子类型；
 - Context Filter：与 Primary Rail 正交的第二筛选维度；
 - Search：只过滤当前 Definition 的内容；
-- Content Grid：每组 `3 × 2 = 6` 项；
+- Content Grid：每组 `4 × 2 = 8` 项；
 - Pager：无数字的点 / 短线分页，可用滚轮整组切换。
 
 Web 原型由 `DesignWorkspace.tsx` 实现；类别、筛选和 Item 数据由 `design-workspace-model.ts` 提供。最终 Unity UI Toolkit 应保持相同的配置驱动结构，不为道路、桥梁、城墙等复制完整 UXML 树。
@@ -69,11 +69,13 @@ Primary Rail 当前为约 `146px` 的稳定槽位，必须支持 **最多 6 个�
 所有设计类别共用一种 Item Card 结构：
 
 ```text
-预览图 | 名称
-       | 一条关键属性
+1:1 预览图 | 名称
+           | 一条关键属性
 ```
 
-文字是主要识别信息，预览图用于快速确认。Card 不堆叠多层边框；Hover / Selected 使用弱 Tone 与细暖金状态。当前只显示一条常驻属性，更多说明进入 Tooltip 或后续详情区域。
+Content Grid 固定为 `4 列 × 2 行`，每页最多显示 8 项。1920×1080 基线下预览窗口约 `72 × 72px`，严格保持 `1:1`。道路、桥梁、城墙等长条对象仍使用方形预览窗口，但可以通过单独的缩略图构图、`background-position` 或正式资产渲染方式适配，不改变 Card 外部比例。
+
+文字是主要识别信息，预览图用于快速确认。Card 默认 Surface 很轻，不形成八块明显矩形；Hover / Selected 使用弱 Tone 与细暖金状态。当前只显示一条常驻属性，更多说明进入 Tooltip 或后续详情区域。
 
 建筑 Item 当前已经连接 Building Placement Tool。其它设计类别现阶段先完成 Workspace 浏览、筛选和显式选择；后续道路、桥梁、台基、城墙、围墙、装饰、树木分别连接自己的 Tool，不在 Workspace 内混入 Tool 参数。
 
