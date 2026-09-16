@@ -1,11 +1,8 @@
-/* Weather Art Pass v1.
-   Art assets stay separate from structure/interaction so the same hierarchy can
-   be reproduced in Unity UI Toolkit: background image for the time track and a
-   low-alpha texture layer for frosted glass. */
+/* Environment Control Art Pass.
+   Artwork is kept separate from structure and interaction so Unity UI Toolkit can
+   reproduce this as BackgroundImage + Slider/Thumb elements without custom drawing. */
 
-/* Frosted glass texture -------------------------------------------------
-   The source PNG already carries very low alpha, so it can sit directly over
-   the neutral mist surface without becoming a visible pattern. */
+/* Frosted glass texture ------------------------------------------------ */
 .gameplay-context-panel--weather{
   background-color:var(--weather-mist-surface);
   background-image:url('/assets/ui/materials/glass-noise-soft.png');
@@ -22,37 +19,41 @@
   background-size:192px 192px;
 }
 
-/* Time-of-day art track -------------------------------------------------
-   Reuse the existing visual-layer element as the art carrier. The hidden range
-   input still owns interaction and the programmatic thumb still shows the
-   exact value; the texture only replaces the old four flat colour blocks. */
-.weather-time-track{
+/* Time + season artwork -------------------------------------------------
+   Source textures are plain rectangular strips. Rounding belongs to the UI
+   container, not to the artwork, so Unity can use the same texture unchanged. */
+.weather-time-track,
+.weather-season-track{
   background:#3f4348;
 }
-.weather-time-track__segments{
+.weather-time-track__segments,
+.weather-season-track__segments{
   display:block;
-  background-image:url('/assets/ui/weather/weather-time-track.png');
   background-repeat:no-repeat;
   background-position:center;
   background-size:100% 100%;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -8px 14px rgba(0,0,0,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -8px 14px rgba(0,0,0,.08);
 }
-.weather-time-track__segments i{
-  display:none!important;
+.weather-time-track__segments{
+  background-image:url('/assets/ui/weather/weather-time-track.png');
+}
+.weather-season-track__segments{
+  background-image:url('/assets/ui/weather/weather-season-track.png');
 }
 
-/* Let the track art carry colour; keep the marker clean and legible. */
-.weather-time-track__thumb{
+/* Artwork carries the colour. Keep marker treatment shared and restrained. */
+.weather-time-track__thumb,
+.weather-season-track__thumb{
   background:#dfbd73;
   border-color:rgba(255,250,238,.98);
   box-shadow:0 2px 7px rgba(0,0,0,.34),0 0 0 3px rgba(223,189,115,.14);
 }
-.weather-time-track:focus-within .weather-time-track__thumb{
+.weather-time-track:focus-within .weather-time-track__thumb,
+.weather-season-track:focus-within .weather-season-track__thumb{
   box-shadow:0 2px 7px rgba(0,0,0,.34),0 0 0 4px rgba(223,189,115,.20);
 }
 
-/* Night uses the same texture asset. The outer Mist Glass token already shifts
-   slightly for dark scenes, so no second artwork is required. */
-.gameplay-screen[data-time-of-day="night"] .weather-time-track__segments{
+.gameplay-screen[data-time-of-day="night"] .weather-time-track__segments,
+.gameplay-screen[data-time-of-day="night"] .weather-season-track__segments{
   filter:none;
 }
