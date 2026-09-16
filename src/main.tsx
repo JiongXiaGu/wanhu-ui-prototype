@@ -34,6 +34,7 @@ import './ui/ui-visual-system.css';
 import './ui/ui-control-system.css';
 import './gameplay/weather-mist-glass.css';
 import './gameplay/weather-visual-controls.css';
+import './gameplay/weather-art-pass.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';

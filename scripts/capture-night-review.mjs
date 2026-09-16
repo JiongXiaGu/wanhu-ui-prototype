@@ -31,8 +31,6 @@ const screen = page.locator('.gameplay-screen');
 const panel = page.locator('.gameplay-context-panel--weather');
 const footer = panel.locator('.gameplay-context-panel__footer--weather-mode');
 
-// Weather uses a bottom-anchored Header / Body / Footer layout. Mode content may shrink upward,
-// but the fixed mode footer must not move on screen.
 const sceneFooterBox = await footer.boundingBox();
 if (!sceneFooterBox) throw new Error('Weather mode footer must be visible in scene simulation mode.');
 
@@ -52,16 +50,23 @@ await page.getByRole('button', { name: '场景模拟', exact: true }).click();
 await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-context-mode') === '场景模拟');
 await page.waitForSelector('[aria-label="日内时间"]');
 
-// Preset selection is already communicated by the selected card. Do not repeat a redundant
-// “current preset” sentence above the cards.
 if ((await page.locator('.weather-preset-section__heading > span').count()) !== 0) {
   throw new Error('Weather preset heading must not repeat the current preset in helper text.');
 }
 
-// Rich controls replace redundant slider rows while keeping ordinary accessible inputs underneath.
 await page.locator('.weather-wind-compass').waitFor();
 await page.locator('.weather-time-track').waitFor();
 await page.locator('.weather-season-track').waitFor();
+
+const timeTrackArt = await page.locator('.weather-time-track__segments').evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!timeTrackArt.includes('weather-time-track.png')) {
+  throw new Error(`Time-of-day control must use the art track texture. background=${timeTrackArt}`);
+}
+const glassTexture = await panel.evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!glassTexture.includes('glass-noise-soft.png')) {
+  throw new Error(`Weather glass must use the soft material texture. background=${glassTexture}`);
+}
+
 const windCompass = page.getByRole('slider', { name: '风向' });
 const windBefore = Number(await windCompass.getAttribute('aria-valuenow'));
 await windCompass.press('ArrowRight');
@@ -71,8 +76,6 @@ await windCompass.press('ArrowLeft');
 await page.screenshot({ path: `${outDir}/37-weather-visual-controls.png` });
 
 const dayTime = page.getByRole('slider', { name: '日内时间' });
-
-// Web prototype only: moving the scene-preview time into the night range hard-switches the background asset.
 await setRangeValue(dayTime, 22);
 await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.getAttribute('data-time-of-day') === 'night');
 
@@ -86,13 +89,11 @@ if (!clock.includes('22:00')) throw new Error(`Top HUD clock must follow the wea
 
 await page.screenshot({ path: `${outDir}/35-weather-night.png` });
 
-// Review the normal Gameplay HUD against the same night scene, without the Weather panel covering the left side.
 await page.getByRole('button', { name: '关闭面板', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
 await page.waitForTimeout(120);
 await page.screenshot({ path: `${outDir}/36-gameplay-night.png` });
 
-// Switching back to daytime must restore the original gameplay background with no transition layer/state machine.
 await page.getByRole('button', { name: '天气控制', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather');
 await setRangeValue(page.getByRole('slider', { name: '日内时间' }), 14.5);
