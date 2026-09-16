@@ -2,6 +2,17 @@
    The bar only owns mode selection, quick one-shot actions and commit actions.
    Detailed parameters remain in the left tool panel. */
 
+.gameplay-screen .building-placement-toolbar-cluster,
+.gameplay-screen .road-placement-toolbar-cluster{
+  left:50%;
+  transform:translateX(-50%);
+  z-index:24;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
 .placement-action-bar{
   min-height:70px;
   display:flex;
