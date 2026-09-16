@@ -61,6 +61,7 @@ jobs:
           node scripts/capture-visual-system-review.mjs
           node scripts/capture-night-review.mjs
           node scripts/capture-weather-preset-review.mjs
+          node scripts/capture-glass-study-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
