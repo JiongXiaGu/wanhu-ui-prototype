@@ -69,7 +69,6 @@
   height:18px;
   fill:rgba(229,199,127,.24);
   stroke-width:1.8;
-  filter:drop-shadow(0 2px 3px rgba(0,0,0,.24));
 }
 .weather-wind-compass__center{
   position:absolute;
@@ -214,8 +213,3 @@
   font-weight:500;
 }
 .weather-season-track__labels{padding:0 8px}
-
-/* In the night scene, the same solid segment palette remains readable. No
-   alternate assets or browser-only blend modes are required. */
-.gameplay-screen[data-time-of-day="night"] .weather-time-track__segments,
-.gameplay-screen[data-time-of-day="night"] .weather-season-track__segments{filter:brightness(1.08)}
