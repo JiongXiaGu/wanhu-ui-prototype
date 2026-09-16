@@ -1,6 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  Archway,
   Bridge,
   Building2,
   Castle,
@@ -111,7 +110,7 @@ const bridge: DesignWorkspaceDefinition = {
     { key: 'all', label: '全部桥梁', icon: Grid2X2 },
     { key: 'wood', label: '木桥', icon: Bridge },
     { key: 'stone', label: '石桥', icon: Bridge },
-    { key: 'arch', label: '拱桥', icon: Archway },
+    { key: 'arch', label: '拱桥', icon: Bridge },
     { key: 'covered', label: '廊桥', icon: PanelsTopLeft },
     { key: 'floating', label: '浮桥', icon: Waves },
   ],
