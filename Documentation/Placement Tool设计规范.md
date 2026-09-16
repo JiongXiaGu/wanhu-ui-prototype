@@ -27,13 +27,15 @@ Placement Tool 固定分成三类 UI：
 - `src/tools/placement/PlacementActionBar.tsx`
 - `src/tools/placement/placement-action-bar.css`
 
+Placement Action Bar 是 `Bottom Command Visual System` 的 **M 档**。完整材质、状态与 Unity UI Toolkit 映射规则见 `Documentation/Bottom Command Visual System设计规范.md`。
+
 稳定结构：
 
 ```text
 ModeGroup [│ Secondary ModeGroup] [│ QuickActionGroup] │ CommitGroup
 ```
 
-Action Bar 外壳约 70px 高，固定屏幕下方居中；宽度由当前 Tool 的按钮数量自然决定，不要求所有工具等宽。
+Action Bar 外壳约 `68px` 高，固定屏幕下方居中；宽度由当前 Tool 的按钮数量自然决定，不要求所有工具等宽。
 
 ### Mode Button
 
@@ -41,7 +43,7 @@ Action Bar 外壳约 70px 高，固定屏幕下方居中；宽度由当前 Tool 
 - 使用 Tooltip / ARIA Label 提供完整中文名称；
 - 属于 Exclusive Selector；
 - 同一 ModeGroup 中保持一个有效 Active；
-- Active 使用弱暖金 Tone + 细金状态线；
+- Active 使用弱暖金 Tone + 顶部细金状态线；
 - 切换 Mode 可以改变左侧 Parameter Panel 内容。
 
 ### Quick Action
@@ -49,7 +51,8 @@ Action Bar 外壳约 70px 高，固定屏幕下方居中；宽度由当前 Tool 
 - 图标按钮；
 - 属于 One-shot Action，不使用 `aria-pressed`，不留下持续 Selected；
 - 点击后执行一次，并保持玩家当前 Mode 不变；
-- 只放高频即时动作，不放 Slider / 数值参数。
+- 只放高频即时动作，不放 Slider / 数值参数；
+- 视觉上与 World Utility 的普通 One-shot Action 使用同一中性按钮语言。
 
 典型能力：旋转、镜像、反转方向、回退控制点等。
 
@@ -57,7 +60,7 @@ Action Bar 外壳约 70px 高，固定屏幕下方居中；宽度由当前 Tool 
 
 所有 Placement Tool 固定在 Action Bar 最右侧：
 
-- 完成：Primary，暖金强调；
+- 完成：Primary，使用暖金图标与轻暖金 Tone，不使用突兀粗金框；
 - 取消：Secondary，中性视觉。
 
 目前使用图标 + Tooltip，不常驻绘制文字标签。
@@ -150,6 +153,8 @@ Placement Tool 中仍保留右下 World Utility Toolbar：
 
 这些状态进入 Tool 时不重置，也不在具体 Building / Road Tool 内复制一份。
 
+World Utility 是 Bottom Command Visual System 的 **S 档**，与 Placement 使用同一 Surface / Hover / Active / Divider 语言，仅尺寸与阴影层级更低。
+
 ## 7. 输入与语义
 
 交互类型不能混用：
@@ -165,17 +170,19 @@ Action Bar 的 Quick Action 不得因为执行一次动作就改变当前 Mode�
 
 1080p 当前原型基线：
 
-- Action Bar 高约 70px；
-- Icon Button 约 50×50px；
-- Icon 约 21px；
-- Action Bar 圆角 14px；
-- 左侧 Parameter Panel 圆角 18px；
-- Active 使用收敛暖金；
+- Action Bar 高约 `68px`；
+- Icon Button 约 `46 × 46px`；
+- Icon 约 `20px`；
+- Action Bar 圆角 `14px`；
+- 左侧 Parameter Panel 圆角 `18px`；
+- 默认 Button 不绘制明显独立 Box；
+- Active 使用收敛暖金 Tone + 顶部 `2px` 状态线；
 - Quick Action 默认中性灰白；
-- 完成是唯一明显 Primary；
-- 取消不使用强烈危险红。
+- 完成是唯一明显 Primary，但仍保持 Toolbar 图标按钮语言；
+- 取消不使用强烈危险红；
+- 分隔线高约 `24px`，与 World Utility 共用视觉规则。
 
-Action Bar 是当前任务主控，其视觉权重高于 World Utility，但不应形成满屏大条或遮挡过多世界画面。
+Action Bar 是当前任务主控，其视觉权重高于 World Utility，但不通过另一套材质表达。Main Dock / Placement / World Utility 分别对应 Bottom Command Visual System 的 L / M / S 三档。
 
 ## 9. Review 要求
 
@@ -191,4 +198,5 @@ Placement Tool 相关改动至少检查：
 - 详细参数仍留在左侧面板；
 - Tool 中 Control Tray / Main Dock / Context Surface 不回归；
 - World Utility 与 Compass 继续保留；
+- Placement / World Utility 的 Surface、按钮 Hover、Active Tone、状态线方向与分隔节奏保持同一视觉家族；
 - 完成后返回对应 Design Workspace。
