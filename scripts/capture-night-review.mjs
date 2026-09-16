@@ -136,6 +136,20 @@ await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detache
 await page.waitForTimeout(120);
 await page.screenshot({ path: `${outDir}/36-gameplay-night.png` });
 
+const mainDock = page.locator('.command-bar');
+const categoryRow = mainDock.locator('.category-row');
+await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();
+const nightWorkspace = page.locator('.workspace--design[data-design-category="building"]');
+await nightWorkspace.waitFor();
+await page.waitForTimeout(160);
+const workspaceTexture = await nightWorkspace.evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!workspaceTexture.includes('glass-noise-soft.png')) {
+  throw new Error(`Night Workspace must retain the shared soft material texture. background=${workspaceTexture}`);
+}
+await page.screenshot({ path: `${outDir}/39-workspace-night.png` });
+await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();
+await nightWorkspace.waitFor({ state: 'detached' });
+
 await page.getByRole('button', { name: '环境控制', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather');
 await setRangeValue(page.getByRole('slider', { name: '日内时间' }), 14.5);
