@@ -3,19 +3,21 @@
    can be reproduced in Unity UI Toolkit without Canvas or browser-only layout. */
 
 .weather-preset-section__heading{justify-content:flex-start}
+.weather-preset-card{height:52px}
+.gameplay-context-panel--weather .parameter-row{min-height:34px}
 
 /* Wind ---------------------------------------------------------------- */
 .weather-wind-layout{
   display:grid;
-  grid-template-columns:112px minmax(0,1fr);
+  grid-template-columns:104px minmax(0,1fr);
   gap:12px;
   align-items:center;
-  padding:3px 0 1px;
+  padding:2px 0 0;
 }
 .weather-wind-compass{
   position:relative;
-  width:112px;
-  height:112px;
+  width:104px;
+  height:104px;
   border:1px solid rgba(255,255,255,.14);
   border-radius:50%;
   background:rgba(255,255,255,.045);
@@ -31,31 +33,31 @@
 }
 .weather-wind-compass__ring{
   position:absolute;
-  inset:15px;
+  inset:14px;
   border:1px solid rgba(255,255,255,.12);
   border-radius:50%;
-  box-shadow:inset 0 0 0 10px rgba(255,255,255,.012);
+  box-shadow:inset 0 0 0 9px rgba(255,255,255,.012);
 }
 .weather-wind-compass__cardinal{
   position:absolute;
   color:#d7d4cd;
-  font-size:9px;
+  font-size:8.5px;
   font-weight:600;
   line-height:1;
   z-index:2;
 }
-.weather-wind-compass__cardinal.is-north{top:7px;left:50%;transform:translateX(-50%)}
-.weather-wind-compass__cardinal.is-east{right:7px;top:50%;transform:translateY(-50%)}
-.weather-wind-compass__cardinal.is-south{bottom:7px;left:50%;transform:translateX(-50%)}
-.weather-wind-compass__cardinal.is-west{left:7px;top:50%;transform:translateY(-50%)}
+.weather-wind-compass__cardinal.is-north{top:6px;left:50%;transform:translateX(-50%)}
+.weather-wind-compass__cardinal.is-east{right:6px;top:50%;transform:translateY(-50%)}
+.weather-wind-compass__cardinal.is-south{bottom:6px;left:50%;transform:translateX(-50%)}
+.weather-wind-compass__cardinal.is-west{left:6px;top:50%;transform:translateY(-50%)}
 .weather-wind-compass__needle{
   position:absolute;
   left:50%;
   top:50%;
-  width:18px;
-  height:62px;
-  margin-left:-9px;
-  margin-top:-31px;
+  width:17px;
+  height:58px;
+  margin-left:-8.5px;
+  margin-top:-29px;
   display:flex;
   align-items:flex-start;
   justify-content:center;
@@ -65,8 +67,8 @@
   pointer-events:none;
 }
 .weather-wind-compass__needle svg{
-  width:18px;
-  height:18px;
+  width:17px;
+  height:17px;
   fill:rgba(229,199,127,.24);
   stroke-width:1.8;
 }
@@ -85,27 +87,27 @@
 .weather-wind-compass>strong{
   position:absolute;
   left:50%;
-  bottom:22px;
+  bottom:20px;
   transform:translateX(-50%);
   color:#f0e7d3;
-  font-size:12px;
+  font-size:11.5px;
   font-weight:650;
   z-index:2;
 }
 .weather-wind-compass>small{
   position:absolute;
   left:50%;
-  bottom:10px;
+  bottom:8px;
   transform:translateX(-50%);
   color:#c6c3bc;
-  font-size:8px;
+  font-size:7.8px;
   font-weight:500;
   white-space:nowrap;
   z-index:2;
 }
 .weather-wind-sliders{min-width:0}
 .weather-wind-sliders .parameter-row{
-  min-height:42px;
+  min-height:38px;
   grid-template-columns:40px 24px minmax(58px,1fr) 24px 36px;
   gap:4px;
 }
@@ -122,15 +124,15 @@
 }
 
 /* Time + season -------------------------------------------------------- */
-.weather-time-season-section{padding-bottom:10px!important}
-.weather-visual-row{margin-top:7px}
-.weather-visual-row+.weather-visual-row{margin-top:13px}
+.weather-time-season-section{padding-bottom:8px!important}
+.weather-visual-row{margin-top:5px}
+.weather-visual-row+.weather-visual-row{margin-top:9px}
 .weather-visual-row__heading{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  min-height:20px;
-  margin-bottom:5px;
+  min-height:18px;
+  margin-bottom:4px;
   color:var(--weather-text);
   font-size:10.5px;
   font-weight:520;
@@ -143,7 +145,7 @@
 .weather-time-track,
 .weather-season-track{
   position:relative;
-  height:24px;
+  height:23px;
   border:1px solid rgba(255,255,255,.14);
   border-radius:9px;
   overflow:visible;
@@ -171,6 +173,17 @@
 .weather-season-track__segments .is-winter{background:#768087}
 .weather-time-track__segments i+ i,
 .weather-season-track__segments i+ i{border-left:1px solid rgba(255,255,255,.10)}
+.weather-season-track__segments i{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.weather-season-track__segments i span{
+  color:rgba(248,245,238,.72);
+  font-size:8.5px;
+  font-weight:600;
+  text-shadow:0 1px 2px rgba(0,0,0,.18);
+}
 .weather-time-track__thumb,
 .weather-season-track__thumb{
   position:absolute;
@@ -202,14 +215,12 @@
   border-color:rgba(212,181,116,.50);
   box-shadow:0 0 0 3px rgba(212,181,116,.09),inset 0 1px 0 rgba(255,255,255,.06);
 }
-.weather-time-track__ticks,
-.weather-season-track__labels{
+.weather-time-track__ticks{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-top:4px;
+  margin-top:3px;
   color:#bbb9b3;
-  font-size:7.8px;
+  font-size:8px;
   font-weight:500;
 }
-.weather-season-track__labels{padding:0 8px}
