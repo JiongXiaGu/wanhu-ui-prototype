@@ -182,18 +182,19 @@ export function AssetInspectorPopover({
   const portalHost = gameplayHost ?? (typeof document !== 'undefined' ? document.body : null);
 
   useLayoutEffect(() => {
-    if (!open || !anchor || !portalHost || !inspectorRef.current) {
+    const inspector = inspectorRef.current;
+    const activeAnchor = anchor;
+    const activePortalHost = portalHost;
+    if (!open || !activeAnchor || !activePortalHost || !inspector) {
       setPosition((current) => current.ready ? { ...current, ready: false } : current);
       return;
     }
 
-    const inspector = inspectorRef.current;
-
     function reposition() {
-      const anchorRect = anchor.getBoundingClientRect();
+      const anchorRect = activeAnchor.getBoundingClientRect();
       const width = inspector.offsetWidth;
       const height = inspector.offsetHeight;
-      const usesGameplayHost = portalHost !== document.body;
+      const usesGameplayHost = activePortalHost !== document.body;
 
       let boundsWidth = window.innerWidth;
       let boundsHeight = window.innerHeight;
@@ -206,11 +207,11 @@ export function AssetInspectorPopover({
       let mode: InspectorPosition['mode'] = 'fixed';
 
       if (usesGameplayHost) {
-        const hostRect = portalHost.getBoundingClientRect();
-        const scaleX = hostRect.width / Math.max(1, portalHost.clientWidth);
-        const scaleY = hostRect.height / Math.max(1, portalHost.clientHeight);
-        boundsWidth = portalHost.clientWidth;
-        boundsHeight = portalHost.clientHeight;
+        const hostRect = activePortalHost.getBoundingClientRect();
+        const scaleX = hostRect.width / Math.max(1, activePortalHost.clientWidth);
+        const scaleY = hostRect.height / Math.max(1, activePortalHost.clientHeight);
+        boundsWidth = activePortalHost.clientWidth;
+        boundsHeight = activePortalHost.clientHeight;
         anchorLeft = (anchorRect.left - hostRect.left) / scaleX;
         anchorTop = (anchorRect.top - hostRect.top) / scaleY;
         anchorRight = (anchorRect.right - hostRect.left) / scaleX;
