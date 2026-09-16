@@ -70,7 +70,7 @@ export function WindCompass({ value, onChange }: WindCompassProps) {
       <span className="weather-wind-compass__cardinal is-south">南</span>
       <span className="weather-wind-compass__cardinal is-west">西</span>
       <span className="weather-wind-compass__ring" />
-      <span className="weather-wind-compass__needle" style={{ transform: `translate(-50%, -88%) rotate(${normalized}deg)` }}>
+      <span className="weather-wind-compass__needle" style={{ transform: `rotate(${normalized}deg)` }}>
         <Navigation2 />
       </span>
       <span className="weather-wind-compass__center" />
