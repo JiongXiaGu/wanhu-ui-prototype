@@ -1,0 +1,102 @@
+.asset-inspector-popover{
+  z-index:56;
+  box-sizing:border-box;
+  width:max-content;
+  min-width:240px;
+  max-width:380px;
+  min-height:90px;
+  max-height:320px;
+  padding:14px 16px 15px;
+  overflow:hidden;
+  pointer-events:none;
+  border:1px solid rgba(239,233,221,.105);
+  border-radius:14px;
+  background:
+    radial-gradient(ellipse at 84% 8%,rgba(201,165,95,.045),transparent 34%),
+    linear-gradient(180deg,rgba(28,37,33,.975),rgba(20,28,24,.965));
+  box-shadow:0 18px 42px rgba(4,8,6,.28),inset 0 1px 0 rgba(255,255,255,.018);
+  backdrop-filter:blur(10px);
+  color:#e5dfd4;
+  transform-origin:50% 50%;
+}
+
+.asset-inspector-popover[data-ready='true']{
+  animation:asset-inspector-enter .13s cubic-bezier(.2,.72,.24,1) both;
+}
+
+.asset-inspector__header{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:0;
+}
+
+.asset-inspector__title{
+  margin:0;
+  color:#eee8dc;
+  font-size:15px;
+  font-weight:650;
+  line-height:1.3;
+  letter-spacing:.008em;
+}
+
+.asset-inspector__meta{
+  color:#9aa198;
+  font-size:10.5px;
+  line-height:1.35;
+}
+
+.asset-inspector__divider{
+  height:1px;
+  margin:11px 0;
+  background:linear-gradient(90deg,rgba(239,233,221,.085),rgba(239,233,221,.025) 78%,transparent);
+}
+
+.asset-inspector__facts{
+  display:grid;
+  grid-template-columns:max-content minmax(84px,1fr);
+  gap:7px 18px;
+  margin:0;
+}
+
+.asset-inspector__facts dt,
+.asset-inspector__facts dd{margin:0}
+.asset-inspector__facts dt{
+  color:#7f887f;
+  font-size:10px;
+  line-height:1.35;
+  white-space:nowrap;
+}
+.asset-inspector__facts dd{
+  color:#d7d2c7;
+  font-size:11.5px;
+  font-weight:550;
+  line-height:1.35;
+  text-align:right;
+}
+.asset-inspector__facts dd.is-accent{color:#d6b86f}
+
+.asset-inspector__description{
+  max-width:340px;
+  margin:0;
+  color:#a8aea5;
+  font-size:10.5px;
+  line-height:1.55;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+
+.asset-inspector__media{
+  display:block;
+  width:100%;
+  max-height:140px;
+  margin:0 0 11px;
+  overflow:hidden;
+  border-radius:10px;
+  object-fit:cover;
+}
+
+@keyframes asset-inspector-enter{
+  from{opacity:0;transform:translateY(3px)}
+  to{opacity:1;transform:translateY(0)}
+}
