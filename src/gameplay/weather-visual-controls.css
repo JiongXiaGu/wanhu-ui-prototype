@@ -1,0 +1,221 @@
+/* Rich Weather controls. These are intentionally composed from ordinary
+   VisualElement-like boxes, borders, text and transforms so the same hierarchy
+   can be reproduced in Unity UI Toolkit without Canvas or browser-only layout. */
+
+.weather-preset-section__heading{justify-content:flex-start}
+
+/* Wind ---------------------------------------------------------------- */
+.weather-wind-layout{
+  display:grid;
+  grid-template-columns:112px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  padding:3px 0 1px;
+}
+.weather-wind-compass{
+  position:relative;
+  width:112px;
+  height:112px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:50%;
+  background:rgba(255,255,255,.045);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),inset 0 -12px 28px rgba(0,0,0,.08);
+  cursor:crosshair;
+  outline:none;
+  user-select:none;
+  touch-action:none;
+}
+.weather-wind-compass:focus-visible{
+  border-color:rgba(212,181,116,.54);
+  box-shadow:0 0 0 3px rgba(212,181,116,.10),inset 0 1px 0 rgba(255,255,255,.07);
+}
+.weather-wind-compass__ring{
+  position:absolute;
+  inset:15px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:50%;
+  box-shadow:inset 0 0 0 10px rgba(255,255,255,.012);
+}
+.weather-wind-compass__cardinal{
+  position:absolute;
+  color:#d7d4cd;
+  font-size:9px;
+  font-weight:600;
+  line-height:1;
+  z-index:2;
+}
+.weather-wind-compass__cardinal.is-north{top:7px;left:50%;transform:translateX(-50%)}
+.weather-wind-compass__cardinal.is-east{right:7px;top:50%;transform:translateY(-50%)}
+.weather-wind-compass__cardinal.is-south{bottom:7px;left:50%;transform:translateX(-50%)}
+.weather-wind-compass__cardinal.is-west{left:7px;top:50%;transform:translateY(-50%)}
+.weather-wind-compass__needle{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:18px;
+  height:62px;
+  margin-left:-9px;
+  margin-top:-31px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  transform-origin:50% 50%;
+  color:#e5c77f;
+  z-index:3;
+  pointer-events:none;
+}
+.weather-wind-compass__needle svg{
+  width:18px;
+  height:18px;
+  fill:rgba(229,199,127,.24);
+  stroke-width:1.8;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.24));
+}
+.weather-wind-compass__center{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:6px;
+  height:6px;
+  border:2px solid rgba(255,255,255,.82);
+  border-radius:50%;
+  background:#c9aa68;
+  transform:translate(-50%,-50%);
+  z-index:4;
+}
+.weather-wind-compass>strong{
+  position:absolute;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  color:#f0e7d3;
+  font-size:12px;
+  font-weight:650;
+  z-index:2;
+}
+.weather-wind-compass>small{
+  position:absolute;
+  left:50%;
+  bottom:10px;
+  transform:translateX(-50%);
+  color:#c6c3bc;
+  font-size:8px;
+  font-weight:500;
+  white-space:nowrap;
+  z-index:2;
+}
+.weather-wind-sliders{min-width:0}
+.weather-wind-sliders .parameter-row{
+  min-height:42px;
+  grid-template-columns:40px 24px minmax(58px,1fr) 24px 36px;
+  gap:4px;
+}
+.weather-wind-sliders .parameter-row>span{font-size:10.5px}
+.game-canvas .gameplay-context-panel--weather .weather-wind-sliders .ui-parameter-row>.ui-stepper-button{
+  width:24px;
+  height:24px;
+  border-radius:7px;
+}
+.game-canvas .gameplay-context-panel--weather .weather-wind-sliders .ui-parameter-row>.ui-value-field{
+  width:36px;
+  height:24px;
+  font-size:10px;
+}
+
+/* Time + season -------------------------------------------------------- */
+.weather-time-season-section{padding-bottom:10px!important}
+.weather-visual-row{margin-top:7px}
+.weather-visual-row+.weather-visual-row{margin-top:13px}
+.weather-visual-row__heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:20px;
+  margin-bottom:5px;
+  color:var(--weather-text);
+  font-size:10.5px;
+  font-weight:520;
+}
+.weather-visual-row__heading b{
+  color:var(--weather-paper);
+  font-size:10.5px;
+  font-weight:600;
+}
+.weather-time-track,
+.weather-season-track{
+  position:relative;
+  height:24px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:9px;
+  overflow:visible;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.weather-time-track__segments,
+.weather-season-track__segments{
+  position:absolute;
+  inset:0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  overflow:hidden;
+  border-radius:8px;
+  pointer-events:none;
+}
+.weather-time-track__segments i,
+.weather-season-track__segments i{display:block}
+.weather-time-track__segments .is-night{background:#555b67}
+.weather-time-track__segments .is-dawn{background:#80786c}
+.weather-time-track__segments .is-day{background:#9a907b}
+.weather-time-track__segments .is-dusk{background:#75696a}
+.weather-season-track__segments .is-spring{background:#877b7b}
+.weather-season-track__segments .is-summer{background:#74806e}
+.weather-season-track__segments .is-autumn{background:#8b795d}
+.weather-season-track__segments .is-winter{background:#768087}
+.weather-time-track__segments i+ i,
+.weather-season-track__segments i+ i{border-left:1px solid rgba(255,255,255,.10)}
+.weather-time-track__thumb,
+.weather-season-track__thumb{
+  position:absolute;
+  left:var(--weather-track-position);
+  top:50%;
+  width:14px;
+  height:14px;
+  border:2px solid rgba(255,255,255,.92);
+  border-radius:50%;
+  background:#d4b574;
+  box-shadow:0 2px 6px rgba(0,0,0,.28),0 0 0 3px rgba(212,181,116,.11);
+  transform:translate(-50%,-50%);
+  z-index:2;
+  pointer-events:none;
+}
+.weather-time-track input,
+.weather-season-track input{
+  position:absolute;
+  inset:-8px 0;
+  width:100%;
+  height:calc(100% + 16px);
+  margin:0;
+  opacity:0;
+  cursor:ew-resize;
+  z-index:3;
+}
+.weather-time-track:focus-within,
+.weather-season-track:focus-within{
+  border-color:rgba(212,181,116,.50);
+  box-shadow:0 0 0 3px rgba(212,181,116,.09),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.weather-time-track__ticks,
+.weather-season-track__labels{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:4px;
+  color:#bbb9b3;
+  font-size:7.8px;
+  font-weight:500;
+}
+.weather-season-track__labels{padding:0 8px}
+
+/* In the night scene, the same solid segment palette remains readable. No
+   alternate assets or browser-only blend modes are required. */
+.gameplay-screen[data-time-of-day="night"] .weather-time-track__segments,
+.gameplay-screen[data-time-of-day="night"] .weather-season-track__segments{filter:brightness(1.08)}
