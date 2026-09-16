@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import type { GameplayUiState } from '../app/ui-state';
 import { gameplayUiReducer, isDesignDockCategory, selectGameplaySpace } from '../app/ui-state';
 import { DesignWorkspace } from '../workspace/DesignWorkspace';
@@ -17,12 +17,14 @@ import { PauseLayer } from './PauseLayer';
 
 interface GameplayScreenProps {
   background: string;
+  nightBackground: string;
   initialState: GameplayUiState;
   onMainMenu: () => void;
 }
 
-export function GameplayScreen({ background, initialState, onMainMenu }: GameplayScreenProps) {
+export function GameplayScreen({ background, nightBackground, initialState, onMainMenu }: GameplayScreenProps) {
   const [state, dispatch] = useReducer(gameplayUiReducer, initialState);
+  const [dayTime, setDayTime] = useState(14.5);
   const space = selectGameplaySpace(state);
   const buildingToolOpen = state.tool === 'building-placement';
   const roadToolOpen = state.tool === 'road-placement';
@@ -31,6 +33,8 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
   const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
+  const isNight = dayTime >= 18 || dayTime < 6;
+  const sceneBackground = isNight ? nightBackground : background;
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
     ? DESIGN_WORKSPACES[state.dockCategory]
     : null;
@@ -80,7 +84,11 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   }
 
   return (
-    <section className={`screen gameplay-screen gameplay-screen--${space}`} style={{ backgroundImage: `url(${background})` }}>
+    <section
+      className={`screen gameplay-screen gameplay-screen--${space} ${isNight ? 'is-night' : 'is-day'}`}
+      data-time-of-day={isNight ? 'night' : 'day'}
+      style={{ backgroundImage: `url(${sceneBackground})` }}
+    >
       <div className="game-vignette" />
       <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
 
@@ -89,6 +97,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
 
       <GameplayHUD
         contextPanel={state.contextPanel}
+        dayTime={dayTime}
         management={state.management}
         mapView={state.mapView}
         mapPanelOpen={state.mapPanelOpen}
@@ -138,6 +147,8 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
       {showContextPanel && state.contextPanel !== 'none' && (
         <GameplayContextPanel
           panel={state.contextPanel}
+          dayTime={dayTime}
+          onDayTimeChange={setDayTime}
           onClose={() => dispatch({ type: 'SET_CONTEXT_PANEL', panel: 'none' })}
         />
       )}

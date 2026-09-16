@@ -45,6 +45,7 @@ interface SpeedControlItem {
 
 interface GameplayHUDProps {
   contextPanel: ContextPanel;
+  dayTime: number;
   management: ManagementView;
   mapView: MapView;
   mapPanelOpen: boolean;
@@ -82,8 +83,16 @@ const SPEED_CONTROLS: SpeedControlItem[] = [
   { value: 4, label: '高速时间', icon: FastForward },
 ];
 
+function formatTime(value: number) {
+  const totalMinutes = Math.round(value * 60) % (24 * 60);
+  const hours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
+  const minutes = (totalMinutes % 60).toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
 export function GameplayHUD({
   contextPanel,
+  dayTime,
   management,
   mapView,
   mapPanelOpen,
@@ -103,7 +112,7 @@ export function GameplayHUD({
             <CloudSun />
             <b>晴</b>
           </span>
-          <span className="gameplay-top-status__clock">秋 · 14:30</span>
+          <span className="gameplay-top-status__clock">秋 · {formatTime(dayTime)}</span>
         </div>
 
         <div className="resource-strip gameplay-top-status__resources" aria-label="城市资源">

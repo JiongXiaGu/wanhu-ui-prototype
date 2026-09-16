@@ -13,6 +13,7 @@ import { DialogHost, NotificationHost, useDialogSystem } from './ui/dialog/Dialo
 
 const MAIN_BG = '/assets/wanhu-main-menu.png';
 const GAME_BG = '/assets/wanhu-gameplay-city.png';
+const GAME_BG_NIGHT = '/assets/wanhu-gameplay-city-night.png';
 
 export default function App() {
   const reviewBootstrap = useMemo(() => resolveReviewBootstrap(window.location.search), []);
@@ -22,8 +23,10 @@ export default function App() {
 
   useEffect(() => {
     const updateScale = () => setSimScale(Math.min(window.innerWidth / 1920, window.innerHeight / 1080));
-    const preload = new Image();
-    preload.src = GAME_BG;
+    for (const src of [GAME_BG, GAME_BG_NIGHT]) {
+      const image = new Image();
+      image.src = src;
+    }
     updateScale();
     window.addEventListener('resize', updateScale);
     return () => window.removeEventListener('resize', updateScale);
@@ -85,7 +88,14 @@ export default function App() {
           />
         )}
 
-        {screen === 'gameplay' && <GameplayScreen background={GAME_BG} initialState={reviewBootstrap.gameplay} onMainMenu={() => setScreen('menu')} />}
+        {screen === 'gameplay' && (
+          <GameplayScreen
+            background={GAME_BG}
+            nightBackground={GAME_BG_NIGHT}
+            initialState={reviewBootstrap.gameplay}
+            onMainMenu={() => setScreen('menu')}
+          />
+        )}
 
         <NotificationHost />
         <DialogHost />

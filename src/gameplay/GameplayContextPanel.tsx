@@ -5,11 +5,13 @@ import { RuntimeParameterRow, SegmentedControl } from '../ui/Controls';
 
 interface Props {
   panel: Exclude<ContextPanel, 'none'>;
+  dayTime: number;
+  onDayTimeChange: (value: number) => void;
   onClose: () => void;
 }
 
 const CAMERA_DEFAULTS = { fov: 60, height: 42, pitch: 38 };
-const WEATHER_DEFAULTS = { cloud: 42, snow: 0, windDirection: 135, windStrength: 1.2, gust: 0.35, dayTime: 14.5, season: 0.48 };
+const WEATHER_DEFAULTS = { cloud: 42, snow: 0, windDirection: 135, windStrength: 1.2, gust: 0.35, season: 0.48 };
 
 function formatTime(value: number) {
   const totalMinutes = Math.round(value * 60) % (24 * 60);
@@ -18,7 +20,7 @@ function formatTime(value: number) {
   return `${hours}:${minutes}`;
 }
 
-export function GameplayContextPanel({ panel, onClose }: Props) {
+export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose }: Props) {
   const [cameraMode, setCameraMode] = useState('经营');
   const [weatherMode, setWeatherMode] = useState('场景模拟');
   const [camera, setCamera] = useState(CAMERA_DEFAULTS);
@@ -80,7 +82,7 @@ export function GameplayContextPanel({ panel, onClose }: Props) {
 
           <section className="gameplay-context-panel__section">
             <div className="gameplay-context-panel__section-title"><b>时间与季节</b></div>
-            <RuntimeParameterRow label="日内时间" value={weather.dayTime} min={0} max={24} step={0.25} disabled={weatherLocked} format={formatTime} onChange={(value) => setWeather((current) => ({ ...current, dayTime: value }))} />
+            <RuntimeParameterRow label="日内时间" value={dayTime} min={0} max={24} step={0.25} disabled={weatherLocked} format={formatTime} onChange={onDayTimeChange} />
             <RuntimeParameterRow label="季节进度" value={weather.season} min={0} max={1} step={0.01} disabled={weatherLocked} format={(value) => value.toFixed(2)} onChange={(value) => setWeather((current) => ({ ...current, season: value }))} />
           </section>
         </div>
