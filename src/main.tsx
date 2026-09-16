@@ -19,7 +19,6 @@ import './settings/settings-bindings.css';
 import './settings/settings-safe-confirmation.css';
 import './fullscreen-actions.css';
 import './tools/building-placement/building-placement.css';
-import './gameplay/gameplay-context-unified.css';
 import './gameplay/city-management.css';
 import './gameplay/gameplay-top-shell.css';
 import './gameplay/operation-hints-refined.css';
