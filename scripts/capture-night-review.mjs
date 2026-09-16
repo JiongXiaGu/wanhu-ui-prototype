@@ -30,12 +30,19 @@ await openEnvironment();
 const screen = page.locator('.gameplay-screen');
 const panel = page.locator('.gameplay-context-panel--weather');
 const footer = panel.locator('.gameplay-context-panel__footer--weather-mode');
+const restoreCurrent = page.getByRole('button', { name: '恢复当前游戏环境', exact: true });
 
 if ((await panel.getAttribute('aria-label')) !== '环境面板') {
   throw new Error(`Context panel should present itself as the environment panel. aria=${await panel.getAttribute('aria-label')}`);
 }
 if ((await panel.locator('.gameplay-context-panel__title').textContent())?.trim() !== '环境') {
   throw new Error('Environment panel title must read “环境”.');
+}
+if (!(await restoreCurrent.isDisabled())) {
+  throw new Error('Restore-current action should start disabled when preview matches the runtime environment.');
+}
+if ((await panel.getAttribute('data-environment-modified')) !== 'false') {
+  throw new Error('Environment panel should start unmodified.');
 }
 
 const sceneFooterBox = await footer.boundingBox();
@@ -50,6 +57,9 @@ const followFooterBox = await footer.boundingBox();
 if (!followFooterBox) throw new Error('Environment mode footer must stay visible in follow-world mode.');
 if (Math.abs(sceneFooterBox.y - followFooterBox.y) > 1 || Math.abs(sceneFooterBox.x - followFooterBox.x) > 1) {
   throw new Error(`Environment footer must stay fixed while mode content changes. scene=${JSON.stringify(sceneFooterBox)} follow=${JSON.stringify(followFooterBox)}`);
+}
+if (!(await restoreCurrent.isDisabled())) {
+  throw new Error('Restore-current action must stay disabled while following the world.');
 }
 await page.screenshot({ path: `${outDir}/34-weather-follow-world.png` });
 
@@ -87,8 +97,13 @@ if (Number(await windDirection.inputValue()) !== 135) {
 await page.screenshot({ path: `${outDir}/37-weather-visual-controls.png` });
 
 const dayTime = page.getByRole('slider', { name: '日内时间' });
+const runtimeDayTime = Number(await dayTime.inputValue());
 await setRangeValue(dayTime, 22);
 await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.getAttribute('data-time-of-day') === 'night');
+await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-environment-modified') === 'true');
+if (await restoreCurrent.isDisabled()) {
+  throw new Error('Restore-current action must enable after the player changes an environment parameter.');
+}
 
 const nightBackground = await screen.evaluate((node) => getComputedStyle(node).backgroundImage);
 if (!nightBackground.includes('wanhu-gameplay-city-night.png')) {
@@ -100,6 +115,22 @@ if (!clock.includes('22:00')) throw new Error(`Top HUD clock must follow the env
 
 await page.screenshot({ path: `${outDir}/35-weather-night.png` });
 
+await restoreCurrent.click();
+await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-environment-modified') === 'false');
+if (Number(await dayTime.inputValue()) !== runtimeDayTime) {
+  throw new Error(`Restore-current must restore the runtime time-of-day. expected=${runtimeDayTime} actual=${await dayTime.inputValue()}`);
+}
+if (!(await restoreCurrent.isDisabled())) {
+  throw new Error('Restore-current action must disable again after the preview matches runtime state.');
+}
+const restoredBackground = await screen.evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!restoredBackground.includes('wanhu-gameplay-city.png') || restoredBackground.includes('night')) {
+  throw new Error(`Restore-current must restore the runtime daytime scene. background=${restoredBackground}`);
+}
+await page.screenshot({ path: `${outDir}/38-environment-restored.png` });
+
+await setRangeValue(dayTime, 22);
+await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.getAttribute('data-time-of-day') === 'night');
 await page.getByRole('button', { name: '关闭面板', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
 await page.waitForTimeout(120);
