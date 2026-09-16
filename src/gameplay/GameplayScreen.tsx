@@ -104,7 +104,12 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
       )}
 
       {(space === 'gameplay' || space === 'workspace') && (
-        <CommandBar activeCategory={state.activeCategory} onCategoryChange={(category) => dispatch({ type: 'SET_CATEGORY', category })} />
+        <CommandBar
+          mode={state.dockMode}
+          activeCategory={state.dockCategory}
+          onModeChange={(mode) => dispatch({ type: 'SET_DOCK_MODE', mode })}
+          onCategoryChange={(category) => dispatch({ type: 'SET_DOCK_CATEGORY', category })}
+        />
       )}
 
       {space === 'workspace' && state.workspace === 'building' && (
