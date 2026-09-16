@@ -52,6 +52,24 @@ await page.getByRole('button', { name: '场景模拟', exact: true }).click();
 await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-context-mode') === '场景模拟');
 await page.waitForSelector('[aria-label="日内时间"]');
 
+// Preset selection is already communicated by the selected card. Do not repeat a redundant
+// “current preset” sentence above the cards.
+if ((await page.locator('.weather-preset-section__heading > span').count()) !== 0) {
+  throw new Error('Weather preset heading must not repeat the current preset in helper text.');
+}
+
+// Rich controls replace redundant slider rows while keeping ordinary accessible inputs underneath.
+await page.locator('.weather-wind-compass').waitFor();
+await page.locator('.weather-time-track').waitFor();
+await page.locator('.weather-season-track').waitFor();
+const windCompass = page.getByRole('slider', { name: '风向' });
+const windBefore = Number(await windCompass.getAttribute('aria-valuenow'));
+await windCompass.press('ArrowRight');
+const windAfter = Number(await windCompass.getAttribute('aria-valuenow'));
+if (windAfter !== (windBefore + 5) % 360) throw new Error(`Wind compass keyboard adjustment failed. before=${windBefore} after=${windAfter}`);
+await windCompass.press('ArrowLeft');
+await page.screenshot({ path: `${outDir}/37-weather-visual-controls.png` });
+
 const dayTime = page.getByRole('slider', { name: '日内时间' });
 
 // Web prototype only: moving the scene-preview time into the night range hard-switches the background asset.
