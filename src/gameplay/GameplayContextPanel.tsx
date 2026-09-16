@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Camera, Cloud, CloudFog, CloudRain, CloudSnow, CloudSun, RotateCcw, Sun, X } from 'lucide-react';
 import type { ContextPanel } from '../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../ui/Controls';
+import { SeasonTrack, TimeOfDayTrack, WindCompass } from './weather-visual-controls';
 
 interface Props {
   panel: Exclude<ContextPanel, 'none'>;
@@ -96,7 +97,6 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
   const isCamera = panel === 'camera';
   const weatherLocked = weatherMode === '跟随世界';
   const HeadingIcon = isCamera ? Camera : CloudSun;
-  const activeWeatherPreset = WEATHER_PRESETS.find((preset) => preset.id === weatherPreset)!;
 
   const updateWeather = (key: keyof typeof WEATHER_DEFAULTS, value: number) => {
     setWeather((current) => ({ ...current, [key]: value }));
@@ -166,10 +166,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
             ) : (
               <>
                 <section className="gameplay-context-panel__section weather-preset-section" aria-label="天气预设">
-                  <div className="weather-preset-section__heading">
-                    <b>天气预设</b>
-                    <span>当前：{activeWeatherPreset.label}{weatherPresetDirty ? ' · 已微调' : ''}</span>
-                  </div>
+                  <div className="weather-preset-section__heading"><b>天气预设</b></div>
                   <div className="weather-preset-grid">
                     {WEATHER_PRESETS.map((preset) => {
                       const PresetIcon = preset.icon;
@@ -200,17 +197,21 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
                   <RuntimeParameterRow label="雾量" value={weather.fog} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateWeather('fog', value)} />
                 </section>
 
-                <section className="gameplay-context-panel__section">
+                <section className="gameplay-context-panel__section weather-wind-section">
                   <div className="gameplay-context-panel__section-title"><b>风场</b></div>
-                  <RuntimeParameterRow label="风向" value={weather.windDirection} min={0} max={360} step={5} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => updateWeather('windDirection', value)} />
-                  <RuntimeParameterRow label="风力" value={weather.windStrength} min={0} max={5} step={0.1} format={(value) => value.toFixed(1)} onChange={(value) => updateWeather('windStrength', value)} />
-                  <RuntimeParameterRow label="阵风" value={weather.gust} min={0} max={1} step={0.05} format={(value) => value.toFixed(2)} onChange={(value) => updateWeather('gust', value)} />
+                  <div className="weather-wind-layout">
+                    <WindCompass value={weather.windDirection} onChange={(value) => updateWeather('windDirection', value)} />
+                    <div className="weather-wind-sliders">
+                      <RuntimeParameterRow label="风力" value={weather.windStrength} min={0} max={5} step={0.1} format={(value) => value.toFixed(1)} onChange={(value) => updateWeather('windStrength', value)} />
+                      <RuntimeParameterRow label="阵风" value={weather.gust} min={0} max={1} step={0.05} format={(value) => value.toFixed(2)} onChange={(value) => updateWeather('gust', value)} />
+                    </div>
+                  </div>
                 </section>
 
-                <section className="gameplay-context-panel__section">
+                <section className="gameplay-context-panel__section weather-time-season-section">
                   <div className="gameplay-context-panel__section-title"><b>时间与季节</b></div>
-                  <RuntimeParameterRow label="日内时间" value={dayTime} min={0} max={24} step={0.25} format={formatTime} onChange={onDayTimeChange} />
-                  <RuntimeParameterRow label="季节进度" value={weather.season} min={0} max={1} step={0.01} format={(value) => value.toFixed(2)} onChange={(value) => setWeather((current) => ({ ...current, season: value }))} />
+                  <TimeOfDayTrack value={dayTime} onChange={onDayTimeChange} />
+                  <SeasonTrack value={weather.season} onChange={(value) => setWeather((current) => ({ ...current, season: value }))} />
                 </section>
               </>
             )}
