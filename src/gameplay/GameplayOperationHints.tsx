@@ -1,4 +1,4 @@
-import type { AdjustmentMode } from '../app/ui-state';
+import type { AdjustmentMode, RoadDrawMode, Tool } from '../app/ui-state';
 
 type HintRow = { binding: string; description: string; primary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
@@ -13,7 +13,7 @@ const gameplayPreset: HintPreset = {
   ],
 };
 
-const toolPresets: Record<AdjustmentMode, HintPreset> = {
+const buildingPresets: Record<AdjustmentMode, HintPreset> = {
   position: {
     task: '建筑放置',
     rows: [
@@ -63,6 +63,40 @@ const toolPresets: Record<AdjustmentMode, HintPreset> = {
   },
 };
 
+const roadPresets: Record<RoadDrawMode, HintPreset> = {
+  'smart-curve': {
+    task: '道路 · 智能曲线',
+    rows: [
+      { binding: '鼠标左键', description: '放置节点', primary: true },
+      { binding: '鼠标右键', description: '结束当前段' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: '鼠标滚轮', description: '缩放镜头' },
+      { binding: 'Ctrl + Z', description: '撤销节点' },
+      { binding: 'Esc', description: '取消铺设' },
+    ],
+  },
+  curve: {
+    task: '道路 · 曲线',
+    rows: [
+      { binding: '鼠标左键', description: '放置控制点', primary: true },
+      { binding: '鼠标右键', description: '结束当前段' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: 'Ctrl + Z', description: '撤销控制点' },
+      { binding: 'Esc', description: '取消铺设' },
+    ],
+  },
+  straight: {
+    task: '道路 · 直线',
+    rows: [
+      { binding: '鼠标左键', description: '确定端点', primary: true },
+      { binding: '鼠标右键', description: '结束当前段' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: 'Ctrl + Z', description: '撤销端点' },
+      { binding: 'Esc', description: '取消铺设' },
+    ],
+  },
+};
+
 function Keycap({ binding }: { binding: string }) {
   return (
     <span className="operation-hints__binding">
@@ -81,12 +115,18 @@ function HintRowView({ row }: { row: HintRow }) {
 }
 
 interface Props {
-  toolActive: boolean;
+  tool: Tool;
   adjustmentMode: AdjustmentMode;
+  roadDrawMode: RoadDrawMode;
 }
 
-export function GameplayOperationHints({ toolActive, adjustmentMode }: Props) {
-  const preset = toolActive ? toolPresets[adjustmentMode] : gameplayPreset;
+export function GameplayOperationHints({ tool, adjustmentMode, roadDrawMode }: Props) {
+  const preset = tool === 'building-placement'
+    ? buildingPresets[adjustmentMode]
+    : tool === 'road-placement'
+      ? roadPresets[roadDrawMode]
+      : gameplayPreset;
+
   return (
     <aside className="gameplay-operation-hints" aria-label="当前操作提示">
       <div className="operation-hints__task"><strong>{preset.task}</strong></div>
