@@ -28,7 +28,10 @@ export function GameplayContextPanel({ panel, onClose }: Props) {
   const HeadingIcon = isCamera ? Camera : CloudSun;
 
   return (
-    <aside className={`gameplay-context-panel gameplay-context-panel--${panel}`} aria-label={isCamera ? '相机面板' : '天气面板'}>
+    <aside
+      className={`gameplay-left-context-surface gameplay-context-panel gameplay-context-panel--${panel}`}
+      aria-label={isCamera ? '相机面板' : '天气面板'}
+    >
       <header>
         <div className="gameplay-context-panel__heading">
           <span className="gameplay-context-panel__heading-icon"><HeadingIcon /></span>
