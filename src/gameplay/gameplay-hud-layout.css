@@ -76,7 +76,7 @@
   bottom:calc(var(--hud-edge) + var(--hud-command-height) + var(--hud-gap-md));
 }
 
-/* All full lower-left context surfaces share the same screen anchor as the placement tool overlay.
+/* All full lower-left context surfaces share the same screen anchor as placement tool parameter panels.
    Their width is chosen so the centered Main Dock can coexist horizontally; vertical growth is capped at 2/3 of the 1080p logical canvas. */
 .gameplay-screen .gameplay-left-context-surface{
   left:var(--hud-edge);
@@ -86,12 +86,14 @@
 .gameplay-screen .gameplay-context-panel--camera{width:var(--hud-context-camera-width)}
 .gameplay-screen .gameplay-context-panel--weather{width:var(--hud-context-weather-width)}
 
-.gameplay-screen .tool-overlay.building-placement-prototype{
+.gameplay-screen .tool-overlay.building-placement-prototype,
+.gameplay-screen .tool-overlay.road-placement-prototype{
   left:var(--hud-edge);
   bottom:var(--hud-edge);
 }
 
 .gameplay-screen .tool-bottom-cluster,
-.gameplay-screen .building-placement-toolbar-cluster{
+.gameplay-screen .building-placement-toolbar-cluster,
+.gameplay-screen .road-placement-toolbar-cluster{
   bottom:var(--hud-edge);
 }
