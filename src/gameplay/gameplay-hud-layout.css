@@ -14,6 +14,11 @@
   --hud-radius-md:14px;
   --hud-radius-lg:18px;
 
+  /* Shared glass contract for gameplay panels.
+     The jade tint stays readable in dark/night scenes; the backdrop is softened and lifted slightly instead of becoming pure black. */
+  --hud-glass-filter:blur(14px) saturate(.86) brightness(1.05);
+  --hud-glass-filter-soft:blur(11px) saturate(.88) brightness(1.04);
+
   /* Bottom Command Visual System.
      Main Dock / Placement Action Bar / World Utility share one USS-friendly visual family.
      Size and shadow tiers establish hierarchy; material/state tokens stay identical. */
@@ -26,11 +31,11 @@
   --command-control-sm:42px;
   --command-icon-size:20px;
   --command-divider-height:24px;
-  --command-surface-top:rgba(28,37,32,.94);
-  --command-surface-bottom:rgba(21,29,25,.925);
-  --command-border:rgba(239,233,221,.10);
+  --command-surface-top:rgba(32,43,37,.89);
+  --command-surface-bottom:rgba(21,30,26,.86);
+  --command-border:rgba(239,233,221,.105);
   --command-divider:rgba(239,233,221,.060);
-  --command-hover:rgba(255,255,255,.030);
+  --command-hover:rgba(255,255,255,.032);
   --command-active-top:rgba(201,165,95,.082);
   --command-active-bottom:rgba(201,165,95,.016);
   --command-icon:#858d85;
@@ -39,7 +44,7 @@
   --command-shadow-lg:0 16px 38px rgba(5,8,7,.23),inset 0 1px 0 rgba(255,255,255,.014);
   --command-shadow-md:0 14px 34px rgba(5,8,7,.21),inset 0 1px 0 rgba(255,255,255,.013);
   --command-shadow-sm:0 12px 30px rgba(5,8,7,.18),inset 0 1px 0 rgba(255,255,255,.012);
-  --command-blur:10px;
+  --command-blur:12px;
 
   --hud-core-width:940px;
   --hud-command-height:var(--command-height-lg);
@@ -49,18 +54,20 @@
   --hud-context-camera-width:360px;
   --hud-left-context-max-height:720px;
 
-  --hud-surface-primary-top:rgba(31,40,36,.955);
-  --hud-surface-primary-bottom:rgba(23,31,27,.945);
-  --hud-surface-secondary-top:rgba(27,35,31,.925);
-  --hud-surface-secondary-bottom:rgba(20,28,24,.905);
-  --hud-surface-tertiary-top:rgba(20,27,24,.62);
-  --hud-surface-tertiary-bottom:rgba(17,23,20,.54);
+  /* Panel surfaces are deliberately translucent enough for blur to read.
+     They still carry their own green-grey tone so night scenes do not determine UI readability. */
+  --hud-surface-primary-top:rgba(35,46,40,.90);
+  --hud-surface-primary-bottom:rgba(22,32,27,.875);
+  --hud-surface-secondary-top:rgba(30,40,35,.86);
+  --hud-surface-secondary-bottom:rgba(19,28,24,.835);
+  --hud-surface-tertiary-top:rgba(22,30,26,.66);
+  --hud-surface-tertiary-bottom:rgba(17,24,20,.58);
 
   --hud-border-strong:rgba(239,233,221,.14);
-  --hud-border-soft:rgba(239,233,221,.085);
+  --hud-border-soft:rgba(239,233,221,.09);
   --hud-rule:rgba(239,233,221,.065);
-  --hud-shadow-primary:0 18px 44px rgba(5,8,7,.25),inset 0 1px 0 rgba(255,255,255,.018);
-  --hud-shadow-secondary:0 12px 30px rgba(5,8,7,.19),inset 0 1px 0 rgba(255,255,255,.012);
+  --hud-shadow-primary:0 18px 44px rgba(5,8,7,.25),inset 0 1px 0 rgba(255,255,255,.020);
+  --hud-shadow-secondary:0 12px 30px rgba(5,8,7,.19),inset 0 1px 0 rgba(255,255,255,.014);
 
   --hud-text:#e5dfd4;
   --hud-text-secondary:#949b93;
