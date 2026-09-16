@@ -7,11 +7,11 @@
   min-height:0;
   max-height:none;
   padding:8px 10px 9px;
-  border:1px solid rgba(239,233,221,.040);
-  border-radius:2px;
-  background:linear-gradient(180deg,rgba(20,27,24,.50),rgba(17,23,20,.44));
-  box-shadow:none;
-  backdrop-filter:blur(5px);
+  border:1px solid rgba(239,233,221,.045);
+  border-radius:var(--hud-radius-md,14px);
+  background:linear-gradient(180deg,var(--hud-surface-tertiary-top,rgba(20,27,24,.62)),var(--hud-surface-tertiary-bottom,rgba(17,23,20,.54)));
+  box-shadow:0 8px 22px rgba(5,8,7,.10);
+  backdrop-filter:blur(6px);
 }
 
 .operation-hints__task{
@@ -83,12 +83,8 @@
   white-space:nowrap;
 }
 .operation-hints__row.is-primary .operation-hints__binding,
-.operation-hints__row.is-primary .operation-hints__binding kbd{
-  color:#b79d62;
-}
-.operation-hints__row.is-primary .operation-hints__description{
-  color:#9e9d95;
-}
+.operation-hints__row.is-primary .operation-hints__binding kbd{color:#b79d62}
+.operation-hints__row.is-primary .operation-hints__description{color:#9e9d95}
 
 /* Only modal/pause states hide the rail. Scene parameter panels never alter it. */
 .gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{

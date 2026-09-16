@@ -10,7 +10,7 @@
 2. `项目概览.md`
 3. `UI设计原则.md`
 4. `UI空间与状态架构.md`
-5. 当前任务相关的 `决策记录/`、`组件设计规范.md` 和代码
+5. 当前任务相关的 `决策记录/`、组件 / Control 规范和代码
 
 ## 文档职责
 
@@ -26,9 +26,17 @@
 
 记录 Gameplay / Workspace / Tool / Pause / Flyout / Global Space 的职责与状态边界。
 
-### 组件设计规范.md
+### UI Surface与Control视觉规范.md
 
-记录 Button、Segmented Control、Parameter Row、Tooltip、Keycap、Archive Item 等共享组件规则。
+记录 Surface、Blur、Button、Segmented、Footer 等跨空间视觉语法。
+
+### UI基础Control视觉规范.md
+
+记录 Slider、Numeric Slider Field、Stepper、Value Field、Select、Toggle、Text Input 的共享视觉、使用边界和 Unity UI Toolkit 映射。基础控件迁移优先以此文档为准。
+
+### Bottom Command Visual System设计规范.md
+
+记录 Main Dock、Placement Action Bar、World Utility Toolbar 的 L / M / S 底部命令栏视觉系统。
 
 ### 决策记录/
 

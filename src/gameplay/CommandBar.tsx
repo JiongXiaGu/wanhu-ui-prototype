@@ -1,5 +1,7 @@
+import type { LucideIcon } from 'lucide-react';
 import {
   Blocks,
+  BookOpen,
   Bridge,
   Building2,
   Castle,
@@ -7,6 +9,10 @@ import {
   DoorOpen,
   Fence,
   Grid3X3,
+  Hammer,
+  House,
+  Landmark,
+  Layers3,
   Magnet,
   Mountain,
   Move,
@@ -14,21 +20,42 @@ import {
   Redo2,
   Route,
   ScanLine,
+  Shield,
+  Store,
   Trees,
   Undo2,
-  Waves,
 } from 'lucide-react';
+import type { DockCategory, DockMode } from '../app/ui-state';
 
-const categories = [
-  { name: '全部', icon: Blocks },
-  { name: '道路', icon: Route },
-  { name: '桥梁', icon: Bridge },
-  { name: '运河', icon: Waves },
-  { name: '城墙', icon: Castle },
-  { name: '围墙', icon: Fence },
-  { name: '建筑', icon: Building2 },
-  { name: '装饰', icon: Trees },
-] as const;
+interface MainDockItem {
+  id: DockCategory;
+  label: string;
+  icon: LucideIcon;
+}
+
+const MAIN_DOCK_ITEMS: Record<DockMode, readonly MainDockItem[]> = {
+  design: [
+    { id: 'road', label: '道路', icon: Route },
+    { id: 'bridge', label: '桥梁', icon: Bridge },
+    { id: 'building', label: '建筑', icon: Building2 },
+    { id: 'platform', label: '台基', icon: Layers3 },
+    { id: 'city-wall', label: '城墙', icon: Castle },
+    { id: 'wall', label: '围墙', icon: Fence },
+    { id: 'decoration', label: '装饰', icon: Palette },
+    { id: 'tree', label: '树木', icon: Trees },
+  ],
+  blueprint: [
+    { id: 'all', label: '全部', icon: Blocks },
+    { id: 'residential', label: '民居', icon: House },
+    { id: 'commercial', label: '商业', icon: Store },
+    { id: 'workshop', label: '工坊', icon: Hammer },
+    { id: 'administration', label: '管理', icon: Building2 },
+    { id: 'science', label: '科学', icon: BookOpen },
+    { id: 'faith', label: '信仰', icon: Landmark },
+    { id: 'military', label: '军事', icon: Shield },
+    { id: 'palace', label: '宫殿', icon: Castle },
+  ],
+};
 
 type WorldUtilityId =
   | 'unlock'
@@ -105,7 +132,7 @@ export function WorldUtilityToolbar({
   }
 
   return (
-    <div className="world-utility-toolbar command-utility" aria-label="世界工具">
+    <div className="world-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm" aria-label="世界工具">
       {worldUtilityGroups.map((group, groupIndex) => (
         <span className="world-utility-toolbar__group" key={group[0].id}>
           {groupIndex > 0 && <i className="world-utility-toolbar__separator" />}
@@ -133,25 +160,52 @@ export function WorldUtilityToolbar({
 }
 
 interface CommandBarProps {
-  activeCategory: string;
-  onCategoryChange: (category: string) => void;
+  mode: DockMode;
+  activeCategory: DockCategory | null;
+  onModeChange: (mode: DockMode) => void;
+  onCategoryChange: (category: DockCategory) => void;
 }
 
-export function CommandBar({ activeCategory, onCategoryChange }: CommandBarProps) {
+export function CommandBar({ mode, activeCategory, onModeChange, onCategoryChange }: CommandBarProps) {
+  const items = MAIN_DOCK_ITEMS[mode];
+
   return (
-    <div className="command-bar">
-      <div className="mode-rail">
-        <button className="is-active">设计</button>
-        <button>蓝图</button>
+    <div className="command-bar bottom-command-surface bottom-command-surface--lg" data-dock-mode={mode}>
+      <div className="mode-rail" aria-label="建造模式">
+        <button
+          type="button"
+          className={mode === 'design' ? 'is-active' : ''}
+          aria-pressed={mode === 'design'}
+          onClick={() => onModeChange('design')}
+        >
+          设计
+        </button>
+        <button
+          type="button"
+          className={mode === 'blueprint' ? 'is-active' : ''}
+          aria-pressed={mode === 'blueprint'}
+          onClick={() => onModeChange('blueprint')}
+        >
+          蓝图
+        </button>
       </div>
-      <i />
-      <div className="category-row">
-        {categories.map(({ name, icon: Icon }) => (
-          <button key={name} className={activeCategory === name ? 'is-active' : ''} onClick={() => onCategoryChange(name)}>
-            <Icon size={17} />
-            <span>{name}</span>
-          </button>
-        ))}
+      <i aria-hidden="true" />
+      <div className="category-row" aria-label={mode === 'design' ? '设计分类' : '蓝图分类'}>
+        {items.map(({ id, label, icon: Icon }) => {
+          const selected = activeCategory === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              className={selected ? 'is-active' : ''}
+              aria-pressed={selected}
+              onClick={() => onCategoryChange(id)}
+            >
+              <Icon />
+              <span>{label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

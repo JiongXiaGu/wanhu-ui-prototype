@@ -8,15 +8,16 @@
 - `newGame`
 - `load`
 - `settings`
+- `loading`
 - `gameplay`
 
 顶层 Screen 由 `src/App.tsx` 管理。
 
-## 2. Gameplay 内部 Space
+## 2. Gameplay 空间优先级
 
-Gameplay 内部不使用大量互相独立的 Modal 叠加，而是按任务职责切换明确的 UI Space。
+Gameplay 不使用大量彼此独立的 Modal 叠加，而是按任务职责切换明确的 UI Space。
 
-当前空间优先级：
+当前优先级：
 
 1. Pause
 2. Tool
@@ -24,180 +25,364 @@ Gameplay 内部不使用大量互相独立的 Modal 叠加，而是按任务职�
 4. Management
 5. Gameplay
 
-### Gameplay
+空间判断：
 
-默认经营状态。
+```text
+paused = true             → Pause
+else tool != none         → Tool
+else workspace != none    → Workspace
+else management != none   → Management
+else                      → Gameplay
+```
 
-组成：
+除了这些主 Space，还存在几个稳定的 HUD 槽位：
 
-- Gameplay Top Shell；
-- World Utility Toolbar；
+- 左上：Compass HUD；
+- 顶部中央：Gameplay Top Shell；
+- 右上：低存在感 System Menu，以及未来 Notification / Objective Stack；
+- 左下：Context Surface；
+- 中下：Main Dock / Workspace / Tool Dock；
+- 右下：Operation Hints + World Utility Toolbar。
+
+Gameplay 外围 HUD 默认遵守 `16px` Safe Edge；同级 Surface 常用间距为 `12px`。这些稳定几何 Token 由 `src/gameplay/gameplay-hud-layout.css` 集中维护。
+
+## 3. Normal Gameplay
+
+默认经营状态显示：
+
+- 左上 Compass HUD；
+- Gameplay Top Shell 两层；
+- 右上独立 System Menu；
 - Main Dock；
-- 轻量 Operation Hints。
+- World Utility Toolbar；
+- Operation Hints；
+- 按需出现的左下 Context Surface。
 
-Gameplay Top Shell 是顶部唯一主控制岛，由两层组成：
+世界画面始终是视觉主体；常驻 HUD 只承担持续状态、主入口和必要世界工具。
 
-1. **Persistent Status Row**：左侧天气 / 时间，中间资源，右侧模拟时间控制；
-2. **Control Tray**：左侧 Information Views，中间五个一级管理域，右侧 Camera / Weather / Menu。
+## 4. Gameplay Top Shell
 
-一级管理域收束为：
+Gameplay Top Shell 位于屏幕顶部中央，是状态与一级入口的核心控制岛。
+
+### 4.1 Persistent Status Row
+
+第一层约 `940 × 56px`，采用固定左右槽 + 几何居中的资源槽：
+
+- 左：当前天气状态 + 季节 / 时间；
+- 中：钱粮 / 人口 / 木材 / 石料；
+- 右：模拟时间速度。
+
+资源槽必须保持屏幕几何中心，不能因为左右内容数量变化而偏移。
+
+时间速度使用纯图标：
+
+- 暂停时间；
+- 正常速度；
+- 加速；
+- 高速。
+
+`speed` 支持 `0 / 1 / 2 / 4`，其中 `0` 是模拟暂停，不等于打开 Pause Menu。
+
+左侧天气只表达当前世界状态，不承担 Weather Control 的入口职责。
+
+### 4.2 Control Tray
+
+第二层是挂接在 Persistent Status Row 下方的紧凑纯图标托盘，当前约 `400 × 38px`。
+
+正式顺序：
+
+`Camera / Weather │ 城市 / 经济 / 政策 / 军事 / 宫殿 │ Information Views`
+
+语义固定为：
+
+- 左：场景观察 / 调整；
+- 中：城市管理；
+- 右：数据观察。
+
+Menu 不再属于 Control Tray。
+
+视觉与交互规则：
+
+- 一级入口常驻只显示图标；
+- Hover 约 280～400ms 后显示 Tooltip；
+- Selected 使用弱暖金 Tone 与细金线；
+- 每个图标入口保留明确 ARIA Label；
+- Top Shell 两层轻微重叠约 2px，避免浏览器缩放 / DPR 产生亮色接缝；
+- Control Tray 在 Normal Gameplay、Workspace、Management 中保留；
+- Tool 中隐藏 Control Tray，只保留 Persistent Status Row。
+
+五个一级管理域当前为：
 
 `城市 / 经济 / 政策 / 军事 / 宫殿`
 
-此前独立的左侧 City Management Rail 与右上 Quick Controls 不再作为运行时结构显示。管理入口、Information Views 入口和轻量场景入口统一收束到顶部，减少左右两侧零散 UI 岛。
+当前内容映射仍处于重构期：城市→City、经济→Finance、政策→Policy、军事→Military、宫殿→Governance；旧户籍、商贸、治理等内容后续进入对应一级域内部重新组织。
 
-Control Tray 不常驻显示文字标签；中文名称由 Hover Tooltip 和 ARIA Label 提供。第二层宽度小于 Persistent Status Row，作为挂接在主状态栏下方的附属命令托盘。
+## 5. 左上 Compass HUD
 
-World Utility Toolbar 位于右下，是独立于 Main Dock 与 Operation Hints 的全局世界编辑工具条。它只承载跨分类、跨工具仍可能使用的世界级辅助能力，不承载“完成 / 取消 / 确认放置”等当前任务流程按钮。
+左上角只保留一个独立 Compass HUD，不再使用城市缩略图 / 小地图占据该槽位。
 
-### Management
+原因：Gameplay 主要使用高机位俯视视角，建筑朝向、南北轴线和院落朝向比持续查看局部小地图更重要，尤其适用于中国古代宫殿、宅院、祠庙、牌坊与街巷布局。
 
-复杂城市系统进入**中央大型阻挡式 Management Space**，不是 Right Edge Flyout。
+当前视觉基准：
+
+- 约 `76 × 76px` 圆形罗盘式仪表；
+- `16px` 左 / 上 Safe Edge；
+- 四向使用中文 `东 / 南 / 西 / 北`；
+- `北` 使用克制暖金强调，`南` 次级强调，东西保持低对比；
+- 内部只保留方向环、刻度、南北轴、指针与轴心，不复制真实风水罗盘的复杂层级、八卦或装饰纹样；
+- Surface 透明度和阴影低于 Top Shell，避免抢占主画面；
+- Building Placement 等需要方向判断的 Tool 中增强南北轴和整体清晰度，但不改变位置与尺寸。
+
+交互 / 数据规则：
+
+- Compass 本身不拦截世界输入；
+- Normal Gameplay、Workspace、Tool 中保留；
+- Management / Pause 中隐藏；
+- 当前 Web Prototype 先验证静态视觉；正式游戏应将相机水平旋转角绑定到 Compass heading，使方向盘随镜头朝向正确变化；
+- 不在 Compass 内塞入管理、天气、地图图层等其它入口。
+
+## 6. 右上 System / Notification Zone
+
+右上不再放 Camera / Weather 大面板。
+
+当前仅常驻一个独立的低存在感 **System Menu Button**：
+
+- 约 `46 × 46px`；
+- `16px` 右 / 上 Safe Edge；
+- 半透明深墨 Surface；
+- 默认较弱，Hover 才明显提亮；
+- 点击进入 Pause Menu。
+
+该按钮与“暂停模拟时间”严格区分：模拟暂停属于 Top Shell 时间控制；System Menu 打开 Save / Settings / Main Menu 等全局系统空间。
+
+右上剩余区域明确预留给未来：
+
+- Notification；
+- 待处理事件；
+- 当前目标 / 教学目标；
+- 城市异常提醒；
+- 建筑完成 / 居民事件等被动信息。
+
+原则是：**左侧负责玩家主动查看的上下文，右侧负责游戏主动推送的信息。**
+
+## 7. Context Surface（左下上下文面板）
+
+Camera / Weather 统一进入左下 **Context Surface** 槽位。
+
+当前 Consumer：
+
+- Camera；
+- Weather Control。
+
+未来可继续复用同一位置规范：
+
+- Selection Inspector：选中建筑 / 居民 / 道路 / 地块详情；
+- 其它场景级只读或轻参数面板。
+
+所有完整左下上下文面板使用统一 `gameplay-left-context-surface` 几何契约；具体业务组件只负责内容、宽度档位和内部视觉。
+
+### 7.1 几何规则
+
+- 左侧距屏幕 `16px`；
+- **底部直接锚定屏幕 `16px` Safe Edge**，与 Building Placement 左侧 ToolOverlay 使用同一底部锚点；
+- 不再为了 Main Dock 人为向上抬升一整段空白；当前 Context Surface 最大宽度 `400px`，而 Main Dock 居中起点约在 `490px`，两者可以水平共存；
+- Camera 当前约 `360px` 宽；
+- Weather 当前约 `400px` 宽；
+- 高度由内容自然决定；
+- 最大高度为 1080p 逻辑画布约 **2/3**，当前 Token 为 `720px`；
+- 内容超过最大高度时仅 Body 内部滚动，Header 与外框锚点保持稳定；
+- 新增长面板优先复用同一 2/3 高度上限，不为单个 Consumer 自行发明新的屏幕高度规则。
+
+### 7.2 互斥规则
+
+Camera / Weather 是同一个 Context Surface 的不同内容，彼此互斥：
+
+- 点击当前入口 → 关闭；
+- 点击另一个入口 → 原位替换内容。
+
+Context Surface 与 Design Workspace 当前也互斥：
+
+```text
+Workspace 打开
+→ 点击 Camera / Weather
+→ Workspace 关闭并清空 Main Dock 当前分类
+→ Context Surface 打开
+```
+
+反向同理：
+
+```text
+Context Surface 打开
+→ 点击 Main Dock 设计分类
+→ Context Surface 关闭
+→ Design Workspace 打开
+```
+
+这是为了避免同屏出现两块竞争下半屏的内容面板。
+
+Tool / Management / Pause 打开时 Context Surface 关闭。
+
+### 7.3 Selection Inspector 预留
+
+未来选中世界中的建筑 / 居民等对象时，推荐采用双层表达：
+
+- 世界 Anchor：只显示名称、状态图标、警告等极轻信息，用于指向“选中了谁”；
+- 左下 Selection Inspector：承载完整详情与动作，并复用同一左下锚点 / 2/3 高度框架。
+
+Selection Inspector 是否在 Design Workspace 打开时压缩成 Compact Summary，待实现对象选择系统时再验证；不要现在用 Camera / Weather 的互斥规则机械限制未来 Selection Inspector。
+
+## 8. Information Views
+
+Information Views 属于“观察城市”，不是“管理城市”。
+
+当前：
+
+- 默认；
+- 地价；
+- 人口；
+- 商业；
+- 道路；
+- 治安；
+- 水利。
+
+规则：
+
+- 入口位于 Control Tray **最右侧**；
+- 再次点击图层入口关闭 Palette；
+- Palette 从右侧图层按钮下方展开并与该侧对齐；
+- 选择具体图层后 Palette 自动收起；
+- 打开 Palette 时关闭 Camera / Weather Context Surface；
+- 主要信息表现发生在世界地图，不将 Palette 扩展成复杂管理面板；
+- 后续地图效果应逐步贴合真实街区、建筑、道路、服务覆盖等游戏数据。
+
+## 9. Management Space
+
+复杂系统进入中央大型阻挡式 Management Space，不进入 Context Surface。
 
 组成：
 
-- Gameplay Top Shell 保留；
-- 顶部 Control Tray 保留并负责一级系统切换；
-- 世界画面作为压暗 / 轻模糊背景；
-- 中央大型 Management Surface。
-
-Management Surface **不重复一级管理导航**。一级系统切换只发生在 Gameplay Top Shell 的五个管理域；Management Surface 内部只允许当前系统自己的二级内容与局部 Tab。
-
-当前一级映射暂时为：
-
-- 城市 → 现有城市概况内容；
-- 经济 → 现有 Finance 内容；
-- 政策 → 现有 Policy 内容；
-- 军事 → 现有 Military 内容；
-- 宫殿 → 暂接现有 Governance 内容。
-
-这是当前导航重构阶段的临时映射。户籍、商贸、治理等内容不会删除，后续在对应一级域内部重新组织。
+- Gameplay Top Shell 两层保留；
+- 世界作为压暗 / 轻模糊背景；
+- 中央大型 Management Surface；
+- 右上 System Menu 仍可作为全局系统入口。
 
 进入 Management 后隐藏：
 
-- World Utility Toolbar；
+- Compass HUD；
 - Main Dock；
-- GameplayOperationHints；
-- Right Edge Flyout。
+- World Utility Toolbar；
+- Operation Hints；
+- Context Surface。
 
-同一个一级管理入口是 **Surface Launcher**：第一次点击打开，处于打开状态时再次点击同一个入口关闭；点击其它一级管理入口则直接切换到目标 Management View。
+Management Surface 不重复顶部五个一级管理入口，只允许当前系统自己的二级内容。
 
-关闭 Management 后回到 Normal Gameplay，不恢复此前已经退出的 Workspace / Tool。
+同一个一级入口是 Surface Launcher：
 
-设计原则：逻辑上阻挡世界操作，但视觉上不完全抹掉城市；玩家仍应感知自己是在管理当前城市，而不是进入独立 Web Dashboard。
+- 第一次点击打开；
+- 再次点击当前入口关闭；
+- 已经打开其他 Management View 时点击新入口直接切换。
 
-### Workspace
+关闭后回 Normal Gameplay，不恢复此前已经退出的 Workspace / Tool / Context Surface。
 
-用于浏览和选择内容，例如建筑目录。
+## 10. Workspace
+
+Workspace 用于浏览和选择具体内容，例如 Design Workspace。
 
 组成：
 
+- Compass HUD；
 - Gameplay Top Shell 两层；
 - Workspace；
 - Main Dock；
 - World Utility Toolbar；
-- 轻量 Operation Hints；
-- 可选的 Camera / Weather Right Edge Flyout。
+- Operation Hints；
+- 右上 System Menu。
 
-Workspace 是浏览内容的轻量工作空间，不需要为了打开建筑目录而把整个顶部控制系统撤走。玩家浏览建筑时仍可访问 Information Views、一级城市管理入口、Camera、Weather 和 Menu。
+Design Workspace 打开时仍可访问 Camera / Weather 入口，但点击它们会先关闭 Workspace，再打开左下 Context Surface。
 
-World Utility Toolbar 继续保留，因为网格、撤销 / 重做和其它世界级辅助能力属于全局编辑状态，不因为打开建筑目录而被重置。
+Workspace 不是重管理空间，因此世界仍保持可见，不做 Management 那样的大面积遮挡。
 
-Main Dock 中会打开 Workspace 的分类入口同样采用 Surface Launcher 语义。当前“建筑”第一次点击打开 Building Workspace，再次点击“建筑”关闭；Workspace 自己的关闭按钮也回到相同状态。
+## 11. Main Dock
 
-Camera / Weather Flyout 可以与 Workspace 共存。打开或关闭轻量 Flyout 不应顺带关闭 Building Workspace；打开 Workspace 也不应清理已经打开的 Camera / Weather Flyout。
+Main Dock 负责“要建造 / 浏览什么”，World Utility Toolbar 负责“如何辅助编辑世界”，两者职责严格分离。
 
-### Tool
+Main Dock 当前结构：
 
-用于进入具体编辑工具，例如 Building Placement。
+`模式选择器 + 当前模式分类带`
+
+### 设计模式
+
+`道路 / 桥梁 / 建筑 / 台基 / 城墙 / 围墙 / 装饰 / 树木`
+
+八类全部进入同一个配置驱动 Design Workspace。
+
+### 蓝图模式
+
+`全部 / 民居 / 商业 / 工坊 / 管理 / 科学 / 信仰 / 军事 / 宫殿`
+
+Blueprint Workspace 尚未实现，不复制空壳占位。
+
+状态原则：
+
+- `dockMode` 默认 `design`；
+- `dockCategory` 默认 `null`；
+- 没有玩家明确点击时不强制 Selected；
+- 切换设计 / 蓝图清空 `dockCategory`；
+- 不分别记忆两个模式上一次分类；
+- 同一个设计分类再次点击关闭 Workspace 并清空分类；
+- 已打开 Design Workspace 时点击另一设计分类，直接替换同一个 Workspace 的 Definition。
+
+Normal Gameplay / Workspace 保留 Main Dock；Tool / Management / Pause 隐藏。
+
+## 12. Design Workspace
+
+正式细则见 `Documentation/Design Workspace设计规范.md`。
+
+稳定结构：
+
+`Header + Primary Rail + Context Filter + Search + 4×2 Content Grid + Pager`
+
+关键不变量：
+
+- 八类设计内容共享一个 Workspace 壳；
+- Primary Rail 约 `146px`，第一项统一显示 `所有`，每组最多 7 项；
+- Content Grid 每页 8 项；
+- Asset Card 是 Action Button，不是 Toggle；
+- Hover / Focus 详情使用共享 Asset Inspector；
+- Asset Inspector 是独立浮层，与这里的屏幕级 Context Surface 不是同一个概念。
+
+## 13. Tool
+
+Tool 用于具体编辑任务，例如 Building Placement。
 
 组成：
 
-- Gameplay Top Shell 的 Persistent Status Row；
+- Compass HUD；
+- Persistent Status Row；
 - ToolOverlay；
 - Tool Bottom Dock；
 - World Utility Toolbar；
-- GameplayOperationHints。
+- Operation Hints；
+- 右上 System Menu。
 
 进入 Tool 后隐藏：
 
 - Control Tray；
 - Main Dock；
+- Workspace；
+- Context Surface；
 - Information View Palette；
 - Management Space。
 
-进入 Tool 时关闭 Camera / Weather 等轻量 Flyout，让当前编辑任务获得明确的输入所有权。
+ToolOverlay / Tool Dock 只拥有当前任务专用参数和动作；全局 Grid / Undo 等继续由 World Utility Toolbar 提供。
 
-ToolOverlay 与 Tool Bottom Dock 只拥有**当前任务专用**参数与动作；World Utility Toolbar 继续保留全局辅助能力。Tool 不得重新创建一份“网格吸附 / 网格显示 / 撤销 / 重做”的局部副本。
+Building Placement 完成或取消后返回 `设计 → 建筑` Design Workspace，因为玩家仍处于明确的建筑任务上下文。
 
-完成或取消 Building Placement 后返回 Building Workspace，而不是直接丢回 Normal Gameplay。
+## 14. World Utility Toolbar
 
-### Pause
+右下角 World Utility Toolbar 是跨分类、跨 Workspace / Tool 的全局世界辅助工具条。
 
-Pause 是全局 UI Space，不是普通 Modal。
-
-组成：
-
-- Pause Menu；
-- Pause Save；
-- Pause Settings。
-
-世界仍作为背景存在，但明显压暗，并可使用轻微 Blur。Pause 中隐藏 World Utility Toolbar 与 Operation Hints。
-
-## 3. Gameplay Top Shell
-
-Gameplay Top Shell 是 Gameplay 内持续存在的顶部控制结构。
-
-### Persistent Status Row
-
-第一层采用固定左右槽 + 真正居中的资源槽：
-
-- 左：天气状态、季节 / 时间；
-- 中：钱粮、人口、木材、石料；
-- 右：暂停时间 / 正常速度 / 加速 / 高速。
-
-资源必须保持几何居中，不能因为左右按钮数量变化而偏移。
-
-时间速度全部使用图标，不常驻显示 `×1 / ×2 / ×4`。`speed` 支持 `0 / 1 / 2 / 4`，其中 `0` 是真正的模拟暂停状态，不等于打开 Pause Menu。
-
-左侧天气只表达当前天气状态，不承担 Weather Control 的入口职责。
-
-### Control Tray
-
-在 Normal Gameplay、Management Space 与 Workspace 中显示，按以下顺序分组：
-
-`Information Views │ 城市 / 经济 / 政策 / 军事 / 宫殿 │ Camera / Weather / Menu`
-
-语义固定为：
-
-- 左：观察城市；
-- 中：管理城市；
-- 右：场景与系统入口。
-
-正式视觉规则：
-
-- 一级入口常驻只显示图标；
-- Hover 约 280～400 ms 后显示中文 Tooltip；
-- Selected 使用弱暖金 Tone 与底部细金线；
-- 图标入口保留明确 ARIA Label；
-- 第二层整体收窄并居中挂接在 Persistent Status Row 下方；
-- 两层在视觉上允许轻微重叠，避免半透明边框产生亮色接缝。
-
-点击复杂管理系统直接进入对应 Management Space；再次点击当前同一管理入口关闭。若已经处于其它 Management View，则直接切换，不经过内部重复一级菜单。
-
-图层入口打开轻量 Information View Palette，再次点击图层入口关闭 Palette；选择具体地图图层后 Palette 自动收起。
-
-Camera 与 Weather 是互斥 Flyout；点击当前已经打开的入口再次关闭，点击另一个则直接切换。
-
-Menu 打开 Pause Space，不属于模拟速度的“暂停时间”。
-
-## 4. World Utility Toolbar
-
-World Utility Toolbar 是右下角的**全局世界编辑工具条**，与 Operation Hints 空间相邻但结构独立。
-
-### 职责
-
-它承载跨建造分类、跨 Workspace / Tool 都可能继续使用的辅助能力，例如：
+当前包含：
 
 - 地图解锁；
 - 区域编辑；
@@ -212,111 +397,46 @@ World Utility Toolbar 是右下角的**全局世界编辑工具条**，与 Opera
 
 规则：
 
-- Normal Gameplay、Workspace、Tool 中保留；
-- Management 与 Pause 中隐藏；
-- 位置固定在右下，Operation Hints 位于其上方，两者不合并为一个 Surface；
-- 默认只显示图标，解释进入 Tooltip；
-- 网格吸附 / 网格显示是 GameplayUiState 中的全局 Toggle，进入或退出 Building Placement 不重置；
-- Undo / Redo 继续使用同一份全局历史状态；
-- 不放当前任务的“完成 / 取消 / 确认”按钮；
-- 不放“道路 / 建筑 / 园林”等建造分类，分类仍属于 Main Dock；
-- Tool 若有专用旋转、体量、屋顶、提交等行为，由 Tool Bottom Dock 自己负责。
+- Normal Gameplay / Workspace / Tool 中保留；
+- Management / Pause 中隐藏；
+- 位于右下 `16px` Safe Edge；
+- Operation Hints 位于其上方约 `12px`；
+- 不放完成 / 取消 / 确认放置等任务流程动作；
+- 不放建造分类；
+- `gridSnap` / `gridVisible` 是全局状态，进入 Tool 不重置。
 
-## 5. Main Dock
+## 15. GameplayOperationHints
 
-Main Dock 负责“玩家要进入哪一种建造 / 内容分类”，与 World Utility Toolbar 的“如何操作世界”严格分离。
+Operation Hints 是右下轻量输入说明，不是工具栏。
 
-当前分类：
+职责：
 
-- 全部；
-- 道路；
-- 桥梁；
-- 运河；
-- 城墙；
-- 围墙；
-- 建筑；
-- 装饰。
+- 显示当前重要输入；
+- 显示当前 Tool / Adjustment 上下文；
+- 显示旋转、反转、撤销、取消等代表性快捷键。
 
-Normal Gameplay 与 Workspace 保留 Main Dock；进入 Tool / Management 时隐藏。
+它不承担教程长文，也不承载可点击工具。
 
-普通分类本身属于 Selector；当某个分类同时拥有一个 Workspace Surface（当前为“建筑”）时，该分类入口同时承担 Launcher 语义：重复点击当前已经展开的 Workspace 分类应关闭该 Workspace，而不是重新打开一遍。
+最终 Unity 中快捷键文字应来自 New Input System 实际绑定，并随 Keyboard/Mouse / Gamepad 动态切换。
 
-## 6. Right Edge Flyout
+## 16. Pause
 
-Right Edge Flyout 只服务轻量、场景上下文相关的快速工具。
+Pause 是全局 UI Space，不是普通 Modal。
 
-当前：
+入口：
 
-- Camera；
-- Weather Control。
+- 屏幕右上独立 System Menu；
+- 无局部 Surface 时按 Esc。
 
-规则：
+Pause 内包括：
 
-- 入口位于 Gameplay Top Shell 的 Control Tray 右侧；
-- Camera / Weather 互斥；
-- 点击当前已经打开的同一入口再次关闭；
-- Flyout 从屏幕右侧滑入，并直接贴合屏幕顶部与右侧，不额外保留一块无意义空白；
-- Normal Gameplay 与 Workspace 中可以使用；
-- Workspace 与 Flyout 可以共存；
-- 打开 Management / Tool / Pause 时关闭 Flyout；
-- 不承载财政、政策、军务等复杂管理系统；
-- Flyout 是辅助空间，不升级为大型统计 / 管理 Workspace。
+- Pause Menu；
+- Pause Save；
+- Pause Settings。
 
-判断标准：如果一个功能需要多级 Tab、较宽表格、趋势图、多个管理参数或后续明显会扩展，应进入 Management / Workspace，而不是继续加宽 Flyout。
+世界仍作为压暗 / Blur 背景存在。Pause 中隐藏 Compass HUD、Context Surface、Main Dock、World Utility Toolbar、Operation Hints 和 System Menu 自身。
 
-## 7. Information Views
-
-Information Views 属于“观察城市”，不属于“管理城市”。
-
-当前包括：
-
-- 默认；
-- 地价；
-- 人口；
-- 商业；
-- 道路；
-- 治安；
-- 水利。
-
-规则：
-
-- 从 Gameplay Top Shell Control Tray 最左侧的图层图标打开轻量 Palette；
-- 图层入口再次点击关闭 Palette；
-- Palette 在顶部导航下方出现，不再占用左侧独立工具栏；
-- 选择图层后 Palette 收起，主要变化发生在世界地图；
-- 打开 Management 时回到默认地图视图；
-- Workspace 不强制清除当前地图视图；
-- 后续数据表现应逐步贴合街区、建筑、道路和覆盖范围，不长期停留在纯装饰性全屏渐变。
-
-## 8. Global Management Space
-
-Archive 与 Settings 属于顶层全局管理空间，与 Gameplay 内部的 Management Space 不同。
-
-### Archive
-
-Load 模式结构：
-
-`Game Group → Save Timeline → Save Preview`
-
-Game Group 代表玩家从一次“新建游戏”开始的一整场游戏；Save 是这个 Game Group 内部的历史节点。
-
-Save 模式进入 Archive Space 时，当前 Game Group 固定，不允许把当前城市保存进其他游戏组。
-
-### Settings
-
-Settings 在 Main Menu 与 Pause 中复用同一组件和同一视觉系统。
-
-分类：
-
-- 显示
-- 图形
-- 音频
-- 操作
-- 游戏
-
-不为 Main Menu 和 Pause 分别维护两套 Settings。
-
-## 9. Gameplay 状态模型
+## 17. Gameplay 状态模型
 
 `src/app/ui-state.ts` 是 Gameplay UI 状态的集中入口。
 
@@ -324,17 +444,21 @@ Settings 在 Main Menu 与 Pause 中复用同一组件和同一视觉系统。
 
 - `workspace`
 - `tool`
-- `flyout`
+- `contextPanel`
 - `management`
 - `mapView`
 - `mapPanelOpen`
 - `paused`
 - `pauseView`
 
-其它运行状态：
+Main Dock：
 
-- `speed`：`0 / 1 / 2 / 4`；
-- `activeCategory`
+- `dockMode`
+- `dockCategory`
+
+其它状态：
+
+- `speed`
 - `terrainMode`
 - `adjustmentMode`
 - `gridSnap`
@@ -342,105 +466,59 @@ Settings 在 Main Menu 与 Pause 中复用同一组件和同一视觉系统。
 - `canUndo`
 - `canRedo`
 
-空间判断：
+正式 Unity 实现继续使用显式状态驱动 VisualElement 显隐；不要通过当前 VisualTree 是否存在反推业务状态。
 
-```text
-paused = true             → Pause
-else tool != none         → Tool
-else workspace != none    → Workspace
-else management != none   → Management
-else                      → Gameplay
-```
+### 17.1 交互语义分类
 
-### 交互语义分类
+**Surface Launcher**：拥有一个可见 Surface；同入口再次点击关闭，同组入口切换。例如 Management、Camera、Weather、Design Workspace、Information View Palette。
 
-不要把所有 Button 都实现成同一种 Toggle。
+**Exclusive Selector**：表示当前模式；再次点击当前项保持选中。例如时间速度、Settings Tab、Building Placement 模式。
 
-**Surface Launcher**：拥有一个可见 Surface，同入口再次点击关闭，同组其它入口切换。例如 Management、Camera、Weather、Building Workspace、Information View Palette。
+**Toggle Setting**：明确 On / Off，例如 Grid Snap / Grid Visible。
 
-**Exclusive Selector**：表示当前模式，再次点击当前项保持选中。例如时间速度、Settings Tab、Segmented Control、Building Placement 模式。
+**One-shot Action**：执行一次，不保留 Active，例如 Asset Card、Undo / Redo、完成 / 取消。
 
-**Toggle Setting**：明确 On / Off。例如 Grid Snap、Grid Visible、Settings Toggle。
+Surface Launcher 的互斥 / 共存必须集中在 reducer，不由视觉组件各自维护互相冲突的业务 Boolean。
 
-**One-shot Action**：只执行一次，不保留 Active。例如 Undo / Redo、Restore、完成 / 取消。
+### 17.2 当前关键互斥
 
-Surface Launcher 的开关 / 互斥 / 共存关系应集中在 reducer，不由视觉组件各自维护业务布尔状态。`mapPanelOpen` 也因此进入 `GameplayUiState`，不再保存在 GameplayHUD 的局部 state。
+- 打开 Design Workspace → 关闭 Context Surface；
+- 打开 Camera / Weather Context Surface → 关闭 Design Workspace，并清空对应 Main Dock 分类；
+- Camera / Weather 彼此互斥；
+- 打开 Management → 关闭 Workspace / Tool / Context Surface / Information Palette，MapView 回默认；
+- 打开 Information Palette / 非默认 MapView → 关闭 Context Surface；
+- 进入 Tool → 关闭 Workspace / Management / Context Surface / Information Palette，MapView 回默认；
+- Pause → 清理 Management / Context Surface / Information Palette / MapView 等局部状态。
 
-### 重要互斥与共存
+## 18. Building Placement
 
-- 打开 Management → 关闭 Workspace / Tool / Flyout / Information Palette，MapView 回默认；
-- Workspace → 保留 Top Control Tray、Main Dock、World Utility、Operation Hints，可与 Camera / Weather Flyout 共存；
-- 打开 Camera / Weather → 两者互斥；关闭当前 Flyout 不影响 Workspace；
-- 打开 Camera / Weather → 若当前是 Management，则退出 Management，并把 MapView 回默认；
-- 进入 Tool → 退出 Workspace、关闭 Management / Flyout / Information Palette，MapView 回默认；
-- 打开非默认 MapView → 关闭 Management 与 Flyout，但 Workspace 可以保留；
-- Pause → Management / Flyout / MapView / Information Palette 清理为安全状态。
+### 地形模式
 
-`gridSnap`、`gridVisible` 属于全局世界编辑设置。进入 Building Placement 时不得重置；Tool 只读取并使用当前值。
-
-正式 Unity 实现必须继续以显式状态驱动 VisualElement 显隐，不通过当前 VisualTree 的存在与否反推业务状态。
-
-## 10. Building Placement 模式
-
-### 地形关系
-
-- `平`：balanced-earthwork，平衡挖填；
-- `填`：fill-only，只允许填方；
-- `高`：manual-elevation，手动标高。
+- `平`：balanced-earthwork；
+- `填`：fill-only；
+- `高`：manual-elevation。
 
 ### 调整对象
 
-- `位`：position，位置；
-- `层`：massing，楼身 / 体量；
-- `顶`：roof，屋顶；
-- `面`：facade，当前保留为未完成 / Disabled 状态。
+- `位`：position；
+- `层`：massing；
+- `顶`：roof；
+- `面`：facade，当前 Disabled / 未完成。
 
-左侧 ToolOverlay 内容根据当前调整对象改变，而不是同时显示全部参数。
+中央 Tool Dock 只保留：
 
-`高` 模式会在当前参数区域上方增加手动标高相关内容。
+`平 / 填 / 高 │ 位 / 层 / 顶 / 面 │ 完成 / 取消`
 
-## 11. Building Placement Dock
+网格吸附 / 网格显示 / Undo / Redo 不在 Tool Dock 重复，继续使用 World Utility Toolbar。
 
-Building Placement Dock 只保留当前放置任务专用控制：
+## 19. Esc 优先级
 
-- `平 / 填 / 高`；
-- `位 / 层 / 顶 / 面`；
-- 完成；
-- 取消。
+原则：先退出更局部的 Surface，再退出更全局的 Space。
 
-以下能力已经迁移到 World Utility Toolbar，不再在 Building Placement 内重复：
+Gameplay 当前顺序：
 
-- 网格吸附；
-- 网格显示；
-- 撤销；
-- 重做。
-
-取消未提交放置不是危险操作，因此不使用强烈 Destructive Red。
-
-## 12. GameplayOperationHints
-
-OperationHints 位于右下，是轻量 Shortcut Rail，与 World Utility Toolbar 独立。
-
-职责：
-
-- 显示当前调整模式；
-- 显示当前最重要输入；
-- 显示旋转、反转、撤销、重做、取消等快捷键。
-
-它不承担教程长文，也不承载可点击工具。World Utility Toolbar 位于其下方；两者对齐但不共享同一 Surface。
-
-Management Space 中不显示 OperationHints，因为玩家此时不操作世界。
-
-最终 Unity 实现中，按键文字应来自实际 Input System 绑定，并支持 Keyboard/Mouse 与 Gamepad 动态切换；Web 原型只使用代表性 Keycap。
-
-## 13. Esc 优先级
-
-原则：先关闭更局部的空间，再关闭更全局的空间，并且同一层级只允许一个明确的输入所有者。
-
-Gameplay 顶层当前顺序：
-
-1. 全局 Dialog / Safe Confirmation 先由 DialogSystem 捕获；
-2. Camera / Weather Flyout；
+1. Dialog / Safe Confirmation 由 DialogSystem capture-phase 处理；
+2. Context Surface（Camera / Weather）；
 3. Information View Palette；
 4. Tool；
 5. Workspace；
@@ -448,41 +526,49 @@ Gameplay 顶层当前顺序：
 7. 非默认 Map View；
 8. 没有局部 Surface 时打开 Pause Menu。
 
-Workspace Search 等局部输入可以优先消费自己的第一次 Esc；外层不能在同一次按键里同时关闭 Workspace。
+Workspace Search 等更局部输入允许先消费自己的第一次 Esc；外层不能在同一次按键里顺带关闭 Workspace。
 
 Pause 内部：
 
-- Pause Save / Pause Settings → Esc 返回 Pause Menu；
+- Pause Save / Settings → Esc 返回 Pause Menu；
 - Pause Menu → Esc 恢复游戏。
 
-新增 UI Space 时必须继续遵守这个优先级，不要让多个 `window.keydown` 监听器竞争同一个 Esc。Gameplay 的 Surface 栈优先集中在 `GameplayScreen`；Dialog 等真正更高优先级的系统使用明确的 capture-phase 输入所有权。
+新增 UI Space 时继续集中输入所有权，不要新增多个彼此竞争的 `window.keydown`。
 
-## 14. Review Scenario
+## 20. Archive / Settings
 
-`src/app/scenarios.ts` 提供确定性的 UI Bootstrap，用于视觉评审，不依赖人工点击流程。
+Archive 与 Settings 属于顶层全局管理空间，不属于 Gameplay Context Surface。
 
-Review Scenario 是测试入口，不是业务路由。
+Archive：
 
-Gameplay 至少持续覆盖：
+`Game Group → Save Timeline → Save Preview`
 
-- Normal Gameplay 双层 Top Shell；
-- 第一层资源几何居中；
-- 第一层时间控制为纯图标的暂停 / 正常 / 加速 / 高速；
-- 第二层顺序固定为 `图层 / 五个管理域 / Camera·Weather·Menu`；
-- 两层保持约 2px 视觉重叠，避免亮色接缝；
-- Camera / Weather Flyout 顶部直接贴屏幕边缘；
-- Camera / Weather 入口重复点击可关闭；
-- Building Workspace 保留 Top Control Tray；
-- Building Workspace 可以与 Camera / Weather Flyout 共存；
-- “建筑”入口重复点击可关闭 Building Workspace；
-- 一级 Management 入口重复点击可关闭当前 Management Space；
-- Information Views 入口重复点击可关闭 Palette；
-- Esc 按 Flyout → Workspace 等由局部到全局的顺序退栈；
-- Normal Gameplay 右下存在 World Utility Toolbar，且不与 Main Dock / Operation Hints 重叠；
-- 网格吸附状态从 Gameplay 进入 Building Placement 后保持；
-- Workspace 保留 World Utility Toolbar；
-- Building Placement 保留 World Utility Toolbar，并且不再出现局部 Grid / Undo 副本；
-- Economy / Policy Management Space + 顶部一级导航；
-- Management Surface 内不存在重复一级 Tab；
-- Information Views 从第二层最左侧图层入口展开；
-- Building Placement 只保留顶部 Persistent Status Row，且 Main Dock / Control Tray 隐藏。
+Settings 在 Main Menu 与 Pause 复用同一组件与视觉系统，分类：
+
+`显示 / 图形 / 音频 / 操作 / 游戏`
+
+普通设置即时生效 / 保存；危险显示设置使用 Safe Confirmation。
+
+## 21. Review Scenario
+
+`src/app/scenarios.ts` 提供确定性的 Review Bootstrap，只用于测试，不是业务路由。
+
+Gameplay Visual Review 至少覆盖：
+
+- Normal Gameplay：左上 Compass HUD、双层 Top Shell、右上 System Menu、Main Dock、右下 World Utility；
+- Compass HUD 固定在 16px 左上 Safe Edge，约 76px 圆形，并显示中文东南西北；
+- Building Placement 保留 Compass HUD，并增强建造态南北轴视觉；
+- Top Row 资源保持几何居中；
+- Control Tray 顺序固定为 `Camera / Weather │ 五个管理域 │ Information Views`；
+- System Menu 独立于 Control Tray，并位于 16px 右上 Safe Edge；
+- Camera / Weather 共用左下 Context Surface；
+- Context Surface 底部固定在 16px Safe Edge，最大高度约 720px / 2⁄3 屏幕；
+- Context Surface 与居中的 Main Dock 水平不重叠；
+- Camera / Weather 重复点击关闭，彼此切换；
+- Context Surface 与 Design Workspace 双向互斥；
+- Design Workspace 保留 Top Control Tray / Compass HUD / Main Dock / World Utility；
+- Information Views 从 Control Tray 最右侧打开并右对齐；
+- Management 保留 Top Shell，隐藏 Compass HUD / Main Dock / Context Surface / World Utility；
+- Tool 只保留 Persistent Status Row，保留 Compass HUD / System Menu / World Utility，并隐藏 Control Tray / Main Dock / Context Surface；
+- 全局 Grid 状态进入 Building Placement 后保持；
+- Esc 按 Context Surface → Palette → Tool → Workspace → Management → Map View → Pause 的局部到全局顺序退栈。

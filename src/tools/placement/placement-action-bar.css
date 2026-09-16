@@ -1,0 +1,145 @@
+/* Shared bottom-center primary command surface for placement tools.
+   This is the medium tier of the Bottom Command Visual System.
+   The bar only owns mode selection, quick one-shot actions and commit actions;
+   detailed parameters remain in the left Tool Parameter Panel. */
+
+.gameplay-screen .building-placement-toolbar-cluster,
+.gameplay-screen .road-placement-toolbar-cluster{
+  left:50%;
+  transform:translateX(-50%);
+  z-index:24;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.placement-action-bar{
+  height:var(--command-height-md,68px);
+  min-height:var(--command-height-md,68px);
+  display:flex;
+  align-items:center;
+  gap:0;
+  padding:10px;
+}
+
+.placement-action-bar__section{
+  height:var(--command-control-md,46px);
+  display:flex;
+  align-items:center;
+}
+.placement-action-bar__section--commit{margin-left:0}
+.placement-action-bar__mode-group,
+.placement-action-bar__quick-group,
+.placement-action-bar__commit-group{
+  height:var(--command-control-md,46px);
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.placement-action-bar__divider{
+  width:1px;
+  height:var(--command-divider-height,24px);
+  margin:0 7px;
+  background:var(--command-divider,rgba(239,233,221,.060));
+}
+
+.placement-action-bar__button{
+  position:relative;
+  width:var(--command-control-md,46px);
+  min-width:var(--command-control-md,46px);
+  height:var(--command-control-md,46px);
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:var(--command-control-radius,10px);
+  background:transparent;
+  color:var(--command-icon,#858d85);
+  cursor:pointer;
+  transition:background .13s ease,color .13s ease,transform .09s ease;
+}
+.placement-action-bar__button svg{
+  width:var(--command-icon-size,20px);
+  height:var(--command-icon-size,20px);
+  stroke-width:1.55;
+}
+.placement-action-bar__button:hover{
+  background:var(--command-hover,rgba(255,255,255,.030));
+  color:var(--command-icon-hover,#d1cec5);
+}
+.placement-action-bar__button:active{transform:translateY(1px)}
+.placement-action-bar__button:focus-visible{
+  outline:1px solid rgba(222,193,122,.66);
+  outline-offset:2px;
+}
+.placement-action-bar__button:disabled{
+  opacity:.27;
+  cursor:default;
+  background:transparent;
+  transform:none;
+}
+
+.placement-action-bar__button--mode.is-active{
+  background:linear-gradient(180deg,var(--command-active-top,rgba(201,165,95,.082)),var(--command-active-bottom,rgba(201,165,95,.016)));
+  color:var(--command-icon-active,#dec17a);
+}
+.placement-action-bar__button--mode.is-active::before{
+  content:'';
+  position:absolute;
+  left:12px;
+  right:12px;
+  top:0;
+  height:2px;
+  border-radius:0 0 2px 2px;
+  background:var(--hud-accent,#c9a55f);
+}
+
+/* Quick actions deliberately use the exact same neutral button language as World Utility one-shot actions. */
+.placement-action-bar__button--quick{color:var(--command-icon,#858d85)}
+
+/* Confirm remains the only persistent primary action, but stays inside the toolbar language instead of becoming a separate framed button. */
+.placement-action-bar__button--confirm{
+  color:var(--command-icon-active,#dec17a);
+  background:linear-gradient(180deg,rgba(201,165,95,.115),rgba(201,165,95,.026));
+}
+.placement-action-bar__button--confirm:hover{
+  color:#ead08b;
+  background:linear-gradient(180deg,rgba(201,165,95,.15),rgba(201,165,95,.042));
+}
+.placement-action-bar__button--cancel{color:#969c95}
+.placement-action-bar__button--cancel:hover{
+  color:var(--command-icon-hover,#d1cec5);
+  background:var(--command-hover,rgba(255,255,255,.030));
+}
+
+.placement-action-bar__button[data-tooltip]::after{
+  content:attr(data-tooltip);
+  position:absolute;
+  left:50%;
+  bottom:54px;
+  min-width:max-content;
+  padding:6px 8px;
+  border:1px solid var(--command-border,rgba(239,233,221,.10));
+  border-radius:var(--hud-radius-sm,10px);
+  background:rgba(18,24,21,.985);
+  box-shadow:0 8px 22px rgba(5,8,7,.22);
+  color:#d5d1c7;
+  font-size:9px;
+  font-weight:400;
+  letter-spacing:.02em;
+  white-space:nowrap;
+  pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  transform:translate(-50%,4px);
+  transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
+  z-index:60;
+}
+.placement-action-bar__button[data-tooltip]:hover::after{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
+  transition-delay:.32s;
+}

@@ -12,7 +12,6 @@ import {
   FastForward,
   Landmark,
   Layers3,
-  Menu as MenuIcon,
   Pause,
   Play,
   Route,
@@ -23,7 +22,7 @@ import {
   Store,
   Users,
 } from 'lucide-react';
-import type { Flyout, ManagementView, MapView, Speed } from '../app/ui-state';
+import type { ContextPanel, ManagementView, MapView, Speed } from '../app/ui-state';
 import { ResourceValue } from '../ui/Controls';
 
 interface MapViewItem {
@@ -45,18 +44,17 @@ interface SpeedControlItem {
 }
 
 interface GameplayHUDProps {
-  flyout: Flyout;
+  contextPanel: ContextPanel;
   management: ManagementView;
   mapView: MapView;
   mapPanelOpen: boolean;
   speed: Speed;
   showControlTray: boolean;
-  onFlyoutChange: (flyout: Flyout) => void;
+  onContextPanelChange: (panel: ContextPanel) => void;
   onManagementChange: (management: ManagementView) => void;
   onToggleMapPanel: () => void;
   onMapViewChange: (mapView: MapView) => void;
   onSpeedChange: (speed: Speed) => void;
-  onPause: () => void;
 }
 
 const MAP_VIEWS: MapViewItem[] = [
@@ -85,18 +83,17 @@ const SPEED_CONTROLS: SpeedControlItem[] = [
 ];
 
 export function GameplayHUD({
-  flyout,
+  contextPanel,
   management,
   mapView,
   mapPanelOpen,
   speed,
   showControlTray,
-  onFlyoutChange,
+  onContextPanelChange,
   onManagementChange,
   onToggleMapPanel,
   onMapViewChange,
   onSpeedChange,
-  onPause,
 }: GameplayHUDProps) {
   return (
     <div className={`gameplay-top-shell ${showControlTray ? 'has-navigation' : ''}`}>
@@ -134,16 +131,24 @@ export function GameplayHUD({
 
       {showControlTray && (
         <nav className="gameplay-top-navigation" aria-label="城市控制">
-          <div className="gameplay-top-navigation__view">
+          <div className="gameplay-top-navigation__scene" aria-label="场景工具">
             <button
               type="button"
-              className={`gameplay-top-navigation__button gameplay-top-navigation__map ${mapPanelOpen || mapView !== 'default' ? 'is-active' : ''}`}
-              aria-label="信息视图"
-              data-tooltip="信息视图"
-              onClick={onToggleMapPanel}
+              className={`gameplay-top-navigation__button ${contextPanel === 'camera' ? 'is-active' : ''}`}
+              aria-label="相机"
+              data-tooltip="相机"
+              onClick={() => onContextPanelChange('camera')}
             >
-              <Layers3 />
-              {mapView !== 'default' && <i className="gameplay-top-navigation__dot" />}
+              <Camera />
+            </button>
+            <button
+              type="button"
+              className={`gameplay-top-navigation__button ${contextPanel === 'weather' ? 'is-active' : ''}`}
+              aria-label="天气控制"
+              data-tooltip="天气控制"
+              onClick={() => onContextPanelChange('weather')}
+            >
+              <CloudSun />
             </button>
           </div>
 
@@ -169,33 +174,16 @@ export function GameplayHUD({
 
           <i className="gameplay-top-navigation__separator" />
 
-          <div className="gameplay-top-navigation__scene" aria-label="场景工具">
+          <div className="gameplay-top-navigation__view">
             <button
               type="button"
-              className={`gameplay-top-navigation__button ${flyout === 'camera' ? 'is-active' : ''}`}
-              aria-label="相机"
-              data-tooltip="相机"
-              onClick={() => onFlyoutChange('camera')}
+              className={`gameplay-top-navigation__button gameplay-top-navigation__map ${mapPanelOpen || mapView !== 'default' ? 'is-active' : ''}`}
+              aria-label="信息视图"
+              data-tooltip="信息视图"
+              onClick={onToggleMapPanel}
             >
-              <Camera />
-            </button>
-            <button
-              type="button"
-              className={`gameplay-top-navigation__button ${flyout === 'weather' ? 'is-active' : ''}`}
-              aria-label="天气控制"
-              data-tooltip="天气控制"
-              onClick={() => onFlyoutChange('weather')}
-            >
-              <CloudSun />
-            </button>
-            <button
-              type="button"
-              className="gameplay-top-navigation__button"
-              aria-label="菜单"
-              data-tooltip="菜单"
-              onClick={onPause}
-            >
-              <MenuIcon />
+              <Layers3 />
+              {mapView !== 'default' && <i className="gameplay-top-navigation__dot" />}
             </button>
           </div>
         </nav>

@@ -1,12 +1,11 @@
 /* Persistent World Utility Toolbar.
-   Geometry is owned by gameplay-hud-layout.css; this file owns material, grouping and control states. */
+   Geometry is owned by gameplay-hud-layout.css; this is the small tier of the shared Bottom Command Visual System. */
 
 .gameplay-screen > .world-utility-toolbar.command-utility{
   position:absolute;
   left:auto;
   z-index:23;
-  box-sizing:border-box;
-  padding:7px 6px;
+  padding:6px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -15,11 +14,6 @@
   visibility:visible;
   pointer-events:auto;
   transform:none;
-  border:1px solid rgba(239,233,221,.095);
-  border-radius:2px;
-  background:linear-gradient(180deg,rgba(29,37,33,.895),rgba(22,29,26,.855));
-  box-shadow:0 10px 26px rgba(6,9,8,.18),inset 0 1px 0 rgba(255,255,255,.012);
-  backdrop-filter:blur(9px);
   transition:opacity .15s ease,transform .15s ease,visibility .15s ease;
 }
 
@@ -32,58 +26,57 @@
 
 .world-utility-toolbar__separator{
   width:1px;
-  height:24px;
+  height:var(--command-divider-height,24px);
   flex:0 0 1px;
   margin:0 4px;
-  background:rgba(239,233,221,.070);
+  background:var(--command-divider,rgba(239,233,221,.060));
 }
 
 .world-utility-toolbar__button{
   position:relative;
-  width:42px;
-  height:42px;
-  flex:0 0 42px;
+  width:var(--command-control-sm,42px);
+  height:var(--command-control-sm,42px);
+  flex:0 0 var(--command-control-sm,42px);
   padding:0;
   display:grid;
   place-items:center;
   border:0;
-  border-radius:2px;
+  border-radius:var(--command-control-radius,10px);
   background:transparent;
-  color:#828a82;
+  color:var(--command-icon,#858d85);
   cursor:pointer;
   transition:background .13s ease,color .13s ease,transform .09s ease;
 }
 
 .world-utility-toolbar__button svg{
-  width:20px;
-  height:20px;
+  width:var(--command-icon-size,20px);
+  height:var(--command-icon-size,20px);
   stroke-width:1.55;
   pointer-events:none;
 }
 
 .world-utility-toolbar__button:hover{
-  background:rgba(255,255,255,.036);
-  color:#d1cec5;
+  background:var(--command-hover,rgba(255,255,255,.030));
+  color:var(--command-icon-hover,#d1cec5);
 }
 
-.world-utility-toolbar__button:active{
-  transform:translateY(1px);
-}
+.world-utility-toolbar__button:active{transform:translateY(1px)}
 
-/* Toggle state: persistent weak-gold tone; actions never keep this state after clicking. */
+/* Bottom command surfaces point their persistent selected state upward toward the world/content they control. */
 .world-utility-toolbar__button.is-active{
-  color:#ddbf77;
-  background:linear-gradient(180deg,rgba(201,165,95,.085),rgba(201,165,95,.022));
+  color:var(--command-icon-active,#dec17a);
+  background:linear-gradient(180deg,var(--command-active-top,rgba(201,165,95,.082)),var(--command-active-bottom,rgba(201,165,95,.016)));
 }
 
 .world-utility-toolbar__button.is-active::before{
   content:'';
   position:absolute;
-  left:10px;
-  right:10px;
-  bottom:0;
+  left:11px;
+  right:11px;
+  top:0;
   height:2px;
-  background:#c9a55f;
+  border-radius:0 0 2px 2px;
+  background:var(--hud-accent,#c9a55f);
 }
 
 .world-utility-toolbar__button:disabled{
@@ -107,7 +100,8 @@
   white-space:nowrap;
   color:#d5d1c7;
   background:rgba(18,24,21,.985);
-  border:1px solid rgba(239,233,221,.12);
+  border:1px solid var(--command-border,rgba(239,233,221,.10));
+  border-radius:var(--hud-radius-sm,10px);
   box-shadow:0 8px 22px rgba(5,8,7,.22);
   font-size:9px;
   letter-spacing:.02em;
@@ -120,5 +114,5 @@
   opacity:1;
   visibility:visible;
   transform:translate(-50%,0);
-  transition-delay:.34s;
+  transition-delay:.32s;
 }

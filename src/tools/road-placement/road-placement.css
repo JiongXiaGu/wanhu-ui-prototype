@@ -1,0 +1,123 @@
+/* Road placement parameter panel. Bottom primary commands are owned by placement-action-bar.css. */
+
+.gameplay-screen .tool-overlay.road-placement-prototype{
+  top:auto;
+  width:380px;
+  max-height:calc(100% - 92px);
+  overflow:hidden;
+  transform:none;
+  z-index:22;
+  isolation:isolate;
+  border:1px solid var(--hud-border-strong,rgba(239,233,221,.14));
+  border-radius:var(--hud-radius-lg,18px);
+  background:
+    radial-gradient(ellipse at 18% 100%,rgba(105,126,113,.034),transparent 40%),
+    radial-gradient(ellipse at 92% 5%,rgba(201,165,95,.018),transparent 30%),
+    linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
+  box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
+  backdrop-filter:blur(11px);
+}
+
+.gameplay-screen .tool-overlay.road-placement-prototype>header{
+  height:54px;
+  min-height:54px;
+  padding:0 12px 0 14px;
+  border-bottom:1px solid var(--hud-rule,rgba(239,233,221,.065));
+  background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.002));
+  box-shadow:none;
+}
+.gameplay-screen .tool-overlay.road-placement-prototype>header::after{display:none}
+.gameplay-screen .tool-overlay.road-placement-prototype>header>div{gap:8px}
+.gameplay-screen .tool-overlay.road-placement-prototype>header b{
+  color:var(--hud-text,#e5dfd4);
+  font-size:16px;
+  font-weight:560;
+  letter-spacing:.018em;
+}
+.gameplay-screen .tool-overlay.road-placement-prototype>header span{color:#888f87;font-size:9px}
+.gameplay-screen .tool-overlay.road-placement-prototype>header .icon-button{
+  width:28px;
+  height:28px;
+  border-radius:9px;
+}
+
+.gameplay-screen .tool-overlay.road-placement-prototype .tool-body{
+  max-height:calc(100vh - 150px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:10px 14px 14px;
+  scrollbar-width:thin;
+}
+
+.road-placement-summary{
+  padding:6px 2px 13px;
+  border-bottom:1px solid var(--hud-rule,rgba(239,233,221,.065));
+}
+.road-placement-summary__heading{min-height:24px;display:flex;align-items:center}
+.road-placement-summary__heading b{color:#cdc9bf;font-size:11px;font-weight:550}
+.road-placement-summary p{
+  margin:4px 0 0;
+  color:#7f8780;
+  font-size:9px;
+  line-height:1.7;
+}
+.road-placement-summary__metrics{
+  margin-top:9px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  color:#858c84;
+  font-size:8.5px;
+  font-variant-numeric:tabular-nums;
+}
+.road-placement-summary__metrics b{color:#bbb8ae;font-weight:500}
+
+.road-placement-parameters{padding:11px 2px 0}
+.road-placement-parameters__heading{
+  min-height:28px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.road-placement-parameters__heading::after{
+  content:'';
+  height:1px;
+  flex:1;
+  background:linear-gradient(90deg,var(--hud-rule,rgba(239,233,221,.065)),transparent 82%);
+}
+.road-placement-parameters__heading b{color:#d5d0c5;font-size:11px;font-weight:550;white-space:nowrap}
+
+.road-placement-parameter-row{
+  min-height:46px;
+  display:grid;
+  grid-template-columns:92px 30px minmax(84px,1fr) 30px;
+  align-items:center;
+  gap:7px;
+  border-radius:8px;
+  transition:background .13s ease;
+}
+.road-placement-parameter-row:hover{background:rgba(255,255,255,.010)}
+.road-placement-parameter-row>span{color:#959b93;font-size:9.5px}
+.road-placement-parameter-row>button{
+  width:30px;
+  height:30px;
+  padding:0;
+  border:0;
+  border-radius:8px;
+  background:rgba(255,255,255,.012);
+  color:#999f97;
+  cursor:pointer;
+}
+.road-placement-parameter-row>button:hover{background:rgba(255,255,255,.038);color:#d0cdc4}
+.road-placement-parameter-row output{
+  min-width:0;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
+  border-radius:8px;
+  background:rgba(255,255,255,.010);
+  color:#c3bfb5;
+  font-size:9px;
+  font-variant-numeric:tabular-nums;
+}

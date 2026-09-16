@@ -57,6 +57,8 @@ jobs:
         run: |
           node scripts/capture-review-v2.mjs
           node scripts/capture-management-review.mjs
+          node scripts/capture-design-workspace-review.mjs
+          node scripts/capture-visual-system-review.mjs
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         with:

@@ -11,23 +11,34 @@ export type ReviewScenario =
   | 'management-finance'
   | 'management-policy'
   | 'map-land-value'
+  | 'workspace-road'
+  | 'workspace-bridge'
   | 'workspace-building'
+  | 'workspace-city-wall'
   | 'building-position'
   | 'building-massing'
   | 'building-roof'
   | 'building-height'
+  | 'road-smart'
+  | 'road-curve'
+  | 'road-straight'
   | 'camera'
   | 'weather'
   | 'pause'
   | 'pause-save'
-  | 'pause-settings'
-  | 'building-camera'
-  | 'building-weather';
+  | 'pause-settings';
 
 export interface ReviewBootstrap {
   screen: Screen;
   gameplay: GameplayUiState;
   loadingProgress?: number;
+}
+
+function designWorkspace(gameplay: GameplayUiState, dockCategory: 'road' | 'bridge' | 'building' | 'city-wall'): ReviewBootstrap {
+  return {
+    screen: 'gameplay',
+    gameplay: { ...gameplay, workspace: 'design', dockMode: 'design', dockCategory },
+  };
 }
 
 export function resolveReviewBootstrap(search: string): ReviewBootstrap {
@@ -51,30 +62,38 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, management: 'policy' } };
     case 'map-land-value':
       return { screen: 'gameplay', gameplay: { ...gameplay, mapView: 'land-value' } };
+    case 'workspace-road':
+      return designWorkspace(gameplay, 'road');
+    case 'workspace-bridge':
+      return designWorkspace(gameplay, 'bridge');
     case 'workspace-building':
-      return { screen: 'gameplay', gameplay: { ...gameplay, workspace: 'building', activeCategory: '建筑' } };
+      return designWorkspace(gameplay, 'building');
+    case 'workspace-city-wall':
+      return designWorkspace(gameplay, 'city-wall');
     case 'building-position':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building' } };
     case 'building-massing':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', adjustmentMode: 'massing' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', adjustmentMode: 'massing' } };
     case 'building-roof':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', adjustmentMode: 'roof' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', adjustmentMode: 'roof' } };
     case 'building-height':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', terrainMode: 'manual-elevation' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', terrainMode: 'manual-elevation' } };
+    case 'road-smart':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'smart-curve' } };
+    case 'road-curve':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'curve' } };
+    case 'road-straight':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'straight' } };
     case 'camera':
-      return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'camera' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, contextPanel: 'camera' } };
     case 'weather':
-      return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'weather' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, contextPanel: 'weather' } };
     case 'pause':
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'menu' } };
     case 'pause-save':
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'save' } };
     case 'pause-settings':
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'settings' } };
-    case 'building-camera':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'camera' } };
-    case 'building-weather':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', activeCategory: '建筑', flyout: 'weather' } };
     case 'menu':
     default:
       return { screen: 'menu', gameplay };

@@ -1,0 +1,159 @@
+/* Design Workspace owns category-specific browsing inside the shared Workspace shell.
+   The shell geometry remains in workspace.css; this file owns the generic design rail and item cards. */
+
+.gameplay-screen .workspace--design{
+  width:1240px;
+  height:370px;
+}
+
+.gameplay-screen .workspace--design .workspace-body{
+  grid-template-columns:146px minmax(0,1fr);
+}
+
+.gameplay-screen .workspace--design .workspace-primary-rail{
+  padding-right:8px;
+}
+
+.gameplay-screen .workspace--design .workspace-primary-rail__content{
+  padding-left:14px;
+}
+
+.gameplay-screen .design-workspace__rail .workspace-primary-rail__page>button{
+  padding:0 10px;
+  gap:8px;
+  border-radius:9px;
+}
+
+.gameplay-screen .design-workspace__rail .workspace-primary-rail__page>button span{
+  min-width:0;
+  max-width:6em;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.gameplay-screen .workspace--design .workspace-catalog{
+  grid-template-rows:42px 220px 24px;
+}
+
+.gameplay-screen .workspace--design .workspace-content-stage{
+  height:220px;
+  padding:5px 0;
+}
+
+.gameplay-screen .workspace--design .workspace-content-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-rows:repeat(2,100px);
+  gap:10px;
+}
+
+.design-item-card{
+  position:relative;
+  height:100px;
+  min-width:0;
+  padding:10px 12px;
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  align-items:center;
+  gap:13px;
+  overflow:hidden;
+  border:0;
+  border-radius:12px;
+  outline:0;
+  background:linear-gradient(90deg,rgba(255,255,255,.009),rgba(255,255,255,.002));
+  box-shadow:inset 0 1px 0 rgba(239,233,221,.010);
+  color:inherit;
+  cursor:pointer;
+  text-align:left;
+  transition:background .14s ease,transform .14s cubic-bezier(.2,.7,.25,1),box-shadow .14s ease;
+}
+
+.design-item-card:hover,
+.design-item-card:focus-visible{
+  background:linear-gradient(90deg,rgba(201,165,95,.046),rgba(255,255,255,.007) 74%,rgba(255,255,255,.002));
+  box-shadow:inset 0 1px 0 rgba(239,233,221,.040),0 8px 20px rgba(5,8,7,.08);
+  transform:translateY(-1px);
+}
+
+.design-item-card:active{
+  background:linear-gradient(90deg,rgba(201,165,95,.065),rgba(255,255,255,.008) 76%,rgba(255,255,255,.002));
+  transform:translateY(0) scale(.992);
+}
+
+.design-item-card::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:15px;
+  bottom:15px;
+  z-index:4;
+  width:2px;
+  opacity:0;
+  border-radius:0 2px 2px 0;
+  background:linear-gradient(180deg,#c9a55f,rgba(201,165,95,.18));
+  transition:opacity .14s ease;
+}
+
+.design-item-card:hover::before,
+.design-item-card:focus-visible::before{opacity:.82}
+
+.design-item-card .card-thumb{
+  width:64px;
+  height:64px;
+  aspect-ratio:1;
+  border-radius:10px;
+}
+
+.design-item-card:hover .card-thumb,
+.design-item-card:focus-visible .card-thumb{
+  transform:scale(1.018);
+  filter:brightness(1.08) saturate(.96);
+}
+
+.design-item-card__copy{
+  min-width:0;
+  align-self:stretch;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  gap:8px;
+  padding-right:2px;
+}
+
+.design-item-card b{
+  display:-webkit-box;
+  max-width:100%;
+  overflow:hidden;
+  color:#e2ddd2;
+  font-size:14.2px;
+  font-weight:600;
+  line-height:1.25;
+  letter-spacing:.008em;
+  white-space:normal;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+}
+
+.design-item-card span{
+  max-width:100%;
+  margin:0;
+  overflow:hidden;
+  color:#979e96;
+  font-size:10.5px;
+  line-height:1.25;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+@media (max-width:1500px){
+  .gameplay-screen .workspace--design{width:1160px;height:362px}
+  .gameplay-screen .workspace--design .workspace-body{grid-template-columns:140px minmax(0,1fr)}
+  .gameplay-screen .workspace--design .workspace-catalog{grid-template-rows:42px 212px 22px}
+  .gameplay-screen .workspace--design .workspace-content-stage{height:212px;padding:5px 0}
+  .gameplay-screen .workspace--design .workspace-content-grid{grid-template-rows:repeat(2,96px);gap:10px}
+  .design-item-card{height:96px;grid-template-columns:60px minmax(0,1fr);gap:11px;padding:10px}
+  .design-item-card .card-thumb{width:60px;height:60px}
+  .design-item-card b{font-size:13.4px}
+  .design-item-card span{font-size:10px}
+}

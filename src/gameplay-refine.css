@@ -1,80 +1,145 @@
-/* Gameplay HUD + bottom command system refinement.
-   Outer screen geometry is centralized in gameplay/gameplay-hud-layout.css.
-   State model:
-   Gameplay  -> Main Dock + World Utility Toolbar
-   Workspace -> Workspace + Main Dock + World Utility Toolbar
-   Tool      -> ToolOverlay + Tool Bottom Dock + World Utility Toolbar */
+/* Gameplay bottom command system refinement.
+   Geometry tokens live in gameplay/gameplay-hud-layout.css.
+   Main Dock, Placement Action Bar and World Utility Toolbar share the Bottom Command Visual System. */
 
-.gameplay-screen .hud-group{
-  left:22px;
-  top:22px;
-  min-width:456px;
-  background:linear-gradient(180deg,rgba(28,36,32,.88),rgba(24,31,28,.82));
-  border-color:rgba(239,233,221,.14);
-  box-shadow:0 14px 36px rgba(7,10,9,.22);
-  backdrop-filter:blur(10px);
-}
-
-.gameplay-screen .city-status{
-  height:48px;
-  padding:0 14px;
-  gap:38px;
-  border-bottom-color:rgba(239,233,221,.085);
-}
-.gameplay-screen .city-status div{gap:12px}
-.gameplay-screen .city-status span{font-size:15px;font-weight:500;letter-spacing:.045em;color:#f0eadf}
-.gameplay-screen .city-status b{font-size:9px;color:#9da198;letter-spacing:.03em}
-.gameplay-screen .city-status small{position:relative;padding-left:12px;color:#b4b4aa;font-size:9px;letter-spacing:.04em}
-.gameplay-screen .city-status small::before{content:'';position:absolute;left:0;top:50%;width:5px;height:5px;border-radius:50%;transform:translateY(-50%);background:rgba(201,165,95,.78);box-shadow:0 0 8px rgba(201,165,95,.18)}
-
-.gameplay-screen .resource-strip{height:38px;padding:0 8px}
-.gameplay-screen .resource-strip>span{min-width:104px;height:24px;padding:0 9px;gap:6px;color:#90968e;border-right-color:rgba(239,233,221,.075)}
-.gameplay-screen .resource-strip svg{opacity:.84}
-.gameplay-screen .resource-strip small{font-size:9px;letter-spacing:.015em}
-.gameplay-screen .resource-strip b{margin-left:auto;color:#ded9ce;font-size:10px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:.01em}
-
-.gameplay-screen .quick-controls{
-  right:22px;
-  top:22px;
-  height:46px;
-  padding:4px;
-  background:linear-gradient(180deg,rgba(28,36,32,.87),rgba(24,31,28,.82));
-  border-color:rgba(239,233,221,.14);
-  box-shadow:0 14px 36px rgba(7,10,9,.20);
-  backdrop-filter:blur(10px);
-}
-.gameplay-screen .quick-controls button{height:36px;padding:0 11px;color:#9ba097}
-.gameplay-screen .quick-controls button:hover{background:rgba(255,255,255,.04)}
-.gameplay-screen .quick-controls button.is-active{background:rgba(201,165,95,.105);color:#e0c17c}
-
-/* Main Dock is the primary bottom surface: stronger material than World Utility / Operation Hints. */
+/* Main Dock is the large tier of the command family: mode selector + current category band. */
 .gameplay-screen .command-bar{
-  height:var(--hud-command-height,82px);
-  padding:5px;
-  background:linear-gradient(180deg,rgba(29,36,33,.965),rgba(24,31,28,.95));
-  border-color:rgba(239,233,221,.15);
-  box-shadow:0 18px 48px rgba(7,10,9,.28),inset 0 1px 0 rgba(255,255,255,.012);
-  backdrop-filter:blur(10px);
+  height:var(--command-height-lg,76px);
+  padding:6px 7px;
   z-index:12;
 }
 
-.gameplay-screen .command-bar>.mode-rail{width:84px;flex:0 0 84px;margin-left:0}
-.gameplay-screen .mode-rail button{font-size:10px;letter-spacing:.06em;color:#858c83}
-.gameplay-screen .mode-rail button.is-active{color:#dfc078;background:linear-gradient(90deg,rgba(201,165,95,.09),rgba(201,165,95,.025))}
-.gameplay-screen .command-bar>i{margin:8px 7px;background:rgba(239,233,221,.085)}
-.gameplay-screen .category-row{min-width:0;padding-right:2px}
-.gameplay-screen .category-row button{min-width:0;gap:6px;color:#80877f;font-size:9px;letter-spacing:.02em}
-.gameplay-screen .category-row button svg{width:19px;height:19px;stroke-width:1.6}
-.gameplay-screen .category-row button:hover{background:rgba(255,255,255,.03);color:#c6c5bc}
-.gameplay-screen .category-row button.is-active{color:#dfc078;background:linear-gradient(180deg,rgba(201,165,95,.09),rgba(201,165,95,.018))}
-.gameplay-screen .category-row button.is-active::before{left:22%;right:22%;height:2px;background:#c9a55f}
-
-/* Workspace clears the Main Dock according to the shared HUD geometry contract. */
-.gameplay-screen .workspace{
-  bottom:calc(var(--hud-edge,24px) + var(--hud-command-height,82px) + var(--hud-gap-md,12px));
+/* Design / Blueprint remains a first-level selector, but no longer looks like a nested card. */
+.gameplay-screen .command-bar>.mode-rail{
+  width:96px;
+  flex:0 0 96px;
+  margin:0;
+  padding:2px;
+  overflow:hidden;
+  border-radius:var(--command-control-radius,10px);
+  background:transparent;
+}
+.gameplay-screen .mode-rail button{
+  position:relative;
+  flex:1;
+  min-height:0;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:var(--command-icon,#858d85);
+  cursor:pointer;
+  font-size:10px;
+  font-weight:520;
+  letter-spacing:.06em;
+  transition:background .13s ease,color .13s ease;
+}
+.gameplay-screen .mode-rail button+button{border-top:1px solid var(--command-divider,rgba(239,233,221,.060))}
+.gameplay-screen .mode-rail button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d1cec5)}
+.gameplay-screen .mode-rail button.is-active{
+  color:var(--command-icon-active,#dec17a);
+  background:linear-gradient(90deg,var(--command-active-top,rgba(201,165,95,.082)),var(--command-active-bottom,rgba(201,165,95,.016)));
+}
+.gameplay-screen .mode-rail button.is-active::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:8px;
+  bottom:8px;
+  width:2px;
+  border-radius:0 2px 2px 0;
+  background:var(--hud-accent,#c9a55f);
+}
+.gameplay-screen .command-bar>i{
+  width:1px;
+  height:var(--command-divider-height,24px);
+  align-self:center;
+  flex:0 0 1px;
+  margin:0 8px;
+  background:var(--command-divider,rgba(239,233,221,.060));
+}
+.gameplay-screen .category-row{
+  min-width:0;
+  flex:1;
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(0,1fr);
+  gap:2px;
+  padding-right:1px;
+  animation:main-dock-categories-in .15s ease-out;
+}
+.gameplay-screen .category-row button{
+  position:relative;
+  min-width:0;
+  padding:0 4px;
+  border:0;
+  border-radius:var(--command-control-radius,10px);
+  background:transparent;
+  color:var(--command-icon,#858d85);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  cursor:pointer;
+  font-size:10px;
+  font-weight:470;
+  letter-spacing:.022em;
+  transition:background .13s ease,color .13s ease,transform .09s ease;
+}
+.gameplay-screen .category-row button svg{width:21px;height:21px;stroke-width:1.55}
+.gameplay-screen .category-row button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d1cec5)}
+.gameplay-screen .category-row button:active{transform:translateY(1px)}
+.gameplay-screen .category-row button.is-active{
+  color:var(--command-icon-active,#dec17a);
+  background:linear-gradient(180deg,var(--command-active-top,rgba(201,165,95,.082)),var(--command-active-bottom,rgba(201,165,95,.016)));
+}
+.gameplay-screen .category-row button.is-active::before{
+  content:'';
+  position:absolute;
+  left:30%;
+  right:30%;
+  top:0;
+  height:2px;
+  border-radius:0 0 2px 2px;
+  background:var(--hud-accent,#c9a55f);
 }
 
-/* Tool state: dedicated contextual dock replaces the Main Dock; World Utility remains global. */
+@keyframes main-dock-categories-in{
+  from{opacity:.55;transform:translateY(2px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Workspace is a larger child surface of the bottom system, not a command bar itself. */
+.gameplay-screen .workspace{
+  bottom:calc(var(--hud-edge,16px) + var(--hud-command-height,76px) + var(--hud-gap-md,12px));
+  border-color:var(--hud-border-strong,rgba(239,233,221,.14));
+  border-radius:var(--hud-radius-lg,18px);
+  background:
+    radial-gradient(ellipse at 78% 18%,rgba(201,165,95,.025),transparent 30%),
+    linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
+  box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
+  backdrop-filter:blur(11px);
+}
+.gameplay-screen .workspace-header{
+  border-bottom-color:var(--hud-rule,rgba(239,233,221,.065));
+  background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.002));
+}
+.gameplay-screen .workspace-header .icon-button{border-radius:9px}
+.gameplay-screen .workspace-primary-rail{border-right-color:var(--hud-rule,rgba(239,233,221,.065))}
+.gameplay-screen .workspace-primary-rail button{border-radius:9px}
+.gameplay-screen .workspace-context-filter{border-bottom-color:rgba(239,233,221,.045)}
+.gameplay-screen .building-card{
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(255,255,255,.016),rgba(255,255,255,.005));
+}
+.gameplay-screen .building-card:hover{
+  background:linear-gradient(90deg,rgba(201,165,95,.048),rgba(255,255,255,.010) 72%,rgba(255,255,255,.003));
+}
+.gameplay-screen .card-thumb{border-radius:9px}
+.gameplay-screen .workspace-search__field,
+.gameplay-screen .workspace-search__trigger{border-radius:9px 9px 0 0}
+
+/* Placement tool clusters reuse the same centered bottom slot; their material lives in placement-action-bar.css. */
 .tool-bottom-cluster{
   position:absolute;
   left:50%;
@@ -84,52 +149,3 @@
   align-items:stretch;
   gap:8px;
 }
-
-.tool-bottom-cluster__utility,
-.tool-bottom-cluster__primary{
-  height:44px;
-  display:flex;
-  align-items:center;
-  padding:4px;
-  background:linear-gradient(180deg,rgba(30,38,34,.94),rgba(24,31,28,.93));
-  border:1px solid rgba(239,233,221,.14);
-  box-shadow:0 12px 34px rgba(7,10,9,.25);
-  backdrop-filter:blur(9px);
-}
-
-.tool-bottom-cluster__utility{gap:3px}
-.tool-bottom-cluster__primary{gap:4px}
-
-.tool-bottom-action{
-  height:34px;
-  min-width:54px;
-  padding:0 9px;
-  border:0;
-  background:transparent;
-  color:#969c94;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:5px;
-  cursor:pointer;
-  font-size:9px;
-  transition:background .14s ease,color .14s ease,transform .08s ease;
-}
-.tool-bottom-action svg{width:14px;height:14px}
-.tool-bottom-action:hover{background:rgba(255,255,255,.04);color:#d0cec5}
-.tool-bottom-action.is-active{background:rgba(201,165,95,.085);color:#dfc078}
-.tool-bottom-action.is-pressed{transform:translateY(1px);color:#d9bf83}
-
-.tool-primary-action{
-  height:34px;
-  min-width:74px;
-  padding:0 16px;
-  border:1px solid rgba(201,165,95,.34);
-  background:rgba(201,165,95,.10);
-  color:#dfc078;
-  cursor:pointer;
-  font-size:10px;
-}
-.tool-primary-action:hover{background:rgba(201,165,95,.16);border-color:rgba(201,165,95,.48)}
-.tool-primary-action--cancel{background:transparent;border-color:rgba(239,233,221,.12);color:#9da29a}
-.tool-primary-action--cancel:hover{background:rgba(255,255,255,.035);color:#d0cec5}

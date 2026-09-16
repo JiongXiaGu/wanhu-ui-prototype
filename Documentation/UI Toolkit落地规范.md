@@ -10,18 +10,18 @@
 - 验证构图、尺寸和空间关系；
 - 验证信息架构与交互流程；
 - 快速比较不同视觉方案；
-- 通过固定 1920 × 1080 场景和 Visual Review 做持续美术审查；
-- 为 Unity UI Toolkit 的正式 UXML / USS / C# 实现提供稳定参考。
+- 通过固定 1920×1080 场景和 Visual Review 做持续美术审查；
+- 为正式 UXML / USS / C# 提供稳定参考。
 
-因此，后续任何设计决策都必须优先回答：
+因此任何重要设计都必须能回答：
 
 > 这个界面在 Unity UI Toolkit 中如何落地？
 
-网页实现方式本身不构成最终技术约束。
+Web 实现方式本身不构成最终技术约束。
 
 ## 2. 权威来源
 
-项目按以下优先级理解：
+优先级：
 
 1. Unity 正式项目中的运行时代码、UXML、USS 与实际游戏规则；
 2. 本仓库 Documentation 中已经确认的长期 UI 设计、交互与跨模块契约；
@@ -38,152 +38,182 @@ Web Prototype 负责表达：
 - 元素相对位置；
 - 信息优先级；
 - 视觉层级；
-- 选中 / Hover / Disabled / Focus 等状态；
-- 页面、Workspace、Tool、Flyout、Pause 等空间切换；
-- 滚轮、分页、搜索、快捷键等交互语义；
-- 动效的方向、节奏与大致时长；
-- 图片、预览、材质、模糊等效果应该呈现出的视觉结果。
+- Selected / Hover / Disabled / Focus；
+- Gameplay / Workspace / Tool / Management / Context Surface / Pause 等空间切换；
+- 滚轮、分页、搜索、快捷键；
+- 动效方向、节奏和大致时长；
+- 图片、预览、材质、Blur 等目标视觉。
 
-Web Prototype **不要求**以下内容与 Unity 1:1 技术对应：
+Web Prototype **不要求**以下内容与 Unity 1:1 对应：
 
-- CSS Grid 的具体写法；
-- `linear-gradient` / `radial-gradient` 的具体实现；
+- CSS Grid；
+- `linear-gradient` / `radial-gradient`；
 - `box-shadow`；
 - `filter`；
 - `backdrop-filter`；
-- `::before` / `::after`；
+- `::before / ::after`；
 - CSS `@keyframes`；
-- 浏览器原生 Tooltip；
-- 浏览器 DOM 结构本身。
+- Web DOM 层级本身。
 
-这些只用于快速表达视觉。正式 Unity 实现应换成适合 UI Toolkit 的结构。
+这些只用于快速表达视觉，正式 Unity 应换成合适的 UI Toolkit / URP 实现。
 
-## 4. 何时必须修改网页方案
+## 4. 何时必须修改 Web 方案
 
-只有当问题影响最终游戏的设计或交互时，才应修改 Web Prototype。
-
-需要修改网页的情况：
+需要修改：
 
 - 布局结构在 UI Toolkit 中明显不合理；
-- 交互流程不适合鼠标、键盘或手柄；
-- 大量内容依赖无限滚动而不适合正式游戏；
-- 状态关系会导致 Unity 侧数据所有权混乱；
-- 视觉效果必须依赖不可接受的运行时成本才能成立；
-- Web 方案掩盖了正式实现中必须解决的信息架构问题。
+- 交互流程不适合鼠标 / 键盘 / 手柄；
+- 大量内容依赖不受控无限滚动；
+- 状态关系会造成 Unity 数据所有权混乱；
+- 视觉效果必须依赖不可接受的运行时成本；
+- Web 方案掩盖正式实现必须解决的信息架构问题。
 
-不需要为了迁移而修改网页的情况：
+不需要为了迁移修改：
 
-- CSS 渐变在 Unity 中需要改成 Sprite / VisualElement；
-- Web 阴影在 Unity 中需要改成 9-slice；
-- Hover 提亮在 Unity 中需要改成 Tint / Overlay；
-- Web 动效需要改成 USS Transition / C#；
-- Web Blur 需要改成 URP 渲染能力；
-- CSS Grid 可以通过嵌套 Flex 重建同样构图。
+- CSS 渐变需换成 Sprite / VisualElement；
+- Web Shadow 需换成 9-slice；
+- Hover 提亮需换成 Tint / Overlay；
+- Web 动效需换成 USS Transition / C#；
+- Web Blur 需换成 URP；
+- CSS Grid 需用嵌套 Flex 重建。
 
-原则：
-
-> **设计合理但技术实现不同，不属于需要重设计。**
+原则：**设计合理但技术实现不同，不属于需要重设计。**
 
 ## 5. UI Toolkit 基础实现约束
 
 ### 5.1 布局
 
-正式 Unity UI 优先使用：
+优先：
 
 - UXML 表达稳定层级；
 - USS 表达视觉和基本布局；
-- Flex Row / Column 组合替代 Web CSS Grid；
-- 固定槽位 / Pool 处理数量有限但重复的内容；
-- ListView 只用于确实需要大量连续列表和虚拟化的场景。
+- Flex Row / Column 组合；
+- 固定槽位 / Pool 处理有限重复内容；
+- ListView 只用于确实需要大量列表和虚拟化的场景。
 
-不要为了复刻网页 DOM，而创建没有语义价值的 VisualElement 层级。
+不要为了复刻网页 DOM 创建没有语义价值的 VisualElement 层级。
 
-### 5.2 固定设计基准
+### 5.2 设计基准
 
-当前 Web Prototype 的 `1920 × 1080` 是正式 UI 的设计基准。
+Web Prototype 的 `1920 × 1080` 是正式 UI 设计基准。
 
-Unity 应使用统一 PanelSettings 缩放策略支持：
-
-- 1920 × 1080；
-- 2560 × 1440；
-- 3840 × 2160；
-- 其它常见宽高比。
-
-不要把 4K 适配理解为把所有 USS 数字手工翻倍。
+Unity 应使用统一 PanelSettings 缩放策略支持 1080p / 1440p / 4K / 其它常见宽高比，而不是复制多套 USS 或手工翻倍数值。
 
 ### 5.3 状态驱动
 
-Unity 正式实现应继续保持当前已经验证的状态模型：
+正式 Unity 继续使用明确状态驱动：
 
 - Gameplay；
 - Workspace；
 - Tool；
+- Management；
+- Context Surface；
+- Information Views；
 - Pause；
-- Right Edge Flyout；
 - Archive；
 - Settings。
 
-视觉状态由明确状态驱动，不依赖查询 VisualTree 当前长什么样来推断业务状态。
+视觉状态由明确数据和 Class 驱动，不通过查询 VisualTree 当前长什么样来推断业务状态。
 
-结构变更、界面打开与关闭、工具模式变化都应有明确的数据所有者。
+结构变更、界面开关、工具模式变化都必须有明确数据所有者。
 
-## 6. 视觉效果的 Unity 对应方案
+## 6. 共享 USS 视觉系统
+
+正式规则见：`Documentation/UI Surface与Control视觉规范.md`。
+
+不要按页面复制一套 Button / Segmented / Surface 样式。建议至少建立：
+
+```text
+UISurface.uss
+UIControls.uss
+BottomCommand.uss
+FullscreenActions.uss
+```
+
+概念 Class：
+
+```text
+.ui-surface
+.ui-surface--glass
+.ui-surface--primary
+.ui-surface--secondary
+
+.ui-button
+.ui-button--primary
+.ui-button--secondary
+.ui-button--utility
+
+.ui-segmented
+.ui-segmented__option
+.ui-segmented__option--active
+```
+
+C# 通过语义 Class 控制状态，例如 `is-active / is-disabled / is-primary`，不要在业务代码中散落颜色、Radius 和 Tint 数值。
 
 ### 6.1 Surface / Tone
 
-Web 中的大量渐变和轻微 Tone 仍可作为视觉参考。
+Web 渐变和轻 Tone 是美术参考。
 
 Unity 优先使用：
 
 - 半透明背景色；
-- 独立 Overlay VisualElement；
-- 小型共享渐变纹理；
+- Overlay VisualElement；
+- 共享渐变纹理；
 - 9-slice Sprite；
 - Tint / Opacity；
 - 必要时 Painter2D / 自定义 Mesh。
 
-不要为了视觉丰富而给每个小控件配置独立复杂材质。
+Surface 必须有自己的色调。不要依赖世界画面的亮度决定 UI 明暗，尤其是夜景。
 
-### 6.2 Soft Glow
+### 6.2 Radius 层级
 
-暖金或青墨的弱环境光建议做成共享视觉组件，例如：
+当前参考：
 
-`SoftGlow`
+- 8px：小型 Option / Auxiliary Action；
+- 10px：普通 Button / Segmented / Tooltip；
+- 14px：中型 HUD / Bottom Command；
+- 18px：Workspace / Context / Tool Parameter Panel。
 
-可以由：
+正式 USS 可以按 PanelSettings 比例换算，但语义层级保持一致。
 
-- 透明 Sprite；
-- VisualElement + Tint；
-- 或极少量专用自定义绘制
+### 6.3 Segmented Control
 
-实现。
+用于 2–5 项局部互斥 Mode，例如 Camera、Weather、Building Placement、New Game。
 
-不要在每个面板复制一套独立 Shader。
+推荐结构：
 
-### 6.3 Shadow
+```text
+SegmentedControl
+├ OptionButton
+├ OptionButton
+└ OptionButton
+```
 
-Web `box-shadow` 只表示美术意图。
+外壳必须有可辨认的弱 Surface / Border，Option 必须拥有 Hover / Active 状态；不能只靠文字颜色让玩家猜它是否可点击。
 
-Unity 中：
+### 6.4 Soft Glow
 
-- 大型重要 Surface 可使用共享 9-slice Shadow Sprite；
-- 小型控件通常不需要真实阴影；
-- 优先靠 Tone、边界和层级关系建立深度。
+暖金或青墨弱环境光应做共享视觉能力，例如 `SoftGlow`：透明 Sprite / VisualElement Tint / 少量自定义绘制。
 
-### 6.4 Hover 图片提亮
+不要给每个 Panel 复制 Shader。
 
-Web 的 `brightness / saturate` 不作为 Unity 技术要求。
+### 6.5 Shadow
 
-Unity 可用：
+Web `box-shadow` 只表示深度意图。
 
-- Image Tint；
-- 轻量 Overlay；
-- Selected / Hover 状态类；
-- 必要时替换 Sprite 或预览材质参数。
+Unity：
 
-### 6.5 伪元素
+- 大型重要 Surface 可用共享 9-slice Shadow Sprite；
+- 小控件通常不需要真实 Shadow；
+- 优先靠 Tone / Border / Layer 建立深度。
 
-Web `::before / ::after` 在正式 Unity 中应转化成有明确职责的子 VisualElement，例如：
+### 6.6 Hover 图片提亮
+
+Web `brightness / saturate` 不是 Unity 技术要求。Unity 可用 Image Tint、Overlay、状态 Class 或预览材质参数。
+
+### 6.7 Web 伪元素
+
+`::before / ::after` 在 Unity 中应转换为有职责的子 VisualElement：
 
 ```text
 CategoryItem
@@ -192,117 +222,123 @@ CategoryItem
 └ Label
 ```
 
-伪元素只能是 Web 原型快捷表达，不能成为 Unity 结构设计依据。
+伪元素只是 Web 原型快捷表达。
 
 ## 7. Blur 统一策略
 
-正式游戏计划使用 **URP 全屏 Blur Pass** 作为统一场景模糊能力。
+正式游戏使用 **共享 URP Blur Service / Fullscreen Pass** 作为场景模糊能力。
 
-因此 Web Prototype 可以继续使用 `backdrop-filter` 或其它方式表达目标视觉，但必须遵守：
+Web 可以继续用 `backdrop-filter` 表达视觉，但 Unity 必须遵守：
 
-- Blur 是场景级 / 全屏级渲染能力，不是每个 VisualElement 自己实现的效果；
-- UI 面板只声明自己是否需要 Blur 背景层，不负责执行模糊算法；
-- Pause、Settings、Archive 等需要明显背景压制的空间可以共享同一 Blur 服务；
-- 普通 Gameplay 小面板尽量只用透明 Surface + Tone，不滥用 Blur；
-- 模糊半径、降采样、性能档位应统一管理；
-- 不允许每个面板建立独立 RenderTexture Blur 链路。
+- Blur 是共享场景级渲染能力，不是每个 VisualElement 自己执行；
+- Surface 只声明是否需要弱化世界背景，以及自己的 Tint / Opacity / Border；
+- Pause / Settings / Archive / Management 等重空间可以使用更明显的 Scene Blur / Dim；
+- Gameplay Workspace / Context / Tool Panel 可以表现轻度 Glass Blur，但仍共享同一 Blur 服务或低成本分档结果；
+- Gameplay 小面板的可读性必须来自 Surface Tint，而不是 Blur；
+- 模糊半径、降采样、质量档位集中管理；
+- 不允许每个 Panel 建独立 RenderTexture Blur 链。
 
-建议 Unity 最终形成类似：
+推荐架构：
 
 ```text
-Scene
+World Camera
 ↓
-URP Fullscreen Blur Pass
+URP Shared Blur Service / Fullscreen Pass
 ↓
-Blurred Scene Texture / Fullscreen Result
+共享弱化世界结果
 ↓
 UI Toolkit Panel
+  └ Surface VisualElement（Tint / Opacity / Border）
 ```
 
-具体实现以后以 Unity 项目的 URP 架构为准，本仓库只记录视觉需求和使用边界。
+### 夜景规则
+
+夜晚世界变暗时，不通过继续降低 Panel Alpha 来获得“玻璃感”。Panel 自己保持稳定玉青 / 深灰 Tint，Blur 只提供低频环境色。这样白天和夜晚的文字对比与控件识别保持一致。
+
+具体视觉基线见 `Documentation/UI Surface与Control视觉规范.md`。
 
 ## 8. 图片与 RenderTexture
 
-以下内容优先使用真实游戏资产：
+以下优先使用真实游戏资产：
 
-- 建筑缩略图；
+- 建筑 / 道路 / 桥梁缩略图；
 - 世界预设；
 - Game Group 城市截图；
 - Archive Preview；
 - 需要实时展示的建筑预览。
 
-允许使用：
+允许：Texture2D / Sprite / RenderTexture / VectorImage。
 
-- Texture2D；
-- Sprite；
-- RenderTexture；
-- VectorImage。
+实时 RenderTexture 必须按可见数量控制更新，不为不可见 Card 持续渲染。
 
-实时 RenderTexture 必须按可见数量控制更新，不为不可见的大量 Card 持续渲染。
+Design Workspace 当前每页 8 个可见 Asset，很适合有限预览池。
 
-Building Workspace 当前只有 6 个可见 Card，非常适合将来做有限预览资源池。
+## 9. Bottom Command Visual System
 
-## 9. 动效规范
+正式规则：`Documentation/Bottom Command Visual System设计规范.md`。
 
-Web 动效表达的是节奏，不是技术实现。
+Unity 不应为 Main Dock / Placement Action Bar / World Utility 各复制一套 USS。
 
-正式 Unity 优先使用：
+建议：
 
-- Opacity；
-- Translate；
-- Scale；
-- USS Transition；
-- 必要时 C# 驱动过渡。
+```text
+BottomCommandSurface
+├ SizeTier: L / M / S
+└ CommandGroup
+   ├ CommandButton
+   ├ ActiveLine
+   └ Divider
+```
 
-常规建议：
+L / M / S 只决定尺寸和 Shadow Tier；Surface、Hover、Active、Divider、Tooltip 共用视觉契约。
+
+## 10. 动效规范
+
+正式 Unity 优先使用：Opacity / Translate / Scale / USS Transition / 必要时 C#。
+
+建议：
 
 - Hover：约 100 ms；
-- Tab / Selected：约 120～160 ms；
-- Workspace / Flyout：约 160～220 ms；
-- 分组分页：约 160～200 ms；
-- Tooltip：约 400 ms 延迟出现。
+- Tab / Selected：约 120–160 ms；
+- Workspace / Context Surface：约 160–220 ms；
+- 分组分页：约 160–200 ms；
+- Tooltip：约 320–400 ms 延迟。
 
-避免频繁动画 Width / Height / Layout Position，避免为了视觉效果持续触发布局重算。
+避免频繁动画 Width / Height / Layout Position。
 
-## 10. Tooltip
+## 11. Tooltip
 
-Web Prototype 中现有 `title` / `data-tooltip` 只是临时表达。
-
-Unity Runtime 必须建立正式共享 Tooltip 系统，例如：
-
-`GameplayTooltipController`
+Unity Runtime 必须建立正式共享 Tooltip Controller，例如 `RuntimeTooltipController`。
 
 职责：
 
 - PointerEnter / PointerLeave；
-- 约 400 ms Delay；
+- Delay；
 - Tooltip Layer；
 - 屏幕边缘修正；
-- 鼠标 / 键盘 / 手柄模式差异；
-- 文本内容与快捷键显示。
+- 鼠标 / 键盘 / 手柄差异；
+- 名称、解释与快捷键。
 
 Tooltip 不得成为完成基础操作所必须的信息来源。
 
-## 11. 输入与滚轮
+## 12. 输入与滚轮
 
-Web Prototype 验证的是输入语义。
+最终 Unity 使用 New Input System，由 UI Toolkit Runtime 接收对应事件。
 
-Unity 最终应使用新的 Input System，并由 UI Toolkit Runtime 接收对应事件。
-
-Workspace 当前已确认：
+Workspace 已确认：
 
 - Primary Rail 滚轮翻分类组；
 - Content Grid 滚轮翻内容组；
 - 一次有效手势只翻一组；
-- 分页视觉始终保留；
+- 分页视觉保留；
 - 滚轮只是快捷输入；
-- Primary Rail 与 Context Filter 是独立筛选维度。
+- Primary Rail 与 Context Filter 是独立维度。
 
-最终 Unity 实现应继续支持鼠标、键盘和手柄导航，不把功能绑定死在浏览器式鼠标交互上。
+正式实现继续支持鼠标、键盘、手柄导航。
 
-## 12. 推荐公共组件
+## 13. 推荐公共组件
 
-Unity 正式实现优先建立以下共享组件：
+优先建立：
 
 - `GameButton`
 - `IconButton`
@@ -313,54 +349,53 @@ Unity 正式实现优先建立以下共享组件：
 - `PagedContentView<T>`
 - `PagedCategoryRail<T>`
 - `SurfaceFrame`
+- `BottomCommandSurface`
 - `SoftGlow`
+- `GameplayBlurService`
 
-这些组件应共享：
+这些共享状态类名、Input 行为、Tooltip、Disabled / Hover / Selected 规则和视觉 Token。
 
-- 状态类名；
-- Input 行为；
-- Tooltip；
-- Disabled / Hover / Selected 规则；
-- 视觉 Token。
+不要把整个 UI 抽象成万能组件。
 
-不要把整个 UI 抽象成一个万能组件。
+## 14. 后续 Web 设计规则
 
-## 13. 后续 Web 设计规则
+每个新增重要 UI 至少明确：
 
-以后继续修改 Web Prototype 时，每个新增的重要 UI 都应至少明确：
-
-1. Unity 中对应的 VisualElement 层级是什么；
-2. 哪部分由 USS 完成；
-3. 哪部分由 C# 状态 / 事件完成；
+1. Unity VisualElement 层级；
+2. USS 负责什么；
+3. C# 状态 / 事件负责什么；
 4. 是否需要 Sprite / Texture / RenderTexture；
-5. 是否依赖 URP 全屏效果；
+5. 是否依赖 URP 效果；
 6. 是否需要 Pool / ListView；
 7. 鼠标、键盘、手柄如何操作。
 
-如果视觉效果无法直接用 UI Toolkit 原语实现，但能通过统一 Sprite、RenderTexture、Painter2D、Mesh 或 URP 能力合理实现，则可以继续保留该视觉设计。
+如果 Web 效果不能直接用 UI Toolkit 原语实现，但能通过统一 Sprite / RenderTexture / Painter2D / Mesh / URP 合理实现，可以保留设计。
 
-不要因为 Web CSS 写起来方便，而新增无法解释 Unity 落地方式的核心交互或结构。
+不要因为 CSS 写起来方便新增无法解释 Unity 落地方式的核心交互或结构。
 
-## 14. 当前 Web 是否需要返工
+## 15. 当前 Web 是否需要返工
 
-当前结论：**不需要因为迁移问题大规模返工现有 Web Prototype。**
+当前结论：**不需要因为迁移问题大规模返工。**
 
-当前网页继续承担美术与交互参考职责。
+后续只在以下情况回头修改：
 
-后续只在以下情况下回头修改现有页面：
-
-- 发现结构或交互本身不适合 Unity；
-- 正式 UI Toolkit 实现暴露出新的信息架构问题；
-- 某视觉效果需要不可接受的性能成本；
+- 结构 / 交互本身不适合 Unity；
+- 正式 UI Toolkit 暴露新的信息架构问题；
+- 某视觉效果成本不可接受；
 - 用户明确调整设计方向。
 
-纯实现差异不作为返工理由。
+纯实现差异不构成返工理由。
 
-## 15. 相关文档
+## 16. 相关文档
 
 - `Documentation/项目概览.md`
 - `Documentation/UI设计原则.md`
+- `Documentation/UI Surface与Control视觉规范.md`
 - `Documentation/UI空间与状态架构.md`
+- `Documentation/Bottom Command Visual System设计规范.md`
+- `Documentation/Placement Tool设计规范.md`
+- `Documentation/Design Workspace设计规范.md`
 - `Documentation/组件设计规范.md`
 - `Documentation/代码审查/2026-09-15-UI Toolkit迁移可行性审查.md`
+- `Documentation/代码审查/2026-09-16-Surface与Control视觉系统审查.md`
 - `Documentation/工作交接.md`
