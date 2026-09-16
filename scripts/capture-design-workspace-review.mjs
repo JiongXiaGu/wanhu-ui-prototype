@@ -56,6 +56,8 @@ for (const [id, label] of designCategories) {
 
   const railLabels = await workspace.locator('.workspace-primary-rail__page > button span').allTextContents();
   if (!railLabels.length) throw new Error(`${label} Workspace must expose at least one primary rail category.`);
+  if (railLabels.length > 7) throw new Error(`${label} Workspace rail must show at most seven categories per group. count=${railLabels.length}`);
+  if (railLabels[0]?.trim() !== '所有') throw new Error(`${label} Workspace first primary filter should use the shared two-character label “所有”.`);
   for (const railLabel of railLabels) {
     if (Array.from(railLabel.trim()).length > 6) throw new Error(`${label} rail label exceeds the six-character contract: ${railLabel}`);
   }
@@ -115,6 +117,12 @@ for (const [id, label] of designCategories) {
       throw new Error('Asset Inspector must respect the 16px gameplay safe edge.');
     }
     if ((await inspector.evaluate((node) => getComputedStyle(node).pointerEvents)) !== 'none') throw new Error('Hover Inspector must ignore pointer picking.');
+    const inspectorVisual = await inspector.evaluate((node) => {
+      const style = getComputedStyle(node);
+      return { boxShadow: style.boxShadow, borderColor: style.borderTopColor };
+    });
+    if (inspectorVisual.boxShadow === 'none') throw new Error('Asset Inspector must keep a distinct elevated shadow above Workspace surfaces.');
+    if (!inspectorVisual.borderColor || inspectorVisual.borderColor === 'rgba(0, 0, 0, 0)') throw new Error('Asset Inspector must keep a visible edge separate from Workspace surfaces.');
     const inspectorText = (await inspector.textContent()) ?? '';
     for (const required of ['尺寸', '造价', '规格']) {
       if (!inspectorText.includes(required)) throw new Error(`Asset Inspector missing required summary field: ${required}`);
