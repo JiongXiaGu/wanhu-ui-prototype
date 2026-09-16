@@ -34,8 +34,7 @@ const expected = new Map([
 ]);
 
 for (const [name, value] of expected) {
-  const slider = page.getByRole('slider', { name, exact: true });
-  const actual = name === '风向' ? await slider.getAttribute('aria-valuenow') : await slider.inputValue();
+  const actual = await page.getByRole('slider', { name, exact: true }).inputValue();
   if (Number(actual) !== Number(value)) {
     throw new Error(`Preset did not update ${name}. expected=${value} actual=${actual}`);
   }
@@ -51,7 +50,6 @@ if ((await page.locator('.weather-preset-section__heading > span').count()) !== 
 
 await page.screenshot({ path: `${outDir}/10-weather-preset-heavy-rain.png` });
 
-// Manual weather edits retain the originating preset in state while marking the preset values as adjusted.
 await page.getByRole('slider', { name: '云量', exact: true }).evaluate((node) => {
   const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
   descriptor?.set?.call(node, '90');
