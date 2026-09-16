@@ -1,0 +1,40 @@
+/* Shared placement parameter-control geometry.
+   Visual material/state comes from ui-control-system.css; this file only adapts the shared fields to Tool Parameter Panels. */
+
+.gameplay-screen .tool-overlay.building-placement-prototype .ui-parameter-row{
+  --ui-parameter-label-width:80px;
+  --ui-parameter-step-size:28px;
+  --ui-parameter-value-width:58px;
+  min-height:44px;
+  padding:0;
+  border-radius:8px;
+  transition:background .13s ease;
+}
+.gameplay-screen .tool-overlay.building-placement-prototype .ui-parameter-row:hover{background:rgba(255,255,255,.010)}
+.gameplay-screen .tool-overlay.building-placement-prototype .ui-parameter-row>span{font-size:9.5px}
+.gameplay-screen .tool-overlay.building-placement-prototype .ui-slider{height:28px}
+.gameplay-screen .tool-overlay.building-placement-prototype .ui-value-field{justify-content:flex-end;border-color:transparent;background:transparent}
+
+.bp-segment-row.ui-labeled-control-row{
+  min-height:44px;
+  padding:0;
+  display:grid;
+  grid-template-columns:80px minmax(0,1fr);
+  align-items:center;
+  gap:6px;
+}
+.bp-segment-row.ui-labeled-control-row>span{color:#959b93;font-size:9.5px}
+.bp-segment-row.ui-labeled-control-row>.ui-segmented{width:100%}
+
+.gameplay-screen .tool-overlay.road-placement-prototype .ui-parameter-row{
+  --ui-parameter-label-width:92px;
+  --ui-parameter-step-size:28px;
+  --ui-parameter-value-width:58px;
+  min-height:46px;
+  padding:0;
+  border-radius:8px;
+  transition:background .13s ease;
+}
+.gameplay-screen .tool-overlay.road-placement-prototype .ui-parameter-row:hover{background:rgba(255,255,255,.010)}
+.gameplay-screen .tool-overlay.road-placement-prototype .ui-parameter-row>span{font-size:9.5px}
+.gameplay-screen .tool-overlay.road-placement-prototype .ui-slider{height:28px}
