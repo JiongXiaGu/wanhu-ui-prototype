@@ -11,6 +11,7 @@ UI 不使用“纯黑不透明盒子”覆盖世界，也不把 Blur 当作唯�
 - Surface 自己必须带有黛墨 / 玉青色调；
 - 世界画面只作为经过弱化、模糊后的环境信息透入；
 - 白天与夜晚都应保持相近的文字对比度和结构识别；
+- Surface 透明度按任务强度分层，不按单个页面随意取值；
 - 暖金只用于 Selected / On / Focus / Primary；
 - 圆角属于层级语法，不是装饰；
 - 同一语义控件不得在不同页面自行发明另一套 Hover / Active / Radius；
@@ -47,33 +48,51 @@ Gameplay Glass Surface 用于仍应让玩家感知世界画面的 HUD / 面板�
 
 这些 Surface 不应完全遮断世界画面。
 
-### 3.2 当前 Web 视觉基线
+### 3.2 Surface Transparency Hierarchy
 
-Primary Gameplay Panel 当前约：
+Gameplay 不再以“所有面板接近同一 Alpha”为目标。透明度由任务强度决定：越接近世界观察越透明，越接近集中操作越稳定。
 
-- Surface Top：`rgba(35,46,40,.90)`；
-- Surface Bottom：`rgba(22,32,27,.875)`；
-- Blur：约 `14px`；
-- Saturate：约 `.86`；
-- Brightness：约 `1.05`；
-- Border：浅纸色约 `14%`；
-- 大面板 Radius：`18px`。
+当前四档语义：
 
-Secondary HUD / Top Tray 约使用 `11–12px` Blur 和更低 Surface Alpha。
+| Tier | 语义 | Web 参考 Alpha | 当前 Consumer |
+| --- | --- | --- | --- |
+| Ambient | 常驻、低干扰辅助 HUD | 约 `.66–.74` | Compass、System Menu、World Utility、Operation Hints |
+| Context | 临时观察 / 调整，不阻断世界 | 约 `.76–.82` | Camera / Weather、Top Control Tray、Workspace Header |
+| Work | 玩家正在浏览或执行任务 | 约 `.82–.88` | Top Status、Main Dock、Workspace Body、Tool Parameter、Placement Action Bar |
+| Blocking | 需要明显压住世界的重空间 | 约 `.92–.94` | Management、Pause、Settings、Archive 等重空间 |
+
+当前 Gameplay Token 位于 `src/gameplay/gameplay-hud-layout.css`：
+
+```text
+--hud-surface-ambient-*
+--hud-surface-context-*
+--hud-surface-work-*
+--hud-surface-blocking-*
+```
+
+稳定规则：
+
+- 只降低 Surface 背景 Alpha，不给整个组件设置统一 `opacity`；
+- Text / Icon / Border / Active 状态保持自己的固定对比度；
+- 子控件仍可使用极弱独立 Tone，避免背景细节直接穿入交互控件；
+- 同一 Surface 内允许按职责拆层，例如 Workspace Header = Context、Body = Work；
+- 不为单个页面重新发明一套透明度数值。
 
 这些数值是 Web Prototype 的视觉参考，不是 Unity Shader 参数合同。
 
 ### 3.3 夜晚规则
 
-夜间城市画面更暗时，禁止简单把 Surface Alpha 继续降低来“增加透明感”。否则 UI 会随场景一起变黑，文字与结构层级失控。
+夜景不使用独立 Night Theme，也不根据世界亮度动态修改 Surface Tier。
 
 夜间稳定性依赖：
 
-1. Surface 自己的玉青 / 深灰底色；
+1. 固定的 Ambient / Context / Work / Blocking Surface Tint；
 2. 被 Blur 后的低频世界颜色；
 3. 轻微 Brightness Lift；
 4. 固定文字 / Icon 对比度；
 5. 弱内高光与 Border。
+
+禁止因为进入夜晚就额外降低 Alpha；如果某个固定 Tier 在昼夜之一失去可读性，应调整该 Tier 本身，而不是增加日夜两套 UI Token。
 
 Blur 负责环境感，不负责基础可读性。
 
@@ -81,7 +100,7 @@ Blur 负责环境感，不负责基础可读性。
 
 ### Gameplay 小面板
 
-可以表现轻度局部玻璃感，但 Blur 强度应克制，不让背景细节穿透到文字层。
+可以表现轻度局部玻璃感，但 Blur 强度应克制，不让背景细节穿透到文字层。透明度越低的 Context / Ambient Surface 可以比高 Alpha Work Surface 多保留一点环境感，但仍共享少量 Blur Tier，不为每个面板单独定 Blur 算法。
 
 ### Pause / Settings / Archive / Management 等重空间
 
@@ -207,17 +226,20 @@ Gameplay 底部 Main Dock / Placement / World Utility 继续遵循：
 
 本规范提供更高层的通用 Surface / Control 规则；Bottom Command 规范提供 L / M / S 三档 Toolbar 的专用尺寸与状态方向。
 
-两者不冲突：
+三档仍然属于同一视觉家族，但允许按照任务强度映射不同透明度：
 
-- 通用 Control Radius / Hover / Blur → 本规范；
-- Command Bar 尺寸 / Group / Active Line → Bottom Command 规范。
+- Main Dock：较轻 Work；
+- Placement Action Bar：更稳定的 Work；
+- World Utility：Ambient。
+
+它们仍共享 Tint 色相、Border、Radius、Hover、Active、Divider、Tooltip，不得因为 Alpha 不同演变成三套材质。
 
 ## 9. Web 代码权威位置
 
 当前视觉集中入口：
 
 - `src/ui/ui-visual-system.css`：通用 Surface / Segmented / Full-screen Button；
-- `src/gameplay/gameplay-hud-layout.css`：Gameplay Geometry + HUD / Blur Token；
+- `src/gameplay/gameplay-hud-layout.css`：Gameplay Geometry + Surface / Blur Token；
 - `src/gameplay/bottom-command-system.css`：Bottom Command Surface；
 - `src/fullscreen-actions.css`：Settings / New Game / Load / Save Footer 的布局与语义分组。
 
@@ -232,8 +254,10 @@ Gameplay 底部 Main Dock / Placement / World Utility 继续遵循：
 ```text
 .ui-surface
 .ui-surface--glass
-.ui-surface--primary
-.ui-surface--secondary
+.ui-surface--ambient
+.ui-surface--context
+.ui-surface--work
+.ui-surface--blocking
 .ui-radius-sm
 .ui-radius-md
 .ui-radius-lg
@@ -273,7 +297,7 @@ URP Shared Blur Service / Fullscreen Pass
 可供 UI 使用的统一弱化背景结果
 ↓
 UI Toolkit Panel
-  └ Surface VisualElement（Tint / Opacity / Border）
+  └ Surface VisualElement（Tier / Tint / Opacity / Border）
 ```
 
 关键点：
@@ -282,18 +306,19 @@ UI Toolkit Panel
 - Surface 只声明视觉层级和 Tint，不拥有独立 Blur 算法；
 - 同屏多个 Surface 可以共享同一 Blur 结果；
 - 不为每个面板创建 RenderTexture 链；
-- 夜间可读性由 Surface Tint 和文本对比保证，而不是动态依赖世界亮度。
+- 昼夜可读性由固定 Surface Tier 和文本对比保证，而不是动态依赖世界亮度。
 
 ## 11. 审查清单
 
 新增或修改 UI 时检查：
 
-- 这是 Surface、Segmented、Toggle、Selector 还是 One-shot Button？
+- 这是 Ambient / Context / Work / Blocking 哪一档 Surface？
 - 是否已经有对应共享 USS / CSS 契约？
+- 是否错误使用整个组件 `opacity` 导致文字和控件一起变淡？
 - 是否又出现 `1px / 2px` 的临时按钮圆角？
 - Hover 时玩家是否能明确判断它可点击？
 - Active 与 Hover 是否有清楚但克制的差异？
-- 夜景下 Surface 是否会变成一整块黑色？
+- 夜景下 Surface 是否仍有稳定色调与结构边界？
 - Blur 是否只是环境点缀，而不是可读性前提？
 - 是否能直接说明 Unity 中对应的 UXML / USS / C# 状态？
 - 是否因为 Web 写法方便而复制了另一套视觉系统？

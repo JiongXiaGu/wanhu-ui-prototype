@@ -6,7 +6,7 @@ Bottom Command Visual System 统一 Gameplay 下方三类持续操作面：
 - **Placement Action Bar**：中号（M），负责当前 Tool 的模式、快捷动作与完成 / 取消；
 - **World Utility Toolbar**：小号（S），负责跨 Workspace / Tool 的世界级辅助能力。
 
-三者不是三套独立美术。它们必须使用同一套 Surface、边界、圆角、Hover、Active、分隔线与 Tooltip 语言，只通过尺寸、内容密度和阴影强度表达层级。
+三者不是三套独立美术。它们必须使用同一套 Tint 色相、边界、圆角、Hover、Active、分隔线与 Tooltip 语言；尺寸、内容密度、阴影与固定的透明度 Tier 用于表达职责层级。
 
 ## 1. 核心原则
 
@@ -26,7 +26,10 @@ World Utility Toolbar    S  全局辅助工具
 - 点击区尺寸；
 - 信息密度；
 - Shadow 强弱；
-- 是否常驻文字。
+- 是否常驻文字；
+- Surface Transparency Tier。
+
+透明度差异表达“任务强度”，不是三套材质：低干扰辅助能力允许更多世界画面透入，当前任务主控保持更稳定的 Work Surface。
 
 ## 2. 1080p 尺寸基线
 
@@ -36,7 +39,8 @@ World Utility Toolbar    S  全局辅助工具
 - 宽：当前约 `940px`；
 - 分类图标：约 `21px`；
 - 允许图标 + 两字分类名；
-- 是 Gameplay / Workspace 的主建造入口。
+- 是 Gameplay / Workspace 的主建造入口；
+- 使用较轻的 Work Surface，当前 Web 约 `.82–.85` Alpha。
 
 ### M：Placement Action Bar
 
@@ -44,22 +48,24 @@ World Utility Toolbar    S  全局辅助工具
 - 图标按钮点击区：`46 × 46px`；
 - 图标：约 `20px`；
 - 宽度由当前 Tool 的 Mode / Quick Action 数量自然决定；
-- Building / Road / 后续 Bridge / Wall 等共用同一外壳。
+- Building / Road / 后续 Bridge / Wall 等共用同一外壳；
+- 使用更稳定的 Work Surface，当前 Web 约 `.85–.88` Alpha。
 
 ### S：World Utility Toolbar
 
 - 高：`56px`；
 - 图标按钮点击区：`42 × 42px`；
 - 图标：约 `20px`；
-- 右下常驻，仅承载跨工具世界能力。
+- 右下常驻，仅承载跨工具世界能力；
+- 使用 Ambient Surface，当前 Web 约 `.68–.74` Alpha。
 
 不要为了让三者等宽或等高而破坏职责层级。
 
 ## 3. 共享材质
 
-三档 Surface 使用同一套视觉 Token：
+三档 Surface 使用同一视觉家族：
 
-- 黛墨 / 深青灰 Surface；
+- 黛墨 / 深青灰 Tint；
 - `14px` 外框圆角；
 - 约 `10px` 控件圆角；
 - 同一细弱边界；
@@ -68,7 +74,7 @@ World Utility Toolbar    S  全局辅助工具
 - 同一分隔线色；
 - 同一 Tooltip 材质。
 
-L / M / S 只使用不同 Shadow Tier，不切换成三种不同背景色。
+L / M / S 可以使用不同固定 Alpha 和 Shadow Tier，但不得切换色相或复制三套 USS / CSS 材质。Transparency Tier 必须来自共享 Token，不允许组件各自硬编码一组随机透明度。
 
 Web 当前代码：
 
@@ -160,6 +166,7 @@ Placement 不应因为组多就使用特别高或特别宽的分隔线；World U
 ```text
 BottomCommandSurface
 ├ Size Tier: L / M / S
+├ Surface Tier: Work / Ambient
 └ Content
    ├ CommandGroup
    │  ├ CommandButton
@@ -175,6 +182,8 @@ BottomCommandSurface
 .bottom-command-surface--lg
 .bottom-command-surface--md
 .bottom-command-surface--sm
+.ui-surface--work
+.ui-surface--ambient
 .command-button
 .command-button--active
 .command-button--primary
@@ -185,7 +194,7 @@ BottomCommandSurface
 
 Web 中的渐变、`box-shadow`、`backdrop-filter` 只表达目标视觉。Unity 可以使用：
 
-- USS 背景色 / Tint；
+- USS 背景色 / Tint / Opacity；
 - 共享 9-slice Surface / Shadow Sprite；
 - 轻量 Overlay VisualElement；
 - ActiveLine 子 VisualElement；
@@ -202,4 +211,4 @@ Web 中的渐变、`box-shadow`、`backdrop-filter` 只表达目标视觉。Unit
 - 详细数值继续放左侧 Tool Parameter Panel；
 - Grid / Undo 等跨工具能力继续留在 S 档 World Utility。
 
-如果未来需要新的底部 Toolbar，先判断它属于 L / M / S 哪一档；只有现有层级无法表达职责时才新增尺寸 Tier。
+如果未来需要新的底部 Toolbar，先判断它属于 L / M / S 哪一档；只有现有层级无法表达职责时才新增尺寸 Tier。透明度优先从 Ambient / Context / Work / Blocking 中选择，不为新 Toolbar 新增独立 Alpha 体系。
