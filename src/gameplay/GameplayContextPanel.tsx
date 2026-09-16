@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Camera, Cloud, CloudFog, CloudRain, CloudSnow, CloudSun, RotateCcw, Sun, X } from 'lucide-react';
 import type { ContextPanel } from '../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../ui/Controls';
@@ -69,6 +69,7 @@ const WEATHER_PRESETS = [
 ] as const;
 
 type WeatherPresetId = (typeof WEATHER_PRESETS)[number]['id'];
+type WeatherSettings = typeof WEATHER_DEFAULTS;
 
 function formatTime(value: number) {
   const totalMinutes = Math.round(value * 60) % (24 * 60);
@@ -87,6 +88,11 @@ function formatWeatherState(weather: typeof WEATHER_DEFAULTS) {
   return '晴天';
 }
 
+function weatherSettingsEqual(left: WeatherSettings, right: WeatherSettings) {
+  return (Object.keys(WEATHER_DEFAULTS) as Array<keyof WeatherSettings>)
+    .every((key) => Math.abs(left[key] - right[key]) < 0.0001);
+}
+
 export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose }: Props) {
   const [cameraMode, setCameraMode] = useState('经营');
   const [weatherMode, setWeatherMode] = useState('场景模拟');
@@ -94,9 +100,12 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
   const [weather, setWeather] = useState(WEATHER_DEFAULTS);
   const [weatherPreset, setWeatherPreset] = useState<WeatherPresetId>('cloudy');
   const [weatherPresetDirty, setWeatherPresetDirty] = useState(false);
+  const runtimeEnvironment = useRef({ weather: { ...WEATHER_DEFAULTS }, dayTime });
   const isCamera = panel === 'camera';
   const weatherLocked = weatherMode === '跟随世界';
   const HeadingIcon = isCamera ? Camera : CloudSun;
+  const environmentModified = !weatherSettingsEqual(weather, runtimeEnvironment.current.weather)
+    || Math.abs(dayTime - runtimeEnvironment.current.dayTime) >= 0.0001;
 
   const updateWeather = (key: keyof typeof WEATHER_DEFAULTS, value: number) => {
     setWeather((current) => ({ ...current, [key]: value }));
@@ -111,6 +120,18 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
     setWeatherPresetDirty(false);
   };
 
+  const restoreRuntimeEnvironment = () => {
+    setWeather({ ...runtimeEnvironment.current.weather });
+    onDayTimeChange(runtimeEnvironment.current.dayTime);
+    setWeatherPreset('cloudy');
+    setWeatherPresetDirty(false);
+  };
+
+  const changeEnvironmentMode = (mode: string) => {
+    if (mode === '跟随世界') restoreRuntimeEnvironment();
+    setWeatherMode(mode);
+  };
+
   return (
     <aside
       className={`gameplay-left-context-surface gameplay-context-panel gameplay-context-panel--${panel}`}
@@ -118,6 +139,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
       data-context-mode={isCamera ? cameraMode : weatherMode}
       data-weather-preset={isCamera ? undefined : weatherPreset}
       data-weather-preset-modified={isCamera ? undefined : String(weatherPresetDirty)}
+      data-environment-modified={isCamera ? undefined : String(environmentModified)}
     >
       <header>
         <div className="gameplay-context-panel__heading">
@@ -214,7 +236,20 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
           </div>
 
           <footer className="gameplay-context-panel__footer gameplay-context-panel__footer--weather-mode" aria-label="环境模式">
-            <SegmentedControl items={['跟随世界', '场景模拟']} active={weatherMode} onChange={setWeatherMode} />
+            <button
+              type="button"
+              className="environment-reset-button"
+              disabled={weatherLocked || !environmentModified}
+              aria-label="恢复当前游戏环境"
+              title={weatherLocked ? '跟随世界时由世界系统驱动' : environmentModified ? '恢复到打开环境面板时的游戏状态' : '当前已与游戏环境一致'}
+              onClick={restoreRuntimeEnvironment}
+            >
+              <RotateCcw />
+              <span>恢复当前</span>
+            </button>
+            <div className="environment-mode-switch">
+              <SegmentedControl items={['跟随世界', '场景模拟']} active={weatherMode} onChange={changeEnvironmentMode} />
+            </div>
           </footer>
         </>
       )}
