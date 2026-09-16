@@ -3,9 +3,10 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement';
+export type Tool = 'none' | 'building-placement' | 'road-placement';
 export type TerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
+export type RoadDrawMode = 'smart-curve' | 'curve' | 'straight';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
 export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 0 | 1 | 2 | 4;
@@ -61,6 +62,7 @@ export interface GameplayUiState {
   dockCategory: DockCategory | null;
   terrainMode: TerrainMode;
   adjustmentMode: AdjustmentMode;
+  roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
   gridVisible: boolean;
   canUndo: boolean;
@@ -81,6 +83,7 @@ export const initialGameplayUiState: GameplayUiState = {
   dockCategory: null,
   terrainMode: 'balanced-earthwork',
   adjustmentMode: 'position',
+  roadDrawMode: 'smart-curve',
   gridSnap: true,
   gridVisible: true,
   canUndo: false,
@@ -92,6 +95,7 @@ export type GameplayUiAction =
   | { type: 'SET_DOCK_CATEGORY'; category: DockCategory }
   | { type: 'CLOSE_WORKSPACE' }
   | { type: 'ENTER_BUILDING_PLACEMENT' }
+  | { type: 'ENTER_ROAD_PLACEMENT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
   | { type: 'SET_MANAGEMENT'; management: ManagementView }
@@ -103,6 +107,7 @@ export type GameplayUiAction =
   | { type: 'SET_SPEED'; speed: Speed }
   | { type: 'SET_TERRAIN_MODE'; mode: TerrainMode }
   | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
+  | { type: 'SET_ROAD_DRAW_MODE'; mode: RoadDrawMode }
   | { type: 'TOGGLE_GRID_SNAP' }
   | { type: 'TOGGLE_GRID_VISIBLE' }
   | { type: 'MARK_HISTORY_DIRTY' }
@@ -163,13 +168,27 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canUndo: false,
         canRedo: false,
       };
-    case 'EXIT_TOOL':
+    case 'ENTER_ROAD_PLACEMENT':
+      return {
+        ...state,
+        workspace: 'none',
+        tool: 'road-placement',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        roadDrawMode: 'smart-curve',
+        canUndo: false,
+        canRedo: false,
+      };
+    case 'EXIT_TOOL': {
+      const returnCategory: DesignDockCategory = state.tool === 'road-placement' ? 'road' : 'building';
       return {
         ...state,
         tool: 'none',
         workspace: 'design',
         dockMode: 'design',
-        dockCategory: 'building',
+        dockCategory: returnCategory,
         management: 'none',
         contextPanel: 'none',
         mapView: 'default',
@@ -177,6 +196,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canUndo: false,
         canRedo: false,
       };
+    }
     case 'SET_CONTEXT_PANEL': {
       const contextPanel = togglePanel(state.contextPanel, action.panel, 'none' as ContextPanel);
       const opening = contextPanel !== 'none';
@@ -241,6 +261,8 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return { ...state, terrainMode: action.mode, canUndo: true, canRedo: false };
     case 'SET_ADJUSTMENT_MODE':
       return { ...state, adjustmentMode: action.mode, canUndo: true, canRedo: false };
+    case 'SET_ROAD_DRAW_MODE':
+      return { ...state, roadDrawMode: action.mode, canUndo: true, canRedo: false };
     case 'TOGGLE_GRID_SNAP':
       return { ...state, gridSnap: !state.gridSnap, canUndo: true, canRedo: false };
     case 'TOGGLE_GRID_VISIBLE':
