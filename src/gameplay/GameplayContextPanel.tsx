@@ -114,7 +114,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
   return (
     <aside
       className={`gameplay-left-context-surface gameplay-context-panel gameplay-context-panel--${panel}`}
-      aria-label={isCamera ? '相机面板' : '天气面板'}
+      aria-label={isCamera ? '相机面板' : '环境面板'}
       data-context-mode={isCamera ? cameraMode : weatherMode}
       data-weather-preset={isCamera ? undefined : weatherPreset}
       data-weather-preset-modified={isCamera ? undefined : String(weatherPresetDirty)}
@@ -123,8 +123,8 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
         <div className="gameplay-context-panel__heading">
           <span className="gameplay-context-panel__heading-icon"><HeadingIcon /></span>
           <div className="gameplay-context-panel__heading-copy">
-            <b className="gameplay-context-panel__title">{isCamera ? '相机' : '天气'}</b>
-            {!isCamera && <span>场景环境</span>}
+            <b className="gameplay-context-panel__title">{isCamera ? '相机' : '环境'}</b>
+            {!isCamera && <span>天气、风场与时节</span>}
           </div>
         </div>
         <button className="icon-button" onClick={onClose} aria-label="关闭面板"><X /></button>
@@ -152,8 +152,8 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
         <>
           <div className={`gameplay-context-panel__body gameplay-context-panel__body--weather ${weatherLocked ? 'is-world-follow' : 'is-scene-simulation'}`}>
             {weatherLocked ? (
-              <section className="gameplay-context-panel__section weather-world-summary" aria-label="当前世界天气">
-                <div className="gameplay-context-panel__section-title"><b>当前世界天气</b></div>
+              <section className="gameplay-context-panel__section weather-world-summary" aria-label="当前世界环境">
+                <div className="gameplay-context-panel__section-title"><b>当前世界环境</b></div>
                 <div className="weather-world-summary__rows">
                   <div><span>天气状态</span><b>{formatWeatherState(weather)}</b></div>
                   <div><span>云量</span><b>{weather.cloud.toFixed(0)}%</b></div>
