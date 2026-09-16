@@ -109,6 +109,150 @@
 .gameplay-context-panel .track{height:3px;background:rgba(235,228,211,.12)}
 .gameplay-context-panel .track i{background:#b99b60}
 
+/* Weather colour anchor -------------------------------------------------
+   Weather is the first context surface to carry a restrained decorative palette.
+   Colour lives on structural nodes; content text/icons keep their normal contrast. */
+.gameplay-context-panel--weather{
+  --weather-jade:#86a39a;
+  --weather-jade-bright:#9fb9b0;
+  --weather-gold:#c9ae77;
+  --weather-paper:#ece1cf;
+
+  --hud-surface-context-top:rgba(39,55,47,.82);
+  --hud-surface-context-bottom:rgba(23,37,31,.78);
+
+  --ui-control-radius:12px;
+  --ui-control-radius-inner:9px;
+  --ui-segment-surface:rgba(126,154,144,.085);
+  --ui-segment-border:rgba(150,178,167,.18);
+  --ui-segment-hover:rgba(134,163,154,.105);
+  --ui-segment-active-top:rgba(190,161,105,.20);
+  --ui-segment-active-bottom:rgba(160,130,76,.12);
+
+  --ui-field-border:rgba(143,171,160,.14);
+  --ui-field-border-hover:rgba(154,184,172,.24);
+  --ui-field-surface:rgba(122,151,140,.050);
+  --ui-field-surface-hover:rgba(140,170,158,.095);
+  --ui-field-text:#ddd4c5;
+  --ui-field-muted:#9ca79e;
+
+  --ui-slider-track:rgba(173,194,184,.14);
+  --ui-slider-track-hover:rgba(185,205,195,.20);
+  --ui-slider-fill-start:#64887c;
+  --ui-slider-fill-end:#94b0a6;
+  --ui-slider-thumb:#c5a96f;
+  --ui-slider-thumb-border:rgba(239,231,215,.94);
+  --ui-slider-focus:rgba(134,163,154,.13);
+
+  background:
+    radial-gradient(ellipse at 8% 0%,rgba(126,164,149,.105),transparent 34%),
+    radial-gradient(ellipse at 100% 18%,rgba(190,158,98,.045),transparent 29%),
+    linear-gradient(180deg,var(--hud-surface-context-top),var(--hud-surface-context-bottom));
+}
+
+.gameplay-context-panel--weather>header{
+  border-bottom-color:rgba(143,171,160,.10);
+  background:
+    linear-gradient(90deg,rgba(134,163,154,.065),transparent 46%),
+    linear-gradient(180deg,rgba(255,255,255,.015),rgba(255,255,255,.003));
+}
+.gameplay-context-panel--weather .gameplay-context-panel__heading-icon{
+  color:var(--weather-jade-bright);
+  border-color:rgba(150,178,167,.18);
+  background:rgba(134,163,154,.075);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 0 16px rgba(96,136,122,.055);
+}
+.gameplay-context-panel--weather .gameplay-context-panel__title{color:var(--weather-paper)}
+.gameplay-context-panel--weather>header .icon-button:hover{color:#ddd5c8;background:rgba(134,163,154,.075)}
+
+.gameplay-context-panel--weather .gameplay-context-panel__section + .gameplay-context-panel__section{
+  border-top-color:rgba(143,171,160,.09);
+}
+.gameplay-context-panel--weather .gameplay-context-panel__section-title{gap:7px}
+.gameplay-context-panel--weather .gameplay-context-panel__section-title::before{
+  content:'';
+  width:3px;
+  height:3px;
+  flex:0 0 3px;
+  border-radius:50%;
+  background:var(--weather-jade);
+  box-shadow:0 0 8px rgba(134,163,154,.22);
+}
+.gameplay-context-panel--weather .gameplay-context-panel__section-title b{
+  color:#9fb2aa;
+  font-weight:560;
+  letter-spacing:.055em;
+}
+
+.game-canvas .gameplay-context-panel--weather .segment{
+  min-height:40px;
+  padding:3px;
+  gap:3px;
+  border-color:var(--ui-segment-border);
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(130,159,148,.105),rgba(78,105,94,.065));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.028),inset 0 -1px 0 rgba(0,0,0,.16);
+}
+.game-canvas .gameplay-context-panel--weather .segment>button{
+  height:34px;
+  min-height:34px;
+  border-radius:9px;
+  color:#aeb8af;
+  font-size:10px;
+  font-weight:520;
+}
+.game-canvas .gameplay-context-panel--weather .segment>button:hover{
+  background:rgba(134,163,154,.105);
+  color:#e0dbd0;
+}
+.game-canvas .gameplay-context-panel--weather .segment>button.is-active{
+  background:linear-gradient(180deg,rgba(201,174,119,.205),rgba(155,126,73,.115));
+  color:#eadfca;
+  box-shadow:
+    inset 0 0 0 1px rgba(201,174,119,.24),
+    inset 0 1px 0 rgba(255,255,255,.040),
+    0 5px 14px rgba(8,12,10,.08);
+}
+
+.gameplay-context-panel--weather .parameter-row>span{color:#a1aaa1;font-size:9.2px}
+.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button{
+  border-color:rgba(143,171,160,.14);
+  background:rgba(122,151,140,.050);
+  color:#a8b2a9;
+}
+.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
+  border-color:rgba(154,184,172,.24);
+  background:rgba(134,163,154,.105);
+  color:#e0dbd0;
+}
+.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-value-field{
+  border-color:rgba(190,158,98,.16);
+  background:rgba(190,158,98,.055);
+  color:#d8caae;
+}
+.gameplay-context-panel--weather .ui-slider__track{
+  background:var(--ui-slider-track);
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.14),0 0 0 1px rgba(143,171,160,.025);
+}
+.gameplay-context-panel--weather .ui-slider__track>i{
+  background:linear-gradient(90deg,var(--ui-slider-fill-start),var(--ui-slider-fill-end));
+  box-shadow:0 0 8px rgba(116,153,140,.08);
+}
+.gameplay-context-panel--weather .ui-slider__thumb{
+  background:var(--ui-slider-thumb);
+  border-color:var(--ui-slider-thumb-border);
+  box-shadow:0 2px 5px rgba(0,0,0,.28),0 0 0 1px rgba(190,158,98,.10);
+}
+.gameplay-context-panel--weather .ui-slider:hover .ui-slider__thumb{
+  box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(134,163,154,.10);
+}
+.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__track{
+  box-shadow:0 0 0 1px rgba(134,163,154,.32);
+}
+.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__thumb{
+  box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 5px rgba(134,163,154,.13);
+}
+
 @keyframes gameplay-context-enter{
   from{transform:translateY(12px);opacity:.72}
   to{transform:translateY(0);opacity:1}

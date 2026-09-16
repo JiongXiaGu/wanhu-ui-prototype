@@ -60,6 +60,8 @@ jobs:
           node scripts/capture-design-workspace-review.mjs
           node scripts/capture-visual-system-review.mjs
           node scripts/capture-night-review.mjs
+      - name: Compress review previews
+        run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         with:
