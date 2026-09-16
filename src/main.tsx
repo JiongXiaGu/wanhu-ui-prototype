@@ -31,6 +31,7 @@ import './gameplay/operation-hints-refined.css';
 import './gameplay/world-utility-toolbar.css';
 import './gameplay/gameplay-hud-layout.css';
 import './gameplay/advanced-parameter-panels.css';
+import './ui/ui-visual-system.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
 
