@@ -50,6 +50,35 @@ await speedControls.getByRole('button', { name: '暂停时间', exact: true }).c
 if (!(await speedControls.getByRole('button', { name: '暂停时间', exact: true }).getAttribute('class'))?.includes('is-active')) throw new Error('Simulation pause must be a real speed state.');
 await speedControls.getByRole('button', { name: '正常速度', exact: true }).click();
 
+// Main Dock is a mode selector plus the current mode's categories. No category is selected implicitly.
+const mainDock = page.locator('.command-bar');
+const modeRail = mainDock.locator('.mode-rail');
+const categoryRow = mainDock.locator('.category-row');
+if ((await modeRail.getByRole('button').count()) !== 2) throw new Error('Main Dock must expose exactly Design and Blueprint modes.');
+if ((await modeRail.getByRole('button', { name: '设计', exact: true }).getAttribute('aria-pressed')) !== 'true') throw new Error('Design mode should be the default Main Dock family.');
+if ((await categoryRow.getByRole('button').count()) !== 8) throw new Error('Design mode must expose eight categories.');
+if ((await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) throw new Error('Main Dock must start with no selected category.');
+for (const label of ['道路', '桥梁', '建筑', '台基', '城墙', '围墙', '装饰', '树木']) {
+  if ((await categoryRow.getByRole('button', { name: label, exact: true }).count()) !== 1) throw new Error(`Design category missing: ${label}`);
+}
+
+await modeRail.getByRole('button', { name: '蓝图', exact: true }).click();
+if ((await categoryRow.getByRole('button').count()) !== 9) throw new Error('Blueprint mode must expose nine categories.');
+if ((await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) throw new Error('Switching to Blueprint must not invent a selected category.');
+for (const label of ['全部', '民居', '商业', '工坊', '管理', '科学', '信仰', '军事', '宫殿']) {
+  if ((await categoryRow.getByRole('button', { name: label, exact: true }).count()) !== 1) throw new Error(`Blueprint category missing: ${label}`);
+}
+await page.waitForTimeout(120);
+await page.screenshot({ path: `${outDir}/02a2-gameplay-blueprint-dock.png` });
+
+await categoryRow.getByRole('button', { name: '宫殿', exact: true }).click();
+if ((await categoryRow.getByRole('button', { name: '宫殿', exact: true }).getAttribute('aria-pressed')) !== 'true') throw new Error('Explicit Blueprint category selection must be visible.');
+await modeRail.getByRole('button', { name: '设计', exact: true }).click();
+if ((await categoryRow.getByRole('button').count()) !== 8 || (await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) throw new Error('Switching mode must clear category selection instead of remembering it.');
+await modeRail.getByRole('button', { name: '蓝图', exact: true }).click();
+if ((await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) throw new Error('Returning to Blueprint must remain unselected until the player chooses again.');
+await modeRail.getByRole('button', { name: '设计', exact: true }).click();
+
 // Scene launchers toggle their flyouts, and flyouts use the same 16px screen-safe edge as the HUD.
 const weatherButton = page.getByRole('button', { name: '天气控制', exact: true });
 await weatherButton.click();
@@ -78,9 +107,10 @@ await cameraButton.click();
 await page.waitForSelector('.right-edge-flyout--camera', { state: 'detached' });
 if ((await page.locator('.workspace--building').count()) !== 1) throw new Error('Closing a scene flyout must not close Building Workspace.');
 
-// Re-clicking the same launcher closes the surface it owns.
+// Re-clicking the same launcher closes the surface it owns and returns the category to no selection.
 await page.getByRole('button', { name: '建筑', exact: true }).click();
 await page.waitForSelector('.workspace--building', { state: 'detached' });
+if ((await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) throw new Error('Closing Building Workspace by re-click must clear the Main Dock category.');
 await page.getByRole('button', { name: '城市', exact: true }).click();
 await page.waitForSelector('.management-space--city');
 await page.getByRole('button', { name: '城市', exact: true }).click();
@@ -96,6 +126,7 @@ await page.waitForSelector('.right-edge-flyout--weather', { state: 'detached' })
 if ((await page.locator('.workspace--building').count()) !== 1) throw new Error('First Escape should close the flyout while leaving Workspace open.');
 await page.keyboard.press('Escape');
 await page.waitForSelector('.workspace--building', { state: 'detached' });
+if ((await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) throw new Error('Esc-closing Building Workspace must clear the Main Dock category.');
 
 const worldTools = page.locator('.world-utility-toolbar');
 if ((await worldTools.count()) !== 1) throw new Error('Normal Gameplay must show one persistent World Utility Toolbar.');
