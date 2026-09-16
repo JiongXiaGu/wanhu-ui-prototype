@@ -1,5 +1,5 @@
 export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'loading' | 'gameplay';
-export type Flyout = 'none' | 'camera' | 'weather';
+export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
@@ -50,7 +50,7 @@ export function isDesignDockCategory(category: DockCategory | null): category is
 export interface GameplayUiState {
   workspace: Workspace;
   tool: Tool;
-  flyout: Flyout;
+  contextPanel: ContextPanel;
   management: ManagementView;
   mapView: MapView;
   mapPanelOpen: boolean;
@@ -70,7 +70,7 @@ export interface GameplayUiState {
 export const initialGameplayUiState: GameplayUiState = {
   workspace: 'none',
   tool: 'none',
-  flyout: 'none',
+  contextPanel: 'none',
   management: 'none',
   mapView: 'default',
   mapPanelOpen: false,
@@ -93,7 +93,7 @@ export type GameplayUiAction =
   | { type: 'CLOSE_WORKSPACE' }
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'EXIT_TOOL' }
-  | { type: 'SET_FLYOUT'; flyout: Flyout }
+  | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
   | { type: 'SET_MANAGEMENT'; management: ManagementView }
   | { type: 'TOGGLE_MAP_PANEL' }
   | { type: 'CLOSE_MAP_PANEL' }
@@ -128,15 +128,18 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         dockCategory: null,
         workspace: 'none',
         management: 'none',
+        contextPanel: 'none',
         mapPanelOpen: false,
       };
     case 'SET_DOCK_CATEGORY': {
       const dockCategory = state.dockCategory === action.category ? null : action.category;
+      const workspace = workspaceForDockSelection(state.dockMode, dockCategory);
       return {
         ...state,
         dockCategory,
-        workspace: workspaceForDockSelection(state.dockMode, dockCategory),
+        workspace,
         management: 'none',
+        contextPanel: workspace === 'none' ? state.contextPanel : 'none',
         mapPanelOpen: false,
       };
     }
@@ -152,7 +155,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         workspace: 'none',
         tool: 'building-placement',
         management: 'none',
-        flyout: 'none',
+        contextPanel: 'none',
         mapView: 'default',
         mapPanelOpen: false,
         terrainMode: 'balanced-earthwork',
@@ -168,20 +171,23 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         dockMode: 'design',
         dockCategory: 'building',
         management: 'none',
-        flyout: 'none',
+        contextPanel: 'none',
         mapView: 'default',
         mapPanelOpen: false,
         canUndo: false,
         canRedo: false,
       };
-    case 'SET_FLYOUT': {
-      const flyout = togglePanel(state.flyout, action.flyout, 'none' as Flyout);
+    case 'SET_CONTEXT_PANEL': {
+      const contextPanel = togglePanel(state.contextPanel, action.panel, 'none' as ContextPanel);
+      const opening = contextPanel !== 'none';
       return {
         ...state,
-        flyout,
-        management: flyout === 'none' ? state.management : 'none',
-        mapPanelOpen: flyout === 'none' ? state.mapPanelOpen : false,
-        mapView: flyout === 'none' ? state.mapView : 'default',
+        contextPanel,
+        workspace: opening ? 'none' : state.workspace,
+        dockCategory: opening && state.workspace === 'design' ? null : state.dockCategory,
+        management: opening ? 'none' : state.management,
+        mapPanelOpen: opening ? false : state.mapPanelOpen,
+        mapView: opening ? 'default' : state.mapView,
       };
     }
     case 'SET_MANAGEMENT': {
@@ -193,7 +199,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         workspace: opening ? 'none' : state.workspace,
         tool: opening ? 'none' : state.tool,
         dockCategory: opening && state.workspace !== 'none' ? null : state.dockCategory,
-        flyout: opening ? 'none' : state.flyout,
+        contextPanel: opening ? 'none' : state.contextPanel,
         mapView: opening ? 'default' : state.mapView,
         mapPanelOpen: false,
       };
@@ -204,6 +210,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         mapPanelOpen,
         management: mapPanelOpen ? 'none' : state.management,
+        contextPanel: mapPanelOpen ? 'none' : state.contextPanel,
       };
     }
     case 'CLOSE_MAP_PANEL':
@@ -214,7 +221,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapView: action.mapView,
         mapPanelOpen: false,
         management: action.mapView === 'default' ? state.management : 'none',
-        flyout: action.mapView === 'default' ? state.flyout : 'none',
+        contextPanel: action.mapView === 'default' ? state.contextPanel : 'none',
       };
     case 'SET_PAUSED':
       return {
@@ -222,7 +229,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         paused: action.paused,
         pauseView: 'menu',
         management: action.paused ? 'none' : state.management,
-        flyout: action.paused ? 'none' : state.flyout,
+        contextPanel: action.paused ? 'none' : state.contextPanel,
         mapView: action.paused ? 'default' : state.mapView,
         mapPanelOpen: false,
       };
