@@ -6,11 +6,12 @@ import {
 } from '../ui/asset-inspector/AssetInspector';
 import type { DesignWorkspaceDefinition, DesignWorkspaceItem } from './design-workspace-model';
 
-const CATEGORY_PAGE_SIZE = 6;
+const CATEGORY_PAGE_SIZE = 7;
 const CONTENT_PAGE_SIZE = 8;
 const CONTENT_PAGER_WINDOW = 5;
 const WHEEL_THRESHOLD = 72;
 const WHEEL_LOCK_MS = 220;
+const ALL_PRIMARY_LABEL = '所有';
 
 interface DesignWorkspaceProps {
   definition: DesignWorkspaceDefinition;
@@ -318,19 +319,22 @@ export function DesignWorkspace({ definition, onClose, onSelectItem }: DesignWor
               )}
 
               <div className="workspace-primary-rail__page" key={categoryPage}>
-                {visibleCategories.map(({ key, label, icon: Icon }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    className={primary === key ? 'is-active' : ''}
-                    aria-pressed={primary === key}
-                    title={label.length > 6 ? label : undefined}
-                    onClick={() => selectPrimary(key)}
-                  >
-                    <Icon size={16} />
-                    <span>{label}</span>
-                  </button>
-                ))}
+                {visibleCategories.map(({ key, label, icon: Icon }) => {
+                  const displayLabel = key === defaultPrimary ? ALL_PRIMARY_LABEL : label;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      className={primary === key ? 'is-active' : ''}
+                      aria-pressed={primary === key}
+                      title={displayLabel.length > 6 ? displayLabel : undefined}
+                      onClick={() => selectPrimary(key)}
+                    >
+                      <Icon size={16} />
+                      <span>{displayLabel}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </nav>
