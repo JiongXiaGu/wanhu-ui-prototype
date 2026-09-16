@@ -92,6 +92,7 @@ await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detache
 
 await cameraButton.click();
 await page.waitForSelector('.gameplay-context-panel--camera');
+await page.waitForTimeout(220);
 const cameraBox = await page.locator('.gameplay-context-panel--camera').boundingBox();
 if (!cameraBox || Math.abs(cameraBox.x - 16) > 2) throw new Error('Camera context panel must use the same lower-left slot.');
 if (Math.abs((1080 - (cameraBox.y + cameraBox.height)) - 16) > 2) throw new Error('Camera context panel must use the same bottom-safe anchor.');
