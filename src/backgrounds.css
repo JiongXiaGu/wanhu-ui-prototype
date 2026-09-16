@@ -9,8 +9,9 @@
   background-repeat: no-repeat;
 }
 
+/* GameplayScreen owns the active world image so review-time scene state can swap day/night assets.
+   This stylesheet owns only presentation geometry, matching the Unity boundary where world state owns the scene. */
 .gameplay-screen {
-  background-image: url('/assets/wanhu-gameplay-city.png') !important;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
