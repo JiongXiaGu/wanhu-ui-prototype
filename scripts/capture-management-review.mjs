@@ -23,6 +23,7 @@ if (Math.abs((topShellBox.x + topShellBox.width / 2) - 960) > 2) throw new Error
 if (topShellBox.height < 90 || topShellBox.height > 94) throw new Error(`Top shell must keep the compact overlapped proportion. height=${topShellBox.height}`);
 if ((await page.locator('.city-management-rail').count()) !== 0) throw new Error('Legacy left Management Rail must not be rendered.');
 if ((await page.locator('.quick-controls').count()) !== 0) throw new Error('Legacy standalone Quick Controls must not be rendered.');
+if ((await page.locator('.gameplay-navigation-hud').count()) !== 0) throw new Error('The old minimap-style Navigation HUD must not return.');
 
 const statusBox = await page.locator('.gameplay-top-status').boundingBox();
 const resourceBox = await page.locator('.gameplay-top-status__resources').boundingBox();
@@ -30,17 +31,22 @@ const navBox = await page.locator('.gameplay-top-navigation').boundingBox();
 if (!statusBox || !resourceBox || !navBox) throw new Error('Both top shell rows must be measurable.');
 if (statusBox.width < 920 || statusBox.width > 960) throw new Error(`Status row must stay near 940px. width=${statusBox.width}`);
 if (Math.abs((resourceBox.x + resourceBox.width / 2) - 960) > 2) throw new Error('Resources must remain geometrically centered.');
-if (navBox.width < 392 || navBox.width > 408) throw new Error(`Control tray should shrink to the new ~400px baseline. width=${navBox.width}`);
+if (navBox.width < 392 || navBox.width > 408) throw new Error(`Control tray should stay near the ~400px baseline. width=${navBox.width}`);
 const rowOverlap = (statusBox.y + statusBox.height) - navBox.y;
 if (rowOverlap < 1 || rowOverlap > 3) throw new Error(`Top shell rows should overlap by about 2px. overlap=${rowOverlap}`);
 if ((await page.locator('.gameplay-top-navigation__scene > button').count()) !== 2) throw new Error('Left scene group must expose exactly Camera and Weather.');
 if ((await page.locator('.gameplay-top-navigation__management > button').count()) !== 5) throw new Error('Top management must expose exactly five primary domains.');
 if ((await page.locator('.gameplay-top-navigation__view > button').count()) !== 1) throw new Error('Information Views must occupy the right side of the tray.');
 
-const navigationHud = page.locator('.gameplay-navigation-hud');
-const navigationBox = await navigationHud.boundingBox();
-if (!navigationBox || Math.abs(navigationBox.x - 16) > 2 || Math.abs(navigationBox.y - 16) > 2) throw new Error('Navigation HUD must own the 16px upper-left screen slot.');
-if (navigationBox.width < 145 || navigationBox.width > 165) throw new Error('Navigation HUD should remain a compact upper-left surface.');
+const compassHud = page.locator('.gameplay-compass-hud');
+const compassBox = await compassHud.boundingBox();
+if (!compassBox || Math.abs(compassBox.x - 16) > 2 || Math.abs(compassBox.y - 16) > 2) throw new Error('Compass HUD must own the 16px upper-left screen slot.');
+if (compassBox.width < 74 || compassBox.width > 78 || compassBox.height < 74 || compassBox.height > 78) {
+  throw new Error(`Compass HUD should remain a compact ~76px circular instrument. box=${JSON.stringify(compassBox)}`);
+}
+const compassLabels = (await compassHud.locator('.gameplay-compass-hud__cardinal').allTextContents()).map((text) => text.trim()).sort().join('');
+if (![...'东西北南'].every((label) => compassLabels.includes(label))) throw new Error(`Compass HUD must expose all four Chinese cardinal directions. labels=${compassLabels}`);
+if ((await compassHud.evaluate((node) => getComputedStyle(node).pointerEvents)) !== 'none') throw new Error('Compass HUD must not intercept world input.');
 
 const menuButton = page.getByRole('button', { name: '菜单', exact: true });
 const menuBox = await menuButton.boundingBox();
@@ -72,13 +78,15 @@ const cameraButton = page.getByRole('button', { name: '相机', exact: true });
 await weatherButton.click();
 await page.waitForSelector('.gameplay-context-panel--weather');
 await page.waitForTimeout(220);
-const weatherBox = await page.locator('.gameplay-context-panel--weather').boundingBox();
+const weatherPanel = page.locator('.gameplay-context-panel--weather');
+const weatherBox = await weatherPanel.boundingBox();
 const commandBox = await mainDock.boundingBox();
 if (!weatherBox || !commandBox) throw new Error('Weather context panel and Main Dock must be measurable.');
 if (Math.abs(weatherBox.x - 16) > 2) throw new Error('Weather context panel must align to the 16px left safe edge.');
-if (weatherBox.height > 542) throw new Error(`Weather context panel must stay within about half the screen height. height=${weatherBox.height}`);
-const weatherDockGap = commandBox.y - (weatherBox.y + weatherBox.height);
-if (weatherDockGap < 10 || weatherDockGap > 14) throw new Error(`Weather panel should sit 12px above Main Dock. gap=${weatherDockGap}`);
+if (Math.abs((1080 - (weatherBox.y + weatherBox.height)) - 16) > 2) throw new Error('Weather context panel must share the 16px bottom anchor used by placement tool panels.');
+if (weatherBox.height > 722) throw new Error(`Weather context panel must stay within two-thirds of the 1080p canvas. height=${weatherBox.height}`);
+if (!(weatherBox.x + weatherBox.width < commandBox.x - 12)) throw new Error('Lower-left context panels must not overlap the centered Main Dock.');
+if ((await weatherPanel.getAttribute('class'))?.includes('gameplay-left-context-surface') !== true) throw new Error('Weather must use the shared lower-left context-surface shell.');
 await weatherButton.click();
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
 
@@ -86,6 +94,8 @@ await cameraButton.click();
 await page.waitForSelector('.gameplay-context-panel--camera');
 const cameraBox = await page.locator('.gameplay-context-panel--camera').boundingBox();
 if (!cameraBox || Math.abs(cameraBox.x - 16) > 2) throw new Error('Camera context panel must use the same lower-left slot.');
+if (Math.abs((1080 - (cameraBox.y + cameraBox.height)) - 16) > 2) throw new Error('Camera context panel must use the same bottom-safe anchor.');
+if (cameraBox.height > 722) throw new Error('Camera context panel must respect the shared two-thirds-height cap.');
 await cameraButton.click();
 await page.waitForSelector('.gameplay-context-panel--camera', { state: 'detached' });
 
@@ -132,6 +142,8 @@ await page.waitForSelector('.building-placement-prototype');
 if ((await page.locator('.gameplay-context-panel').count()) !== 0) throw new Error('Tool space must not retain Camera/Weather context panels.');
 if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Tool space must hide the secondary top control tray.');
 if ((await page.getByRole('button', { name: '菜单', exact: true }).count()) !== 1) throw new Error('The global system-menu button should remain available in Tool space.');
+const toolCompass = page.locator('.gameplay-compass-hud');
+if ((await toolCompass.count()) !== 1 || !(await toolCompass.getAttribute('class'))?.includes('is-build-mode')) throw new Error('Building Placement should keep the compass and strengthen its build-mode presentation.');
 const toolWorldTools = page.locator('.world-utility-toolbar');
 if ((await toolWorldTools.getByRole('button', { name: '网格吸附', exact: true }).getAttribute('aria-pressed')) !== 'false') throw new Error('Global grid state must persist into Building Placement.');
 if ((await page.locator('.placement-utility-strip').count()) !== 0) throw new Error('Building Placement must not duplicate grid/history utilities.');
@@ -147,7 +159,7 @@ await open('gameplay', '.gameplay-top-navigation');
 await page.getByRole('button', { name: '经济', exact: true }).click();
 await page.waitForSelector('.management-space--finance');
 if ((await page.locator('.gameplay-top-navigation').count()) !== 1) throw new Error('Management Space must retain the top control tray.');
-for (const selector of ['.command-bar', '.world-utility-toolbar', '.gameplay-operation-hints', '.gameplay-context-panel', '.gameplay-navigation-hud']) {
+for (const selector of ['.command-bar', '.world-utility-toolbar', '.gameplay-operation-hints', '.gameplay-context-panel', '.gameplay-compass-hud']) {
   if ((await page.locator(selector).count()) !== 0) throw new Error(`${selector} must not remain visible in Management Space.`);
 }
 await page.screenshot({ path: `${outDir}/02b-finance-top-navigation.png` });
