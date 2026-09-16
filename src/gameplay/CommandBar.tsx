@@ -132,7 +132,7 @@ export function WorldUtilityToolbar({
   }
 
   return (
-    <div className="world-utility-toolbar command-utility" aria-label="世界工具">
+    <div className="world-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm" aria-label="世界工具">
       {worldUtilityGroups.map((group, groupIndex) => (
         <span className="world-utility-toolbar__group" key={group[0].id}>
           {groupIndex > 0 && <i className="world-utility-toolbar__separator" />}
@@ -170,7 +170,7 @@ export function CommandBar({ mode, activeCategory, onModeChange, onCategoryChang
   const items = MAIN_DOCK_ITEMS[mode];
 
   return (
-    <div className="command-bar" data-dock-mode={mode}>
+    <div className="command-bar bottom-command-surface bottom-command-surface--lg" data-dock-mode={mode}>
       <div className="mode-rail" aria-label="建造模式">
         <button
           type="button"

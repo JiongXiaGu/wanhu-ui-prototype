@@ -44,7 +44,7 @@ export function PlacementActionBar({
   onCancel,
 }: PlacementActionBarProps) {
   return (
-    <div className="placement-action-bar" aria-label={ariaLabel}>
+    <div className="placement-action-bar bottom-command-surface bottom-command-surface--md" aria-label={ariaLabel}>
       {modeGroups.map((group, groupIndex) => (
         <div className="placement-action-bar__section" key={group.id}>
           {groupIndex > 0 && <i className="placement-action-bar__divider" aria-hidden="true" />}

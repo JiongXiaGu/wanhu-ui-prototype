@@ -15,18 +15,12 @@
 }
 
 .placement-action-bar{
-  box-sizing:border-box;
   height:var(--command-height-md,68px);
   min-height:var(--command-height-md,68px);
   display:flex;
   align-items:center;
   gap:0;
   padding:10px;
-  border:1px solid var(--command-border,rgba(239,233,221,.10));
-  border-radius:var(--command-radius,14px);
-  background:linear-gradient(180deg,var(--command-surface-top,rgba(28,37,32,.94)),var(--command-surface-bottom,rgba(21,29,25,.925)));
-  box-shadow:var(--command-shadow-md,0 14px 34px rgba(5,8,7,.21));
-  backdrop-filter:blur(var(--command-blur,10px));
 }
 
 .placement-action-bar__section{

@@ -7,6 +7,7 @@ import './workspace.css';
 import './tool-overlay.css';
 import './menu-refine.css';
 import './backgrounds.css';
+import './gameplay/bottom-command-system.css';
 import './gameplay-refine.css';
 import './workspace/design-workspace.css';
 import './ui/asset-inspector/asset-inspector.css';

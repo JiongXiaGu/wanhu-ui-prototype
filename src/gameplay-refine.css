@@ -4,14 +4,8 @@
 
 /* Main Dock is the large tier of the command family: mode selector + current category band. */
 .gameplay-screen .command-bar{
-  box-sizing:border-box;
   height:var(--command-height-lg,76px);
   padding:6px 7px;
-  background:linear-gradient(180deg,var(--command-surface-top,rgba(28,37,32,.94)),var(--command-surface-bottom,rgba(21,29,25,.925)));
-  border:1px solid var(--command-border,rgba(239,233,221,.10));
-  border-radius:var(--command-radius,14px);
-  box-shadow:var(--command-shadow-lg,0 16px 38px rgba(5,8,7,.23));
-  backdrop-filter:blur(var(--command-blur,10px));
   z-index:12;
 }
 
