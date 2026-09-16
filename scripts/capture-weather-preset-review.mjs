@@ -34,20 +34,24 @@ const expected = new Map([
 ]);
 
 for (const [name, value] of expected) {
-  const actual = await page.getByRole('slider', { name, exact: true }).inputValue();
+  const slider = page.getByRole('slider', { name, exact: true });
+  const actual = name === '风向' ? await slider.getAttribute('aria-valuenow') : await slider.inputValue();
   if (Number(actual) !== Number(value)) {
     throw new Error(`Preset did not update ${name}. expected=${value} actual=${actual}`);
   }
 }
 
-const currentPreset = (await page.locator('.weather-preset-section__heading span').textContent())?.trim() ?? '';
-if (!currentPreset.includes('当前：大雨') || currentPreset.includes('已微调')) {
-  throw new Error(`Preset status should identify the untouched heavy-rain preset. text=${currentPreset}`);
+const heavyRainCard = page.getByRole('button', { name: '大雨天气预设', exact: true });
+if ((await heavyRainCard.getAttribute('aria-pressed')) !== 'true') {
+  throw new Error('Heavy-rain preset card should communicate the active preset without redundant helper text.');
+}
+if ((await page.locator('.weather-preset-section__heading > span').count()) !== 0) {
+  throw new Error('Weather preset heading must not repeat the selected preset in helper text.');
 }
 
 await page.screenshot({ path: `${outDir}/10-weather-preset-heavy-rain.png` });
 
-// Manual weather edits retain the originating preset but mark it as adjusted.
+// Manual weather edits retain the originating preset in state while marking the preset values as adjusted.
 await page.getByRole('slider', { name: '云量', exact: true }).evaluate((node) => {
   const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
   descriptor?.set?.call(node, '90');
@@ -55,10 +59,8 @@ await page.getByRole('slider', { name: '云量', exact: true }).evaluate((node) 
   node.dispatchEvent(new Event('change', { bubbles: true }));
 });
 await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-weather-preset-modified') === 'true');
-
-const modifiedPreset = (await page.locator('.weather-preset-section__heading span').textContent())?.trim() ?? '';
-if (!modifiedPreset.includes('当前：大雨') || !modifiedPreset.includes('已微调')) {
-  throw new Error(`Manual edit should mark the active preset as adjusted. text=${modifiedPreset}`);
+if ((await panel.getAttribute('data-weather-preset')) !== 'heavy-rain') {
+  throw new Error('Manual adjustment should preserve the originating preset id.');
 }
 
 await browser.close();
