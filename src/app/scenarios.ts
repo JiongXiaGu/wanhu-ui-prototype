@@ -23,9 +23,7 @@ export type ReviewScenario =
   | 'weather'
   | 'pause'
   | 'pause-save'
-  | 'pause-settings'
-  | 'building-camera'
-  | 'building-weather';
+  | 'pause-settings';
 
 export interface ReviewBootstrap {
   screen: Screen;
@@ -78,19 +76,15 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
     case 'building-height':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', terrainMode: 'manual-elevation' } };
     case 'camera':
-      return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'camera' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, contextPanel: 'camera' } };
     case 'weather':
-      return { screen: 'gameplay', gameplay: { ...gameplay, flyout: 'weather' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, contextPanel: 'weather' } };
     case 'pause':
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'menu' } };
     case 'pause-save':
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'save' } };
     case 'pause-settings':
       return { screen: 'gameplay', gameplay: { ...gameplay, paused: true, pauseView: 'settings' } };
-    case 'building-camera':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', flyout: 'camera' } };
-    case 'building-weather':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', flyout: 'weather' } };
     case 'menu':
     default:
       return { screen: 'menu', gameplay };
