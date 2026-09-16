@@ -6,11 +6,12 @@ import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
 import { CommandBar, WorldUtilityToolbar } from './CommandBar';
+import { GameplayContextPanel } from './GameplayContextPanel';
+import { GameplayNavigationHud, GameplaySystemMenuButton } from './GameplayCornerHud';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
 import { ManagementSpace } from './ManagementSpace';
 import { PauseLayer } from './PauseLayer';
-import { RightEdgeFlyout } from './RightEdgeFlyout';
 
 interface GameplayScreenProps {
   background: string;
@@ -24,6 +25,8 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   const toolOpen = state.tool === 'building-placement';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
   const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
+  const showNavigationHud = !state.paused && space !== 'management';
+  const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
     ? DESIGN_WORKSPACES[state.dockCategory]
     : null;
@@ -38,8 +41,8 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
 
       event.preventDefault();
 
-      if (state.flyout !== 'none') {
-        dispatch({ type: 'SET_FLYOUT', flyout: 'none' });
+      if (state.contextPanel !== 'none') {
+        dispatch({ type: 'SET_CONTEXT_PANEL', panel: 'none' });
         return;
       }
       if (state.mapPanelOpen) {
@@ -68,7 +71,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
 
     window.addEventListener('keydown', handleGameplayEscape);
     return () => window.removeEventListener('keydown', handleGameplayEscape);
-  }, [state.flyout, state.management, state.mapPanelOpen, state.mapView, state.paused, state.tool, state.workspace]);
+  }, [state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.tool, state.workspace]);
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
@@ -79,19 +82,21 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
       <div className="game-vignette" />
       <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
 
+      {showNavigationHud && <GameplayNavigationHud background={background} />}
+      {!state.paused && <GameplaySystemMenuButton onClick={() => dispatch({ type: 'SET_PAUSED', paused: true })} />}
+
       <GameplayHUD
-        flyout={state.flyout}
+        contextPanel={state.contextPanel}
         management={state.management}
         mapView={state.mapView}
         mapPanelOpen={state.mapPanelOpen}
         speed={state.speed}
         showControlTray={showControlTray}
-        onFlyoutChange={(flyout) => dispatch({ type: 'SET_FLYOUT', flyout })}
+        onContextPanelChange={(panel) => dispatch({ type: 'SET_CONTEXT_PANEL', panel })}
         onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
         onToggleMapPanel={() => dispatch({ type: 'TOGGLE_MAP_PANEL' })}
         onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
         onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
-        onPause={() => dispatch({ type: 'SET_PAUSED', paused: true })}
       />
 
       {showWorldUtilityToolbar && (
@@ -127,6 +132,13 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         />
       )}
 
+      {showContextPanel && state.contextPanel !== 'none' && (
+        <GameplayContextPanel
+          panel={state.contextPanel}
+          onClose={() => dispatch({ type: 'SET_CONTEXT_PANEL', panel: 'none' })}
+        />
+      )}
+
       {toolOpen && !state.paused && (
         <>
           <BuildingPlacementOverlay
@@ -141,10 +153,6 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
 
       {space !== 'management' && !state.paused && (
         <GameplayOperationHints toolActive={toolOpen} adjustmentMode={state.adjustmentMode} />
-      )}
-
-      {state.flyout !== 'none' && !state.paused && (
-        <RightEdgeFlyout flyout={state.flyout} onClose={() => dispatch({ type: 'SET_FLYOUT', flyout: 'none' })} />
       )}
 
       {space === 'management' && state.management !== 'none' && (
