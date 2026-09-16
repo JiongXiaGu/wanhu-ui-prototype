@@ -3,7 +3,7 @@ import { Search, X } from 'lucide-react';
 import type { DesignWorkspaceDefinition, DesignWorkspaceItem } from './design-workspace-model';
 
 const CATEGORY_PAGE_SIZE = 6;
-const CONTENT_PAGE_SIZE = 6;
+const CONTENT_PAGE_SIZE = 8;
 const CONTENT_PAGER_WINDOW = 5;
 const WHEEL_THRESHOLD = 72;
 const WHEEL_LOCK_MS = 220;
