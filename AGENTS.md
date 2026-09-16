@@ -28,6 +28,19 @@
 
 不得把“截图任务成功运行”当成“已经审图”；必须实际查看图片内容。
 
+## Vercel 构建额度与分支纪律
+
+当前项目的 Vercel Preview / Production 构建额度是有限资源，连续推送可能触发 `build-rate-limit`。开发流程必须主动减少无意义部署：
+
+- 同一轮 UI 工作优先在一个临时分支内完成代码、测试、Review Scenario 与文档，再形成一次可复核提交；
+- 不为 1–2 px 微调、单独文档更新、临时截图说明反复推送提交；
+- 中间视觉复核优先使用 GitHub Actions Visual Review Artifact，不要求每一步都等 Vercel 在线地址更新；
+- 临时分支已经构建成功后，不要依赖“把同一个 SHA 快进到 `main`”来触发 Production；最终发布应让 `main` 拥有明确的新提交 SHA，再只触发一次 Production；
+- 如果 Vercel 已返回 `build-rate-limit`，停止继续制造部署提交。若已有 Ready Preview，可直接 Promote 到 Production；否则等待额度窗口恢复后再发布；
+- Preview / Production 是否消耗额度以当前 Vercel 项目实际配额为准，项目内不写死某个每日次数。
+
+目标是把构建额度当作项目资源管理，而不是把每个微调都变成一次远端部署。
+
 ## 实现与文档
 
 - Web Prototype 用于验证视觉、构图、信息架构与交互；最终运行时为 Unity UI Toolkit。

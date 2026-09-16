@@ -21,12 +21,12 @@ Design Workspace 是同一个 Workspace Surface，不为八类内容复制八套
 
 再次点击当前 Main Dock 分类、Workspace 关闭按钮或 Esc，均关闭 Workspace 并清空 `dockCategory`。Main Dock 在玩家没有明确选择分类时保持无 Selected，不保存或恢复“设计模式上一次分类”。
 
-Camera / Weather 已迁移到左下共享 Context Surface。Design Workspace 与该 Context Surface 当前互斥：
+Camera / Environment 已迁移到左下共享 Context Surface。Design Workspace 与该 Context Surface 当前互斥：
 
-- Workspace 打开时点击 Camera / Weather → 关闭 Workspace、清空 `dockCategory`、打开 Context Surface；
+- Workspace 打开时点击 Camera / Environment → 关闭 Workspace、清空 `dockCategory`、打开 Context Surface；
 - Context Surface 打开时点击设计分类 → 关闭 Context Surface、打开 Design Workspace。
 
-这样下半屏只保留一个主要内容 Surface，避免天气 / 相机参数面板和资产目录同时争抢空间。
+这样下半屏只保留一个主要内容 Surface，避免环境 / 相机参数面板和资产目录同时争抢空间。
 
 ## 通用框架
 
@@ -43,6 +43,22 @@ Camera / Weather 已迁移到左下共享 Context Surface。Design Workspace 与
 
 Web 原型由 `DesignWorkspace.tsx` 实现；类别、筛选和 Item 数据由 `design-workspace-model.ts` 提供。最终 Unity UI Toolkit 应保持相同的配置驱动结构，不为道路、桥梁、城墙等复制完整 UXML 树。
 
+### 1080p 几何基线
+
+当前 1920×1080 基线：
+
+- Workspace 约 `1240 × 280px`；
+- Header 约 `50px`；
+- Primary Rail 约 `146px` 宽；
+- Rail 每项约 `29px` 高，每组最多 7 项；
+- Context Filter 约 `34px` 高；
+- Content Grid 固定 4 列 × 2 行；
+- Asset Item 固定约 `64px` 高；
+- Preview 固定 `64 × 64px`，与 Item 左边和上下边完全贴合；
+- Bottom Pager 约 `18px` 高，并始终保留视觉锚点。
+
+Workspace 的目标是紧凑资产浏览器，不是大型图库面板。缩略图只负责快速识别，资产名称与关键属性负责主要阅读。
+
 ## Primary Rail
 
 Primary Rail 当前约 `146px`，必须支持最多 **6 个汉字**的常规分类名称，例如：
@@ -56,6 +72,13 @@ Primary Rail 当前约 `146px`，必须支持最多 **6 个汉字**的常规分�
 每组最多显示 **7 个 Rail 项**；超过 7 个时使用左侧组分页 / 滚轮切换。第一项通用筛选统一显示 **`所有`**，不再拼接 `全部道路 / 全部桥梁 / 全部建筑` 等业务文案，减少重复并方便本地化。
 
 打开 Workspace 后，Primary Rail 与 Context Filter 都必须有一个真实有效筛选状态。默认 `所有` / `全部` 可以 Selected，因为它们描述当前内容集合；这和 Main Dock “没有明确选择就不 Selected”是不同语义。
+
+Rail Pager 使用固定视觉槽位：
+
+- 只有一组分类时不隐藏槽位，显示一条低对比竖线 `┃`；
+- 多组分类时显示“当前长竖线 + 其它点”；
+- 切换分类或筛选不能因为 Pager 整体出现 / 消失而改变 Rail 的内部几何；
+- Web 可用伪元素验证单组视觉，最终 UI Toolkit 应使用始终存在的 Pager VisualElement，由 C# 更新 Marker 数量与状态。
 
 ## 当前八类原型配置
 
@@ -75,21 +98,41 @@ Primary Rail 当前约 `146px`，必须支持最多 **6 个汉字**的常规分�
 所有设计类别共用一种 Item Card：
 
 ```text
-1:1 预览图 | 名称
-           | 一条关键属性
+64×64 Preview | 名称
+              | 一条关键属性
 ```
 
-Content Grid 固定为 `4 列 × 2 行`，每页最多显示 8 项。1920×1080 基线下 Design Workspace 约 `1240 × 370px`。
+Content Grid 固定为 `4 列 × 2 行`，每页最多显示 8 项。
 
-Item Card 约 `255 × 100px`。预览窗口约 `64 × 64px`，严格保持 `1:1`，避免图片压缩文字区域。道路、桥梁、城墙等长条对象仍使用方形预览窗口，但可以通过独立缩略图构图、`background-position` 或正式资产渲染方式适配，不改变 Card 外部比例。
+Asset Item 高度固定约 `64px`，Preview 同样固定为 `64 × 64px`。Preview 完全占据 Item 左侧高度，并与 Item 左边、上边、下边贴合；Item 不再额外为图片保留上下 Padding。这样图片是识别辅助，而文字仍然是主要信息。
 
-名称是主要识别信息，1080p 基线约 `14.2px / 600`，允许最多两行；关键属性约 `10.5px`。默认阅读顺序是：**名称 / 预览图 → 属性**。
+Preview 严格保持 `1:1`。道路、桥梁、城墙等长条对象仍使用方形预览窗口，但可以通过独立缩略图构图、`background-position` 或正式资产渲染方式适配，不改变 Item 外部比例。
+
+名称是主要识别信息，1080p 基线约 `14.2px / 600`，允许最多两行；关键属性约 `10.5px`。默认阅读顺序是：**名称 → Preview → 属性**。属性文字必须低于名称一级，但不能灰到需要费力辨认。
 
 Asset Card 是 **Action Button**，不是 Toggle / Exclusive Selector。它只有 `Default / Hover / Focus / Pressed / Disabled` 等按钮状态，不保留点击后的 Selected，也不使用 `aria-pressed`。点击 Item 表示“使用这个资产 / 进入对应 Tool”；如果某类 Tool 尚未接入，也不为了视觉反馈伪造持续 Selected。
 
-Card 默认 Surface 很轻，不形成八块明显矩形；Hover / Focus 使用弱 Tone 与细暖金状态，Pressed 只短暂反馈点击。
+状态视觉：
+
+- Default：近乎无框，只保留极弱 Surface；
+- Hover：Surface 和文字轻微提亮，Preview 恢复少量亮度 / 饱和度；不位移、不缩放、不出现暖金状态线；
+- Keyboard / Gamepad Focus：才允许显示克制的 `2px` 暖金短线；
+- Pressed：短暂使用极弱暖金 Tone，不形成持续 Selected。
 
 建筑 Item 当前已经连接 Building Placement Tool。其它设计类别先完成 Workspace 浏览、筛选和显式选择；后续道路、桥梁、台基、城墙、围墙、装饰、树木分别连接自己的 Tool，不在 Workspace 内混入 Tool 参数。
+
+## Content Pager
+
+Content Pager 永远保留稳定视觉槽位，不因为筛选结果只有一页而整个消失：
+
+- 只有一页时显示低对比短横线 `━`，不可交互；
+- 多页时显示“当前长横线 + 其它点”；
+- 筛选、搜索导致页数变化时，Pager 的中心位置、高度和所在行不变化，只改变 Marker 数量与状态；
+- Marker 切换可以做约 `140–180ms` 的宽度、Opacity、Tone 过渡；
+- 当前页才允许使用旧金，其它页保持中性灰；
+- 最终 UI Toolkit 使用持久 Pager 容器和复用 Marker VisualElement，不通过重新创建整块 Footer 改变布局。
+
+Pager 是浏览状态指示器，不是新的 Footer Surface。
 
 ## Asset Inspector
 
@@ -107,7 +150,7 @@ Asset Inspector 用于玩家点击前的决策摘要，例如：
 
 它不承担确认、购买、放置、参数修改等操作，内部不放可点击按钮。
 
-注意：**Asset Inspector 与 Gameplay 左下 Context Surface 是两种不同层级。** Asset Inspector 是绑定 Asset Card 的短时悬浮详情；Context Surface 是屏幕级稳定槽位，用于 Camera / Weather / 未来 Selection Inspector。
+注意：**Asset Inspector 与 Gameplay 左下 Context Surface 是两种不同层级。** Asset Inspector 是绑定 Asset Card 的短时悬浮详情；Context Surface 是屏幕级稳定槽位，用于 Camera / Environment / 未来 Selection Inspector。
 
 ### 尺寸与 Composition
 
@@ -170,8 +213,8 @@ Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最�
 - 关闭 Workspace → Main Dock 分类取消 Selected；
 - Asset Card 不保存 Selected；
 - Hover / Focus Asset Inspector 只提供只读详情，不改变 GameplayUiState；
-- 打开 Camera / Weather Context Surface → Design Workspace 关闭并清空分类；
-- 打开 Design Workspace → Camera / Weather Context Surface 关闭；
+- 打开 Camera / Environment Context Surface → Design Workspace 关闭并清空分类；
+- 打开 Design Workspace → Camera / Environment Context Surface 关闭；
 - Top Shell、Navigation HUD、World Utility Toolbar、Main Dock 在 Design Workspace 中继续保留；
 - 进入具体 Tool 后 Main Dock / Control Tray 按 Tool 空间规则隐藏；
 - Building Placement 完成或取消后返回 `设计 → 建筑` Design Workspace。
@@ -180,10 +223,11 @@ Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最�
 
 - `src/workspace/DesignWorkspace.tsx`：共享 Workspace 行为、Asset Button 与当前 Asset Inspector 内容组合；
 - `src/workspace/design-workspace-model.ts`：八类 Definition 与原型数据；
-- `src/workspace/design-workspace.css`：Design Workspace Rail / Asset Button 视觉；
+- `src/workspace/design-workspace.css`：Design Workspace 几何、Rail / Asset Button 与稳定 Pager 槽位；
+- `src/workspace/workspace-world-first-glass.css`：Workspace World-first Glass 材质与状态视觉；
 - `src/ui/asset-inspector/AssetInspector.tsx`：跨系统 Asset Inspector 框架；
 - `src/ui/asset-inspector/asset-inspector.css`：Asset Inspector 通用视觉与尺寸边界；
-- `src/workspace.css`：Workspace 通用壳、Header、筛选、分页等基础样式；
+- `src/workspace.css`：Workspace 通用壳与基础样式；
 - `src/app/ui-state.ts`：Workspace / Main Dock / Context Surface 全局状态与切换逻辑；
 - `src/gameplay/GameplayScreen.tsx`：把当前 Definition 接入 Gameplay 空间。
 

@@ -15,6 +15,17 @@ Vercel 线上页面是否已经更新不作为截图复核的前置条件；GitH
 
 对于有明显状态差异的界面，应分别保留关键状态截图。例如 New Game 至少覆盖常规地图选择与随机地图参数状态。
 
+## Vercel 构建额度
+
+Vercel Preview / Production 构建额度有限，连续的小提交可能触发 `build-rate-limit`。复核流程必须兼顾视觉质量与部署额度：
+
+- 一轮相关 UI 调整应尽量合并代码、测试、Review Scenario 和文档后再推送一次；
+- 1–2 px 微调、仅文档变更、局部说明修正默认不单独触发 Vercel 部署；
+- 迭代期间优先使用 GitHub Actions Visual Review Artifact 完成截图复核，不要求每次都生成新的 Vercel Preview；
+- 最终发布时再让 `main` 产生明确的新提交并触发一次 Production；不要依赖把已经作为 Preview 构建过的同一 SHA 快进到 `main`；
+- 若已触发 `build-rate-limit`，停止继续推送“重试提交”。已有 Ready Preview 时优先直接 Promote 到 Production；否则等待额度窗口恢复；
+- 不在文档中写死某个每日构建次数，实际限制以当前 Vercel 项目配额和平台返回状态为准。
+
 ## Review 图片输出
 
 Playwright 仍以 1920×1080 PNG 完成自动截图与视觉断言，确保测试过程不受有损压缩影响。所有截图脚本完成后统一执行预览压缩：
