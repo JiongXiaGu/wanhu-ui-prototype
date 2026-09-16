@@ -5,10 +5,22 @@
   box-sizing:border-box;
   border:1px solid var(--command-border,rgba(239,233,221,.10));
   border-radius:var(--command-radius,14px);
-  background:linear-gradient(180deg,var(--command-surface-top,rgba(28,37,32,.94)),var(--command-surface-bottom,rgba(21,29,25,.925)));
-  backdrop-filter:blur(var(--command-blur,10px));
+  background:linear-gradient(180deg,var(--command-surface-top,rgba(28,37,32,.88)),var(--command-surface-bottom,rgba(21,29,25,.85)));
+  backdrop-filter:blur(var(--command-blur,12px));
 }
 
-.bottom-command-surface--lg{box-shadow:var(--command-shadow-lg,0 16px 38px rgba(5,8,7,.23))}
-.bottom-command-surface--md{box-shadow:var(--command-shadow-md,0 14px 34px rgba(5,8,7,.21))}
-.bottom-command-surface--sm{box-shadow:var(--command-shadow-sm,0 12px 30px rgba(5,8,7,.18))}
+.bottom-command-surface--lg{
+  background:linear-gradient(180deg,var(--command-surface-lg-top,var(--command-surface-top)),var(--command-surface-lg-bottom,var(--command-surface-bottom)));
+  box-shadow:var(--command-shadow-lg,0 16px 38px rgba(5,8,7,.23));
+  backdrop-filter:blur(var(--command-blur-lg,var(--command-blur,12px)));
+}
+.bottom-command-surface--md{
+  background:linear-gradient(180deg,var(--command-surface-md-top,var(--command-surface-top)),var(--command-surface-md-bottom,var(--command-surface-bottom)));
+  box-shadow:var(--command-shadow-md,0 14px 34px rgba(5,8,7,.21));
+  backdrop-filter:blur(var(--command-blur-md,var(--command-blur,12px)));
+}
+.bottom-command-surface--sm{
+  background:linear-gradient(180deg,var(--command-surface-sm-top,var(--command-surface-top)),var(--command-surface-sm-bottom,var(--command-surface-bottom)));
+  box-shadow:var(--command-shadow-sm,0 12px 30px rgba(5,8,7,.18));
+  backdrop-filter:blur(var(--command-blur-sm,var(--command-blur,10px)));
+}

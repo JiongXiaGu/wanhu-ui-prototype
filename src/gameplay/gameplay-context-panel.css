@@ -6,9 +6,9 @@
   overflow:hidden;
   border:1px solid var(--hud-border-strong,rgba(239,233,221,.14));
   border-radius:var(--hud-radius-lg,18px);
-  background:linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
+  background:linear-gradient(180deg,var(--hud-surface-context-top,var(--hud-surface-secondary-top)),var(--hud-surface-context-bottom,var(--hud-surface-secondary-bottom)));
   box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
-  backdrop-filter:blur(11px);
+  backdrop-filter:var(--hud-glass-filter,blur(14px));
   animation:gameplay-context-enter .18s cubic-bezier(.2,.75,.25,1) both;
   z-index:28;
 }

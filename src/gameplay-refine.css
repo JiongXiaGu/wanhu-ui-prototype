@@ -109,20 +109,25 @@
   to{opacity:1;transform:translateY(0)}
 }
 
-/* Workspace is a larger child surface of the bottom system, not a command bar itself. */
+/* Workspace uses two transparency tiers inside one shell:
+   the Header is Context so more world remains visible, while the browsing Body is Work for stable card readability. */
 .gameplay-screen .workspace{
   bottom:calc(var(--hud-edge,16px) + var(--hud-command-height,76px) + var(--hud-gap-md,12px));
   border-color:var(--hud-border-strong,rgba(239,233,221,.14));
   border-radius:var(--hud-radius-lg,18px);
-  background:
-    radial-gradient(ellipse at 78% 18%,rgba(201,165,95,.025),transparent 30%),
-    linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
+  background:transparent;
   box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
-  backdrop-filter:blur(11px);
+  backdrop-filter:var(--hud-glass-filter-soft,blur(11px));
 }
 .gameplay-screen .workspace-header{
   border-bottom-color:var(--hud-rule,rgba(239,233,221,.065));
-  background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.002));
+  background:linear-gradient(180deg,var(--hud-surface-context-top,var(--hud-surface-secondary-top)),var(--hud-surface-context-bottom,var(--hud-surface-secondary-bottom)));
+}
+.gameplay-screen .workspace-body{
+  background:
+    radial-gradient(ellipse at 78% 18%,rgba(201,165,95,.022),transparent 30%),
+    radial-gradient(ellipse at 14% 88%,rgba(104,126,112,.020),transparent 34%),
+    linear-gradient(180deg,var(--hud-surface-work-top,var(--hud-surface-primary-top)),var(--hud-surface-work-bottom,var(--hud-surface-primary-bottom)));
 }
 .gameplay-screen .workspace-header .icon-button{border-radius:9px}
 .gameplay-screen .workspace-primary-rail{border-right-color:var(--hud-rule,rgba(239,233,221,.065))}
