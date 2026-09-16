@@ -1,0 +1,217 @@
+/* Wanhu Mist Glass v1
+   Shared material language for Gameplay glass surfaces.
+   Default runtime uses the selected high-transparency baseline. Environment and
+   Design Workspace differ by Surface Tier, not by hue. Review-only A/B/C
+   attributes preserve the comparison baselines without changing gameplay state. */
+
+/* ---- Default / C: selected production baseline ---- */
+.gameplay-screen .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(86,88,86,.31);
+  --weather-mist-card:rgba(255,255,255,.040);
+  --weather-mist-card-hover:rgba(255,255,255,.066);
+  --weather-paper:#f0ede6;
+  --weather-text:#d8d5ce;
+  --weather-muted:#b7b4ad;
+  --weather-faint:#92938f;
+  --weather-edge:rgba(255,255,255,.22);
+  --weather-rule:rgba(255,255,255,.10);
+  --weather-jade:#9ea7a2;
+  backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+  -webkit-backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+}
+.gameplay-screen[data-time-of-day="night"] .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(104,106,104,.29);
+  --weather-mist-card:rgba(255,255,255,.046);
+  --weather-mist-card-hover:rgba(255,255,255,.072);
+  --weather-edge:rgba(255,255,255,.24);
+  --weather-rule:rgba(255,255,255,.11);
+  backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+  -webkit-backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+}
+.gameplay-screen .gameplay-context-panel--weather>header,
+.gameplay-screen .workspace--design .workspace-header{
+  background:rgba(255,255,255,.012);
+}
+.gameplay-screen .gameplay-context-panel__footer--weather-mode{
+  background:rgba(255,255,255,.010);
+}
+
+.gameplay-screen .workspace--design{
+  --workspace-glass-surface:rgba(86,88,86,.34);
+  --workspace-glass-body:rgba(54,57,55,.43);
+  --workspace-glass-rail:rgba(255,255,255,.014);
+  --workspace-glass-card:rgba(255,255,255,.008);
+  --workspace-glass-card-hover:rgba(255,255,255,.035);
+  --workspace-paper:#f0ede6;
+  --workspace-text:#d8d5ce;
+  --workspace-muted:#b7b4ad;
+  --workspace-faint:#92938f;
+  --workspace-edge:rgba(255,255,255,.22);
+  --workspace-rule:rgba(255,255,255,.10);
+  --workspace-jade:#9ea7a2;
+  backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+  -webkit-backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+}
+.gameplay-screen[data-time-of-day="night"] .workspace--design{
+  --workspace-glass-surface:rgba(104,106,104,.32);
+  --workspace-glass-body:rgba(65,68,66,.42);
+  --workspace-edge:rgba(255,255,255,.24);
+  --workspace-rule:rgba(255,255,255,.11);
+  backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+  -webkit-backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+}
+
+/* ---- A: former baseline, review only ---- */
+.gameplay-screen[data-glass-study="a"] .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(76,78,77,.48);
+  --weather-mist-card:rgba(255,255,255,.060);
+  --weather-mist-card-hover:rgba(255,255,255,.086);
+  --weather-paper:#f0ede6;
+  --weather-text:#d8d5ce;
+  --weather-muted:#b9b6af;
+  --weather-faint:#92938f;
+  --weather-edge:rgba(255,255,255,.19);
+  --weather-rule:rgba(255,255,255,.085);
+  --weather-jade:#9eaaa3;
+  backdrop-filter:blur(20px) saturate(.70) brightness(1.02);
+  -webkit-backdrop-filter:blur(20px) saturate(.70) brightness(1.02);
+}
+.gameplay-screen[data-glass-study="a"][data-time-of-day="night"] .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(106,108,106,.45);
+  --weather-mist-card:rgba(255,255,255,.068);
+  --weather-mist-card-hover:rgba(255,255,255,.096);
+  --weather-edge:rgba(255,255,255,.21);
+  --weather-rule:rgba(255,255,255,.095);
+  backdrop-filter:blur(20px) saturate(.67) brightness(1.055);
+  -webkit-backdrop-filter:blur(20px) saturate(.67) brightness(1.055);
+}
+.gameplay-screen[data-glass-study="a"] .gameplay-context-panel--weather>header{background:rgba(255,255,255,.018)}
+.gameplay-screen[data-glass-study="a"] .gameplay-context-panel__footer--weather-mode{background:rgba(255,255,255,.016)}
+
+.gameplay-screen[data-glass-study="a"] .workspace--design{
+  --workspace-glass-surface:rgba(74,76,75,.52);
+  --workspace-glass-body:rgba(43,47,45,.66);
+  --workspace-glass-rail:rgba(255,255,255,.022);
+  --workspace-glass-card:rgba(255,255,255,.012);
+  --workspace-glass-card-hover:rgba(255,255,255,.045);
+  --workspace-paper:#f0ede6;
+  --workspace-text:#d6d3cc;
+  --workspace-muted:#aaa9a3;
+  --workspace-faint:#848985;
+  --workspace-edge:rgba(255,255,255,.17);
+  --workspace-rule:rgba(255,255,255,.075);
+  --workspace-jade:#9eaaa3;
+  backdrop-filter:blur(18px) saturate(.70) brightness(1.02);
+  -webkit-backdrop-filter:blur(18px) saturate(.70) brightness(1.02);
+}
+.gameplay-screen[data-glass-study="a"][data-time-of-day="night"] .workspace--design{
+  --workspace-glass-surface:rgba(92,94,92,.50);
+  --workspace-glass-body:rgba(55,59,57,.66);
+  --workspace-edge:rgba(255,255,255,.19);
+  --workspace-rule:rgba(255,255,255,.085);
+  backdrop-filter:blur(18px) saturate(.66) brightness(1.05);
+  -webkit-backdrop-filter:blur(18px) saturate(.66) brightness(1.05);
+}
+.gameplay-screen[data-glass-study="a"] .workspace--design .workspace-header{background:rgba(255,255,255,.022)}
+
+/* ---- B: medium-transparency review baseline ---- */
+.gameplay-screen[data-glass-study="b"] .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(82,84,82,.40);
+  --weather-mist-card:rgba(255,255,255,.052);
+  --weather-mist-card-hover:rgba(255,255,255,.078);
+  --weather-paper:#f0ede6;
+  --weather-text:#d8d5ce;
+  --weather-muted:#b7b4ad;
+  --weather-faint:#92938f;
+  --weather-edge:rgba(255,255,255,.19);
+  --weather-rule:rgba(255,255,255,.085);
+  --weather-jade:#9ea7a2;
+  backdrop-filter:blur(22px) saturate(.68) brightness(1.03);
+  -webkit-backdrop-filter:blur(22px) saturate(.68) brightness(1.03);
+}
+.gameplay-screen[data-glass-study="b"][data-time-of-day="night"] .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(100,102,100,.36);
+  --weather-mist-card:rgba(255,255,255,.058);
+  --weather-mist-card-hover:rgba(255,255,255,.084);
+  --weather-edge:rgba(255,255,255,.21);
+  --weather-rule:rgba(255,255,255,.095);
+  backdrop-filter:blur(22px) saturate(.65) brightness(1.065);
+  -webkit-backdrop-filter:blur(22px) saturate(.65) brightness(1.065);
+}
+.gameplay-screen[data-glass-study="b"] .gameplay-context-panel--weather>header,
+.gameplay-screen[data-glass-study="b"] .workspace--design .workspace-header{background:rgba(255,255,255,.016)}
+.gameplay-screen[data-glass-study="b"] .gameplay-context-panel__footer--weather-mode{background:rgba(255,255,255,.014)}
+
+.gameplay-screen[data-glass-study="b"] .workspace--design{
+  --workspace-glass-surface:rgba(82,84,82,.42);
+  --workspace-glass-body:rgba(51,54,52,.52);
+  --workspace-glass-rail:rgba(255,255,255,.018);
+  --workspace-glass-card:rgba(255,255,255,.010);
+  --workspace-glass-card-hover:rgba(255,255,255,.042);
+  --workspace-paper:#f0ede6;
+  --workspace-text:#d8d5ce;
+  --workspace-muted:#b7b4ad;
+  --workspace-faint:#92938f;
+  --workspace-edge:rgba(255,255,255,.19);
+  --workspace-rule:rgba(255,255,255,.085);
+  --workspace-jade:#9ea7a2;
+  backdrop-filter:blur(22px) saturate(.68) brightness(1.03);
+  -webkit-backdrop-filter:blur(22px) saturate(.68) brightness(1.03);
+}
+.gameplay-screen[data-glass-study="b"][data-time-of-day="night"] .workspace--design{
+  --workspace-glass-surface:rgba(100,102,100,.38);
+  --workspace-glass-body:rgba(62,65,63,.50);
+  --workspace-edge:rgba(255,255,255,.21);
+  --workspace-rule:rgba(255,255,255,.095);
+  backdrop-filter:blur(22px) saturate(.65) brightness(1.065);
+  -webkit-backdrop-filter:blur(22px) saturate(.65) brightness(1.065);
+}
+
+/* ---- C: selected baseline, explicit review alias ---- */
+.gameplay-screen[data-glass-study="c"] .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(86,88,86,.31);
+  --weather-mist-card:rgba(255,255,255,.040);
+  --weather-mist-card-hover:rgba(255,255,255,.066);
+  --weather-paper:#f0ede6;
+  --weather-text:#d8d5ce;
+  --weather-muted:#b7b4ad;
+  --weather-faint:#92938f;
+  --weather-edge:rgba(255,255,255,.22);
+  --weather-rule:rgba(255,255,255,.10);
+  --weather-jade:#9ea7a2;
+  backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+  -webkit-backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+}
+.gameplay-screen[data-glass-study="c"][data-time-of-day="night"] .gameplay-context-panel--weather{
+  --weather-mist-surface:rgba(104,106,104,.29);
+  --weather-mist-card:rgba(255,255,255,.046);
+  --weather-mist-card-hover:rgba(255,255,255,.072);
+  --weather-edge:rgba(255,255,255,.24);
+  --weather-rule:rgba(255,255,255,.11);
+  backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+  -webkit-backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+}
+.gameplay-screen[data-glass-study="c"] .workspace--design{
+  --workspace-glass-surface:rgba(86,88,86,.34);
+  --workspace-glass-body:rgba(54,57,55,.43);
+  --workspace-glass-rail:rgba(255,255,255,.014);
+  --workspace-glass-card:rgba(255,255,255,.008);
+  --workspace-glass-card-hover:rgba(255,255,255,.035);
+  --workspace-paper:#f0ede6;
+  --workspace-text:#d8d5ce;
+  --workspace-muted:#b7b4ad;
+  --workspace-faint:#92938f;
+  --workspace-edge:rgba(255,255,255,.22);
+  --workspace-rule:rgba(255,255,255,.10);
+  --workspace-jade:#9ea7a2;
+  backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+  -webkit-backdrop-filter:blur(26px) saturate(.64) brightness(1.05);
+}
+.gameplay-screen[data-glass-study="c"][data-time-of-day="night"] .workspace--design{
+  --workspace-glass-surface:rgba(104,106,104,.32);
+  --workspace-glass-body:rgba(65,68,66,.42);
+  --workspace-edge:rgba(255,255,255,.24);
+  --workspace-rule:rgba(255,255,255,.11);
+  backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+  -webkit-backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+}
