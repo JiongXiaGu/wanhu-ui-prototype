@@ -1,6 +1,7 @@
-/* Weather visual skin: Neutral Obsidian Glass v2.
+/* Weather visual skin: Neutral Obsidian Glass v3.
    Core hierarchy must still work without browser backdrop blur so the visual
-   contract can map cleanly to Unity UI Toolkit + USS. */
+   contract can map cleanly to Unity UI Toolkit + USS. Weather presets are
+   regular button elements with icon + label, mirroring a future VisualElement list. */
 
 .gameplay-context-panel--weather{
   --weather-obsidian-top:rgba(38,40,41,.60);
@@ -65,7 +66,7 @@
    if backdrop-filter is removed in the Unity implementation. */
 .gameplay-context-panel__body--weather{
   max-height:calc(var(--hud-left-context-max-height,720px) - 98px);
-  padding:12px 17px 10px;
+  padding:11px 17px 9px;
   background:
     radial-gradient(ellipse at 76% 8%,rgba(255,255,255,.020),transparent 33%),
     linear-gradient(180deg,rgba(255,255,255,.006),rgba(255,255,255,0));
@@ -74,10 +75,10 @@
 
 /* Sections: tighter rhythm; hierarchy comes from text scale and whitespace. */
 .gameplay-context-panel--weather .gameplay-context-panel__section{
-  padding:2px 0 8px;
+  padding:2px 0 7px;
 }
 .gameplay-context-panel--weather .gameplay-context-panel__section + .gameplay-context-panel__section{
-  padding-top:10px;
+  padding-top:9px;
   border-top:0;
 }
 .gameplay-context-panel--weather .gameplay-context-panel__section-title{
@@ -87,16 +88,89 @@
 }
 .gameplay-context-panel--weather .gameplay-context-panel__section-title::before,
 .gameplay-context-panel--weather .gameplay-context-panel__section-title::after{display:none!important}
-.gameplay-context-panel--weather .gameplay-context-panel__section-title b{
+.gameplay-context-panel--weather .gameplay-context-panel__section-title b,
+.weather-preset-section__heading>b{
   color:#cbc7bf;
   font-size:12px;
   font-weight:600;
   letter-spacing:.025em;
 }
 
+/* Weather presets -------------------------------------------------------
+   Seven compact cards fit the 400px context surface in one row. Their structure
+   maps directly to UI Toolkit: Button > Icon + Label. Colour is semantic and
+   deliberately limited to the icon; the glass card remains neutral. */
+.weather-preset-section{padding-top:1px!important;padding-bottom:8px!important}
+.weather-preset-section__heading{
+  min-height:22px;
+  margin-bottom:6px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.weather-preset-section__heading>span{
+  color:#8f928e;
+  font-size:9.5px;
+  font-weight:500;
+  white-space:nowrap;
+}
+.weather-preset-grid{
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:4px;
+}
+.weather-preset-card{
+  min-width:0;
+  height:54px;
+  padding:5px 2px 4px;
+  border:1px solid rgba(235,233,227,.060);
+  border-radius:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  background:rgba(255,255,255,.026);
+  color:#aaa9a4;
+  cursor:pointer;
+}
+.weather-preset-card:hover{
+  border-color:rgba(235,233,227,.115);
+  background:rgba(255,255,255,.052);
+  color:#dedad2;
+}
+.weather-preset-card.is-active{
+  border-color:rgba(182,154,102,.42);
+  background:rgba(182,154,102,.085);
+  color:#e5dfd3;
+  box-shadow:inset 0 -2px 0 rgba(182,154,102,.72),inset 0 1px 0 rgba(255,255,255,.028);
+}
+.weather-preset-card__icon{
+  width:17px;
+  height:17px;
+  stroke-width:1.7;
+  color:#a7aaa7;
+}
+.weather-preset-card>span{
+  min-width:0;
+  font-size:9.3px;
+  font-weight:560;
+  line-height:1;
+  white-space:nowrap;
+}
+.weather-preset-card[data-preset-id="clear"] .weather-preset-card__icon{color:#c6ae72}
+.weather-preset-card[data-preset-id="cloudy"] .weather-preset-card__icon{color:#aeb7b5}
+.weather-preset-card[data-preset-id="overcast"] .weather-preset-card__icon{color:#9da09e}
+.weather-preset-card[data-preset-id="light-rain"] .weather-preset-card__icon{color:#9bacb0}
+.weather-preset-card[data-preset-id="heavy-rain"] .weather-preset-card__icon{color:#91a2a8}
+.weather-preset-card[data-preset-id="snow"] .weather-preset-card__icon{color:#c5cecb}
+.weather-preset-card[data-preset-id="fog"] .weather-preset-card__icon{color:#b5bab5}
+.weather-preset-card.is-active .weather-preset-card__icon{filter:brightness(1.12)}
+
 /* Parameter rows: larger labels inside a shorter row. */
 .gameplay-context-panel--weather .parameter-row{
-  min-height:37px;
+  min-height:36px;
   grid-template-columns:86px 28px minmax(100px,1fr) 28px 50px;
   gap:5px;
 }
