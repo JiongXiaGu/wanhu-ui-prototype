@@ -144,17 +144,46 @@ if ((await page.locator('.gameplay-context-panel').count()) !== 0) throw new Err
 if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Tool space must hide the secondary top control tray.');
 if ((await page.getByRole('button', { name: '菜单', exact: true }).count()) !== 1) throw new Error('The global system-menu button should remain available in Tool space.');
 const toolCompass = page.locator('.gameplay-compass-hud');
-if ((await toolCompass.count()) !== 1 || !(await toolCompass.getAttribute('class'))?.includes('is-build-mode')) throw new Error('Building Placement should keep the compass and strengthen its build-mode presentation.');
+if ((await toolCompass.count()) !== 1 || !(await toolCompass.getAttribute('class'))?.includes('is-build-mode')) throw new Error('Placement tools should keep the compass and strengthen its build-mode presentation.');
 const toolWorldTools = page.locator('.world-utility-toolbar');
 if ((await toolWorldTools.getByRole('button', { name: '网格吸附', exact: true }).getAttribute('aria-pressed')) !== 'false') throw new Error('Global grid state must persist into Building Placement.');
 if ((await page.locator('.placement-utility-strip').count()) !== 0) throw new Error('Building Placement must not duplicate grid/history utilities.');
 
-const placementDock = page.locator('.building-placement-toolbar-cluster .tool-bottom-cluster__primary');
-const placementDockBox = await placementDock.boundingBox();
-if (!placementDockBox || placementDockBox.height < 64 || placementDockBox.height > 68) throw new Error('Building Placement primary dock must stay near 66px.');
-const placementModeBox = await placementDock.locator('.bp-mode-action').first().boundingBox();
-if (!placementModeBox || placementModeBox.width < 46 || placementModeBox.height < 46) throw new Error('Placement mode controls must retain large hit targets.');
-await page.screenshot({ path: `${outDir}/02e-building-placement-top-shell.png` });
+const buildingActionBar = page.locator('.building-placement-toolbar-cluster .placement-action-bar');
+const buildingActionBarBox = await buildingActionBar.boundingBox();
+if (!buildingActionBarBox || buildingActionBarBox.height < 68 || buildingActionBarBox.height > 72) throw new Error('Building Placement must use the shared ~70px action bar.');
+if (Math.abs((buildingActionBarBox.x + buildingActionBarBox.width / 2) - 960) > 2) throw new Error('Building Placement action bar must remain centered.');
+if ((await buildingActionBar.locator('.placement-action-bar__button--mode').count()) !== 7) throw new Error('Building Placement must expose seven icon mode controls including the disabled facade slot.');
+if ((await buildingActionBar.locator('.placement-action-bar__button--mode[aria-pressed="true"]').count()) !== 2) throw new Error('Building Placement must expose one active terrain mode and one active adjustment mode.');
+if ((await buildingActionBar.locator('.placement-action-bar__button--quick').count()) !== 3) throw new Error('Building Placement must expose rotate-left, rotate-right and mirror quick actions.');
+for (const label of ['逆时针旋转', '顺时针旋转', '镜像建筑', '完成', '取消']) {
+  if ((await buildingActionBar.getByRole('button', { name: label, exact: true }).count()) !== 1) throw new Error(`Building Placement action missing: ${label}`);
+}
+if ((await buildingActionBar.locator('button').filter({ hasText: /平|填|高|位|层|顶|面|完成|取消/ }).count()) !== 0) throw new Error('Placement Action Bar should be icon-first instead of persistent text buttons.');
+await page.screenshot({ path: `${outDir}/02e-building-placement-action-bar.png` });
+
+// Road placement uses the same action-bar shell, but owns road-specific modes and parameters.
+await open('workspace-road', '.workspace[data-design-category="road"]');
+await page.locator('.building-card').first().click();
+await page.waitForSelector('.road-placement-prototype');
+const roadActionBar = page.locator('.road-placement-toolbar-cluster .placement-action-bar');
+const roadActionBarBox = await roadActionBar.boundingBox();
+if (!roadActionBarBox || roadActionBarBox.height < 68 || roadActionBarBox.height > 72) throw new Error('Road Placement must reuse the shared action-bar geometry.');
+if (Math.abs((roadActionBarBox.x + roadActionBarBox.width / 2) - 960) > 2) throw new Error('Road Placement action bar must remain centered.');
+if ((await roadActionBar.locator('.placement-action-bar__button--mode').count()) !== 3) throw new Error('Road Placement must expose exactly three draw modes.');
+if ((await roadActionBar.locator('.placement-action-bar__button--mode[aria-pressed="true"]').count()) !== 1) throw new Error('Road draw modes must behave as one exclusive selector.');
+for (const label of ['智能曲线', '曲线', '直线', '反转道路方向', '完成', '取消']) {
+  if ((await roadActionBar.getByRole('button', { name: label, exact: true }).count()) !== 1) throw new Error(`Road Placement action missing: ${label}`);
+}
+await page.screenshot({ path: `${outDir}/02f-road-placement-smart.png` });
+await roadActionBar.getByRole('button', { name: '曲线', exact: true }).click();
+if ((await roadActionBar.getByRole('button', { name: '曲线', exact: true }).getAttribute('aria-pressed')) !== 'true') throw new Error('Road curve mode must become selected.');
+if ((await page.locator('.road-placement-prototype').getAttribute('data-road-mode')) !== 'curve') throw new Error('Road parameter panel must follow the selected draw mode.');
+await roadActionBar.getByRole('button', { name: '反转道路方向', exact: true }).click();
+if ((await roadActionBar.getByRole('button', { name: '反转道路方向', exact: true }).getAttribute('aria-pressed')) !== null) throw new Error('Road quick actions must remain one-shot actions, not toggles.');
+await page.screenshot({ path: `${outDir}/02g-road-placement-curve.png` });
+await roadActionBar.getByRole('button', { name: '完成', exact: true }).click();
+await page.waitForSelector('.workspace[data-design-category="road"]');
 
 await open('gameplay', '.gameplay-top-navigation');
 await page.getByRole('button', { name: '经济', exact: true }).click();
