@@ -5,6 +5,8 @@ import { DesignWorkspace } from '../workspace/DesignWorkspace';
 import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
+import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
+import { RoadPlacementDock } from '../tools/road-placement/RoadPlacementDock';
 import { CommandBar, WorldUtilityToolbar } from './CommandBar';
 import { GameplayContextPanel } from './GameplayContextPanel';
 import { GameplayCompassHud, GameplaySystemMenuButton } from './GameplayCornerHud';
@@ -22,7 +24,9 @@ interface GameplayScreenProps {
 export function GameplayScreen({ background, initialState, onMainMenu }: GameplayScreenProps) {
   const [state, dispatch] = useReducer(gameplayUiReducer, initialState);
   const space = selectGameplaySpace(state);
-  const toolOpen = state.tool === 'building-placement';
+  const buildingToolOpen = state.tool === 'building-placement';
+  const roadToolOpen = state.tool === 'road-placement';
+  const toolOpen = state.tool !== 'none';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
   const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
   const showCompassHud = !state.paused && space !== 'management';
@@ -35,8 +39,6 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
     function handleGameplayEscape(event: KeyboardEvent) {
       if (event.key !== 'Escape' || event.defaultPrevented || state.paused) return;
 
-      // A focused workspace search owns its first Escape so the query can collapse
-      // without also dismissing the whole workspace in the same key press.
       if (state.workspace !== 'none' && document.activeElement instanceof HTMLElement && document.activeElement.closest('.workspace-search')) return;
 
       event.preventDefault();
@@ -128,6 +130,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
           onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
           onSelectItem={() => {
             if (designWorkspace.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
+            if (designWorkspace.id === 'road') dispatch({ type: 'ENTER_ROAD_PLACEMENT' });
           }}
         />
       )}
@@ -139,7 +142,7 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         />
       )}
 
-      {toolOpen && !state.paused && (
+      {buildingToolOpen && !state.paused && (
         <>
           <BuildingPlacementOverlay
             terrainMode={state.terrainMode}
@@ -151,8 +154,19 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         </>
       )}
 
+      {roadToolOpen && !state.paused && (
+        <>
+          <RoadPlacementOverlay
+            drawMode={state.roadDrawMode}
+            onClose={exitTool}
+            onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+          />
+          <RoadPlacementDock state={state} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+        </>
+      )}
+
       {space !== 'management' && !state.paused && (
-        <GameplayOperationHints toolActive={toolOpen} adjustmentMode={state.adjustmentMode} />
+        <GameplayOperationHints tool={state.tool} adjustmentMode={state.adjustmentMode} roadDrawMode={state.roadDrawMode} />
       )}
 
       {space === 'management' && state.management !== 'none' && (
