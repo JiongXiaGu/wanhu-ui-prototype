@@ -16,6 +16,34 @@ async function open(review, waitFor) {
   await page.waitForTimeout(160);
 }
 
+async function assertPersistentPagerSlot(workspace, label) {
+  const contentPager = workspace.locator('.workspace-content-pager');
+  if ((await contentPager.count()) === 0) {
+    const singleContentMarker = await workspace.locator('.workspace-catalog').evaluate((node) => {
+      const style = getComputedStyle(node, '::after');
+      return { content: style.content, width: Number.parseFloat(style.width), height: Number.parseFloat(style.height) };
+    });
+    if (singleContentMarker.content === 'none' || singleContentMarker.width < 16 || singleContentMarker.height < 2) {
+      throw new Error(`${label} single-page content pager must keep a visible horizontal dash slot.`);
+    }
+  } else if ((await contentPager.locator('button').count()) < 1) {
+    throw new Error(`${label} multi-page content pager must expose at least one marker.`);
+  }
+
+  const railPager = workspace.locator('.workspace-rail-pager');
+  if ((await railPager.count()) === 0) {
+    const singleRailMarker = await workspace.locator('.workspace-primary-rail__content').evaluate((node) => {
+      const style = getComputedStyle(node, '::before');
+      return { content: style.content, width: Number.parseFloat(style.width), height: Number.parseFloat(style.height) };
+    });
+    if (singleRailMarker.content === 'none' || singleRailMarker.width < 2 || singleRailMarker.height < 13) {
+      throw new Error(`${label} single-group rail pager must keep a visible vertical dash slot.`);
+    }
+  } else if ((await railPager.locator('button').count()) < 1) {
+    throw new Error(`${label} multi-group rail pager must expose at least one marker.`);
+  }
+}
+
 const designCategories = [
   ['road', '道路'],
   ['bridge', '桥梁'],
@@ -46,8 +74,13 @@ for (const [id, label] of designCategories) {
   if (!workspaceBox || workspaceBox.width < 1230 || workspaceBox.width > 1250) {
     throw new Error(`${label} Workspace should stay near the 1240px asset-browser width. width=${workspaceBox?.width}`);
   }
-  if (!workspaceBox || workspaceBox.height < 365 || workspaceBox.height > 375) {
-    throw new Error(`${label} Workspace should stay near the 370px asset-browser height. height=${workspaceBox?.height}`);
+  if (!workspaceBox || workspaceBox.height < 276 || workspaceBox.height > 284) {
+    throw new Error(`${label} Workspace should stay near the compact 280px browsing height. height=${workspaceBox?.height}`);
+  }
+
+  const headerBox = await workspace.locator('.workspace-header').boundingBox();
+  if (!headerBox || headerBox.height < 48 || headerBox.height > 52) {
+    throw new Error(`${label} Workspace header should stay near 50px. height=${headerBox?.height}`);
   }
 
   const rail = workspace.locator('.workspace-primary-rail');
@@ -62,12 +95,19 @@ for (const [id, label] of designCategories) {
     if (Array.from(railLabel.trim()).length > 6) throw new Error(`${label} rail label exceeds the six-character contract: ${railLabel}`);
   }
 
+  const firstRailButtonBox = await workspace.locator('.workspace-primary-rail__page > button').first().boundingBox();
+  if (!firstRailButtonBox || firstRailButtonBox.height < 28 || firstRailButtonBox.height > 30) {
+    throw new Error(`${label} rail rows should stay near the compact 29px baseline. height=${firstRailButtonBox?.height}`);
+  }
+
   if ((await workspace.locator('.workspace-primary-rail__page > button[aria-pressed="true"]').count()) !== 1) {
     throw new Error(`${label} Workspace must expose exactly one active primary filter.`);
   }
   if ((await workspace.locator('.workspace-context-filter__scroll > button[aria-pressed="true"]').count()) !== 1) {
     throw new Error(`${label} Workspace must expose exactly one active context filter.`);
   }
+
+  await assertPersistentPagerSlot(workspace, label);
 
   const cards = workspace.locator('.design-item-card');
   const cardCount = await cards.count();
@@ -76,20 +116,28 @@ for (const [id, label] of designCategories) {
   const firstCard = cards.first();
   const firstCardBox = await firstCard.boundingBox();
   const previewBox = await firstCard.locator('.card-thumb').boundingBox();
-  if (!firstCardBox || firstCardBox.width < 245 || firstCardBox.height < 98 || firstCardBox.height > 102) {
-    throw new Error(`${label} item cards should use the wider ~255x100 asset-card proportion. box=${JSON.stringify(firstCardBox)}`);
+  if (!firstCardBox || firstCardBox.width < 245 || firstCardBox.height < 63 || firstCardBox.height > 65) {
+    throw new Error(`${label} item cards should use the compact ~255x64 asset-row proportion. box=${JSON.stringify(firstCardBox)}`);
   }
   if ((await firstCard.evaluate((node) => node.tagName)) !== 'BUTTON') throw new Error(`${label} asset entries must be real action buttons.`);
   if ((await firstCard.getAttribute('aria-pressed')) !== null) throw new Error(`${label} asset buttons must not expose toggle/selected aria-pressed semantics.`);
   if (!previewBox || Math.abs(previewBox.width - previewBox.height) > 1) {
     throw new Error(`${label} item previews must remain square. size=${previewBox?.width}x${previewBox?.height}`);
   }
-  if (previewBox.width < 62 || previewBox.width > 66) throw new Error(`${label} item previews should remain near the 64px baseline.`);
+  if (previewBox.width < 63 || previewBox.width > 65) throw new Error(`${label} item previews should remain at the 64px baseline.`);
+  if (Math.abs(previewBox.x - firstCardBox.x) > 1 || Math.abs(previewBox.y - firstCardBox.y) > 1 || Math.abs(previewBox.height - firstCardBox.height) > 1) {
+    throw new Error(`${label} preview must sit flush against the card's left edge and match the 64px card height.`);
+  }
 
   const titleFontSize = Number.parseFloat(await firstCard.locator('b').evaluate((element) => getComputedStyle(element).fontSize));
   const metaFontSize = Number.parseFloat(await firstCard.locator('span').evaluate((element) => getComputedStyle(element).fontSize));
   if (titleFontSize < 13.8 || titleFontSize > 14.6) throw new Error(`${label} item names should stay near the 14.2px primary-text baseline. size=${titleFontSize}`);
   if (metaFontSize < 10.2 || metaFontSize > 10.8) throw new Error(`${label} item metadata should stay near the 10.5px secondary-text baseline. size=${metaFontSize}`);
+
+  await firstCard.hover();
+  await page.waitForTimeout(80);
+  const hoverTransform = await firstCard.evaluate((node) => getComputedStyle(node).transform);
+  if (hoverTransform !== 'none') throw new Error(`${label} asset hover should not lift or scale the row. transform=${hoverTransform}`);
 
   if (id === 'road' || id === 'bridge') {
     if (cardCount !== 8) throw new Error(`${label} prototype should fill one complete eight-item page.`);
@@ -100,7 +148,7 @@ for (const [id, label] of designCategories) {
       throw new Error(`${label} first four cards must occupy the first row.`);
     }
     if (!(first.x < second.x && second.x < third.x && third.x < fourth.x)) throw new Error(`${label} first row must contain four columns.`);
-    if (fifth.y <= first.y + 30) throw new Error(`${label} fifth card must begin the second row.`);
+    if (fifth.y <= first.y + 50) throw new Error(`${label} fifth card must begin the second row.`);
   }
 
   if (id === 'bridge') {

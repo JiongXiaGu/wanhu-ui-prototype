@@ -1,14 +1,14 @@
-/* Workspace World-first Glass v1.
+/* Workspace World-first Glass v2.
    The world remains the illustration. Workspace uses the same restrained neutral
    mist-glass family proven by the Environment panel, while preserving the
-   existing Context-header / Work-body hierarchy and all browsing geometry. */
+   existing Context-header / Work-body hierarchy and all browsing semantics. */
 
 .gameplay-screen .workspace--design{
   --workspace-glass-surface:rgba(74,76,75,.52);
   --workspace-glass-body:rgba(43,47,45,.66);
   --workspace-glass-rail:rgba(255,255,255,.022);
-  --workspace-glass-card:rgba(255,255,255,.018);
-  --workspace-glass-card-hover:rgba(255,255,255,.055);
+  --workspace-glass-card:rgba(255,255,255,.012);
+  --workspace-glass-card-hover:rgba(255,255,255,.045);
   --workspace-paper:#f0ede6;
   --workspace-text:#d6d3cc;
   --workspace-muted:#aaa9a3;
@@ -103,12 +103,13 @@
 }
 .gameplay-screen .workspace--design .workspace-primary-rail button.is-active svg{transform:none}
 
-/* Context filters become light tabs rather than a second row of small buttons. */
+/* Context filters remain lightweight tabs. Current state uses a short old-gold
+   underline rather than a full-width web-style tab indicator. */
 .gameplay-screen .workspace--design .workspace-context-filter{
   border-bottom-color:var(--workspace-rule);
 }
 .gameplay-screen .workspace--design .workspace-context-filter__scroll>button{
-  color:var(--workspace-faint);
+  color:#999b96;
 }
 .gameplay-screen .workspace--design .workspace-context-filter__scroll>button:hover{
   color:var(--workspace-paper);
@@ -118,6 +119,8 @@
   color:#e8dfcc;
 }
 .gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after{
+  left:32%;
+  right:32%;
   height:2px;
   background:var(--workspace-gold);
   box-shadow:none;
@@ -141,40 +144,43 @@
 .gameplay-screen .workspace--design .workspace-search__field input{color:var(--workspace-paper)}
 .gameplay-screen .workspace--design .workspace-search__field input::placeholder{color:#858984}
 
-/* Asset cards are action rows, not mini-panels. Default is almost flat; hover
-   gets a weak material lift and the familiar old-gold action marker. */
+/* Asset entries are compact 64px action rows. The image is a recognition aid,
+   while name and metadata remain the primary reading content. */
 .gameplay-screen .workspace--design .design-item-card{
-  border-radius:10px;
+  border-radius:8px;
   background:var(--workspace-glass-card);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.012);
+  box-shadow:none;
 }
-.gameplay-screen .workspace--design .design-item-card:hover,
+.gameplay-screen .workspace--design .design-item-card:hover{
+  background:var(--workspace-glass-card-hover);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.028);
+  transform:none;
+}
 .gameplay-screen .workspace--design .design-item-card:focus-visible{
   background:var(--workspace-glass-card-hover);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.035),
-    0 7px 18px rgba(4,7,6,.07);
-  transform:translateY(-1px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+  transform:none;
 }
 .gameplay-screen .workspace--design .design-item-card:active{
-  background:rgba(201,170,104,.060);
-  transform:translateY(0) scale(.994);
+  background:rgba(201,170,104,.055);
+  transform:scale(.995);
 }
 .gameplay-screen .workspace--design .design-item-card::before{
   background:var(--workspace-gold);
 }
-.gameplay-screen .workspace--design .design-item-card:hover::before,
-.gameplay-screen .workspace--design .design-item-card:focus-visible::before{opacity:.72}
+.gameplay-screen .workspace--design .design-item-card:hover::before{opacity:0}
+.gameplay-screen .workspace--design .design-item-card:focus-visible::before{opacity:.78}
 .gameplay-screen .workspace--design .design-item-card b{color:var(--workspace-paper)}
-.gameplay-screen .workspace--design .design-item-card span{color:var(--workspace-muted)}
+.gameplay-screen .workspace--design .design-item-card span{color:#b8b5ae}
 .gameplay-screen .workspace--design .design-item-card .card-thumb{
-  border-radius:9px;
+  border-radius:8px 0 0 8px;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.045),
     inset 0 0 0 1px rgba(255,255,255,.030);
 }
 
-/* Pager is intentionally quiet until it communicates the current page. */
+/* Pager remains a stable visual anchor even for one page / one rail group.
+   Multi-page states use the same muted markers plus one old-gold current bar. */
 .gameplay-screen .workspace--design .workspace-content-pager button span,
 .gameplay-screen .workspace--design .workspace-rail-pager button span{
   background:#858984;
@@ -186,4 +192,9 @@
 .gameplay-screen .workspace--design .workspace-rail-pager button.is-active span{
   background:var(--workspace-gold);
   box-shadow:none;
+}
+.gameplay-screen .workspace--design .workspace-catalog:not(:has(.workspace-content-pager))::after,
+.gameplay-screen .workspace--design .workspace-primary-rail__content:not(:has(.workspace-rail-pager))::before{
+  background:#8e918c;
+  opacity:.52;
 }
