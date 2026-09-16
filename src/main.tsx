@@ -9,6 +9,7 @@ import './menu-refine.css';
 import './backgrounds.css';
 import './gameplay-refine.css';
 import './workspace/design-workspace.css';
+import './ui/asset-inspector/asset-inspector.css';
 import './operation-hints.css';
 import './archive/archive-panel.css';
 import './archive/archive-info-refine.css';
