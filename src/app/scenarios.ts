@@ -19,6 +19,9 @@ export type ReviewScenario =
   | 'building-massing'
   | 'building-roof'
   | 'building-height'
+  | 'road-smart'
+  | 'road-curve'
+  | 'road-straight'
   | 'camera'
   | 'weather'
   | 'pause'
@@ -75,6 +78,12 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', adjustmentMode: 'roof' } };
     case 'building-height':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', terrainMode: 'manual-elevation' } };
+    case 'road-smart':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'smart-curve' } };
+    case 'road-curve':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'curve' } };
+    case 'road-straight':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'straight' } };
     case 'camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, contextPanel: 'camera' } };
     case 'weather':
