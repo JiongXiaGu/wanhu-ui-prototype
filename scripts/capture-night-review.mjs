@@ -32,7 +32,7 @@ const panel = page.locator('.gameplay-context-panel--weather');
 const footer = panel.locator('.gameplay-context-panel__footer--weather-mode');
 
 const sceneFooterBox = await footer.boundingBox();
-if (!sceneFooterBox) throw new Error('Weather mode footer must be visible in scene simulation mode.');
+if (!sceneFooterBox) throw new Error('Environment mode footer must be visible in scene simulation mode.');
 
 await page.getByRole('button', { name: '跟随世界', exact: true }).click();
 await page.waitForFunction(() => document.querySelector('.gameplay-context-panel--weather')?.getAttribute('data-context-mode') === '跟随世界');
@@ -40,9 +40,9 @@ await page.waitForSelector('.weather-world-summary');
 await page.waitForTimeout(120);
 
 const followFooterBox = await footer.boundingBox();
-if (!followFooterBox) throw new Error('Weather mode footer must stay visible in follow-world mode.');
+if (!followFooterBox) throw new Error('Environment mode footer must stay visible in follow-world mode.');
 if (Math.abs(sceneFooterBox.y - followFooterBox.y) > 1 || Math.abs(sceneFooterBox.x - followFooterBox.x) > 1) {
-  throw new Error(`Weather footer must stay fixed while mode content changes. scene=${JSON.stringify(sceneFooterBox)} follow=${JSON.stringify(followFooterBox)}`);
+  throw new Error(`Environment footer must stay fixed while mode content changes. scene=${JSON.stringify(sceneFooterBox)} follow=${JSON.stringify(followFooterBox)}`);
 }
 await page.screenshot({ path: `${outDir}/34-weather-follow-world.png` });
 
@@ -53,26 +53,30 @@ await page.waitForSelector('[aria-label="日内时间"]');
 if ((await page.locator('.weather-preset-section__heading > span').count()) !== 0) {
   throw new Error('Weather preset heading must not repeat the current preset in helper text.');
 }
+if ((await page.locator('.weather-wind-compass').count()) !== 0) {
+  throw new Error('Environment panel should use the shared wind-direction slider instead of a compass control.');
+}
 
-await page.locator('.weather-wind-compass').waitFor();
 await page.locator('.weather-time-track').waitFor();
 await page.locator('.weather-season-track').waitFor();
 
 const timeTrackArt = await page.locator('.weather-time-track__segments').evaluate((node) => getComputedStyle(node).backgroundImage);
 if (!timeTrackArt.includes('weather-time-track.png')) {
-  throw new Error(`Time-of-day control must use the art track texture. background=${timeTrackArt}`);
+  throw new Error(`Time-of-day control must use the rectangular art strip. background=${timeTrackArt}`);
+}
+const seasonTrackArt = await page.locator('.weather-season-track__segments').evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!seasonTrackArt.includes('weather-season-track.png')) {
+  throw new Error(`Season control must use the rectangular art strip. background=${seasonTrackArt}`);
 }
 const glassTexture = await panel.evaluate((node) => getComputedStyle(node).backgroundImage);
 if (!glassTexture.includes('glass-noise-soft.png')) {
-  throw new Error(`Weather glass must use the soft material texture. background=${glassTexture}`);
+  throw new Error(`Environment glass must use the soft material texture. background=${glassTexture}`);
 }
 
-const windCompass = page.getByRole('slider', { name: '风向' });
-const windBefore = Number(await windCompass.getAttribute('aria-valuenow'));
-await windCompass.press('ArrowRight');
-const windAfter = Number(await windCompass.getAttribute('aria-valuenow'));
-if (windAfter !== (windBefore + 5) % 360) throw new Error(`Wind compass keyboard adjustment failed. before=${windBefore} after=${windAfter}`);
-await windCompass.press('ArrowLeft');
+const windDirection = page.getByRole('slider', { name: '风向', exact: true });
+if (Number(await windDirection.inputValue()) !== 135) {
+  throw new Error(`Wind direction should remain a standard slider. value=${await windDirection.inputValue()}`);
+}
 await page.screenshot({ path: `${outDir}/37-weather-visual-controls.png` });
 
 const dayTime = page.getByRole('slider', { name: '日内时间' });
@@ -85,7 +89,7 @@ if (!nightBackground.includes('wanhu-gameplay-city-night.png')) {
 }
 
 const clock = (await page.locator('.gameplay-top-status__clock').textContent())?.trim() ?? '';
-if (!clock.includes('22:00')) throw new Error(`Top HUD clock must follow the weather-panel day time. clock=${clock}`);
+if (!clock.includes('22:00')) throw new Error(`Top HUD clock must follow the environment-panel day time. clock=${clock}`);
 
 await page.screenshot({ path: `${outDir}/35-weather-night.png` });
 
