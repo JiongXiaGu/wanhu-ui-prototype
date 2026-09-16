@@ -42,6 +42,14 @@ for (const [id, label] of designCategories) {
     throw new Error(`Main Dock should show ${label} as the explicit active launcher while its Workspace is open.`);
   }
 
+  const workspaceBox = await workspace.boundingBox();
+  if (!workspaceBox || workspaceBox.width < 1230 || workspaceBox.width > 1250) {
+    throw new Error(`${label} Workspace should stay near the 1240px asset-browser width. width=${workspaceBox?.width}`);
+  }
+  if (!workspaceBox || workspaceBox.height < 365 || workspaceBox.height > 375) {
+    throw new Error(`${label} Workspace should stay near the 370px asset-browser height. height=${workspaceBox?.height}`);
+  }
+
   const rail = workspace.locator('.workspace-primary-rail');
   const railBox = await rail.boundingBox();
   if (!railBox || railBox.width < 140) throw new Error(`${label} rail must reserve enough width for six Chinese characters.`);
@@ -63,11 +71,20 @@ for (const [id, label] of designCategories) {
   const cardCount = await cards.count();
   if (cardCount < 1 || cardCount > 8) throw new Error(`${label} Workspace must show between one and eight items on a page. count=${cardCount}`);
 
+  const firstCardBox = await cards.first().boundingBox();
   const previewBox = await cards.first().locator('.card-thumb').boundingBox();
+  if (!firstCardBox || firstCardBox.width < 245 || firstCardBox.height < 98 || firstCardBox.height > 102) {
+    throw new Error(`${label} item cards should use the wider ~255x100 asset-card proportion. box=${JSON.stringify(firstCardBox)}`);
+  }
   if (!previewBox || Math.abs(previewBox.width - previewBox.height) > 1) {
     throw new Error(`${label} item previews must remain square. size=${previewBox?.width}x${previewBox?.height}`);
   }
-  if (previewBox.width < 68 || previewBox.width > 74) throw new Error(`${label} item previews should remain near the 72px baseline.`);
+  if (previewBox.width < 82 || previewBox.width > 86) throw new Error(`${label} item previews should remain near the 84px baseline.`);
+
+  const titleFontSize = Number.parseFloat(await cards.first().locator('b').evaluate((element) => getComputedStyle(element).fontSize));
+  const metaFontSize = Number.parseFloat(await cards.first().locator('span').evaluate((element) => getComputedStyle(element).fontSize));
+  if (titleFontSize < 13.8 || titleFontSize > 14.6) throw new Error(`${label} item names should stay near the 14.2px primary-text baseline. size=${titleFontSize}`);
+  if (metaFontSize < 10.2 || metaFontSize > 10.8) throw new Error(`${label} item metadata should stay near the 10.5px secondary-text baseline. size=${metaFontSize}`);
 
   if (id === 'road' || id === 'bridge') {
     if (cardCount !== 8) throw new Error(`${label} prototype should fill one complete eight-item page.`);
@@ -78,7 +95,7 @@ for (const [id, label] of designCategories) {
       throw new Error(`${label} first four cards must occupy the first row.`);
     }
     if (!(first.x < second.x && second.x < third.x && third.x < fourth.x)) throw new Error(`${label} first row must contain four columns.`);
-    if (fifth.y <= first.y + 20) throw new Error(`${label} fifth card must begin the second row.`);
+    if (fifth.y <= first.y + 30) throw new Error(`${label} fifth card must begin the second row.`);
   }
 
   if (id === 'road' || id === 'bridge' || id === 'building' || id === 'city-wall') {
