@@ -16,8 +16,11 @@ const panel = page.locator('.gameplay-context-panel--weather');
 await panel.waitFor();
 await page.waitForTimeout(160);
 
+if ((await panel.getAttribute('aria-label')) !== '环境面板') {
+  throw new Error('Environment review should expose the environment panel label.');
+}
 if ((await panel.getAttribute('data-weather-preset')) !== 'cloudy') {
-  throw new Error('Weather review should start from the cloudy preset.');
+  throw new Error('Environment review should start from the cloudy weather preset.');
 }
 
 await page.getByRole('button', { name: '大雨天气预设', exact: true }).click();
