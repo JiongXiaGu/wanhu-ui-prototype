@@ -1,6 +1,6 @@
 /* Environment visual controls.
-   Wind uses the shared slider system. Time and season use ordinary image-backed
-   tracks with a programmatic thumb/input, matching a Unity UI Toolkit hierarchy. */
+   Wind uses the shared slider system. Time and season use ordinary gradient
+   tracks with a programmatic thumb/input so the hierarchy maps cleanly to Unity UI Toolkit. */
 
 .weather-preset-section__heading{justify-content:flex-start}
 .weather-preset-card{height:52px}
@@ -55,11 +55,11 @@
   z-index:2;
 }
 .weather-season-track__labels span{
-  color:rgba(250,247,239,.78);
+  color:rgba(250,247,239,.76);
   font-size:8.5px;
   font-weight:650;
   text-align:center;
-  text-shadow:0 1px 3px rgba(0,0,0,.44);
+  text-shadow:0 1px 3px rgba(0,0,0,.34);
 }
 .weather-time-track__thumb,
 .weather-season-track__thumb{
