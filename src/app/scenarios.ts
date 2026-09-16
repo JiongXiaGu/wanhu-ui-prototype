@@ -11,7 +11,10 @@ export type ReviewScenario =
   | 'management-finance'
   | 'management-policy'
   | 'map-land-value'
+  | 'workspace-road'
+  | 'workspace-bridge'
   | 'workspace-building'
+  | 'workspace-city-wall'
   | 'building-position'
   | 'building-massing'
   | 'building-roof'
@@ -28,6 +31,13 @@ export interface ReviewBootstrap {
   screen: Screen;
   gameplay: GameplayUiState;
   loadingProgress?: number;
+}
+
+function designWorkspace(gameplay: GameplayUiState, dockCategory: 'road' | 'bridge' | 'building' | 'city-wall'): ReviewBootstrap {
+  return {
+    screen: 'gameplay',
+    gameplay: { ...gameplay, workspace: 'design', dockMode: 'design', dockCategory },
+  };
 }
 
 export function resolveReviewBootstrap(search: string): ReviewBootstrap {
@@ -51,8 +61,14 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, management: 'policy' } };
     case 'map-land-value':
       return { screen: 'gameplay', gameplay: { ...gameplay, mapView: 'land-value' } };
+    case 'workspace-road':
+      return designWorkspace(gameplay, 'road');
+    case 'workspace-bridge':
+      return designWorkspace(gameplay, 'bridge');
     case 'workspace-building':
-      return { screen: 'gameplay', gameplay: { ...gameplay, workspace: 'building', dockMode: 'design', dockCategory: 'building' } };
+      return designWorkspace(gameplay, 'building');
+    case 'workspace-city-wall':
+      return designWorkspace(gameplay, 'city-wall');
     case 'building-position':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building' } };
     case 'building-massing':

@@ -2,7 +2,7 @@ export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'loading' | 'gam
 export type Flyout = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
-export type Workspace = 'none' | 'building';
+export type Workspace = 'none' | 'design';
 export type Tool = 'none' | 'building-placement';
 export type TerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
@@ -31,6 +31,21 @@ export type BlueprintDockCategory =
   | 'military'
   | 'palace';
 export type DockCategory = DesignDockCategory | BlueprintDockCategory;
+
+const DESIGN_DOCK_CATEGORIES: readonly DesignDockCategory[] = [
+  'road',
+  'bridge',
+  'building',
+  'platform',
+  'city-wall',
+  'wall',
+  'decoration',
+  'tree',
+];
+
+export function isDesignDockCategory(category: DockCategory | null): category is DesignDockCategory {
+  return category !== null && DESIGN_DOCK_CATEGORIES.includes(category as DesignDockCategory);
+}
 
 export interface GameplayUiState {
   workspace: Workspace;
@@ -100,7 +115,7 @@ function togglePanel<T>(current: T, requested: T, closed: T): T {
 }
 
 function workspaceForDockSelection(mode: DockMode, category: DockCategory | null): Workspace {
-  return mode === 'design' && category === 'building' ? 'building' : 'none';
+  return mode === 'design' && isDesignDockCategory(category) ? 'design' : 'none';
 }
 
 export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiAction): GameplayUiState {
@@ -129,9 +144,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         workspace: 'none',
-        dockCategory: state.workspace === 'building' && state.dockMode === 'design' && state.dockCategory === 'building'
-          ? null
-          : state.dockCategory,
+        dockCategory: state.workspace === 'design' ? null : state.dockCategory,
       };
     case 'ENTER_BUILDING_PLACEMENT':
       return {
@@ -151,7 +164,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         tool: 'none',
-        workspace: 'building',
+        workspace: 'design',
         dockMode: 'design',
         dockCategory: 'building',
         management: 'none',
@@ -179,7 +192,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management,
         workspace: opening ? 'none' : state.workspace,
         tool: opening ? 'none' : state.tool,
-        dockCategory: opening && state.workspace === 'building' ? null : state.dockCategory,
+        dockCategory: opening && state.workspace !== 'none' ? null : state.dockCategory,
         flyout: opening ? 'none' : state.flyout,
         mapView: opening ? 'default' : state.mapView,
         mapPanelOpen: false,

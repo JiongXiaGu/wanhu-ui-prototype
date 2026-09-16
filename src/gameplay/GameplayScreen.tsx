@@ -1,7 +1,8 @@
 import { useEffect, useReducer } from 'react';
 import type { GameplayUiState } from '../app/ui-state';
-import { gameplayUiReducer, selectGameplaySpace } from '../app/ui-state';
-import { BuildingWorkspace } from '../workspace/BuildingWorkspace';
+import { gameplayUiReducer, isDesignDockCategory, selectGameplaySpace } from '../app/ui-state';
+import { DesignWorkspace } from '../workspace/DesignWorkspace';
+import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
 import { CommandBar, WorldUtilityToolbar } from './CommandBar';
@@ -23,6 +24,9 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
   const toolOpen = state.tool === 'building-placement';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
   const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
+  const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
+    ? DESIGN_WORKSPACES[state.dockCategory]
+    : null;
 
   useEffect(() => {
     function handleGameplayEscape(event: KeyboardEvent) {
@@ -112,10 +116,14 @@ export function GameplayScreen({ background, initialState, onMainMenu }: Gamepla
         />
       )}
 
-      {space === 'workspace' && state.workspace === 'building' && (
-        <BuildingWorkspace
+      {designWorkspace && (
+        <DesignWorkspace
+          key={designWorkspace.id}
+          definition={designWorkspace}
           onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
-          onSelectBuilding={() => dispatch({ type: 'ENTER_BUILDING_PLACEMENT' })}
+          onSelectItem={() => {
+            if (designWorkspace.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
+          }}
         />
       )}
 

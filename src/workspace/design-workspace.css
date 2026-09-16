@@ -1,0 +1,124 @@
+/* Design Workspace owns category-specific browsing inside the shared Workspace shell.
+   The shell geometry remains in workspace.css; this file owns the generic design rail and item cards. */
+
+.gameplay-screen .workspace--design .workspace-body{
+  grid-template-columns:146px minmax(0,1fr);
+}
+
+.gameplay-screen .workspace--design .workspace-primary-rail{
+  padding-right:8px;
+}
+
+.gameplay-screen .workspace--design .workspace-primary-rail__content{
+  padding-left:14px;
+}
+
+.gameplay-screen .design-workspace__rail .workspace-primary-rail__page>button{
+  padding:0 10px;
+  gap:8px;
+  border-radius:9px;
+}
+
+.gameplay-screen .design-workspace__rail .workspace-primary-rail__page>button span{
+  min-width:0;
+  max-width:6em;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.design-item-card{
+  position:relative;
+  height:88px;
+  min-width:0;
+  padding:7px 11px 7px 7px;
+  display:grid;
+  grid-template-columns:112px minmax(0,1fr);
+  align-items:center;
+  gap:13px;
+  overflow:hidden;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(90deg,rgba(255,255,255,.016),rgba(255,255,255,.005));
+  box-shadow:inset 0 1px 0 rgba(239,233,221,.018);
+  color:inherit;
+  cursor:pointer;
+  text-align:left;
+  transition:background .16s ease,transform .16s cubic-bezier(.2,.7,.25,1),box-shadow .16s ease;
+}
+
+.design-item-card:hover{
+  background:linear-gradient(90deg,rgba(201,165,95,.052),rgba(255,255,255,.010) 72%,rgba(255,255,255,.003));
+  box-shadow:inset 0 1px 0 rgba(239,233,221,.046),0 8px 20px rgba(5,8,7,.09);
+  transform:translateY(-1px);
+}
+
+.design-item-card::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:13px;
+  bottom:13px;
+  z-index:4;
+  width:2px;
+  opacity:0;
+  border-radius:0 2px 2px 0;
+  background:linear-gradient(180deg,#c9a55f,rgba(201,165,95,.18));
+  transition:opacity .14s ease;
+}
+
+.design-item-card:hover::before,
+.design-item-card:focus-visible::before,
+.design-item-card.is-selected::before{opacity:.82}
+
+.design-item-card.is-selected{
+  background:linear-gradient(90deg,rgba(201,165,95,.075),rgba(201,165,95,.018) 72%,rgba(255,255,255,.003));
+  box-shadow:inset 0 1px 0 rgba(201,165,95,.10);
+}
+
+.design-item-card .card-thumb{
+  border-radius:9px;
+}
+
+.design-item-card:hover .card-thumb,
+.design-item-card.is-selected .card-thumb{
+  transform:scale(1.018);
+  filter:brightness(1.08) saturate(.96);
+}
+
+.design-item-card__copy{
+  min-width:0;
+  align-self:stretch;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  gap:8px;
+  padding-right:2px;
+}
+
+.design-item-card b{
+  max-width:100%;
+  color:#d5d0c4;
+  font-size:11.5px;
+  font-weight:600;
+  line-height:1.3;
+  letter-spacing:.012em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.design-item-card span{
+  margin:0;
+  color:#8f968e;
+  font-size:9.3px;
+  line-height:1.2;
+  white-space:nowrap;
+}
+
+@media (max-width:1500px){
+  .gameplay-screen .workspace--design .workspace-body{grid-template-columns:140px minmax(0,1fr)}
+  .design-item-card{grid-template-columns:100px minmax(0,1fr);gap:11px}
+  .design-item-card .card-thumb{width:100px;height:64px}
+}
