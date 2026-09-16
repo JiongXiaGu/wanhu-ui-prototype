@@ -21,8 +21,9 @@
 }
 
 /* Time + season ---------------------------------------------------------
-   No scene artwork. Colour alone communicates the cycle, while the ordinary
-   range input and programmatic thumb retain all interaction semantics. */
+   No scene artwork. Colour alone communicates each cycle. These tracks are only
+   one tier thicker than ordinary parameter sliders, so they remain part of the
+   same control family rather than reading as banners. */
 .weather-time-track,
 .weather-season-track{
   background:#45484b;
@@ -30,51 +31,36 @@
 .weather-time-track__segments,
 .weather-season-track__segments{
   display:block;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.08),
-    inset 0 -8px 14px rgba(0,0,0,.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -4px 7px rgba(0,0,0,.06);
 }
 
-/* 00:00 -> dawn -> noon -> dusk -> 24:00. Low saturation avoids becoming a
-   decorative illustration while remaining readable at a glance. */
+/* 00:00 -> dawn -> noon -> dusk -> 24:00. */
 .weather-time-track__segments{
   background-image:linear-gradient(
     90deg,
     #444a59 0%,
     #5f6070 16%,
     #8c8177 27%,
-    #aaa18e 39%,
-    #b7ae98 50%,
-    #a58d79 66%,
-    #7a6669 78%,
-    #595462 88%,
+    #a69e8d 39%,
+    #b0a790 50%,
+    #9d8776 66%,
+    #756468 78%,
+    #575361 88%,
     #444a59 100%
   );
 }
 
-/* Spring -> summer -> autumn -> winter. The palette is deliberately muted and
-   continuous so the track reads as information rather than a picture strip. */
+/* Spring -> summer -> autumn -> winter. */
 .weather-season-track__segments{
   background-image:linear-gradient(
     90deg,
-    #8d7f84 0%,
-    #8b8780 16%,
-    #7b8877 27%,
-    #74816e 42%,
-    #817b68 54%,
-    #9a8465 68%,
-    #8a8176 82%,
+    #8a7d82 0%,
+    #87847e 16%,
+    #788475 29%,
+    #72806e 42%,
+    #7f7968 55%,
+    #968166 69%,
+    #858078 82%,
     #748087 100%
   );
-}
-
-.weather-time-track__thumb,
-.weather-season-track__thumb{
-  background:#d6b772;
-  border-color:rgba(255,250,238,.98);
-  box-shadow:0 2px 7px rgba(0,0,0,.32),0 0 0 3px rgba(214,183,114,.13);
-}
-.weather-time-track:focus-within .weather-time-track__thumb,
-.weather-season-track:focus-within .weather-season-track__thumb{
-  box-shadow:0 2px 7px rgba(0,0,0,.32),0 0 0 4px rgba(214,183,114,.19);
 }
