@@ -34,7 +34,7 @@ if (Math.abs((resourceBox.x + resourceBox.width / 2) - 960) > 2) throw new Error
 if (navBox.width < 392 || navBox.width > 408) throw new Error(`Control tray should stay near the ~400px baseline. width=${navBox.width}`);
 const rowOverlap = (statusBox.y + statusBox.height) - navBox.y;
 if (rowOverlap < 1 || rowOverlap > 3) throw new Error(`Top shell rows should overlap by about 2px. overlap=${rowOverlap}`);
-if ((await page.locator('.gameplay-top-navigation__scene > button').count()) !== 2) throw new Error('Left scene group must expose exactly Camera and Weather.');
+if ((await page.locator('.gameplay-top-navigation__scene > button').count()) !== 2) throw new Error('Left scene group must expose exactly Camera and Environment.');
 if ((await page.locator('.gameplay-top-navigation__management > button').count()) !== 5) throw new Error('Top management must expose exactly five primary domains.');
 if ((await page.locator('.gameplay-top-navigation__view > button').count()) !== 1) throw new Error('Information Views must occupy the right side of the tray.');
 
@@ -73,21 +73,21 @@ if ((await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) th
 await page.screenshot({ path: `${outDir}/02a2-gameplay-blueprint-dock.png` });
 await modeRail.getByRole('button', { name: '设计', exact: true }).click();
 
-const weatherButton = page.getByRole('button', { name: '天气控制', exact: true });
+const environmentButton = page.getByRole('button', { name: '环境控制', exact: true });
 const cameraButton = page.getByRole('button', { name: '相机', exact: true });
-await weatherButton.click();
+await environmentButton.click();
 await page.waitForSelector('.gameplay-context-panel--weather');
 await page.waitForTimeout(220);
-const weatherPanel = page.locator('.gameplay-context-panel--weather');
-const weatherBox = await weatherPanel.boundingBox();
+const environmentPanel = page.locator('.gameplay-context-panel--weather');
+const environmentBox = await environmentPanel.boundingBox();
 const commandBox = await mainDock.boundingBox();
-if (!weatherBox || !commandBox) throw new Error('Weather context panel and Main Dock must be measurable.');
-if (Math.abs(weatherBox.x - 16) > 2) throw new Error('Weather context panel must align to the 16px left safe edge.');
-if (Math.abs((1080 - (weatherBox.y + weatherBox.height)) - 16) > 2) throw new Error('Weather context panel must share the 16px bottom anchor used by placement tool panels.');
-if (weatherBox.height > 722) throw new Error(`Weather context panel must stay within two-thirds of the 1080p canvas. height=${weatherBox.height}`);
-if (!(weatherBox.x + weatherBox.width < commandBox.x - 12)) throw new Error('Lower-left context panels must not overlap the centered Main Dock.');
-if ((await weatherPanel.getAttribute('class'))?.includes('gameplay-left-context-surface') !== true) throw new Error('Weather must use the shared lower-left context-surface shell.');
-await weatherButton.click();
+if (!environmentBox || !commandBox) throw new Error('Environment context panel and Main Dock must be measurable.');
+if (Math.abs(environmentBox.x - 16) > 2) throw new Error('Environment context panel must align to the 16px left safe edge.');
+if (Math.abs((1080 - (environmentBox.y + environmentBox.height)) - 16) > 2) throw new Error('Environment context panel must share the 16px bottom anchor used by placement tool panels.');
+if (environmentBox.height > 722) throw new Error(`Environment context panel must stay within two-thirds of the 1080p canvas. height=${environmentBox.height}`);
+if (!(environmentBox.x + environmentBox.width < commandBox.x - 12)) throw new Error('Lower-left context panels must not overlap the centered Main Dock.');
+if ((await environmentPanel.getAttribute('class'))?.includes('gameplay-left-context-surface') !== true) throw new Error('Environment must use the shared lower-left context-surface shell.');
+await environmentButton.click();
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
 
 await cameraButton.click();
@@ -104,7 +104,7 @@ await page.waitForSelector('.gameplay-context-panel--camera', { state: 'detached
 await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();
 await page.waitForSelector('.workspace--building');
 if ((await page.locator('.gameplay-top-navigation').count()) !== 1) throw new Error('Workspace must keep the top control tray.');
-await weatherButton.click();
+await environmentButton.click();
 await page.waitForSelector('.gameplay-context-panel--weather');
 await page.waitForSelector('.workspace--building', { state: 'detached' });
 if ((await categoryRow.locator('button[aria-pressed="true"]').count()) !== 0) throw new Error('Opening a context panel must close Workspace and clear its launcher selection.');
@@ -116,7 +116,7 @@ await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();
 await page.waitForSelector('.workspace--building', { state: 'detached' });
 
 // Escape dismisses the current lower-left context surface before any global action.
-await weatherButton.click();
+await environmentButton.click();
 await page.waitForSelector('.gameplay-context-panel--weather');
 await page.keyboard.press('Escape');
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
@@ -140,7 +140,7 @@ await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();
 await page.waitForSelector('.workspace--building');
 await page.locator('.building-card').first().click();
 await page.waitForSelector('.building-placement-prototype');
-if ((await page.locator('.gameplay-context-panel').count()) !== 0) throw new Error('Tool space must not retain Camera/Weather context panels.');
+if ((await page.locator('.gameplay-context-panel').count()) !== 0) throw new Error('Tool space must not retain Camera/Environment context panels.');
 if ((await page.locator('.gameplay-top-navigation').count()) !== 0) throw new Error('Tool space must hide the secondary top control tray.');
 if ((await page.getByRole('button', { name: '菜单', exact: true }).count()) !== 1) throw new Error('The global system-menu button should remain available in Tool space.');
 const toolCompass = page.locator('.gameplay-compass-hud');
