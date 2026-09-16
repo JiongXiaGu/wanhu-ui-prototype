@@ -2,10 +2,11 @@
    Geometry tokens live in gameplay/gameplay-hud-layout.css.
    This file owns Main Dock, Workspace shell refinements and generic Tool Bottom Dock visuals; retired HUD/QuickControls styles are intentionally removed. */
 
-/* Main Dock is the primary bottom surface: same family as the Top Status Row, but shorter and denser. */
+/* Main Dock is the primary bottom launcher. Its left rail selects the command family;
+   the right side shows only the categories that belong to that family. */
 .gameplay-screen .command-bar{
   height:var(--hud-command-height,76px);
-  padding:5px 6px;
+  padding:6px 7px;
   background:linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
   border:1px solid var(--hud-border-strong,rgba(239,233,221,.14));
   border-radius:var(--hud-radius-md,14px);
@@ -15,50 +16,101 @@
 }
 
 .gameplay-screen .command-bar>.mode-rail{
-  width:78px;
-  flex:0 0 78px;
-  margin-left:0;
+  width:96px;
+  flex:0 0 96px;
+  margin:0;
+  padding:2px;
   overflow:hidden;
   border-radius:10px;
+  background:rgba(255,255,255,.008);
 }
 .gameplay-screen .mode-rail button{
+  position:relative;
+  flex:1;
+  min-height:0;
+  border:0;
   border-radius:8px;
-  font-size:9.5px;
-  letter-spacing:.055em;
+  background:transparent;
   color:#858c83;
+  cursor:pointer;
+  font-size:10px;
+  font-weight:520;
+  letter-spacing:.06em;
+  transition:background .13s ease,color .13s ease;
 }
-.gameplay-screen .mode-rail button+button{border-top:1px solid var(--hud-rule,rgba(239,233,221,.065))}
-.gameplay-screen .mode-rail button:hover{background:rgba(255,255,255,.025);color:#c6c5bc}
+.gameplay-screen .mode-rail button+button{border-top:1px solid var(--hud-rule,rgba(239,233,221,.055))}
+.gameplay-screen .mode-rail button:hover{background:rgba(255,255,255,.028);color:#c9c7be}
 .gameplay-screen .mode-rail button.is-active{
   color:var(--hud-accent-text,#dec17a);
   background:linear-gradient(90deg,rgba(201,165,95,.09),rgba(201,165,95,.018));
 }
+.gameplay-screen .mode-rail button.is-active::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:8px;
+  bottom:8px;
+  width:2px;
+  border-radius:0 2px 2px 0;
+  background:var(--hud-accent,#c9a55f);
+}
 .gameplay-screen .command-bar>i{
-  margin:8px 7px;
+  width:1px;
+  height:auto;
+  flex:0 0 1px;
+  margin:8px 10px;
   background:var(--hud-rule,rgba(239,233,221,.065));
 }
-.gameplay-screen .category-row{min-width:0;padding-right:2px;gap:2px}
-.gameplay-screen .category-row button{
+.gameplay-screen .category-row{
   min-width:0;
-  gap:5px;
-  border-radius:10px;
-  color:#80877f;
-  font-size:8.8px;
-  letter-spacing:.018em;
+  flex:1;
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(0,1fr);
+  gap:2px;
+  padding-right:1px;
+  animation:main-dock-categories-in .15s ease-out;
 }
-.gameplay-screen .category-row button svg{width:19px;height:19px;stroke-width:1.58}
-.gameplay-screen .category-row button:hover{background:rgba(255,255,255,.028);color:#c6c5bc}
+.gameplay-screen .category-row button{
+  position:relative;
+  min-width:0;
+  padding:0 4px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#80877f;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  cursor:pointer;
+  font-size:10px;
+  font-weight:470;
+  letter-spacing:.022em;
+  transition:background .13s ease,color .13s ease,transform .09s ease;
+}
+.gameplay-screen .category-row button svg{width:21px;height:21px;stroke-width:1.55}
+.gameplay-screen .category-row button:hover{background:rgba(255,255,255,.028);color:#c9c7be}
+.gameplay-screen .category-row button:active{transform:translateY(1px)}
 .gameplay-screen .category-row button.is-active{
   color:var(--hud-accent-text,#dec17a);
-  background:linear-gradient(180deg,rgba(201,165,95,.085),rgba(201,165,95,.016));
+  background:linear-gradient(180deg,rgba(201,165,95,.070),rgba(201,165,95,.012));
 }
 .gameplay-screen .category-row button.is-active::before{
-  left:24%;
-  right:24%;
+  content:'';
+  position:absolute;
+  left:30%;
+  right:30%;
   top:0;
   height:2px;
   border-radius:0 0 2px 2px;
   background:var(--hud-accent,#c9a55f);
+}
+
+@keyframes main-dock-categories-in{
+  from{opacity:.55;transform:translateY(2px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
 /* Workspace is a larger child surface of the bottom system, not a separate visual language. */
