@@ -71,18 +71,21 @@ for (const [id, label] of designCategories) {
   const cardCount = await cards.count();
   if (cardCount < 1 || cardCount > 8) throw new Error(`${label} Workspace must show between one and eight items on a page. count=${cardCount}`);
 
-  const firstCardBox = await cards.first().boundingBox();
-  const previewBox = await cards.first().locator('.card-thumb').boundingBox();
+  const firstCard = cards.first();
+  const firstCardBox = await firstCard.boundingBox();
+  const previewBox = await firstCard.locator('.card-thumb').boundingBox();
   if (!firstCardBox || firstCardBox.width < 245 || firstCardBox.height < 98 || firstCardBox.height > 102) {
     throw new Error(`${label} item cards should use the wider ~255x100 asset-card proportion. box=${JSON.stringify(firstCardBox)}`);
   }
+  if ((await firstCard.evaluate((node) => node.tagName)) !== 'BUTTON') throw new Error(`${label} asset entries must be real action buttons.`);
+  if ((await firstCard.getAttribute('aria-pressed')) !== null) throw new Error(`${label} asset buttons must not expose toggle/selected aria-pressed semantics.`);
   if (!previewBox || Math.abs(previewBox.width - previewBox.height) > 1) {
     throw new Error(`${label} item previews must remain square. size=${previewBox?.width}x${previewBox?.height}`);
   }
-  if (previewBox.width < 82 || previewBox.width > 86) throw new Error(`${label} item previews should remain near the 84px baseline.`);
+  if (previewBox.width < 62 || previewBox.width > 66) throw new Error(`${label} item previews should remain near the 64px baseline.`);
 
-  const titleFontSize = Number.parseFloat(await cards.first().locator('b').evaluate((element) => getComputedStyle(element).fontSize));
-  const metaFontSize = Number.parseFloat(await cards.first().locator('span').evaluate((element) => getComputedStyle(element).fontSize));
+  const titleFontSize = Number.parseFloat(await firstCard.locator('b').evaluate((element) => getComputedStyle(element).fontSize));
+  const metaFontSize = Number.parseFloat(await firstCard.locator('span').evaluate((element) => getComputedStyle(element).fontSize));
   if (titleFontSize < 13.8 || titleFontSize > 14.6) throw new Error(`${label} item names should stay near the 14.2px primary-text baseline. size=${titleFontSize}`);
   if (metaFontSize < 10.2 || metaFontSize > 10.8) throw new Error(`${label} item metadata should stay near the 10.5px secondary-text baseline. size=${metaFontSize}`);
 
@@ -96,6 +99,40 @@ for (const [id, label] of designCategories) {
     }
     if (!(first.x < second.x && second.x < third.x && third.x < fourth.x)) throw new Error(`${label} first row must contain four columns.`);
     if (fifth.y <= first.y + 30) throw new Error(`${label} fifth card must begin the second row.`);
+  }
+
+  if (id === 'bridge') {
+    const firstName = (await firstCard.locator('b').textContent())?.trim();
+    await firstCard.hover();
+    await page.waitForTimeout(340);
+    const inspector = page.locator('.asset-inspector-popover');
+    await inspector.waitFor();
+    const inspectorBox = await inspector.boundingBox();
+    if (!inspectorBox) throw new Error('Asset Inspector must be measurable.');
+    if (inspectorBox.width < 240 || inspectorBox.width > 382) throw new Error(`Asset Inspector must size intrinsically inside its width constraints. width=${inspectorBox.width}`);
+    if (inspectorBox.height < 90 || inspectorBox.height > 322) throw new Error(`Asset Inspector must size intrinsically inside its height constraints. height=${inspectorBox.height}`);
+    if (inspectorBox.x < 14 || inspectorBox.y < 14 || inspectorBox.x + inspectorBox.width > 1906 || inspectorBox.y + inspectorBox.height > 1066) {
+      throw new Error('Asset Inspector must respect the 16px gameplay safe edge.');
+    }
+    if ((await inspector.evaluate((node) => getComputedStyle(node).pointerEvents)) !== 'none') throw new Error('Hover Inspector must ignore pointer picking.');
+    const inspectorText = (await inspector.textContent()) ?? '';
+    for (const required of ['尺寸', '造价', '规格']) {
+      if (!inspectorText.includes(required)) throw new Error(`Asset Inspector missing required summary field: ${required}`);
+    }
+    if (firstName && !inspectorText.includes(firstName)) throw new Error('Asset Inspector must identify the hovered asset.');
+
+    const secondCard = cards.nth(1);
+    const secondName = (await secondCard.locator('b').textContent())?.trim();
+    await secondCard.hover();
+    await page.waitForTimeout(90);
+    if (secondName && !((await inspector.textContent()) ?? '').includes(secondName)) {
+      throw new Error('Once open, Asset Inspector should switch adjacent card content without repeating the initial hover delay.');
+    }
+
+    await page.screenshot({ path: `${outDir}/03-design-bridge-inspector.png` });
+    await workspace.locator('.workspace-title').hover();
+    await page.waitForTimeout(140);
+    if ((await page.locator('.asset-inspector-popover').count()) !== 0) throw new Error('Asset Inspector must dismiss after leaving asset buttons.');
   }
 
   if (id === 'road' || id === 'bridge' || id === 'building' || id === 'city-wall') {
@@ -119,10 +156,21 @@ if ((await page.locator('.workspace--design').count()) !== 1) throw new Error('S
 if ((await categoryRow.getByRole('button', { name: '道路', exact: true }).getAttribute('aria-pressed')) !== 'false') throw new Error('Previous design launcher must clear when switching categories.');
 if ((await categoryRow.getByRole('button', { name: '桥梁', exact: true }).getAttribute('aria-pressed')) !== 'true') throw new Error('Target design launcher must become active immediately.');
 
+// Keyboard focus exposes the same Inspector immediately; asset cards remain one-shot actions.
+const focusedBridgeCard = page.locator('.design-item-card').first();
+await focusedBridgeCard.focus();
+await page.waitForSelector('.asset-inspector-popover');
+if ((await focusedBridgeCard.getAttribute('aria-describedby')) !== 'design-asset-inspector') throw new Error('Focused asset button should reference the shared Inspector.');
+await page.locator('.workspace-search__trigger').focus();
+await page.waitForTimeout(140);
+if ((await page.locator('.asset-inspector-popover').count()) !== 0) throw new Error('Asset Inspector must dismiss when keyboard focus leaves asset buttons.');
+
 // Building keeps the same shared framework but its content item enters the dedicated placement Tool.
 await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();
 await page.waitForSelector('.workspace--design[data-design-category="building"]');
-await page.locator('.design-item-card').first().click();
+const buildingCard = page.locator('.design-item-card').first();
+if ((await buildingCard.getAttribute('aria-pressed')) !== null) throw new Error('Building asset cards must be action buttons, not toggles.');
+await buildingCard.click();
 await page.waitForSelector('.building-placement-prototype');
 await page.keyboard.press('Escape');
 await page.waitForSelector('.workspace--design[data-design-category="building"]');
