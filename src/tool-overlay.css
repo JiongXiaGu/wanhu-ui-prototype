@@ -1,9 +1,10 @@
-/* Building ToolOverlay v2 — gameplay tool execution surface */
+/* Building ToolOverlay v3 — gameplay tool execution surface.
+   Geometry and local visual hierarchy live here; palette comes from Wanhu theme tokens. */
 .tool-overlay{
   width:536px;
-  border-color:rgba(239,233,221,.18);
-  background:rgba(23,30,27,.972);
-  box-shadow:0 22px 58px rgba(6,9,8,.34);
+  border-color:rgba(238,233,223,.11);
+  background:rgba(18,23,25,.945);
+  box-shadow:0 22px 58px rgba(2,4,5,.43),inset 0 1px 0 rgba(255,255,255,.025);
 }
 
 .tool-overlay>header{
@@ -12,62 +13,50 @@
   background:linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,0));
 }
 
-.tool-overlay>header>div{
-  gap:13px;
-}
-
+.tool-overlay>header>div{gap:13px}
 .tool-overlay>header b{
   font-size:20px;
   line-height:1;
   letter-spacing:.01em;
   font-weight:600;
 }
-
 .tool-overlay>header span{
   font-size:10px;
-  color:#969a91;
+  color:#898e8b;
   letter-spacing:.02em;
 }
-
 .tool-overlay>header .icon-button{
   width:34px;
   height:34px;
   border-radius:3px;
 }
-
 .tool-overlay>header .icon-button:hover{
   background:rgba(255,255,255,.05);
   color:var(--paper);
 }
 
-.tool-overlay .tool-body{
-  padding:16px 17px 15px;
-}
+.tool-overlay .tool-body{padding:16px 17px 15px}
 
 .tool-overlay .segment{
   min-height:36px;
-  background:rgba(255,255,255,.012);
-  border-color:rgba(239,233,221,.145);
+  background:rgba(255,255,255,.010);
+  border-color:rgba(238,233,223,.085);
 }
-
 .tool-overlay .segment button{
   position:relative;
   min-height:35px;
   font-size:10px;
-  color:#858b82;
+  color:#838886;
   transition:background .14s ease,color .14s ease;
 }
-
 .tool-overlay .segment button:hover{
   background:rgba(255,255,255,.035);
-  color:#c7c5bc;
+  color:#d4cfc6;
 }
-
 .tool-overlay .segment button.is-active{
-  background:linear-gradient(180deg,rgba(201,165,95,.11),rgba(201,165,95,.045));
-  color:var(--gold-hi);
+  background:rgba(169,132,75,.085);
+  color:var(--wanhu-color-brass-high,#bd9959);
 }
-
 .tool-overlay .segment button.is-active::after{
   content:'';
   position:absolute;
@@ -75,7 +64,7 @@
   right:14px;
   bottom:0;
   height:2px;
-  background:var(--gold);
+  background:var(--wanhu-color-brass,#a9844b);
 }
 
 .tool-overlay .tool-body h3{
@@ -83,7 +72,7 @@
   padding-bottom:8px;
   font-size:11px;
   font-weight:600;
-  color:#d8d3c7;
+  color:#c8c3ba;
   letter-spacing:.035em;
 }
 
@@ -92,37 +81,33 @@
   min-height:46px;
   gap:7px;
 }
-
 .tool-overlay .parameter-row>span{
   font-size:10px;
-  color:#9ca097;
+  color:#898e8b;
 }
-
 .tool-overlay .parameter-row>button{
   width:30px;
   height:30px;
   border-radius:3px;
-  border-color:rgba(239,233,221,.16);
-  background:rgba(255,255,255,.018);
+  border-color:rgba(238,233,223,.085);
+  background:rgba(255,255,255,.012);
   font-size:14px;
   color:#c7c2b6;
   transition:background .14s ease,border-color .14s ease,color .14s ease;
 }
-
 .tool-overlay .parameter-row>button:hover{
-  background:rgba(255,255,255,.055);
-  border-color:rgba(239,233,221,.25);
+  background:rgba(255,255,255,.040);
+  border-color:rgba(238,233,223,.14);
   color:var(--paper);
 }
-
 .tool-overlay .parameter-row output{
   height:30px;
   border-radius:3px;
   font-size:10px;
   color:#ddd7ca;
   font-variant-numeric:tabular-nums;
-  border-color:rgba(239,233,221,.16);
-  background:rgba(255,255,255,.018);
+  border-color:rgba(238,233,223,.085);
+  background:rgba(255,255,255,.012);
 }
 
 .tool-overlay .track{
@@ -130,11 +115,7 @@
   border-radius:2px;
   background:rgba(235,228,211,.15);
 }
-
-.tool-overlay .track i{
-  border-radius:2px 0 0 2px;
-}
-
+.tool-overlay .track i{border-radius:2px 0 0 2px}
 .tool-overlay .track i::after{
   content:'';
   position:absolute;
@@ -154,10 +135,9 @@
   min-height:48px;
   gap:7px;
 }
-
 .tool-overlay .inline-segment>span{
   font-size:10px;
-  color:#9ca097;
+  color:#898e8b;
 }
 
 .tool-overlay .icon-strip{
@@ -165,40 +145,34 @@
   padding-top:13px;
   min-height:48px;
 }
-
 .tool-overlay .icon-strip>span{
   font-size:9px;
-  color:#858b82;
+  color:#898e8b;
   letter-spacing:.035em;
 }
-
 .tool-overlay .icon-strip>div{
   display:flex;
   gap:7px;
 }
-
 .tool-overlay .icon-strip button{
   position:relative;
   width:36px;
   height:36px;
   border-radius:4px;
   color:transparent;
-  border:1px solid rgba(239,233,221,.16);
-  background:rgba(255,255,255,.018);
+  border:1px solid rgba(238,233,223,.085);
+  background:rgba(255,255,255,.012);
   transition:background .14s ease,border-color .14s ease,transform .14s ease;
 }
-
 .tool-overlay .icon-strip button:hover{
-  background:rgba(255,255,255,.055);
-  border-color:rgba(239,233,221,.25);
+  background:rgba(255,255,255,.040);
+  border-color:rgba(238,233,223,.14);
   transform:translateY(-1px);
 }
-
 .tool-overlay .icon-strip button.is-active{
-  background:rgba(201,165,95,.12);
-  border-color:rgba(201,165,95,.38);
+  background:rgba(169,132,75,.09);
+  border-color:rgba(169,132,75,.28);
 }
-
 .tool-overlay .icon-strip button::before{
   content:'';
   position:absolute;
@@ -226,10 +200,7 @@
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9d4c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18' stroke-dasharray='2 2'/%3E%3Cpath d='m9 7-5 5 5 5V7Z'/%3E%3Cpath d='m15 7 5 5-5 5V7Z'/%3E%3C/svg%3E");
 }
 
-.tool-overlay .icon-strip button.is-active::before{
-  filter:sepia(1) saturate(1.25) brightness(1.12);
-}
-
+.tool-overlay .icon-strip button.is-active::before{filter:sepia(1) saturate(1.25) brightness(1.12)}
 .tool-overlay .icon-strip button::after{
   position:absolute;
   bottom:44px;
@@ -247,12 +218,10 @@
   transition:opacity .12s ease,transform .12s ease;
   box-shadow:0 8px 22px rgba(0,0,0,.22);
 }
-
 .tool-overlay .icon-strip button:nth-child(1)::after{content:'贴合地形'}
 .tool-overlay .icon-strip button:nth-child(2)::after{content:'显示占地边界'}
 .tool-overlay .icon-strip button:nth-child(3)::after{content:'锁定比例'}
 .tool-overlay .icon-strip button:nth-child(4)::after{content:'镜像放置'}
-
 .tool-overlay .icon-strip button:hover::after{
   opacity:1;
   transform:translateX(-50%) translateY(0);
