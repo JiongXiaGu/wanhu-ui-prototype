@@ -1,6 +1,7 @@
 /* Full-screen Settings Space — Global / Blocking Surface.
    Geometry belongs here; palette, material and shared state language come from the
-   game-wide Wanhu Theme. */
+   game-wide Wanhu Theme. The screen deliberately does not own scene artwork: menu
+   and paused gameplay provide the visual world underneath this blocking material. */
 
 .settings-space{
   position:absolute;
@@ -10,14 +11,12 @@
   flex-direction:column;
   overflow:hidden;
   color:var(--wanhu-color-paper-primary);
-  background-color:var(--wanhu-color-ink-950);
   background-image:
     linear-gradient(180deg,var(--wanhu-surface-blocking-top),var(--wanhu-surface-blocking-bottom)),
-    var(--wanhu-material-noise),
-    url('/assets/wanhu-gameplay-city.png');
-  background-repeat:no-repeat,repeat,no-repeat;
-  background-size:auto,256px 256px,cover;
-  background-position:center,center,center;
+    var(--wanhu-material-noise);
+  background-repeat:no-repeat,repeat;
+  background-size:auto,256px 256px;
+  background-position:center,center;
 }
 
 .settings-space::before{
