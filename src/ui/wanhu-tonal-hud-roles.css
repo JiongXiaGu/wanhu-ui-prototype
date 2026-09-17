@@ -1,7 +1,7 @@
 /* Tonal Material — persistent HUD role calibration.
    Frostpunk-like tonal separation should come from darker hue and luminance,
    not from turning every persistent HUD surface into an opaque black plate.
-   Keep the reviewed persistent-role alpha bands and Edge/Elevation borderless rules. */
+   Keep the reviewed persistent-role alpha bands and Edge/Elevation rules. */
 
 .gameplay-screen .gameplay-top-status{
   background-color:rgba(25,31,33,.50);
@@ -14,6 +14,10 @@
 
 .gameplay-screen .gameplay-top-navigation{
   background-color:rgba(24,30,32,.41);
+  border-top-color:rgba(238,233,223,.080);
+  border-right-color:rgba(238,233,223,.040);
+  border-bottom-color:rgba(238,233,223,.018);
+  border-left-color:rgba(238,233,223,.040);
   backdrop-filter:blur(20px) saturate(.93) brightness(.985);
   -webkit-backdrop-filter:blur(20px) saturate(.93) brightness(.985);
 }
