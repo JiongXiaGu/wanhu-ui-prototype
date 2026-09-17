@@ -1,0 +1,19 @@
+/* Placement-family adapter for the shared Left Context System.
+   This file owns placement positioning only. Shell/header/material/control skin
+   remains owned by gameplay-context-panel.css and wanhu-surface-system.css. */
+
+.gameplay-screen .placement-context-panel{
+  top:auto;
+  width:400px;
+  max-height:calc(100% - 92px);
+  transform:none;
+  z-index:22;
+}
+
+.gameplay-screen .placement-context-panel .placement-context-panel__body{
+  max-height:calc(100vh - 150px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:10px 12px 12px;
+  scrollbar-width:thin;
+}
