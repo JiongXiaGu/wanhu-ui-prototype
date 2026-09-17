@@ -31,7 +31,7 @@ function alphaFromCssColor(value) {
   return match[1] === undefined ? 1 : Number(match[1]);
 }
 
-async function inspectRole(selector, label, minAlpha, maxAlpha) {
+async function inspectRole(selector, label, minAlpha, maxAlpha, edgeMode) {
   const locator = page.locator(selector).first();
   await locator.waitFor();
   const visual = await locator.evaluate((node) => {
@@ -40,7 +40,10 @@ async function inspectRole(selector, label, minAlpha, maxAlpha) {
       backgroundColor: style.backgroundColor,
       backgroundImage: style.backgroundImage,
       backdropFilter: style.backdropFilter || style.webkitBackdropFilter || '',
-      borderColor: style.borderTopColor,
+      borderTopColor: style.borderTopColor,
+      borderRightColor: style.borderRightColor,
+      borderBottomColor: style.borderBottomColor,
+      borderLeftColor: style.borderLeftColor,
       boxShadow: style.boxShadow,
     };
   });
@@ -54,19 +57,29 @@ async function inspectRole(selector, label, minAlpha, maxAlpha) {
   if (!visual.backdropFilter.includes('blur(20px)')) {
     throw new Error(`${label} must use the 20px shared scene blur. filter=${visual.backdropFilter}`);
   }
-  if (!visual.borderColor || visual.borderColor === 'rgba(0, 0, 0, 0)') {
-    throw new Error(`${label} must keep a visible neutral edge.`);
+
+  const edgeColors = [visual.borderTopColor, visual.borderRightColor, visual.borderBottomColor, visual.borderLeftColor];
+  const edgeAlphas = edgeColors.map(alphaFromCssColor);
+  if (edgeMode === 'directional') {
+    if (Math.max(...edgeAlphas) < .05 || (visual.borderTopColor === visual.borderBottomColor && visual.borderLeftColor === visual.borderRightColor)) {
+      throw new Error(`${label} must keep the formal directional edge language. visual=${JSON.stringify(visual)}`);
+    }
+  } else if (edgeMode === 'borderless') {
+    if (edgeAlphas.some((edgeAlpha) => edgeAlpha > .03)) {
+      throw new Error(`${label} must remain borderless under Edge & Elevation v1. visual=${JSON.stringify(visual)}`);
+    }
   }
+
   if (visual.boxShadow === 'none') throw new Error(`${label} must keep surface separation shadow.`);
 }
 
 async function inspectHudRoles(prefix) {
-  await inspectRole('.gameplay-top-status', `${prefix} Top HUD`, .44, .54);
-  await inspectRole('.gameplay-top-navigation', `${prefix} Secondary HUD`, .36, .46);
-  await inspectRole('.command-bar', `${prefix} Main Dock`, .53, .62);
-  await inspectRole('.world-utility-toolbar', `${prefix} Utility Toolbar`, .36, .46);
-  await inspectRole('.gameplay-operation-hints', `${prefix} Operation Hint`, .40, .50);
-  await inspectRole('.gameplay-system-menu-button', `${prefix} System Menu`, .34, .44);
+  await inspectRole('.gameplay-top-status', `${prefix} Top HUD`, .44, .54, 'directional');
+  await inspectRole('.gameplay-top-navigation', `${prefix} Secondary HUD`, .36, .46, 'directional');
+  await inspectRole('.command-bar', `${prefix} Main Dock`, .53, .62, 'borderless');
+  await inspectRole('.world-utility-toolbar', `${prefix} Utility Toolbar`, .36, .46, 'borderless');
+  await inspectRole('.gameplay-operation-hints', `${prefix} Operation Hint`, .40, .50, 'borderless');
+  await inspectRole('.gameplay-system-menu-button', `${prefix} System Menu`, .34, .44, 'borderless');
 }
 
 // Day: all persistent HUD roles on the normal gameplay world.
