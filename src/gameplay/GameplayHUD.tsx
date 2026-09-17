@@ -1,7 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  Archive,
-  Box,
   Building2,
   Camera,
   ChevronsRight,
@@ -18,12 +16,11 @@ import {
   ScrollText,
   Shield,
   ShieldCheck,
-  Sparkles,
   Store,
   Users,
+  Warehouse,
 } from 'lucide-react';
 import type { ContextPanel, ManagementView, MapView, Speed } from '../app/ui-state';
-import { ResourceValue } from '../ui/Controls';
 
 interface MapViewItem {
   id: MapView;
@@ -34,6 +31,14 @@ interface MapViewItem {
 interface ManagementPrimaryItem {
   id: Exclude<ManagementView, 'none'>;
   label: string;
+  icon: LucideIcon;
+}
+
+interface StatusQuickEntry {
+  id: Exclude<ManagementView, 'none'>;
+  label: string;
+  targetLabel: string;
+  value: string;
   icon: LucideIcon;
 }
 
@@ -71,9 +76,17 @@ const MAP_VIEWS: MapViewItem[] = [
 const MANAGEMENT_PRIMARY: ManagementPrimaryItem[] = [
   { id: 'city', label: '城市', icon: Building2 },
   { id: 'finance', label: '经济', icon: Coins },
+  { id: 'inventory', label: '库存', icon: Warehouse },
   { id: 'policy', label: '政策', icon: ScrollText },
   { id: 'military', label: '军事', icon: Shield },
   { id: 'governance', label: '宫殿', icon: Landmark },
+];
+
+const STATUS_QUICK_ENTRIES: StatusQuickEntry[] = [
+  { id: 'city', label: '人口', targetLabel: '城市', value: '8,426', icon: Users },
+  { id: 'finance', label: '金钱', targetLabel: '经济', value: '24,680', icon: Coins },
+  { id: 'inventory', label: '贸易值', targetLabel: '库存', value: '12,430', icon: Warehouse },
+  { id: 'military', label: '军事值', targetLabel: '军事', value: '68', icon: Shield },
 ];
 
 const SPEED_CONTROLS: SpeedControlItem[] = [
@@ -115,11 +128,24 @@ export function GameplayHUD({
           <span className="gameplay-top-status__clock">秋 · {formatTime(dayTime)}</span>
         </div>
 
-        <div className="resource-strip gameplay-top-status__resources" aria-label="城市资源">
-          <ResourceValue icon={<Archive size={13} />} label="钱粮" value="24,680" />
-          <ResourceValue icon={<Sparkles size={13} />} label="人口" value="8,426" />
-          <ResourceValue icon={<Box size={13} />} label="木材" value="3,240" />
-          <ResourceValue icon={<Layers3 size={13} />} label="石料" value="2,780" />
+        <div className="gameplay-top-status__resources" aria-label="城市核心指标快捷入口">
+          {STATUS_QUICK_ENTRIES.map((item) => {
+            const Icon = item.icon;
+            const tooltip = `${item.label} · 打开${item.targetLabel}`;
+            return (
+              <button
+                key={item.label}
+                type="button"
+                className="gameplay-top-resource-shortcut"
+                aria-label={`${item.label} ${item.value}，打开${item.targetLabel}`}
+                data-tooltip={tooltip}
+                onClick={() => onManagementChange(item.id)}
+              >
+                <Icon />
+                <b>{item.value}</b>
+              </button>
+            );
+          })}
         </div>
 
         <div className="gameplay-top-status__time-controls" aria-label="时间控制">
