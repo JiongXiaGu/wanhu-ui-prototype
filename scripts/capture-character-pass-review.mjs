@@ -41,6 +41,7 @@ async function pseudo(selector, part) {
       borderLeftWidth: Number.parseFloat(style.borderLeftWidth),
       borderBottomWidth: Number.parseFloat(style.borderBottomWidth),
       opacity: Number.parseFloat(style.opacity),
+      transform: style.transform,
       animationName: style.animationName,
       animationDuration: style.animationDuration,
       animationDelay: style.animationDelay,
@@ -49,18 +50,27 @@ async function pseudo(selector, part) {
 }
 
 async function assertCharacterAnchors() {
-  const weatherBeam = await pseudo('.gameplay-top-status__weather-state', '::after');
-  const weatherLeft = Number.parseFloat(weatherBeam.left);
+  const topEdgeAnchor = await pseudo('.gameplay-top-status', '::before');
+  const anchorLeft = Number.parseFloat(topEdgeAnchor.left);
+  const anchorTop = Number.parseFloat(topEdgeAnchor.top);
   if (
-    weatherLeft > 8 ||
-    weatherBeam.width < 30 ||
-    weatherBeam.width > 36 ||
-    weatherBeam.height < 6 ||
-    weatherBeam.height > 8 ||
-    !weatherBeam.backgroundImage.includes('radial-gradient') ||
-    !weatherBeam.backgroundImage.includes('linear-gradient')
+    anchorLeft < 14 ||
+    anchorLeft > 24 ||
+    anchorTop < -1 ||
+    anchorTop > 2 ||
+    topEdgeAnchor.width < 14 ||
+    topEdgeAnchor.width > 20 ||
+    topEdgeAnchor.height < 3 ||
+    topEdgeAnchor.height > 5 ||
+    !topEdgeAnchor.backgroundImage.includes('radial-gradient') ||
+    !topEdgeAnchor.backgroundImage.includes('linear-gradient')
   ) {
-    throw new Error(`Weather anchor must read as a compact beam-head joint at the information-group origin, not a text underline. visual=${JSON.stringify(weatherBeam)}`);
+    throw new Error(`Top HUD identity must be integrated into the shell edge as a short neutral beam + gold joint node. visual=${JSON.stringify(topEdgeAnchor)}`);
+  }
+
+  const weatherTextMarker = await pseudo('.gameplay-top-status__weather-state', '::after');
+  if (weatherTextMarker.content !== 'none') {
+    throw new Error(`Weather text must not carry a decorative underline / beam marker in Character Pass v2. visual=${JSON.stringify(weatherTextMarker)}`);
   }
 
   const resource = page.locator('.gameplay-top-status__resources > span').first();
@@ -104,42 +114,59 @@ async function assertWorkspaceAndDockCharacter(bridgeButton, workspace) {
     throw new Error(`Workspace settle motion must preserve the existing 1920px-canvas center anchor. box=${JSON.stringify(workspaceBox)}`);
   }
 
-  const titleBeam = await pseudo('.workspace--design .workspace-title', '::after');
-  const titleLeft = Number.parseFloat(titleBeam.left);
+  const headerBeam = await pseudo('.workspace--design .workspace-header', '::before');
+  const headerLeft = Number.parseFloat(headerBeam.left);
+  const headerTop = Number.parseFloat(headerBeam.top);
   if (
-    titleLeft > 4 ||
-    titleBeam.width < 30 ||
-    titleBeam.width > 36 ||
-    titleBeam.height < 6 ||
-    titleBeam.height > 8 ||
-    !titleBeam.backgroundImage.includes('radial-gradient')
+    headerLeft < 14 ||
+    headerLeft > 24 ||
+    headerTop < -1 ||
+    headerTop > 2 ||
+    headerBeam.width < 30 ||
+    headerBeam.width > 38 ||
+    headerBeam.height < 3 ||
+    headerBeam.height > 5 ||
+    !headerBeam.backgroundImage.includes('radial-gradient') ||
+    !headerBeam.backgroundImage.includes('linear-gradient')
   ) {
-    throw new Error(`Workspace title identity must anchor to the icon/start edge instead of becoming a title underline. visual=${JSON.stringify(titleBeam)}`);
+    throw new Error(`Workspace identity beam must live on the Header edge instead of around title text. visual=${JSON.stringify(headerBeam)}`);
+  }
+
+  const titleTextMarker = await pseudo('.workspace--design .workspace-title', '::after');
+  if (titleTextMarker.content !== 'none') {
+    throw new Error(`Workspace title text must stay clean; Character identity belongs to the Header edge. visual=${JSON.stringify(titleTextMarker)}`);
   }
 
   const activeFilter = workspace.locator('.workspace-context-filter__scroll > button.is-active').first();
-  const filterJoint = await activeFilter.evaluate((node) => {
+  const filterNode = await activeFilter.evaluate((node) => {
     const style = getComputedStyle(node, '::after');
     return {
       width: Number.parseFloat(style.width),
       height: Number.parseFloat(style.height),
       left: style.left,
+      right: style.right,
+      top: style.top,
+      bottom: style.bottom,
       borderLeftWidth: Number.parseFloat(style.borderLeftWidth),
       borderBottomWidth: Number.parseFloat(style.borderBottomWidth),
       backgroundImage: style.backgroundImage,
       backgroundColor: style.backgroundColor,
+      transform: style.transform,
     };
   });
+  const filterLeft = Number.parseFloat(filterNode.left);
   if (
-    filterJoint.width < 16 ||
-    filterJoint.width > 20 ||
-    filterJoint.height < 7 ||
-    filterJoint.height > 9 ||
-    filterJoint.borderLeftWidth < 1 ||
-    filterJoint.borderBottomWidth < 2 ||
-    !filterJoint.backgroundImage.includes('radial-gradient')
+    filterNode.width < 3 ||
+    filterNode.width > 5 ||
+    filterNode.height < 3 ||
+    filterNode.height > 5 ||
+    filterLeft < 3 ||
+    filterLeft > 8 ||
+    filterNode.borderLeftWidth !== 0 ||
+    filterNode.borderBottomWidth !== 0 ||
+    filterNode.backgroundImage !== 'none'
   ) {
-    throw new Error(`Workspace active filter must expose a compact L-joint + joint node instead of a web-tab underline. visual=${JSON.stringify(filterJoint)}`);
+    throw new Error(`Workspace active filter must use one compact tenon node, not an underline or L-joint. visual=${JSON.stringify(filterNode)}`);
   }
 
   const base = await bridgeButton.evaluate((node) => {
@@ -164,23 +191,24 @@ async function assertWorkspaceAndDockCharacter(bridgeButton, workspace) {
     base.nodeHeight < 3 ||
     base.nodeHeight > 5
   ) {
-    throw new Error(`Main Dock active item must use a compact platform base + central joint node. visual=${JSON.stringify(base)}`);
+    throw new Error(`Main Dock active item must preserve the reviewed compact platform base + central joint node. visual=${JSON.stringify(base)}`);
   }
 }
 
 async function assertReducedMotion() {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await open('gameplay', '.gameplay-top-status');
-  const weatherBeam = await pseudo('.gameplay-top-status__weather-state', '::after');
-  if (weatherBeam.animationName !== 'none') {
-    throw new Error(`Character markers must respect prefers-reduced-motion. weather=${JSON.stringify(weatherBeam)}`);
+  const topEdgeAnchor = await pseudo('.gameplay-top-status', '::before');
+  if (topEdgeAnchor.animationName !== 'none') {
+    throw new Error(`Character edge markers must respect prefers-reduced-motion. top=${JSON.stringify(topEdgeAnchor)}`);
   }
 
   const { workspace } = await openBridgeWorkspace();
   const workspaceAnimation = await workspace.evaluate((node) => getComputedStyle(node).animationName);
-  const titleBeam = await pseudo('.workspace--design .workspace-title', '::after');
-  if (workspaceAnimation !== 'none' || titleBeam.animationName !== 'none') {
-    throw new Error(`Workspace and its Character markers must disable decorative motion for reduced-motion users. workspace=${workspaceAnimation}, title=${JSON.stringify(titleBeam)}`);
+  const headerBeam = await pseudo('.workspace--design .workspace-header', '::before');
+  const filterNode = await pseudo('.workspace--design .workspace-context-filter__scroll>button.is-active', '::after');
+  if (workspaceAnimation !== 'none' || headerBeam.animationName !== 'none' || filterNode.animationName !== 'none') {
+    throw new Error(`Workspace and its Character markers must disable decorative motion for reduced-motion users. workspace=${workspaceAnimation}, header=${JSON.stringify(headerBeam)}, filter=${JSON.stringify(filterNode)}`);
   }
 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -189,10 +217,10 @@ async function assertReducedMotion() {
 // Day — normal gameplay first, then the representative Work state.
 await open('gameplay', '.gameplay-top-status');
 await assertCharacterAnchors();
-await page.screenshot({ path: `${outDir}/48-character-pass-gameplay-day.png` });
+await page.screenshot({ path: `${outDir}/49-character-edge-integrated-gameplay-day.png` });
 const dayWork = await openBridgeWorkspace();
 await assertWorkspaceAndDockCharacter(dayWork.bridgeButton, dayWork.workspace);
-await page.screenshot({ path: `${outDir}/48-character-pass-workspace-day.png` });
+await page.screenshot({ path: `${outDir}/49-character-edge-integrated-workspace-day.png` });
 
 // Night — use the real Environment time control, then review the same two states.
 await open('weather', '.gameplay-context-panel--weather');
@@ -203,10 +231,10 @@ await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.get
 await page.getByRole('button', { name: '关闭面板', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
 await assertCharacterAnchors();
-await page.screenshot({ path: `${outDir}/48-character-pass-gameplay-night.png` });
+await page.screenshot({ path: `${outDir}/49-character-edge-integrated-gameplay-night.png` });
 const nightWork = await openBridgeWorkspace();
 await assertWorkspaceAndDockCharacter(nightWork.bridgeButton, nightWork.workspace);
-await page.screenshot({ path: `${outDir}/48-character-pass-workspace-night.png` });
+await page.screenshot({ path: `${outDir}/49-character-edge-integrated-workspace-night.png` });
 
 await assertReducedMotion();
 await browser.close();
