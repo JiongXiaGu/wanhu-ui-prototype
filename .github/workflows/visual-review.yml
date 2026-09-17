@@ -68,6 +68,7 @@ jobs:
           node scripts/capture-hud-material-review.mjs
           node scripts/capture-edge-elevation-study-review.mjs
           node scripts/capture-character-pass-review.mjs
+          node scripts/capture-inventory-shortcut-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
