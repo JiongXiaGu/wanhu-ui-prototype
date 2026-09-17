@@ -100,6 +100,7 @@ export function LeftContextSection({
 
 export function LeftContextModeFooter({
   actionLabel,
+  actionAriaLabel,
   actionTitle,
   actionDisabled = false,
   actionClassName = '',
@@ -108,6 +109,7 @@ export function LeftContextModeFooter({
   children,
 }: {
   actionLabel?: string;
+  actionAriaLabel?: string;
   actionTitle?: string;
   actionDisabled?: boolean;
   actionClassName?: string;
@@ -122,7 +124,7 @@ export function LeftContextModeFooter({
           type="button"
           className={`context-panel-reset-button ${actionClassName}`.trim()}
           disabled={actionDisabled}
-          aria-label={actionLabel}
+          aria-label={actionAriaLabel ?? actionLabel}
           title={actionTitle}
           onClick={onAction}
         >
