@@ -1,6 +1,8 @@
 /* Wanhu Icon-led Header v1
    Remove decorative beam markers from persistent HUD / panel titles.
-   Identity now comes from icon prominence, typography and one quiet structural rule. */
+   Identity now comes from icon prominence, typography and one quiet structural rule.
+   Workspace and Context Surface share the same header language while preserving their
+   established density-specific geometry: Workspace 50px, Context Surface 58px. */
 
 /* Decorative edge beams are retired. */
 .gameplay-screen .gameplay-top-status::before,
@@ -35,18 +37,14 @@
   color:#d8d2c8;
   font-weight:600;
 }
-.gameplay-screen .gameplay-top-status__clock{
-  color:#8f9390;
-}
+.gameplay-screen .gameplay-top-status__clock{color:#8f9390}
 
 /* ---------------------------------------------------------------------
    Shared panel header language: Workspace + Context Surface
+   Same visual grammar, density-appropriate geometry.
    --------------------------------------------------------------------- */
 .gameplay-screen .workspace--design .workspace-header,
 .gameplay-screen .gameplay-context-panel>header{
-  height:58px;
-  min-height:58px;
-  flex:0 0 58px;
   padding:0 12px 0 14px;
   border-bottom:1px solid rgba(238,233,223,.060);
   background:rgba(255,255,255,.007);
@@ -56,9 +54,18 @@
   justify-content:space-between;
 }
 
-/* Workspace body follows the shared 58px header without changing the shell size. */
+.gameplay-screen .workspace--design .workspace-header{
+  height:50px;
+  min-height:50px;
+  flex:0 0 50px;
+}
 .gameplay-screen .workspace--design .workspace-body{
-  height:calc(100% - 58px);
+  height:calc(100% - 50px);
+}
+.gameplay-screen .gameplay-context-panel>header{
+  height:58px;
+  min-height:58px;
+  flex:0 0 58px;
 }
 
 .gameplay-screen .workspace--design .workspace-title,
@@ -69,13 +76,13 @@
   gap:10px;
 }
 
-/* Workspace currently renders the Lucide icon directly; make that SVG itself the chip.
-   Context Surface already owns a wrapper, so both resolve to the same 32px visual box. */
+/* Workspace keeps a compact 30px identity chip so its 50px browser header remains
+   efficient. Context Surface uses a 32px chip inside its roomier 58px header. */
 .gameplay-screen .workspace--design .workspace-title>svg{
   width:16px;
   height:16px;
   box-sizing:content-box;
-  padding:7px;
+  padding:6px;
   flex:0 0 auto;
   border:1px solid rgba(238,233,223,.078);
   border-radius:9px;
@@ -110,9 +117,7 @@
   line-height:1.08;
   letter-spacing:.015em;
 }
-.gameplay-screen .gameplay-context-panel__heading-copy{
-  gap:3px;
-}
+.gameplay-screen .gameplay-context-panel__heading-copy{gap:3px}
 .gameplay-screen .gameplay-context-panel__heading-copy>span{
   color:#888d8a;
   font-size:9px;
@@ -135,8 +140,8 @@
   background:rgba(255,255,255,.035);
 }
 
-/* Weather used to carry a separate slate-blue title treatment. The unified header
-   now uses the same tonal family; weather identity comes from its icon and content. */
+/* Weather no longer owns a separate slate-blue title strip. Environment identity
+   comes from its icon, title and content rather than a differently coloured bar. */
 .gameplay-screen .gameplay-context-panel--weather>header{
   border-bottom-color:rgba(238,233,223,.060);
   background:rgba(255,255,255,.007);
@@ -148,9 +153,7 @@
   background:rgba(255,255,255,.038);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.016);
 }
-.gameplay-screen .gameplay-context-panel--weather .gameplay-context-panel__heading-copy>span{
-  color:#888d8a;
-}
+.gameplay-screen .gameplay-context-panel--weather .gameplay-context-panel__heading-copy>span{color:#888d8a}
 
 @media (prefers-reduced-motion:reduce){
   .gameplay-screen .gameplay-top-status::before,
