@@ -211,22 +211,22 @@
   box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(169,132,75,.11);
 }
 
-/* Shared segmented controls ----------------------------------------------- */
+/* Shared segmented controls: open/transparent shell, common 10px/8px geometry. */
 .game-canvas .left-context-panel .segment{
   min-height:34px;
   height:34px;
-  padding:2px;
-  gap:2px;
-  border:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));
+  padding:0;
+  gap:6px;
+  border:0;
   border-radius:10px;
-  overflow:hidden;
-  background:rgba(255,255,255,.012);
+  overflow:visible;
+  background:transparent;
   box-shadow:none;
 }
 .game-canvas .left-context-panel .segment>button{
   position:relative;
-  height:28px;
-  min-height:28px;
+  height:34px;
+  min-height:34px;
   padding:0 10px;
   border:0;
   border-radius:8px;
