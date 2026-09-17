@@ -215,18 +215,18 @@
 .game-canvas .left-context-panel .segment{
   min-height:34px;
   height:34px;
-  padding:0;
-  gap:6px;
-  border:0;
-  border-radius:0;
-  overflow:visible;
-  background:transparent;
+  padding:2px;
+  gap:2px;
+  border:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));
+  border-radius:10px;
+  overflow:hidden;
+  background:rgba(255,255,255,.012);
   box-shadow:none;
 }
 .game-canvas .left-context-panel .segment>button{
   position:relative;
-  height:34px;
-  min-height:34px;
+  height:28px;
+  min-height:28px;
   padding:0 10px;
   border:0;
   border-radius:8px;
