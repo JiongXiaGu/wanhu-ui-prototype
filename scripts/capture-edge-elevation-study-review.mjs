@@ -51,6 +51,13 @@ async function setVariant(variant) {
   await page.waitForTimeout(90);
 }
 
+async function clearVariant() {
+  await page.locator('.gameplay-screen').evaluate((node) => {
+    node.removeAttribute('data-edge-study');
+  });
+  await page.waitForTimeout(90);
+}
+
 async function borderSnapshot(selector) {
   return page.locator(selector).first().evaluate((node) => {
     const style = getComputedStyle(node);
@@ -67,25 +74,45 @@ async function borderSnapshot(selector) {
 async function assertDirectional(label, selector) {
   const edge = await borderSnapshot(selector);
   if (edge.top === edge.bottom && edge.left === edge.right) {
-    throw new Error(`${label} must use directional edge colors in variant B. edge=${JSON.stringify(edge)}`);
+    throw new Error(`${label} must use directional edge colors. edge=${JSON.stringify(edge)}`);
   }
-  if (edge.shadow === 'none') throw new Error(`${label} must keep elevation shadow in variant B.`);
+  if (edge.shadow === 'none') throw new Error(`${label} must keep an elevation shadow.`);
 }
 
 async function assertBorderless(label, selector) {
   const edge = await borderSnapshot(selector);
   const alphas = [edge.top, edge.right, edge.bottom, edge.left].map(alphaFromCssColor);
   if (alphas.some((alpha) => alpha > 0.03)) {
-    throw new Error(`${label} must remove the structural outer border in variant C. edge=${JSON.stringify(edge)}`);
+    throw new Error(`${label} must remove the structural outer border. edge=${JSON.stringify(edge)}`);
   }
-  if (edge.shadow === 'none') throw new Error(`${label} must keep elevation shadow in variant C.`);
+  if (edge.shadow === 'none') throw new Error(`${label} must keep an elevation shadow.`);
 }
 
 async function assertElevatedContour(label) {
   const edge = await borderSnapshot('.asset-inspector-popover');
   if (alphaFromCssColor(edge.top) < 0.08 || alphaFromCssColor(edge.bottom) < 0.08 || edge.top === edge.bottom) {
-    throw new Error(`${label} Inspector must retain a directional contour even in borderless variant C. edge=${JSON.stringify(edge)}`);
+    throw new Error(`${label} Inspector must retain a directional contour. edge=${JSON.stringify(edge)}`);
   }
+}
+
+async function assertInternalDarkRule(label, selector) {
+  const edge = await borderSnapshot(selector);
+  if (alphaFromCssColor(edge.bottom) < 0.05) {
+    throw new Error(`${label} must retain a visible internal separator while the outer shell stays borderless. edge=${JSON.stringify(edge)}`);
+  }
+}
+
+async function assertFormalMix(period) {
+  await assertDirectional(`${period} Top HUD`, '.gameplay-top-status');
+  await assertDirectional(`${period} Secondary HUD`, '.gameplay-top-navigation');
+  await assertBorderless(`${period} Workspace`, '.workspace--design');
+  await assertBorderless(`${period} Main Dock`, '.command-bar');
+  await assertBorderless(`${period} Utility`, '.world-utility-toolbar');
+  await assertBorderless(`${period} Operation Hint`, '.gameplay-operation-hints');
+  await assertBorderless(`${period} System Menu`, '.gameplay-system-menu-button');
+  await assertElevatedContour(`${period} formal`);
+  await assertInternalDarkRule(`${period} Workspace Header`, '.workspace-header');
+  await assertInternalDarkRule(`${period} Workspace Filter`, '.workspace-context-filter');
 }
 
 async function captureVariants(period) {
@@ -109,12 +136,15 @@ async function captureVariants(period) {
   }
 }
 
-// Day: keep all representative roles visible at once.
+// Day: first validate the formal mixed runtime, then preserve the pure A/B/C study views.
 await open('gameplay', '.gameplay-top-status');
 await openBridgeInspector();
+await clearVariant();
+await assertFormalMix('day');
+await page.screenshot({ path: `${outDir}/46-edge-v1-day.png` });
 await captureVariants('day');
 
-// Night: use the real Environment control, then review the same composite.
+// Night: use the real Environment control and validate the same formal hierarchy.
 await open('weather', '.gameplay-context-panel--weather');
 await page.getByRole('button', { name: '场景模拟', exact: true }).click();
 await page.waitForSelector('[aria-label="日内时间"]');
@@ -123,6 +153,9 @@ await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.get
 await page.getByRole('button', { name: '关闭面板', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
 await openBridgeInspector();
+await clearVariant();
+await assertFormalMix('night');
+await page.screenshot({ path: `${outDir}/46-edge-v1-night.png` });
 await captureVariants('night');
 
 await browser.close();
