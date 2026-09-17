@@ -8,7 +8,6 @@ import {
   Droplets,
   Eye,
   FastForward,
-  Landmark,
   Layers3,
   Pause,
   Play,
@@ -79,7 +78,6 @@ const MANAGEMENT_PRIMARY: ManagementPrimaryItem[] = [
   { id: 'inventory', label: '库存', icon: Warehouse },
   { id: 'policy', label: '政策', icon: ScrollText },
   { id: 'military', label: '军事', icon: Shield },
-  { id: 'governance', label: '宫殿', icon: Landmark },
 ];
 
 const STATUS_QUICK_ENTRIES: StatusQuickEntry[] = [
@@ -133,17 +131,18 @@ export function GameplayHUD({
             const Icon = item.icon;
             const tooltip = `${item.label} · 打开${item.targetLabel}`;
             return (
-              <button
-                key={item.label}
-                type="button"
-                className="gameplay-top-resource-shortcut"
-                aria-label={`${item.label} ${item.value}，打开${item.targetLabel}`}
-                data-tooltip={tooltip}
-                onClick={() => onManagementChange(item.id)}
-              >
-                <Icon />
-                <b>{item.value}</b>
-              </button>
+              <span key={item.label} className="gameplay-top-resource-slot">
+                <button
+                  type="button"
+                  className="gameplay-top-resource-shortcut"
+                  aria-label={`${item.label} ${item.value}，打开${item.targetLabel}`}
+                  data-tooltip={tooltip}
+                  onClick={() => onManagementChange(item.id)}
+                >
+                  <Icon />
+                  <b>{item.value}</b>
+                </button>
+              </span>
             );
           })}
         </div>
