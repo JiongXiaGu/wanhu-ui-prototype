@@ -136,6 +136,27 @@ await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detache
 await page.waitForTimeout(120);
 await page.screenshot({ path: `${outDir}/36-gameplay-night.png` });
 
+// Settings is a Global / Blocking Surface. It must preserve the current night world
+// underneath instead of swapping in a Settings-owned daytime scene image.
+await page.keyboard.press('Escape');
+await page.waitForSelector('.pause-command-surface');
+await page.getByRole('button', { name: '游戏设置', exact: true }).click();
+const nightSettings = page.locator('.settings-panel--pause');
+await nightSettings.waitFor();
+const nightSettingsBackground = await nightSettings.evaluate((node) => getComputedStyle(node).backgroundImage);
+if (nightSettingsBackground.includes('wanhu-gameplay-city.png') || nightSettingsBackground.includes('wanhu-gameplay-city-night.png')) {
+  throw new Error(`Settings must inherit scene artwork from its parent context. background=${nightSettingsBackground}`);
+}
+if ((await screen.getAttribute('data-time-of-day')) !== 'night') {
+  throw new Error('Opening Settings from Pause must preserve the current night gameplay state.');
+}
+await page.waitForTimeout(160);
+await page.screenshot({ path: `${outDir}/40-settings-night.png` });
+await nightSettings.getByRole('button', { name: '返回', exact: true }).click();
+await page.waitForSelector('.pause-command-surface');
+await page.getByRole('button', { name: '继续游戏', exact: true }).click();
+await page.waitForSelector('.pause-layer', { state: 'detached' });
+
 const mainDock = page.locator('.command-bar');
 const categoryRow = mainDock.locator('.category-row');
 await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();
