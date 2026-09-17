@@ -20,15 +20,15 @@
   width:100%;
   height:100%;
   overflow:hidden;
-  border:1px solid rgba(239,233,221,.10);
+  border:1px solid rgba(238,233,223,.105);
   border-radius:50%;
-  background:
-    radial-gradient(circle at 50% 47%,rgba(45,57,50,.76) 0 20%,rgba(27,37,32,.72) 46%,rgba(16,23,20,.72) 76%,rgba(12,18,15,.68) 100%);
+  background:radial-gradient(circle at 50% 46%,rgba(43,49,50,.72) 0 20%,rgba(29,35,36,.76) 46%,rgba(19,24,26,.82) 76%,rgba(14,18,20,.84) 100%);
   box-shadow:
-    0 12px 28px rgba(4,8,6,.16),
-    inset 0 1px 0 rgba(255,255,255,.018),
-    inset 0 0 0 7px rgba(239,233,221,.012);
-  backdrop-filter:blur(9px);
+    0 12px 30px rgba(2,4,5,.28),
+    inset 0 1px 0 rgba(255,255,255,.035),
+    inset 0 0 0 7px rgba(255,255,255,.008);
+  backdrop-filter:blur(13px) saturate(.92) brightness(.98);
+  -webkit-backdrop-filter:blur(13px) saturate(.92) brightness(.98);
 }
 
 .gameplay-compass-hud__dial::before,
@@ -86,7 +86,7 @@
   position:absolute;
   display:grid;
   place-items:center;
-  color:#777f78;
+  color:#858a88;
   font-size:8px;
   font-weight:560;
   line-height:1;
@@ -101,7 +101,7 @@
 .gameplay-compass-hud__cardinal--north{
   left:50%;
   top:8px;
-  color:#d4b66d;
+  color:var(--wanhu-color-brass-high,#bd9959);
   font-size:10px;
   transform:translateX(-50%);
   text-shadow:0 0 10px rgba(201,165,95,.18);
@@ -109,7 +109,7 @@
 .gameplay-compass-hud__cardinal--south{
   left:50%;
   bottom:8px;
-  color:#aaa89f;
+  color:#aaa79f;
   font-size:9px;
   transform:translateX(-50%);
 }
