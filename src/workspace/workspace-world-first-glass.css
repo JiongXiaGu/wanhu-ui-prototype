@@ -1,55 +1,21 @@
-/* Workspace World-first Glass v2.
-   The world remains the illustration. Workspace uses the same restrained neutral
-   mist-glass family proven by the Environment panel, while preserving the
-   existing Context-header / Work-body hierarchy and all browsing semantics. */
+/* Design Workspace component skin.
+   P1-A: material/elevation belong to wanhu-surface-system.css.
+   This file keeps Workspace-specific geometry, local interaction hierarchy and browsing semantics. */
 
 .gameplay-screen .workspace--design{
-  --workspace-glass-surface:rgba(74,76,75,.52);
-  --workspace-glass-body:rgba(43,47,45,.66);
-  --workspace-glass-rail:rgba(255,255,255,.022);
-  --workspace-glass-card:rgba(255,255,255,.012);
-  --workspace-glass-card-hover:rgba(255,255,255,.045);
-  --workspace-paper:#f0ede6;
-  --workspace-text:#d6d3cc;
-  --workspace-muted:#aaa9a3;
-  --workspace-faint:#848985;
-  --workspace-edge:rgba(255,255,255,.17);
-  --workspace-rule:rgba(255,255,255,.075);
-  --workspace-gold:#c9aa68;
-  --workspace-gold-soft:rgba(201,170,104,.10);
-  --workspace-jade:#9eaaa3;
-
-  border-color:var(--workspace-edge);
+  --workspace-paper:var(--wanhu-color-paper-primary,#eee9df);
+  --workspace-text:#d4cfc6;
+  --workspace-muted:#a19f99;
+  --workspace-faint:var(--wanhu-color-paper-tertiary,#818685);
+  --workspace-gold:var(--wanhu-color-brass,#a9844b);
+  --workspace-gold-soft:rgba(169,132,75,.085);
+  --workspace-jade:#9b9e99;
   border-radius:18px;
-  background-color:var(--workspace-glass-surface);
-  background-image:url('/assets/ui/materials/glass-noise-soft.png');
-  background-repeat:repeat;
-  background-size:256px 256px;
-  box-shadow:
-    0 22px 52px rgba(4,7,6,.25),
-    inset 0 1px 0 rgba(255,255,255,.13);
-  backdrop-filter:blur(18px) saturate(.70) brightness(1.02);
-  -webkit-backdrop-filter:blur(18px) saturate(.70) brightness(1.02);
 }
 
-/* Large surfaces keep the same tier at night. Only a small brightness lift is
-   used so the sheet does not merge into a dark scene. */
-.gameplay-screen[data-time-of-day="night"] .workspace--design{
-  --workspace-glass-surface:rgba(92,94,92,.50);
-  --workspace-glass-body:rgba(55,59,57,.66);
-  --workspace-edge:rgba(255,255,255,.19);
-  --workspace-rule:rgba(255,255,255,.085);
-  backdrop-filter:blur(18px) saturate(.66) brightness(1.05);
-  -webkit-backdrop-filter:blur(18px) saturate(.66) brightness(1.05);
-}
-
-/* Header stays Context-tier: more world is visible here than in the browsing
-   body. It is not a separate coloured title bar. */
+/* Header / body geometry remains component-owned; material is shared. */
 .gameplay-screen .workspace--design .workspace-header{
-  border-bottom-color:var(--workspace-rule);
   border-radius:17px 17px 0 0;
-  background:rgba(255,255,255,.022);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
 }
 .gameplay-screen .workspace--design .workspace-title>svg{
   color:var(--workspace-jade);
@@ -67,33 +33,22 @@
   background:rgba(255,255,255,.065);
   color:#fffdf7;
 }
-
-/* Body is the stable Work-tier reading surface. */
 .gameplay-screen .workspace--design .workspace-body{
   border-radius:0 0 17px 17px;
-  background:var(--workspace-glass-body);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
 }
 
-/* Primary rail: keep geometry, remove the old dark column impression. */
-.gameplay-screen .workspace--design .workspace-primary-rail{
-  border-right-color:var(--workspace-rule);
-  background:var(--workspace-glass-rail);
-}
-.gameplay-screen .workspace--design .workspace-primary-rail__divider{
-  background:rgba(255,255,255,.055);
-}
+/* Primary rail: structure comes from one divider and the active marker. */
 .gameplay-screen .workspace--design .workspace-primary-rail button{
   background:transparent;
   color:var(--workspace-muted);
 }
 .gameplay-screen .workspace--design .workspace-primary-rail button:hover{
-  background:rgba(255,255,255,.040);
+  background:var(--wanhu-control-hover,rgba(255,255,255,.040));
   color:var(--workspace-paper);
   transform:none;
 }
 .gameplay-screen .workspace--design .workspace-primary-rail button.is-active{
-  background:linear-gradient(90deg,var(--workspace-gold-soft),rgba(201,170,104,.025) 66%,transparent);
+  background:linear-gradient(90deg,var(--workspace-gold-soft),rgba(169,132,75,.025) 66%,transparent);
   color:#efe5cf;
 }
 .gameplay-screen .workspace--design .workspace-primary-rail button.is-active::before{
@@ -103,11 +58,7 @@
 }
 .gameplay-screen .workspace--design .workspace-primary-rail button.is-active svg{transform:none}
 
-/* Context filters remain lightweight tabs. Current state uses a short old-gold
-   underline rather than a full-width web-style tab indicator. */
-.gameplay-screen .workspace--design .workspace-context-filter{
-  border-bottom-color:var(--workspace-rule);
-}
+/* Context filters remain lightweight tabs. */
 .gameplay-screen .workspace--design .workspace-context-filter__scroll>button{
   color:#999b96;
 }
@@ -132,37 +83,27 @@
   color:var(--workspace-muted);
 }
 .gameplay-screen .workspace--design .workspace-search__trigger:hover{
-  border-bottom-color:rgba(201,170,104,.30);
+  border-bottom-color:rgba(169,132,75,.30);
   background:rgba(255,255,255,.025);
   color:var(--workspace-paper);
 }
 .gameplay-screen .workspace--design .workspace-search__field{
-  border-bottom-color:rgba(201,170,104,.34);
+  border-bottom-color:rgba(169,132,75,.34);
   background:rgba(255,255,255,.026);
   color:var(--workspace-text);
 }
 .gameplay-screen .workspace--design .workspace-search__field input{color:var(--workspace-paper)}
 .gameplay-screen .workspace--design .workspace-search__field input::placeholder{color:#858984}
 
-/* Asset entries are compact 64px action rows. The image is a recognition aid,
-   while name and metadata remain the primary reading content. */
+/* Asset entries are compact action rows; material background comes from shared Work recipe. */
 .gameplay-screen .workspace--design .design-item-card{
   border-radius:8px;
-  background:var(--workspace-glass-card);
-  box-shadow:none;
-}
-.gameplay-screen .workspace--design .design-item-card:hover{
-  background:var(--workspace-glass-card-hover);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.028);
   transform:none;
 }
-.gameplay-screen .workspace--design .design-item-card:focus-visible{
-  background:var(--workspace-glass-card-hover);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
-  transform:none;
-}
+.gameplay-screen .workspace--design .design-item-card:hover{transform:none}
+.gameplay-screen .workspace--design .design-item-card:focus-visible{transform:none}
 .gameplay-screen .workspace--design .design-item-card:active{
-  background:rgba(201,170,104,.055);
+  background:rgba(169,132,75,.055);
   transform:scale(.995);
 }
 .gameplay-screen .workspace--design .design-item-card::before{
@@ -179,8 +120,7 @@
     inset 0 0 0 1px rgba(255,255,255,.030);
 }
 
-/* Pager remains a stable visual anchor even for one page / one rail group.
-   Multi-page states use the same muted markers plus one old-gold current bar. */
+/* Pager stays a stable anchor even when only one page exists. */
 .gameplay-screen .workspace--design .workspace-content-pager button span,
 .gameplay-screen .workspace--design .workspace-rail-pager button span{
   background:#858984;
