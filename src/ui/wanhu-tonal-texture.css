@@ -17,3 +17,24 @@
     linear-gradient(180deg,rgba(255,255,255,.014),rgba(0,0,0,.022)),
     url('/assets/ui/materials/glass-noise-soft.png');
 }
+
+/* The historical A/B/C glass-study states are review fixtures, not production
+   skins. Let their own alpha variables win so the regression study remains useful
+   even though the production Tonal pass is imported after them. */
+.gameplay-screen[data-glass-study] .gameplay-context-panel--weather{
+  background-color:var(--weather-mist-surface);
+  background-image:url('/assets/ui/materials/glass-noise-soft.png');
+  background-repeat:repeat;
+  background-size:256px 256px;
+}
+
+.gameplay-screen[data-glass-study] .workspace--design{
+  background-color:var(--workspace-glass-surface);
+  background-image:url('/assets/ui/materials/glass-noise-soft.png');
+  background-repeat:repeat;
+  background-size:256px 256px;
+}
+
+.gameplay-screen[data-glass-study] .workspace--design .workspace-body{
+  background:var(--workspace-glass-body);
+}
