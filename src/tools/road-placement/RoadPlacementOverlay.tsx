@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Route } from 'lucide-react';
 import type { RoadDrawMode } from '../../app/ui-state';
 import { RuntimeParameterRow } from '../../ui/Controls';
+import { LeftContextSection } from '../../ui/LeftContextPanel';
+import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 
 interface RoadPlacementOverlayProps {
   drawMode: RoadDrawMode;
@@ -38,31 +40,35 @@ const MODE_COPY: Record<RoadDrawMode, { title: string; detail: string }> = {
 
 export function RoadPlacementOverlay({ drawMode, onClose, onDirty }: RoadPlacementOverlayProps) {
   const modeCopy = MODE_COPY[drawMode];
-  return (
-    <section className="tool-overlay road-placement-prototype" data-road-mode={drawMode}>
-      <header>
-        <div><b>道路铺设</b><span>土路</span></div>
-        <button className="icon-button" onClick={onClose} aria-label="退出道路铺设"><X /></button>
-      </header>
 
-      <div className="tool-body">
-        <section className="road-placement-summary">
-          <div className="road-placement-summary__heading"><b>{modeCopy.title}</b></div>
+  return (
+    <PlacementContextPanel
+      ariaLabel="道路铺设参数"
+      icon={Route}
+      title="道路铺设"
+      subtitle="土路"
+      closeLabel="退出道路铺设"
+      className="road-placement-prototype"
+      bodyClassName="road-placement-prototype__body"
+      onClose={onClose}
+      dataAttributes={{ 'data-road-mode': drawMode }}
+    >
+      <div className="road-placement-context">
+        <LeftContextSection title={modeCopy.title} className="road-placement-summary">
           <p>{modeCopy.detail}</p>
           <div className="road-placement-summary__metrics">
             <span>预估长度 <b>28 m</b></span>
             <span>坡度 <b>3.2%</b></span>
             <span>节点 <b>3</b></span>
           </div>
-        </section>
+        </LeftContextSection>
 
-        <section className="road-placement-parameters">
-          <div className="road-placement-parameters__heading"><b>道路参数</b></div>
+        <LeftContextSection title="道路参数" className="road-placement-parameters">
           <RoadParameterControl label="道路宽度" initial={6} min={2} max={20} step={1} suffix=" m" onDirty={onDirty} />
           <RoadParameterControl label="相对标高" initial={0} min={-5} max={5} step={0.1} suffix=" m" onDirty={onDirty} />
           {drawMode !== 'straight' && <RoadParameterControl label="曲线平滑" initial={60} min={0} max={100} step={5} suffix="%" onDirty={onDirty} />}
-        </section>
+        </LeftContextSection>
       </div>
-    </section>
+    </PlacementContextPanel>
   );
 }
