@@ -31,6 +31,10 @@ import './gameplay/gameplay-top-shell.css';
 import './gameplay/operation-hints-refined.css';
 import './gameplay/world-utility-toolbar.css';
 import './gameplay/gameplay-hud-layout.css';
+
+/* Canonical theme contract. Component CSS below owns geometry; material recipes are
+   applied later by wanhu-surface-system.css. */
+import './ui/wanhu-theme-tokens.css';
 import './ui/ui-visual-system.css';
 import './ui/ui-control-system.css';
 import './workspace/workspace-world-first-glass.css';
@@ -45,9 +49,10 @@ import './ui/wanhu-character.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
 import './ui/wanhu-tonal-material.css';
-import './ui/wanhu-tonal-texture.css';
 import './ui/wanhu-tonal-hud-roles.css';
-import './ui/wanhu-workspace-integration.css';
+
+/* P1-A formal material owner for Workspace + Environment. */
+import './ui/wanhu-surface-system.css';
 import './ui/wanhu-icon-led-header.css';
 import './ui/wanhu-top-resource-shortcuts.css';
 import './fixed-canvas-guards.css';
