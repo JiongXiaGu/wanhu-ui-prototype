@@ -1,9 +1,7 @@
-/* Input bindings — Flex structure mirrors the future UI Toolkit InputBindingField layout. */
+/* Input bindings — Flex structure mirrors the future UI Toolkit InputBindingField layout.
+   Visual states consume the game-wide Wanhu Theme. */
 
-.settings-binding-section{
-  margin-top:6px;
-  padding-bottom:18px;
-}
+.settings-binding-section{margin-top:6px;padding-bottom:18px}
 
 .settings-binding-table-header{
   height:34px;
@@ -11,36 +9,18 @@
   display:flex;
   align-items:center;
   gap:12px;
-  color:#697169;
+  color:var(--wanhu-color-paper-tertiary);
   font-size:9px;
   letter-spacing:.04em;
-  border-bottom:1px solid rgba(239,233,221,.045);
+  border-bottom:1px solid var(--wanhu-surface-blocking-rule);
 }
-
-.settings-binding-table-header>span:first-child{
-  min-width:0;
-  flex:1;
-}
-
+.settings-binding-table-header>span:first-child{min-width:0;flex:1}
 .settings-binding-table-header>span:nth-child(2),
-.settings-binding-table-header>span:nth-child(3){
-  flex:0 0 174px;
-  text-align:center;
-}
-
+.settings-binding-table-header>span:nth-child(3){flex:0 0 174px;text-align:center}
 .settings-binding-table-header>i{flex:0 0 30px}
 
-.settings-binding-groups{
-  display:flex;
-  flex-direction:column;
-}
-
-.settings-binding-group{
-  display:flex;
-  flex-direction:column;
-  border-bottom:1px solid rgba(239,233,221,.035);
-}
-
+.settings-binding-groups{display:flex;flex-direction:column}
+.settings-binding-group{display:flex;flex-direction:column;border-bottom:1px solid rgba(238,233,223,.032)}
 .settings-binding-group__header{
   height:46px;
   padding:0 10px 0 8px;
@@ -49,48 +29,17 @@
   gap:9px;
   border:0;
   background:transparent;
-  color:#999e97;
+  color:var(--wanhu-color-text-muted);
   cursor:pointer;
   text-align:left;
   transition:background .12s ease,color .12s ease;
 }
-
-.settings-binding-group__header:hover{
-  color:#d0ccc1;
-  background:linear-gradient(90deg,rgba(255,255,255,.022),rgba(255,255,255,.007) 72%,transparent);
-}
-
-.settings-binding-group__header>svg{
-  width:14px;
-  height:14px;
-  flex:0 0 14px;
-  color:#717970;
-  transition:transform .14s ease,color .14s ease;
-}
-
-.settings-binding-group.is-open .settings-binding-group__header>svg{
-  transform:rotate(90deg);
-  color:#a89562;
-}
-
-.settings-binding-group__header>b{
-  font-size:11px;
-  font-weight:500;
-  letter-spacing:.015em;
-}
-
-.settings-binding-group__header>span{
-  margin-left:auto;
-  color:#626a63;
-  font-size:9px;
-  font-variant-numeric:tabular-nums;
-}
-
-.settings-binding-group__rows{
-  display:flex;
-  flex-direction:column;
-  padding:0 0 6px 23px;
-}
+.settings-binding-group__header:hover{color:var(--wanhu-color-text-secondary);background:linear-gradient(90deg,var(--wanhu-surface-blocking-row-hover),rgba(255,255,255,.007) 72%,transparent)}
+.settings-binding-group__header>svg{width:14px;height:14px;flex:0 0 14px;color:var(--wanhu-color-icon);transition:transform .14s ease,color .14s ease}
+.settings-binding-group.is-open .settings-binding-group__header>svg{transform:rotate(90deg);color:var(--wanhu-color-brass)}
+.settings-binding-group__header>b{font-size:11px;font-weight:500;letter-spacing:.015em}
+.settings-binding-group__header>span{margin-left:auto;color:var(--wanhu-color-paper-tertiary);font-size:9px;font-variant-numeric:tabular-nums}
+.settings-binding-group__rows{display:flex;flex-direction:column;padding:0 0 6px 23px}
 
 .settings-binding-row{
   min-height:48px;
@@ -99,36 +48,13 @@
   align-items:center;
   gap:12px;
   background:transparent;
-  box-shadow:inset 0 -1px 0 rgba(239,233,221,.020);
+  box-shadow:inset 0 -1px 0 rgba(238,233,223,.020);
   transition:background .12s ease;
 }
-
-.settings-binding-row:hover{
-  background:linear-gradient(90deg,rgba(255,255,255,.020),rgba(255,255,255,.008) 70%,transparent);
-}
-
-.settings-binding-row__label{
-  min-width:0;
-  flex:1;
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.settings-binding-row__label>b{
-  overflow:hidden;
-  color:#bdbab1;
-  font-size:10.8px;
-  font-weight:500;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-
-.settings-binding-row__label>small{
-  color:#b37067;
-  font-size:8.5px;
-  white-space:nowrap;
-}
+.settings-binding-row:hover{background:linear-gradient(90deg,rgba(255,255,255,.024),rgba(255,255,255,.008) 70%,transparent)}
+.settings-binding-row__label{min-width:0;flex:1;display:flex;align-items:center;gap:10px}
+.settings-binding-row__label>b{overflow:hidden;color:var(--wanhu-color-text-secondary);font-size:10.8px;font-weight:500;white-space:nowrap;text-overflow:ellipsis}
+.settings-binding-row__label>small{color:var(--wanhu-color-cinnabar);font-size:8.5px;white-space:nowrap}
 
 .settings-binding-cell{
   flex:0 0 174px;
@@ -138,87 +64,24 @@
   align-items:center;
   justify-content:center;
   overflow:hidden;
-  border:1px solid rgba(239,233,221,.075);
+  border:1px solid var(--wanhu-control-border-soft);
   border-radius:2px;
-  background:rgba(255,255,255,.012);
-  color:#a9aaa3;
+  background:rgba(255,255,255,.010);
+  color:var(--wanhu-color-paper-secondary);
   cursor:pointer;
   transition:border-color .12s ease,background .12s ease,color .12s ease,box-shadow .12s ease;
 }
+.settings-binding-cell:hover{border-color:var(--wanhu-control-border-hover);background:var(--wanhu-control-hover);color:var(--wanhu-color-text-secondary)}
+.settings-binding-cell kbd{max-width:100%;overflow:hidden;border:0;background:transparent;color:inherit;font:inherit;font-size:9.5px;white-space:nowrap;text-overflow:ellipsis}
+.settings-binding-cell.is-empty{border-style:dashed;color:var(--wanhu-color-paper-tertiary)}
+.settings-binding-cell__empty{display:flex;align-items:center;gap:5px;font-size:9px}
+.settings-binding-cell.is-listening{border-color:rgba(189,153,89,.48);background:var(--wanhu-control-active-bg);color:var(--wanhu-color-brass-high);box-shadow:0 0 0 1px rgba(169,132,75,.045)}
+.settings-binding-cell.is-listening>span{font-size:9px;letter-spacing:.02em}
+.settings-binding-cell.is-conflict{border-color:rgba(152,84,71,.62);background:rgba(152,84,71,.085);color:#d3a097;box-shadow:0 0 0 1px rgba(152,84,71,.05)}
 
-.settings-binding-cell:hover{
-  border-color:rgba(239,233,221,.15);
-  background:rgba(255,255,255,.026);
-  color:#d4cfc3;
-}
-
-.settings-binding-cell kbd{
-  max-width:100%;
-  overflow:hidden;
-  border:0;
-  background:transparent;
-  color:inherit;
-  font:inherit;
-  font-size:9.5px;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-
-.settings-binding-cell.is-empty{
-  border-style:dashed;
-  color:#6f766f;
-}
-
-.settings-binding-cell__empty{
-  display:flex;
-  align-items:center;
-  gap:5px;
-  font-size:9px;
-}
-
-.settings-binding-cell.is-listening{
-  border-color:rgba(201,165,95,.55);
-  background:rgba(201,165,95,.065);
-  color:#dec37d;
-  box-shadow:0 0 0 1px rgba(201,165,95,.05),0 0 18px rgba(201,165,95,.045);
-}
-
-.settings-binding-cell.is-listening>span{
-  font-size:9px;
-  letter-spacing:.02em;
-}
-
-.settings-binding-cell.is-conflict{
-  border-color:rgba(174,91,80,.58);
-  background:rgba(139,63,55,.07);
-  color:#d9a097;
-  box-shadow:0 0 0 1px rgba(174,91,80,.04);
-}
-
-.settings-binding-row__reset{
-  flex:0 0 30px;
-  width:30px;
-  height:30px;
-  padding:0;
-  display:grid;
-  place-items:center;
-  border:0;
-  background:transparent;
-  color:#626962;
-  opacity:0;
-  cursor:pointer;
-  transition:opacity .12s ease,color .12s ease,background .12s ease;
-}
-
-.settings-binding-row:hover .settings-binding-row__reset,
-.settings-binding-row__reset:focus-visible{
-  opacity:1;
-}
-
-.settings-binding-row__reset:hover{
-  color:#c7c2b7;
-  background:rgba(255,255,255,.025);
-}
+.settings-binding-row__reset{flex:0 0 30px;width:30px;height:30px;padding:0;display:grid;place-items:center;border:0;background:transparent;color:var(--wanhu-color-paper-tertiary);opacity:0;cursor:pointer;transition:opacity .12s ease,color .12s ease,background .12s ease}
+.settings-binding-row:hover .settings-binding-row__reset,.settings-binding-row__reset:focus-visible{opacity:1}
+.settings-binding-row__reset:hover{color:var(--wanhu-color-text-secondary);background:var(--wanhu-control-hover)}
 
 @media (max-width:1500px){
   .settings-binding-table-header>span:nth-child(2),
