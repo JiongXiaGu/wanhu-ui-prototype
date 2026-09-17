@@ -42,11 +42,12 @@ async function assertBareIcon(locator, label, minSize, maxSize) {
     }),
   ]);
   if (!box || box.width < minSize || box.width > maxSize || box.height < minSize || box.height > maxSize) {
-    throw new Error(`${label} must keep a restrained bare-icon size. box=${JSON.stringify(box)}`);
+    throw new Error(`${label} must keep the reviewed optical size. box=${JSON.stringify(box)}`);
   }
   if (style.borderTopWidth !== 0 || style.backgroundColor !== 'rgba(0, 0, 0, 0)' || style.boxShadow !== 'none') {
-    throw new Error(`${label} must not read as a chip/button. style=${JSON.stringify(style)}`);
+    throw new Error(`${label} must remain visually bare, not chip/button-like. style=${JSON.stringify(style)}`);
   }
+  return box;
 }
 
 async function assertTopHudIdentity() {
@@ -55,9 +56,16 @@ async function assertTopHudIdentity() {
 
   const weather = page.locator('.gameplay-top-status__weather-state').first();
   const icon = weather.locator('svg').first();
-  const weatherBox = await weather.boundingBox();
+  const label = weather.locator('b').first();
+  const [weatherBox, iconBox, labelStyle] = await Promise.all([
+    weather.boundingBox(),
+    assertBareIcon(icon, 'Top HUD weather identity icon', 13.5, 14.5),
+    label.evaluate((node) => ({ fontSize: Number.parseFloat(getComputedStyle(node).fontSize) })),
+  ]);
   if (!weatherBox) throw new Error('Top HUD weather state must remain measurable.');
-  await assertBareIcon(icon, 'Top HUD weather identity icon', 11, 15);
+  if (iconBox.width <= labelStyle.fontSize) {
+    throw new Error(`Top HUD icon should be optically larger than weather text. icon=${iconBox.width}, text=${labelStyle.fontSize}`);
+  }
 
   const resource = page.locator('.gameplay-top-status__resources > span').first();
   const resourceBorder = await resource.evaluate((node) => Number.parseFloat(getComputedStyle(node).borderRightWidth));
@@ -72,20 +80,23 @@ async function assertContextHeader() {
   const icon = page.locator('.gameplay-context-panel--weather .gameplay-context-panel__heading-icon');
   const iconSvg = icon.locator('svg').first();
   const title = page.locator('.gameplay-context-panel--weather .gameplay-context-panel__title');
-  const [headerBox, titleStyle] = await Promise.all([
+  const [headerBox, wrapperBox, iconSvgBox, titleStyle] = await Promise.all([
     header.boundingBox(),
+    assertBareIcon(icon, 'Context header identity wrapper', 18.5, 19.5),
+    iconSvg.boundingBox(),
     title.evaluate((node) => ({ fontSize: Number.parseFloat(getComputedStyle(node).fontSize), fontWeight: getComputedStyle(node).fontWeight })),
   ]);
   if (!headerBox || headerBox.height < 56 || headerBox.height > 60) {
     throw new Error(`Context header must keep its reviewed ~58px density. box=${JSON.stringify(headerBox)}`);
   }
-  await assertBareIcon(icon, 'Context header identity wrapper', 16, 20);
-  const iconSvgBox = await iconSvg.boundingBox();
-  if (!iconSvgBox || iconSvgBox.width < 16 || iconSvgBox.width > 20 || iconSvgBox.height < 16 || iconSvgBox.height > 20) {
-    throw new Error(`Context header identity SVG must remain visually prominent without a chip. box=${JSON.stringify(iconSvgBox)}`);
+  if (!iconSvgBox || iconSvgBox.width < 18.5 || iconSvgBox.width > 19.5 || iconSvgBox.height < 18.5 || iconSvgBox.height > 19.5) {
+    throw new Error(`Context header identity SVG must remain at the reviewed 19px scale. box=${JSON.stringify(iconSvgBox)}`);
   }
   if (titleStyle.fontSize < 15.5 || titleStyle.fontSize > 16.5) {
     throw new Error(`Context header title must use the refined 16px title scale. style=${JSON.stringify(titleStyle)}`);
+  }
+  if (wrapperBox.width <= titleStyle.fontSize) {
+    throw new Error(`Context header icon should be optically larger than title text. icon=${wrapperBox.width}, title=${titleStyle.fontSize}`);
   }
 }
 
@@ -123,16 +134,19 @@ async function assertWorkspaceHeaderAndDock(bridgeButton, workspace) {
   const header = workspace.locator('.workspace-header');
   const identityIcon = workspace.locator('.workspace-title > svg');
   const title = workspace.locator('.workspace-title > b');
-  const [headerBox, titleStyle] = await Promise.all([
+  const [headerBox, iconBox, titleStyle] = await Promise.all([
     header.boundingBox(),
+    assertBareIcon(identityIcon, 'Workspace identity icon', 17.5, 18.5),
     title.evaluate((node) => ({ fontSize: Number.parseFloat(getComputedStyle(node).fontSize), fontWeight: getComputedStyle(node).fontWeight })),
   ]);
   if (!headerBox || headerBox.height < 48 || headerBox.height > 52) {
     throw new Error(`Workspace must preserve its compact ~50px browsing header. box=${JSON.stringify(headerBox)}`);
   }
-  await assertBareIcon(identityIcon, 'Workspace identity icon', 15, 19);
   if (titleStyle.fontSize < 15.5 || titleStyle.fontSize > 16.5) {
     throw new Error(`Workspace title must use the refined 16px title scale. style=${JSON.stringify(titleStyle)}`);
+  }
+  if (iconBox.width <= titleStyle.fontSize) {
+    throw new Error(`Workspace identity icon should be optically larger than title text. icon=${iconBox.width}, title=${titleStyle.fontSize}`);
   }
 
   const activeFilter = workspace.locator('.workspace-context-filter__scroll > button.is-active').first();
@@ -175,16 +189,16 @@ async function assertReducedMotion() {
 
 await open('gameplay', '.gameplay-top-status');
 await assertTopHudIdentity();
-await page.screenshot({ path: `${outDir}/52-bare-icons-gameplay-day.png` });
+await page.screenshot({ path: `${outDir}/53-icon-scale-gameplay-day.png` });
 
 await open('weather', '.gameplay-context-panel--weather');
 await assertContextHeader();
-await page.screenshot({ path: `${outDir}/52-bare-icons-weather-day.png` });
+await page.screenshot({ path: `${outDir}/53-icon-scale-weather-day.png` });
 
 await open('gameplay', '.gameplay-top-status');
 const dayWork = await openBridgeWorkspace();
 await assertWorkspaceHeaderAndDock(dayWork.bridgeButton, dayWork.workspace);
-await page.screenshot({ path: `${outDir}/52-bare-icons-workspace-day.png` });
+await page.screenshot({ path: `${outDir}/53-icon-scale-workspace-day.png` });
 
 await open('weather', '.gameplay-context-panel--weather');
 await page.getByRole('button', { name: '场景模拟', exact: true }).click();
@@ -192,13 +206,13 @@ await page.waitForSelector('[aria-label="日内时间"]');
 await setRangeValue(page.getByRole('slider', { name: '日内时间' }), 22);
 await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.getAttribute('data-time-of-day') === 'night');
 await assertContextHeader();
-await page.screenshot({ path: `${outDir}/52-bare-icons-weather-night.png` });
+await page.screenshot({ path: `${outDir}/53-icon-scale-weather-night.png` });
 await page.getByRole('button', { name: '关闭面板', exact: true }).click();
 await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
 await assertTopHudIdentity();
 const nightWork = await openBridgeWorkspace();
 await assertWorkspaceHeaderAndDock(nightWork.bridgeButton, nightWork.workspace);
-await page.screenshot({ path: `${outDir}/52-bare-icons-workspace-night.png` });
+await page.screenshot({ path: `${outDir}/53-icon-scale-workspace-night.png` });
 
 await assertReducedMotion();
 await browser.close();
