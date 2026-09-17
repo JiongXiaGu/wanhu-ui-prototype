@@ -1,5 +1,5 @@
-/* Wanhu Character Pass v2 — edge integrated.
-   Character belongs to structural edges and state nodes, not to text decoration.
+/* Wanhu Character Pass v2 — structural states only.
+   Character belongs to meaningful state markers, not decorative header beams.
    90% functional modern UI, 10% abstracted timber-frame / platform construction language. */
 
 .gameplay-screen{
@@ -11,34 +11,7 @@
   --wanhu-character-beam:rgba(236,231,220,.34);
 }
 
-/* ---------- Top HUD: anchor the shell edge; do not underline weather text ---------- */
-.gameplay-screen .gameplay-top-status{
-  position:relative;
-}
-.gameplay-screen .gameplay-top-status::before{
-  content:'';
-  position:absolute;
-  z-index:3;
-  left:18px;
-  top:0;
-  width:16px;
-  height:4px;
-  pointer-events:none;
-  opacity:.84;
-  background:
-    radial-gradient(circle at 13px 2px,var(--wanhu-character-gold-hi) 0 1.25px,transparent 1.65px),
-    linear-gradient(var(--wanhu-character-beam),var(--wanhu-character-beam)) 0 2px/11px 1px no-repeat;
-  transform-origin:left center;
-  animation:wanhu-character-edge-enter .16s cubic-bezier(.2,.72,.24,1) both;
-}
-
-.gameplay-screen .gameplay-top-status__weather-state{
-  position:relative;
-}
-.gameplay-screen .gameplay-top-status__weather-state::after{
-  content:none;
-}
-
+/* Top metric slots keep a quiet structural separator and tabular values. */
 .gameplay-screen .gameplay-top-status__resources>span{
   position:relative;
   border-right:0;
@@ -55,42 +28,17 @@
   background:linear-gradient(180deg,transparent,rgba(222,218,207,.20) 28%,rgba(222,218,207,.20) 72%,transparent);
 }
 .gameplay-screen .gameplay-top-status__resources>span:last-child::after{display:none}
-.gameplay-screen .gameplay-top-status__resources small{letter-spacing:.028em}
 .gameplay-screen .gameplay-top-status__resources b{font-variant-numeric:tabular-nums lining-nums}
 
-/* ---------- Workspace: put the beam into the Header edge; keep title text clean ---------- */
+/* Workspace enters as a placed working surface; the title itself stays undecorated. */
 .gameplay-screen .workspace--design{
   animation:wanhu-character-workspace-settle .18s cubic-bezier(.2,.72,.24,1) both;
 }
-
-.gameplay-screen .workspace--design .workspace-header{
-  position:relative;
-}
-.gameplay-screen .workspace--design .workspace-header::before{
-  content:'';
-  position:absolute;
-  z-index:3;
-  left:18px;
-  top:0;
-  width:34px;
-  height:4px;
-  pointer-events:none;
-  opacity:.82;
-  background:
-    radial-gradient(circle at 30px 2px,var(--wanhu-character-gold-hi) 0 1.3px,transparent 1.7px),
-    linear-gradient(var(--wanhu-character-beam),var(--wanhu-character-beam)) 0 2px/28px 1px no-repeat;
-  transform-origin:left center;
-  animation:wanhu-character-edge-enter .18s .04s cubic-bezier(.2,.72,.24,1) both;
-}
-
 .gameplay-screen .workspace--design .workspace-title{
   position:relative;
   align-self:stretch;
   display:flex;
   align-items:center;
-}
-.gameplay-screen .workspace--design .workspace-title::after{
-  content:none;
 }
 
 /* Context Filter: current component = text state + one tenon node, no underline / L-joint. */
@@ -116,7 +64,7 @@
   animation:wanhu-character-filter-node-enter .14s .04s cubic-bezier(.2,.72,.24,1) both;
 }
 
-/* ---------- Main Dock: keep the reviewed platform-base language unchanged ---------- */
+/* Main Dock: keep the reviewed platform-base language unchanged. */
 .gameplay-screen .command-bar .category-row button.is-active{
   background:linear-gradient(180deg,rgba(210,179,111,0) 12%,rgba(210,179,111,.020) 54%,rgba(210,179,111,.085) 100%);
   box-shadow:inset 0 -1px 0 rgba(255,255,255,.025);
@@ -170,10 +118,6 @@
   from{opacity:0;transform:translateX(-50%) translateY(6px)}
   to{opacity:1;transform:translateX(-50%) translateY(0)}
 }
-@keyframes wanhu-character-edge-enter{
-  from{opacity:0;transform:scaleX(.28)}
-  to{opacity:.84;transform:scaleX(1)}
-}
 @keyframes wanhu-character-filter-node-enter{
   from{opacity:0;transform:translateY(-50%) rotate(45deg) scale(.35)}
   to{opacity:1;transform:translateY(-50%) rotate(45deg) scale(1)}
@@ -189,8 +133,6 @@
 
 @media (prefers-reduced-motion:reduce){
   .gameplay-screen .workspace--design,
-  .gameplay-screen .gameplay-top-status::before,
-  .gameplay-screen .workspace--design .workspace-header::before,
   .gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after,
   .gameplay-screen .command-bar .category-row button.is-active::before,
   .gameplay-screen .command-bar .category-row button.is-active::after{animation:none}
