@@ -1,6 +1,6 @@
-/* Wanhu Surface System v1
-   P1-A formal owner for Environment (Context) and Design Workspace (Work).
-   Geometry remains in component CSS; this file owns material, elevation and shared text/accent mapping. */
+/* Wanhu Surface System v2
+   Formal material owner for gameplay surfaces.
+   Theme tokens own palette/material recipes; component CSS owns geometry only. */
 
 /* ---------------------------------------------------------------------
    Context Surface — Environment
@@ -109,3 +109,158 @@
   background:var(--wanhu-surface-work-focus);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
 }
+
+/* ---------------------------------------------------------------------
+   Persistent Information Surface — Top Status
+   --------------------------------------------------------------------- */
+.gameplay-screen .gameplay-top-status{
+  background-color:var(--wanhu-surface-info-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-info-highlight),var(--wanhu-surface-info-shade)),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-color:var(--wanhu-surface-info-edge);
+  box-shadow:var(--wanhu-surface-info-shadow);
+  backdrop-filter:var(--wanhu-surface-info-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-info-filter);
+}
+.gameplay-screen .gameplay-top-shell.has-navigation .gameplay-top-status{
+  border-bottom-color:var(--wanhu-surface-info-rule);
+}
+.gameplay-screen .gameplay-top-status__world-state,
+.gameplay-screen .gameplay-top-status__clock{color:#9a9d99}
+.gameplay-screen .gameplay-top-status__weather-state{color:#bcb6aa}
+.gameplay-screen .gameplay-top-status__weather-state b{color:#d4cec2}
+.gameplay-screen .gameplay-top-status__resources>span{color:#8d918f}
+.gameplay-screen .gameplay-top-status__resources svg{color:#858a88;opacity:.92}
+.gameplay-screen .gameplay-top-status__resources small{color:#999b97}
+.gameplay-screen .gameplay-top-status__resources b{color:var(--wanhu-color-paper-primary);font-weight:640}
+.gameplay-screen .gameplay-top-status__clock::before,
+.gameplay-screen .gameplay-top-status__resources>span{border-color:rgba(238,233,223,.075)}
+.gameplay-screen .gameplay-top-speed-button{color:#7f8583}
+.gameplay-screen .gameplay-top-speed-button:hover{color:#d8d3ca;background:rgba(255,255,255,.035)}
+.gameplay-screen .gameplay-top-speed-button.is-active{
+  color:var(--wanhu-color-brass-high);
+  background:linear-gradient(180deg,rgba(169,132,75,.13),rgba(169,132,75,.030));
+  box-shadow:inset 0 0 0 1px rgba(189,153,89,.055);
+}
+
+/* ---------------------------------------------------------------------
+   Secondary Persistent Control Surface — Control Tray
+   --------------------------------------------------------------------- */
+.gameplay-screen .gameplay-top-navigation{
+  background-color:var(--wanhu-surface-control-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-control-highlight),var(--wanhu-surface-control-shade)),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-top-color:var(--wanhu-surface-control-edge-top);
+  border-right-color:var(--wanhu-surface-control-edge-side);
+  border-bottom-color:var(--wanhu-surface-control-edge-bottom);
+  border-left-color:var(--wanhu-surface-control-edge-side);
+  box-shadow:var(--wanhu-surface-control-shadow);
+  backdrop-filter:var(--wanhu-surface-control-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-control-filter);
+}
+.gameplay-screen .gameplay-top-navigation::before{background:rgba(255,255,255,.018)}
+.gameplay-screen .gameplay-top-navigation__button{color:#7f8583}
+.gameplay-screen .gameplay-top-navigation__button:hover{color:#d4cfc6;background:rgba(255,255,255,.035)}
+.gameplay-screen .gameplay-top-navigation__button.is-active{
+  color:var(--wanhu-color-brass-high);
+  background:var(--wanhu-control-active-bg);
+  box-shadow:inset 0 0 0 1px rgba(189,153,89,.045);
+}
+.gameplay-screen .gameplay-top-navigation__separator{background:var(--wanhu-surface-control-rule)}
+
+/* ---------------------------------------------------------------------
+   Persistent Command Surface — Main Dock
+   --------------------------------------------------------------------- */
+.gameplay-screen .command-bar{
+  background-color:var(--wanhu-surface-command-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-command-highlight),var(--wanhu-surface-command-shade)),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-color:var(--wanhu-surface-command-edge);
+  box-shadow:var(--wanhu-surface-command-shadow);
+  backdrop-filter:var(--wanhu-surface-command-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-command-filter);
+  --command-icon:#858a88;
+  --command-icon-hover:#d8d3ca;
+  --command-icon-active:var(--wanhu-color-brass-high);
+  --command-divider:var(--wanhu-surface-command-rule);
+  --command-hover:rgba(255,255,255,.044);
+  --command-active-top:rgba(169,132,75,.115);
+  --command-active-bottom:rgba(169,132,75,.024);
+}
+.gameplay-screen .command-bar .mode-rail button,
+.gameplay-screen .command-bar .category-row button{color:#858a88}
+.gameplay-screen .command-bar .mode-rail button:hover,
+.gameplay-screen .command-bar .category-row button:hover{color:#d8d3ca}
+.gameplay-screen .command-bar .mode-rail button.is-active,
+.gameplay-screen .command-bar .category-row button.is-active{
+  color:var(--wanhu-color-brass-high);
+  box-shadow:inset 0 0 0 1px rgba(189,153,89,.045),inset 0 1px 0 rgba(255,255,255,.020);
+}
+
+/* ---------------------------------------------------------------------
+   Ambient Surface — World Utility + System Menu
+   --------------------------------------------------------------------- */
+.gameplay-screen > .world-utility-toolbar.command-utility{
+  background-color:var(--wanhu-surface-ambient-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-ambient-highlight),var(--wanhu-surface-ambient-shade)),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-color:var(--wanhu-surface-ambient-edge);
+  box-shadow:var(--wanhu-surface-ambient-shadow);
+  backdrop-filter:var(--wanhu-surface-ambient-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-ambient-filter);
+  --command-icon:#7b817f;
+  --command-icon-hover:#cecac2;
+  --command-icon-active:var(--wanhu-color-brass-high);
+}
+
+.gameplay-screen .gameplay-system-menu-button{
+  background-color:var(--wanhu-surface-ambient-soft-bg);
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
+  border-color:var(--wanhu-surface-ambient-edge);
+  box-shadow:0 10px 26px rgba(2,4,5,.22),inset 0 1px 0 rgba(255,255,255,.024);
+  backdrop-filter:var(--wanhu-surface-ambient-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-ambient-filter);
+  color:#7d8381;
+  opacity:.96;
+}
+.gameplay-screen .gameplay-system-menu-button:hover{
+  background-color:rgba(33,39,41,.44);
+  border-color:rgba(189,153,89,.025);
+  color:#d8d3ca;
+}
+
+/* ---------------------------------------------------------------------
+   Readout Surface — Operation Hint
+   --------------------------------------------------------------------- */
+.gameplay-screen .gameplay-operation-hints{
+  background-color:var(--wanhu-surface-readout-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-readout-highlight),var(--wanhu-surface-readout-shade)),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-color:var(--wanhu-surface-readout-edge);
+  box-shadow:var(--wanhu-surface-readout-shadow);
+  backdrop-filter:var(--wanhu-surface-readout-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-readout-filter);
+}
+.gameplay-screen .operation-hints__task{border-bottom-color:rgba(255,255,255,.055)}
+.gameplay-screen .operation-hints__task>strong{color:#b0ada5}
+.gameplay-screen .operation-hints__binding{color:#928a78}
+.gameplay-screen .operation-hints__description{color:#858987}
+.gameplay-screen .operation-hints__row.is-primary .operation-hints__binding,
+.gameplay-screen .operation-hints__row.is-primary .operation-hints__binding kbd{color:var(--wanhu-color-brass-high)}
