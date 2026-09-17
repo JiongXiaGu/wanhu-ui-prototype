@@ -38,3 +38,10 @@
 .gameplay-screen[data-glass-study] .workspace--design .workspace-body{
   background:var(--workspace-glass-body);
 }
+
+/* Formal Edge & Elevation v1 remains authoritative: the production Workspace
+   shell is borderless and separates from the world through tonal density + shadow.
+   Edge-study fixtures keep their own A/B/C contour rules. */
+.gameplay-screen:not([data-edge-study]) .workspace--design{
+  border-color:rgba(238,233,223,.018);
+}
