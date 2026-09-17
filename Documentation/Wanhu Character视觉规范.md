@@ -17,7 +17,8 @@
 
 顶部状态栏保留信息仪表身份，但不再像通用资源表：
 
-- 天气 / 时间区域使用一条极短 Old Gold 梁线 + 末端节点作为起始锚点；
+- 天气 / 时间区域使用一条极短 Old Gold 梁线 + 节点作为起始锚点；
+- 锚点应贴近图标 / 信息组的起始边，不直接落在文字正下方，避免重新读成普通 Tab 下划线；
 - 资源组之间取消贯穿高度的长 Divider，改用 10–12px 的短结构接缝；
 - 数字仍然是主要阅读对象，特色线条不得抢过资源数值；
 - 不改变资源组宽度与 Top HUD 既定高度。
@@ -26,8 +27,9 @@
 
 Workspace 的识别重点放在标题与筛选状态：
 
-- Title 下方使用 28–36px 的短梁 + 节点；
-- Context Filter Active 不使用常规长下划线，改成小型 L 形接合标记；
+- Title 使用 28–36px 的短梁 + 节点，但梁头优先锚在标题图标 / 起始边附近，不直接给标题文字画一条下划线；
+- Context Filter Active 不使用常规长下划线，改成 16–20px 的小型 L 形接合标记；
+- L-joint 的转角允许放置 2–3px Joint Node，使其在 1080p 整屏尺度下仍能读成“接合”而不是残缺下划线；
 - Active 背景仍保持极弱，只负责状态承托；
 - Card 本身不增加传统装饰，避免资产浏览区产生噪声。
 
@@ -50,6 +52,8 @@ Character 动画统一为“接合 / 落位”，不是网页式上浮：
 - L-joint：从左下展开；
 - Dock Base：从中心向两侧展开；
 - Joint Node：轻微 scale-in；
+- Workspace 打开时只使用 `opacity + Y 4–6px` 的轻微落位，不 Scale 整个 Surface；
+- Workspace 内部 Character Marker 可以比 Surface 晚约 40ms 出现，形成“面板到位 → 构件接合”的顺序；
 - 推荐时长 120–180ms；
 - `prefers-reduced-motion` 时关闭这些装饰动画。
 
@@ -72,9 +76,10 @@ Utility / Operation Hint 默认不增加 Character 装饰，因为辅助层应�
 建议映射：
 
 - Short Beam：1px `VisualElement` + 3px Joint Node；
-- L-joint：两个窄 `VisualElement` 组成直角；
+- L-joint：两个窄 `VisualElement` 组成直角，转角节点作为独立子元素；
 - Dock Base：水平 `VisualElement` + 中央 Joint Node；
-- 动画：对 width / opacity / scale 做 120–180ms 过渡；
+- Workspace 落位：只对根容器做 opacity / translateY，保留原有屏幕锚定与几何；
+- 动画：对 width / opacity / scale / translate 做 120–180ms 过渡；
 - 所有 Character 元素 `PickingMode.Ignore`；
 - 不额外申请 Blur，不改变现有 Surface / Elevation 结构。
 
@@ -84,10 +89,11 @@ Utility / Operation Hint 默认不增加 Character 装饰，因为辅助层应�
 
 - 普通 Gameplay 白天 / 夜晚；
 - Workspace 打开白天 / 夜晚；
-- 天气锚点不干扰天气与时间读取；
+- 天气锚点不干扰天气与时间读取，也不能像天气文字的普通下划线；
 - 资源短接缝不会重新形成“表格感”；
-- Workspace 标题短梁清楚但不成为装饰主角；
-- Filter Active 明确且不再像 Web Tab；
+- Workspace 标题短梁清楚但不成为文字下划线或装饰主角；
+- Filter Active 明确、能读出 L-joint / Joint Node，且不再像 Web Tab；
 - Main Dock Active 能被读成“承托 / 落位”，不是普通 pill；
+- Workspace 打开动效不 Scale、不改变既定中心锚点；
 - Utility / Hint 继续保持无 Character 装饰；
 - 所有既定几何和 Edge & Elevation 规则保持不变。
