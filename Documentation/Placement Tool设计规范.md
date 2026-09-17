@@ -6,7 +6,7 @@ Placement Tool 是 Design Workspace 中选择具体资产后进入的世界编�
 
 Placement Tool 固定分成三类 UI：
 
-- **左侧 Tool Parameter Panel**：当前工具的详细参数、数值、Slider、Segmented Control、状态摘要；
+- **左侧 Placement Context**：当前工具的详细参数、数值、Slider、Segmented Control、状态摘要；属于统一 `Left Context System`；
 - **中下 Placement Action Bar**：模式切换、高频 One-shot Quick Action、完成 / 取消；
 - **右下 World Utility Toolbar**：跨工具全局能力，例如 Grid Snap / Grid Visible / Undo / Redo。
 
@@ -44,7 +44,7 @@ Action Bar 外壳约 `68px` 高，固定屏幕下方居中；宽度由当前 Too
 - 属于 Exclusive Selector；
 - 同一 ModeGroup 中保持一个有效 Active；
 - Active 使用弱暖金 Tone + 顶部细金状态线；
-- 切换 Mode 可以改变左侧 Parameter Panel 内容。
+- 切换 Mode 可以改变左侧 Placement Context 内容。
 
 ### Quick Action
 
@@ -67,7 +67,7 @@ Action Bar 外壳约 `68px` 高，固定屏幕下方居中；宽度由当前 Too
 
 ## 3. Building Placement
 
-左侧 Parameter Panel 继续承载：
+左侧 Placement Context 继续承载：
 
 - 地形状态摘要；
 - 位置参数；
@@ -102,9 +102,9 @@ Action Bar 当前包含两组 Mode：
 
 ## 4. Road Placement
 
-道路资产现已连接 Road Placement Tool。
+道路资产现已连接 Road Placement Tool，并已迁入统一 `Left Context System`。
 
-左侧 Parameter Panel 当前验证：
+左侧 Placement Context 当前验证：
 
 - 当前绘制模式摘要；
 - 道路宽度；
@@ -118,7 +118,7 @@ Action Bar 只有一个道路绘制 ModeGroup：
 - 曲线；
 - 直线。
 
-三者属于同一个 Exclusive Selector，默认智能曲线。
+三者属于同一个 Exclusive Selector，默认智能曲线。绘制模式仍由中央 Placement Action Bar 持有，左侧 Context 只消费当前模式并展示对应业务参数。
 
 当前 Quick Action：
 
@@ -128,19 +128,53 @@ Action Bar 只有一个道路绘制 ModeGroup：
 
 完成 / 取消 Road Placement 后返回 `设计 → 道路` Design Workspace。
 
-## 5. Tool Parameter Panel
+## 5. Placement Context 与 Left Context System
 
-Building / Road 的左侧面板业务内容不同，但应遵守同一屏幕规则：
+Placement Tool 的左侧参数区不是一套独立 Tool Panel 系统，而是 `Left Context System` 的 Placement 分支。
+
+共享所有权固定为：
+
+- `src/ui/LeftContextPanel.tsx`：全局 Left Context Shell、Header、Section、可选 Footer；
+- `src/gameplay/gameplay-context-panel.css`：Left Context Shell、Header、Section、共享参数控件与 Segmented Control 的视觉和几何；
+- `src/tools/placement/PlacementContextPanel.tsx`：Placement 家族进入 Left Context System 的统一适配入口；
+- `src/tools/placement/placement-context-panel.css`：Placement Context 的统一屏幕定位、宽度、最大高度与 Body 滚动几何；
+- `src/ui/wanhu-surface-system.css`：Context Surface 的正式材质 Token 与日夜表现。
+
+Building / Road / Wall / Bridge 等具体工具只拥有自己的业务内容和业务节奏。具体工具 CSS **不得重新定义** 以下内容：
+
+- 外层 Surface 背景、边框、阴影、模糊与圆角；
+- Header 高度、标题结构、图标结构与关闭按钮皮肤；
+- Body 的公共滚动与 Placement Context 外层几何；
+- `RuntimeParameterRow`、Slider、Stepper、Segmented Control 的公共皮肤；
+- Placement 模式切换、完成 / 取消等中央 Action Bar 职责。
+
+新工具的默认骨架应直接从以下结构开始：
+
+```text
+PlacementContextPanel
+└─ LeftContextPanel
+   ├─ Shared Header
+   └─ Shared Body
+      ├─ LeftContextSection：状态 / 模式摘要
+      └─ LeftContextSection：工具业务参数
+
+PlacementActionBar
+├─ ModeGroup
+├─ QuickActionGroup（可选）
+└─ CommitGroup
+```
+
+因此后续桥梁、城墙、围墙、河道、台基等工具新增时，应优先增加自己的 Context 内容与参数配置，而不是新增一份 `XXXPlacementPanel` 外壳或 `XXXPlacement` 专属面板皮肤。
+
+1080p 当前 Placement Context 空间规则：
 
 - `left:16px / bottom:16px`；
-- 深墨青 Primary Surface；
+- 宽度由 `placement-context-panel.css` 统一管理；
+- 深墨青 Context Surface；
 - 18px 大面板圆角；
 - Header + Body；
-- 参数内容可以滚动；
-- Header 保持稳定；
-- 不与 Placement Action Bar 争夺同一职责。
-
-后续桥梁、城墙、围墙工具应优先复用这个“左参数 / 中操作 / 右全局工具”的空间框架。
+- 参数内容可以滚动，Header 保持稳定；
+- Placement Context 默认不使用 Footer，避免与中央 Placement Action Bar 重复职责。
 
 ## 6. World Utility 不变量
 
@@ -174,7 +208,7 @@ Action Bar 的 Quick Action 不得因为执行一次动作就改变当前 Mode�
 - Icon Button 约 `46 × 46px`；
 - Icon 约 `20px`；
 - Action Bar 圆角 `14px`；
-- 左侧 Parameter Panel 圆角 `18px`；
+- 左侧 Placement Context 圆角 `18px`；
 - 默认 Button 不绘制明显独立 Box；
 - Active 使用收敛暖金 Tone + 顶部 `2px` 状态线；
 - Quick Action 默认中性灰白；
@@ -188,15 +222,20 @@ Action Bar 是当前任务主控，其视觉权重高于 World Utility，但不�
 
 Placement Tool 相关改动至少检查：
 
+- Building / Road 都必须通过 `PlacementContextPanel` 进入同一个 `Left Context System`；
+- Building / Road 的 Header 几何、Placement Context 宽度与共享参数控件一致；
+- 具体 Tool CSS 不重新拥有 Shell / Header / Surface / 公共 Control 皮肤；
 - Building / Road 两种不同 Tool 都能复用同一 Action Bar；
 - Action Bar 居中且几何稳定；
 - Building 两组 Mode 分别只有一个 Active；
 - Road 三种绘制方式只有一个 Active；
+- Road 切换为直线模式时左侧 Context 应响应状态并隐藏曲线平滑参数；
 - Quick Action 不拥有 Toggle / Selected 状态；
 - Building 旋转 / 镜像存在；
 - Road 反转方向存在；
-- 详细参数仍留在左侧面板；
-- Tool 中 Control Tray / Main Dock / Context Surface 不回归；
+- 详细参数仍留在左侧 Context；
+- Placement Context 不增加 Footer 与中央 Action Bar 重复模式/提交职责；
+- Tool 中 Control Tray / Main Dock / Scene Context Surface 不回归；
 - World Utility 与 Compass 继续保留；
 - Placement / World Utility 的 Surface、按钮 Hover、Active Tone、状态线方向与分隔节奏保持同一视觉家族；
 - 完成后返回对应 Design Workspace。
