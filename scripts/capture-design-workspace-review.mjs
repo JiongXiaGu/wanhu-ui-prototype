@@ -16,6 +16,33 @@ async function open(review, waitFor) {
   await page.waitForTimeout(160);
 }
 
+async function waitForStableLayout() {
+  await page.evaluate(() => new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  }));
+}
+
+async function measureCompactAssetRow(card) {
+  let lastMeasurement = null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await waitForStableLayout();
+    const cardBox = await card.boundingBox();
+    const previewBox = await card.locator('.card-thumb').boundingBox();
+    lastMeasurement = { cardBox, previewBox };
+    const cardValid = cardBox && cardBox.width >= 245 && cardBox.height >= 63 && cardBox.height <= 65;
+    const previewValid = previewBox
+      && Math.abs(previewBox.width - previewBox.height) <= 1
+      && previewBox.width >= 63 && previewBox.width <= 65;
+    const flush = cardBox && previewBox
+      && Math.abs(previewBox.x - cardBox.x) <= 1
+      && Math.abs(previewBox.y - cardBox.y) <= 1
+      && Math.abs(previewBox.height - cardBox.height) <= 1;
+    if (cardValid && previewValid && flush) return lastMeasurement;
+    await page.waitForTimeout(70);
+  }
+  return lastMeasurement;
+}
+
 async function assertPersistentPagerSlot(workspace, label) {
   const contentPager = workspace.locator('.workspace-content-pager');
   if ((await contentPager.count()) === 0) {
@@ -63,6 +90,7 @@ for (const [id, label] of designCategories) {
   await categoryRow.getByRole('button', { name: label, exact: true }).click();
   const workspace = page.locator(`.workspace--design[data-design-category="${id}"]`);
   await workspace.waitFor();
+  await waitForStableLayout();
 
   const title = (await workspace.locator('.workspace-title b').textContent())?.trim();
   if (title !== label) throw new Error(`Design Workspace title mismatch for ${label}: ${title}`);
@@ -114,8 +142,7 @@ for (const [id, label] of designCategories) {
   if (cardCount < 1 || cardCount > 8) throw new Error(`${label} Workspace must show between one and eight items on a page. count=${cardCount}`);
 
   const firstCard = cards.first();
-  const firstCardBox = await firstCard.boundingBox();
-  const previewBox = await firstCard.locator('.card-thumb').boundingBox();
+  const { cardBox: firstCardBox, previewBox } = await measureCompactAssetRow(firstCard);
   if (!firstCardBox || firstCardBox.width < 245 || firstCardBox.height < 63 || firstCardBox.height > 65) {
     throw new Error(`${label} item cards should use the compact ~255x64 asset-row proportion. box=${JSON.stringify(firstCardBox)}`);
   }
@@ -126,7 +153,7 @@ for (const [id, label] of designCategories) {
   }
   if (previewBox.width < 63 || previewBox.width > 65) throw new Error(`${label} item previews should remain at the 64px baseline.`);
   if (Math.abs(previewBox.x - firstCardBox.x) > 1 || Math.abs(previewBox.y - firstCardBox.y) > 1 || Math.abs(previewBox.height - firstCardBox.height) > 1) {
-    throw new Error(`${label} preview must sit flush against the card's left edge and match the 64px card height.`);
+    throw new Error(`${label} preview must sit flush against the card's left edge and match the 64px card height. card=${JSON.stringify(firstCardBox)} preview=${JSON.stringify(previewBox)}`);
   }
 
   const titleFontSize = Number.parseFloat(await firstCard.locator('b').evaluate((element) => getComputedStyle(element).fontSize));
