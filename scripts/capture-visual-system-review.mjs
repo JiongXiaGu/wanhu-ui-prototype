@@ -54,8 +54,17 @@ const segmentButtons = placementSegment.getByRole('button');
 if ((await segmentButtons.count()) < 3) throw new Error('Building Placement segmented control must expose multiple clickable options.');
 await expectRounded(segmentButtons.first(), 'Building Placement segment option', 7);
 const activeSegment = placementSegment.locator('button.is-active').first();
-const activeBackground = await activeSegment.evaluate((node) => getComputedStyle(node).backgroundImage);
-if (!activeBackground || activeBackground === 'none') throw new Error('Active segmented option must have a visible active tone.');
+const activeTone = await activeSegment.evaluate((node) => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, backgroundColor: style.backgroundColor };
+});
+const hasBackgroundImage = Boolean(activeTone.backgroundImage && activeTone.backgroundImage !== 'none');
+const hasBackgroundColor = Boolean(
+  activeTone.backgroundColor
+  && activeTone.backgroundColor !== 'transparent'
+  && activeTone.backgroundColor !== 'rgba(0, 0, 0, 0)'
+);
+if (!hasBackgroundImage && !hasBackgroundColor) throw new Error('Active segmented option must have a visible active tone.');
 await expectSharedSlider(buildingPanel, 'Building Placement');
 await expectRounded(buildingPanel.locator('.ui-stepper-button').first(), 'Building Placement stepper button', 7);
 await page.screenshot({ path: `${outDir}/30-visual-system-building-segment.png` });
