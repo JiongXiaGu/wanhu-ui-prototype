@@ -70,6 +70,7 @@ jobs:
           node scripts/capture-character-pass-review.mjs
           node scripts/capture-inventory-shortcut-review.mjs
           node scripts/capture-surface-system-review.mjs
+          node scripts/capture-management-skin-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
