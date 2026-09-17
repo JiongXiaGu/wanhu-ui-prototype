@@ -3,19 +3,32 @@
    They expose icon + value only; the secondary tray below remains the primary navigation. */
 
 .gameplay-top-shell{
-  --top-nav-width:450px;
+  --top-nav-width:400px;
 }
 
 .gameplay-top-status__resources{
-  gap:6px;
+  gap:0;
+}
+
+.gameplay-screen .gameplay-top-status__resources>.gameplay-top-resource-slot{
+  position:relative;
+  width:112px;
+  min-width:112px;
+  height:34px;
+  padding:0 4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:inherit;
+  border-right:0;
 }
 
 .gameplay-top-resource-shortcut{
   position:relative;
-  width:104px;
-  min-width:104px;
+  width:102px;
+  min-width:102px;
   height:34px;
-  padding:0 10px;
+  padding:0 8px;
   border:0;
   border-radius:8px;
   background:transparent;
