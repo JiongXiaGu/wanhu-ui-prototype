@@ -1,6 +1,6 @@
 /* P2-A Management Panel Skin
-   Formal component skin for city / population / finance / inventory / policy / military management workspaces.
-   Geometry stays in city-management.css; this file owns the shared Graphite / Paper / Brass presentation. */
+   Formal component skin for city / population / finance / inventory / policy / military workspaces.
+   Surface material belongs to wanhu-surface-system.css; this file owns local hierarchy and states. */
 
 .management-space{
   --management-paper:var(--wanhu-color-paper-primary,#eee9df);
@@ -18,20 +18,7 @@
   backdrop-filter:blur(2px) saturate(.78) brightness(.82);
   -webkit-backdrop-filter:blur(2px) saturate(.78) brightness(.82);
 }
-
-.management-space__panel{
-  border-color:var(--wanhu-surface-context-edge,rgba(238,233,223,.10));
-  border-radius:16px;
-  background-color:var(--wanhu-color-ink-950,#171c1e);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-surface-context-generic-top,rgba(28,34,36,.80)),var(--wanhu-surface-context-generic-bottom,rgba(17,22,24,.78))),
-    var(--wanhu-material-noise,url('/assets/ui/materials/glass-noise-soft.png'));
-  background-repeat:no-repeat,repeat;
-  background-size:auto,256px 256px;
-  box-shadow:0 28px 78px rgba(2,4,5,.42),inset 0 1px 0 rgba(255,255,255,.025);
-  backdrop-filter:var(--wanhu-surface-context-filter,blur(15px) saturate(.92) brightness(.98));
-  -webkit-backdrop-filter:var(--wanhu-surface-context-filter,blur(15px) saturate(.92) brightness(.98));
-}
+.management-space__panel{border-radius:16px}
 
 .management-space__header{
   height:64px;
@@ -87,10 +74,7 @@
 .management-metric em{color:#a99468;font-size:8.5px}
 
 .management-overview-grid,.management-finance-layout{height:calc(100% - 102px)}
-.management-section{
-  border-top-color:var(--management-rule-strong);
-  background:transparent;
-}
+.management-section{border-top-color:var(--management-rule-strong);background:transparent}
 .management-section__title{
   height:46px;
   padding:0 14px;
@@ -155,10 +139,8 @@
 .management-space--inventory .inventory-location-detail__metrics>div{background:rgba(255,255,255,.010)}
 .management-space--inventory .inventory-location-list__body>button.is-active{background:rgba(169,132,75,.045)}
 .management-space--inventory .inventory-location-list__body>button.is-active::before,
-.management-space--inventory .inventory-content-list>div>i>em,
-.management-space--inventory .inventory-route-card>svg{background-color:var(--management-brass);color:var(--management-brass)}
+.management-space--inventory .inventory-content-list>div>i>em{background:var(--management-brass)}
+.management-space--inventory .inventory-route-card>svg{color:var(--management-brass)}
 .management-space--inventory .inventory-village-focus{background:rgba(255,255,255,.008);border-color:var(--management-rule)}
 
-@media (prefers-reduced-motion:reduce){
-  .management-space__panel{animation:none}
-}
+@media (prefers-reduced-motion:reduce){.management-space__panel{animation:none}}
