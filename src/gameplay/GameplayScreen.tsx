@@ -12,7 +12,7 @@ import { GameplayContextPanel } from './GameplayContextPanel';
 import { GameplayCompassHud, GameplaySystemMenuButton } from './GameplayCornerHud';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
-import { ManagementSpace } from './ManagementSpace';
+import { ManagementSpace } from './management/ManagementSpace';
 import { PauseLayer } from './PauseLayer';
 
 interface GameplayScreenProps {

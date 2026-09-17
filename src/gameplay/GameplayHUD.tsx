@@ -1,6 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-  Building2,
   Camera,
   ChevronsRight,
   CloudSun,
@@ -12,32 +11,16 @@ import {
   Pause,
   Play,
   Route,
-  ScrollText,
-  Shield,
   ShieldCheck,
   Store,
   Users,
-  Warehouse,
 } from 'lucide-react';
 import type { ContextPanel, ManagementView, MapView, Speed } from '../app/ui-state';
+import { MANAGEMENT_PRIMARY_NAV, MANAGEMENT_STATUS_QUICK_ENTRIES } from './management/management-navigation';
 
 interface MapViewItem {
   id: MapView;
   label: string;
-  icon: LucideIcon;
-}
-
-interface ManagementPrimaryItem {
-  id: Exclude<ManagementView, 'none'>;
-  label: string;
-  icon: LucideIcon;
-}
-
-interface StatusQuickEntry {
-  id: Exclude<ManagementView, 'none'>;
-  label: string;
-  targetLabel: string;
-  value: string;
   icon: LucideIcon;
 }
 
@@ -70,21 +53,6 @@ const MAP_VIEWS: MapViewItem[] = [
   { id: 'traffic', label: '道路', icon: Route },
   { id: 'security', label: '治安', icon: ShieldCheck },
   { id: 'water', label: '水利', icon: Droplets },
-];
-
-const MANAGEMENT_PRIMARY: ManagementPrimaryItem[] = [
-  { id: 'city', label: '城市', icon: Building2 },
-  { id: 'finance', label: '经济', icon: Coins },
-  { id: 'inventory', label: '库存', icon: Warehouse },
-  { id: 'policy', label: '政策', icon: ScrollText },
-  { id: 'military', label: '军事', icon: Shield },
-];
-
-const STATUS_QUICK_ENTRIES: StatusQuickEntry[] = [
-  { id: 'city', label: '人口', targetLabel: '城市', value: '8,426', icon: Users },
-  { id: 'finance', label: '金钱', targetLabel: '经济', value: '24,680', icon: Coins },
-  { id: 'inventory', label: '贸易值', targetLabel: '库存', value: '12,430', icon: Warehouse },
-  { id: 'military', label: '军事值', targetLabel: '军事', value: '68', icon: Shield },
 ];
 
 const SPEED_CONTROLS: SpeedControlItem[] = [
@@ -127,7 +95,7 @@ export function GameplayHUD({
         </div>
 
         <div className="gameplay-top-status__resources" aria-label="城市核心指标快捷入口">
-          {STATUS_QUICK_ENTRIES.map((item) => {
+          {MANAGEMENT_STATUS_QUICK_ENTRIES.map((item) => {
             const Icon = item.icon;
             const tooltip = `${item.label} · 打开${item.targetLabel}`;
             return (
@@ -189,7 +157,7 @@ export function GameplayHUD({
           <i className="gameplay-top-navigation__separator" />
 
           <div className="gameplay-top-navigation__management" aria-label="城市管理">
-            {MANAGEMENT_PRIMARY.map((item) => {
+            {MANAGEMENT_PRIMARY_NAV.map((item) => {
               const Icon = item.icon;
               return (
                 <button
