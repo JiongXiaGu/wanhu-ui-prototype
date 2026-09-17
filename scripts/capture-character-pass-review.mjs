@@ -31,9 +31,7 @@ async function pseudoContent(selector, part) {
 
 async function assertTopHudIdentity() {
   const beam = await pseudoContent('.gameplay-top-status', '::before');
-  if (beam !== 'none') {
-    throw new Error(`Top HUD must not use a decorative edge beam. content=${beam}`);
-  }
+  if (beam !== 'none') throw new Error(`Top HUD must not use a decorative edge beam. content=${beam}`);
 
   const weather = page.locator('.gameplay-top-status__weather-state').first();
   const icon = weather.locator('svg').first();
@@ -60,10 +58,10 @@ async function assertContextHeader() {
     title.evaluate((node) => ({ fontSize: Number.parseFloat(getComputedStyle(node).fontSize), fontWeight: getComputedStyle(node).fontWeight })),
   ]);
   if (!headerBox || headerBox.height < 56 || headerBox.height > 60) {
-    throw new Error(`Context header must use the shared 58px header geometry. box=${JSON.stringify(headerBox)}`);
+    throw new Error(`Context header must keep its reviewed ~58px density. box=${JSON.stringify(headerBox)}`);
   }
   if (!iconBox || iconBox.width < 30 || iconBox.width > 34 || iconBox.height < 30 || iconBox.height > 34) {
-    throw new Error(`Context header identity icon must use the shared 32px chip. box=${JSON.stringify(iconBox)}`);
+    throw new Error(`Context header identity icon must use the 32px icon-led chip. box=${JSON.stringify(iconBox)}`);
   }
   if (titleStyle.fontSize < 14 || titleStyle.fontSize > 16) {
     throw new Error(`Context header title must use the shared title scale. style=${JSON.stringify(titleStyle)}`);
@@ -99,9 +97,7 @@ async function assertWorkspaceHeaderAndDock(bridgeButton, workspace) {
   }
 
   const beam = await pseudoContent('.workspace--design .workspace-header', '::before');
-  if (beam !== 'none') {
-    throw new Error(`Workspace header must not use a decorative beam marker. content=${beam}`);
-  }
+  if (beam !== 'none') throw new Error(`Workspace header must not use a decorative beam marker. content=${beam}`);
 
   const header = workspace.locator('.workspace-header');
   const identityIcon = workspace.locator('.workspace-title > svg');
@@ -111,24 +107,20 @@ async function assertWorkspaceHeaderAndDock(bridgeButton, workspace) {
     identityIcon.boundingBox(),
     title.evaluate((node) => ({ fontSize: Number.parseFloat(getComputedStyle(node).fontSize), fontWeight: getComputedStyle(node).fontWeight })),
   ]);
-  if (!headerBox || headerBox.height < 56 || headerBox.height > 60) {
-    throw new Error(`Workspace header must use the shared 58px header geometry. box=${JSON.stringify(headerBox)}`);
+  if (!headerBox || headerBox.height < 48 || headerBox.height > 52) {
+    throw new Error(`Workspace must preserve its compact ~50px browsing header. box=${JSON.stringify(headerBox)}`);
   }
-  if (!iconBox || iconBox.width < 30 || iconBox.width > 34 || iconBox.height < 30 || iconBox.height > 34) {
-    throw new Error(`Workspace identity icon must use the shared 32px chip. box=${JSON.stringify(iconBox)}`);
+  if (!iconBox || iconBox.width < 28 || iconBox.width > 32 || iconBox.height < 28 || iconBox.height > 32) {
+    throw new Error(`Workspace identity icon must use the compact ~30px icon-led chip. box=${JSON.stringify(iconBox)}`);
   }
   if (titleStyle.fontSize < 14 || titleStyle.fontSize > 16) {
-    throw new Error(`Workspace title must use the shared title scale. style=${JSON.stringify(titleStyle)}`);
+    throw new Error(`Workspace title must share the Context title scale. style=${JSON.stringify(titleStyle)}`);
   }
 
   const activeFilter = workspace.locator('.workspace-context-filter__scroll > button.is-active').first();
   const filterNode = await activeFilter.evaluate((node) => {
     const style = getComputedStyle(node, '::after');
-    return {
-      width: Number.parseFloat(style.width),
-      height: Number.parseFloat(style.height),
-      backgroundImage: style.backgroundImage,
-    };
+    return { width: Number.parseFloat(style.width), height: Number.parseFloat(style.height), backgroundImage: style.backgroundImage };
   });
   if (filterNode.width < 3 || filterNode.width > 5 || filterNode.height < 3 || filterNode.height > 5 || filterNode.backgroundImage !== 'none') {
     throw new Error(`Workspace filter should keep one compact state node. visual=${JSON.stringify(filterNode)}`);
@@ -163,7 +155,6 @@ async function assertReducedMotion() {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 }
 
-// Day — normal gameplay, Environment header, then representative Work state.
 await open('gameplay', '.gameplay-top-status');
 await assertTopHudIdentity();
 await page.screenshot({ path: `${outDir}/51-icon-led-gameplay-day.png` });
@@ -177,7 +168,6 @@ const dayWork = await openBridgeWorkspace();
 await assertWorkspaceHeaderAndDock(dayWork.bridgeButton, dayWork.workspace);
 await page.screenshot({ path: `${outDir}/51-icon-led-workspace-day.png` });
 
-// Night — use the real Environment time control, inspect the shared header, then Workspace.
 await open('weather', '.gameplay-context-panel--weather');
 await page.getByRole('button', { name: '场景模拟', exact: true }).click();
 await page.waitForSelector('[aria-label="日内时间"]');
