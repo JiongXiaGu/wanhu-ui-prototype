@@ -26,6 +26,7 @@ import './tools/placement/placement-action-bar.css';
 import './tools/building-placement/building-placement.css';
 import './tools/road-placement/road-placement.css';
 import './gameplay/city-management.css';
+import './gameplay/inventory-management.css';
 import './gameplay/gameplay-top-shell.css';
 import './gameplay/operation-hints-refined.css';
 import './gameplay/world-utility-toolbar.css';
@@ -49,6 +50,7 @@ import './ui/wanhu-tonal-texture.css';
 import './ui/wanhu-tonal-hud-roles.css';
 import './ui/wanhu-workspace-integration.css';
 import './ui/wanhu-icon-led-header.css';
+import './ui/wanhu-top-resource-shortcuts.css';
 import './fixed-canvas-guards.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
