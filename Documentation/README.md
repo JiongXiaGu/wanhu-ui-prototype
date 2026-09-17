@@ -30,10 +30,6 @@
 
 记录 Surface、Blur、Button、Segmented、Footer 等跨空间视觉语法。
 
-### Wanhu Color Hierarchy视觉规范.md
-
-记录 Gameplay 的色彩角色与使用边界：Paper 负责阅读，Jade / Qing 负责分类与信息，Old Gold 负责 Current / Selected / Focus / Primary，Cinnabar 只用于 Warning / Danger / Urgent。
-
 ### UI基础Control视觉规范.md
 
 记录 Slider、Numeric Slider Field、Stepper、Value Field、Select、Toggle、Text Input 的共享视觉、使用边界和 Unity UI Toolkit 映射。基础控件迁移优先以此文档为准。

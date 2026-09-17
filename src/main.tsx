@@ -42,7 +42,6 @@ import './ui/wanhu-contrast-identity.css';
 import './ui/wanhu-edge-elevation.css';
 import './ui/wanhu-edge-elevation-study.css';
 import './ui/wanhu-character.css';
-import './ui/wanhu-color-hierarchy.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
