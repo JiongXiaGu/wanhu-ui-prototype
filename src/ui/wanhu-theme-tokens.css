@@ -1,8 +1,10 @@
-/* Wanhu Theme Tokens v3
-   Canonical gameplay palette + material recipe values.
-   Component CSS should consume these tokens instead of inventing local surface colours. */
+/* Wanhu Theme Tokens v4
+   Canonical game-wide palette + material recipe values.
+   The game canvas owns the visual language; individual screens consume these tokens
+   instead of inventing local palettes. Gameplay may only override role density for
+   scene-dependent states such as night. */
 
-.gameplay-screen{
+.game-canvas{
   /* Palette */
   --wanhu-color-ink-950:#171c1e;
   --wanhu-color-ink-900:#1d2325;
@@ -46,6 +48,19 @@
   --wanhu-surface-work-focus:rgba(169,132,75,.040);
   --wanhu-surface-work-shadow:0 18px 44px rgba(2,4,5,.28),inset 0 1px 0 rgba(255,255,255,.028);
   --wanhu-surface-work-filter:blur(20px) saturate(.92) brightness(.985);
+
+  /* Blocking / Global surface: full-screen configuration and management spaces.
+     It is denser than a Work surface but remains a textured graphite material, not
+     an opaque black webpage. */
+  --wanhu-surface-blocking-top:rgba(27,32,34,.935);
+  --wanhu-surface-blocking-bottom:rgba(16,21,23,.955);
+  --wanhu-surface-blocking-vignette:rgba(5,8,9,.18);
+  --wanhu-surface-blocking-edge:rgba(238,233,223,.075);
+  --wanhu-surface-blocking-rule:rgba(238,233,223,.055);
+  --wanhu-surface-blocking-row-hover:rgba(255,255,255,.028);
+  --wanhu-surface-blocking-menu:rgba(25,31,33,.975);
+  --wanhu-surface-blocking-menu-hover:rgba(255,255,255,.048);
+  --wanhu-surface-blocking-shadow:0 24px 64px rgba(2,4,5,.40),inset 0 1px 0 rgba(255,255,255,.028);
 
   /* Persistent information surface: Top Status. */
   --wanhu-surface-info-bg:rgba(25,31,33,.50);
@@ -93,7 +108,7 @@
   --wanhu-surface-readout-highlight:rgba(255,255,255,.020);
   --wanhu-surface-readout-shade:rgba(0,0,0,.024);
 
-  /* Common control tones used inside all gameplay surfaces. */
+  /* Common control tones used across the game. */
   --wanhu-control-hover:rgba(255,255,255,.040);
   --wanhu-control-hover-strong:rgba(255,255,255,.052);
   --wanhu-control-border-soft:rgba(238,233,223,.065);
@@ -134,8 +149,8 @@
   --hud-surface-context-bottom:rgba(20,25,27,.75);
   --hud-surface-work-top:rgba(29,35,37,.86);
   --hud-surface-work-bottom:rgba(18,23,25,.84);
-  --hud-surface-blocking-top:rgba(27,32,34,.93);
-  --hud-surface-blocking-bottom:rgba(16,21,23,.92);
+  --hud-surface-blocking-top:var(--wanhu-surface-blocking-top);
+  --hud-surface-blocking-bottom:var(--wanhu-surface-blocking-bottom);
 
   --command-surface-lg-top:rgba(28,34,36,.84);
   --command-surface-lg-bottom:rgba(17,22,24,.82);
