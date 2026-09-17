@@ -1,4 +1,4 @@
-/* Wanhu Theme Tokens v1
+/* Wanhu Theme Tokens v2
    Canonical gameplay palette + material recipe values.
    Component CSS should consume these tokens instead of inventing local surface colours. */
 
@@ -41,7 +41,53 @@
   --wanhu-surface-work-shadow:0 18px 44px rgba(2,4,5,.28),inset 0 1px 0 rgba(255,255,255,.028);
   --wanhu-surface-work-filter:blur(20px) saturate(.92) brightness(.985);
 
-  /* Common control tones used inside Context / Work surfaces. */
+  /* Persistent information surface: Top Status. */
+  --wanhu-surface-info-bg:rgba(25,31,33,.50);
+  --wanhu-surface-info-edge:rgba(238,233,223,.12);
+  --wanhu-surface-info-rule:rgba(238,233,223,.045);
+  --wanhu-surface-info-shadow:0 16px 40px rgba(2,4,5,.30),inset 0 1px 0 rgba(255,255,255,.045);
+  --wanhu-surface-info-filter:blur(20px) saturate(.92) brightness(.98);
+  --wanhu-surface-info-highlight:rgba(255,255,255,.030);
+  --wanhu-surface-info-shade:rgba(0,0,0,.035);
+
+  /* Secondary persistent controls: Control Tray below Top Status. */
+  --wanhu-surface-control-bg:rgba(24,30,32,.41);
+  --wanhu-surface-control-edge-top:rgba(238,233,223,.080);
+  --wanhu-surface-control-edge-side:rgba(238,233,223,.040);
+  --wanhu-surface-control-edge-bottom:rgba(238,233,223,.018);
+  --wanhu-surface-control-rule:rgba(238,233,223,.050);
+  --wanhu-surface-control-shadow:0 11px 28px rgba(2,4,5,.22),inset 0 1px 0 rgba(255,255,255,.032);
+  --wanhu-surface-control-filter:blur(20px) saturate(.93) brightness(.985);
+  --wanhu-surface-control-highlight:rgba(255,255,255,.024);
+  --wanhu-surface-control-shade:rgba(0,0,0,.025);
+
+  /* Persistent command base: Main Dock. */
+  --wanhu-surface-command-bg:rgba(22,27,29,.58);
+  --wanhu-surface-command-edge:rgba(238,233,223,.018);
+  --wanhu-surface-command-rule:rgba(238,233,223,.050);
+  --wanhu-surface-command-shadow:0 18px 44px rgba(2,4,5,.34),inset 0 1px 0 rgba(255,255,255,.038);
+  --wanhu-surface-command-filter:blur(20px) saturate(.92) brightness(.98);
+  --wanhu-surface-command-highlight:rgba(255,255,255,.030);
+  --wanhu-surface-command-shade:rgba(0,0,0,.038);
+
+  /* Ambient surface: World Utility + tiny detached utility actions. */
+  --wanhu-surface-ambient-bg:rgba(24,30,32,.41);
+  --wanhu-surface-ambient-soft-bg:rgba(24,30,32,.40);
+  --wanhu-surface-ambient-edge:rgba(238,233,223,.016);
+  --wanhu-surface-ambient-shadow:0 12px 30px rgba(2,4,5,.23),inset 0 1px 0 rgba(255,255,255,.025);
+  --wanhu-surface-ambient-filter:blur(20px) saturate(.94) brightness(.985);
+  --wanhu-surface-ambient-highlight:rgba(255,255,255,.022);
+  --wanhu-surface-ambient-shade:rgba(0,0,0,.022);
+
+  /* Readout surface: Operation Hint protects small text without becoming a work panel. */
+  --wanhu-surface-readout-bg:rgba(22,28,30,.45);
+  --wanhu-surface-readout-edge:rgba(238,233,223,.016);
+  --wanhu-surface-readout-shadow:0 10px 26px rgba(2,4,5,.22),inset 0 1px 0 rgba(255,255,255,.022);
+  --wanhu-surface-readout-filter:blur(20px) saturate(.93) brightness(.985);
+  --wanhu-surface-readout-highlight:rgba(255,255,255,.020);
+  --wanhu-surface-readout-shade:rgba(0,0,0,.024);
+
+  /* Common control tones used inside all gameplay surfaces. */
   --wanhu-control-hover:rgba(255,255,255,.040);
   --wanhu-control-hover-strong:rgba(255,255,255,.052);
   --wanhu-control-border-soft:rgba(238,233,223,.065);
@@ -61,4 +107,8 @@
   --wanhu-surface-work-body-overlay:rgba(15,21,23,.36);
   --wanhu-surface-work-rule:rgba(238,233,223,.064);
   --wanhu-surface-work-filter:blur(20px) saturate(.90) brightness(1.0);
+
+  /* Persistent HUD keeps the reviewed role separation at night. Only the top
+     information strip needs a small density lift; detached controls stay stable. */
+  --wanhu-surface-info-bg:rgba(28,34,36,.52);
 }
