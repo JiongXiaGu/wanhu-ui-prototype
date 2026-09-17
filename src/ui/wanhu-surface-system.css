@@ -1,4 +1,4 @@
-/* Wanhu Surface System v3
+/* Wanhu Surface System v4
    Formal material owner for gameplay surfaces.
    Theme tokens own palette/material recipes; component CSS owns geometry and local content hierarchy. */
 
@@ -124,6 +124,22 @@
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .design-item-card:focus-visible{
   background:var(--wanhu-surface-work-focus);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+/* ---------------------------------------------------------------------
+   Management Surface — large blocking information workspaces
+   --------------------------------------------------------------------- */
+.gameplay-screen .management-space__panel{
+  border-color:var(--wanhu-surface-context-edge);
+  background-color:var(--wanhu-color-ink-950);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-context-generic-top),var(--wanhu-surface-context-generic-bottom)),
+    var(--wanhu-material-noise);
+  background-repeat:no-repeat,repeat;
+  background-size:auto,256px 256px;
+  box-shadow:0 28px 78px rgba(2,4,5,.42),inset 0 1px 0 rgba(255,255,255,.025);
+  backdrop-filter:var(--wanhu-surface-context-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-context-filter);
 }
 
 /* ---------------------------------------------------------------------
