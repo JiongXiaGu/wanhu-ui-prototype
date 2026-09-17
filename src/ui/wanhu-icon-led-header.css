@@ -1,10 +1,9 @@
-/* Wanhu Icon-led Header v1
-   Remove decorative beam markers from persistent HUD / panel titles.
-   Identity now comes from icon prominence, typography and one quiet structural rule.
-   Workspace and Context Surface share the same header language while preserving their
-   established density-specific geometry: Workspace 50px, Context Surface 58px. */
+/* Wanhu Bare Header Icons v2
+   Header identity is carried by a quiet bare icon + typography, not by a visible chip.
+   Click / layout affordances may keep their hit area, but the visual icon itself must not
+   read as a button. Workspace and Context Surface keep density-specific geometry. */
 
-/* Decorative edge beams are retired. */
+/* Decorative edge beams stay retired. */
 .gameplay-screen .gameplay-top-status::before,
 .gameplay-screen .workspace--design .workspace-header::before{
   content:none;
@@ -18,18 +17,18 @@
 .gameplay-screen .gameplay-top-status__weather-state{
   display:inline-flex;
   align-items:center;
-  gap:7px;
+  gap:6px;
 }
 .gameplay-screen .gameplay-top-status__weather-state>svg{
-  width:14px;
-  height:14px;
-  box-sizing:content-box;
-  padding:4px;
+  width:13px;
+  height:13px;
+  box-sizing:border-box;
+  padding:0;
   flex:0 0 auto;
-  border:1px solid rgba(238,233,223,.070);
-  border-radius:7px;
-  background:rgba(255,255,255,.034);
-  color:#c9c3b7;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#bdb7ab;
   stroke-width:1.7;
   filter:none;
 }
@@ -37,7 +36,10 @@
   color:#d8d2c8;
   font-weight:600;
 }
-.gameplay-screen .gameplay-top-status__clock{color:#8f9390}
+.gameplay-screen .gameplay-top-status__clock{
+  margin-left:9px;
+  color:#8f9390;
+}
 
 /* ---------------------------------------------------------------------
    Shared panel header language: Workspace + Context Surface
@@ -73,49 +75,48 @@
   min-width:0;
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:9px;
 }
 
-/* Workspace keeps a compact 30px identity chip so its 50px browser header remains
-   efficient. Context Surface uses a 32px chip inside its roomier 58px header. */
+/* Bare identity icons: no chip surface, border, radius or local shadow. */
 .gameplay-screen .workspace--design .workspace-title>svg{
-  width:16px;
-  height:16px;
-  box-sizing:content-box;
-  padding:6px;
-  flex:0 0 auto;
-  border:1px solid rgba(238,233,223,.078);
-  border-radius:9px;
-  background:rgba(255,255,255,.038);
-  color:#d1cabd;
+  width:17px;
+  height:17px;
+  box-sizing:border-box;
+  padding:0;
+  flex:0 0 17px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#bbb5aa;
   stroke-width:1.65;
   filter:none;
 }
 .gameplay-screen .gameplay-context-panel__heading-icon{
-  width:32px;
-  height:32px;
-  flex:0 0 32px;
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
   display:grid;
   place-items:center;
-  border:1px solid rgba(238,233,223,.078);
-  border-radius:9px;
-  background:rgba(255,255,255,.038);
-  color:#d1cabd;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.016);
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#bbb5aa;
+  box-shadow:none;
 }
 .gameplay-screen .gameplay-context-panel__heading-icon svg{
-  width:16px;
-  height:16px;
+  width:18px;
+  height:18px;
   stroke-width:1.65;
 }
 
 .gameplay-screen .workspace--design .workspace-title>b,
 .gameplay-screen .gameplay-context-panel__title{
   color:var(--wanhu-tonal-paper,#eee9df);
-  font-size:15px;
+  font-size:16px;
   font-weight:600;
   line-height:1.08;
-  letter-spacing:.015em;
+  letter-spacing:.012em;
 }
 .gameplay-screen .gameplay-context-panel__heading-copy{gap:3px}
 .gameplay-screen .gameplay-context-panel__heading-copy>span{
@@ -125,7 +126,7 @@
   letter-spacing:.035em;
 }
 
-/* Right-side actions remain neutral. Identity stays on the leading icon. */
+/* Right-side actions remain neutral. Identity stays on the leading icon + title. */
 .gameplay-screen .workspace--design .workspace-header>.icon-button,
 .gameplay-screen .gameplay-context-panel>header>.icon-button{
   width:30px;
@@ -140,18 +141,17 @@
   background:rgba(255,255,255,.035);
 }
 
-/* Weather no longer owns a separate slate-blue title strip. Environment identity
-   comes from its icon, title and content rather than a differently coloured bar. */
+/* Environment uses the same neutral header language; its identity comes from content. */
 .gameplay-screen .gameplay-context-panel--weather>header{
   border-bottom-color:rgba(238,233,223,.060);
   background:rgba(255,255,255,.007);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
 }
 .gameplay-screen .gameplay-context-panel--weather .gameplay-context-panel__heading-icon{
-  color:#d1cabd;
-  border-color:rgba(238,233,223,.078);
-  background:rgba(255,255,255,.038);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.016);
+  color:#bbb5aa;
+  border:0;
+  background:transparent;
+  box-shadow:none;
 }
 .gameplay-screen .gameplay-context-panel--weather .gameplay-context-panel__heading-copy>span{color:#888d8a}
 
