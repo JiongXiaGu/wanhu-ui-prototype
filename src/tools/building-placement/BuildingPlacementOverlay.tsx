@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Building2 } from 'lucide-react';
 import type { AdjustmentMode, TerrainMode } from '../../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../../ui/Controls';
-import { LeftContextPanel, LeftContextSection } from '../../ui/LeftContextPanel';
+import { LeftContextSection } from '../../ui/LeftContextPanel';
+import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 
 interface BuildingPlacementOverlayProps {
   terrainMode: TerrainMode;
@@ -107,16 +108,14 @@ function ModeParameters({ mode, onDirty }: { mode: AdjustmentMode; onDirty: () =
 
 export function BuildingPlacementOverlay({ terrainMode, adjustmentMode, onClose, onDirty }: BuildingPlacementOverlayProps) {
   return (
-    <LeftContextPanel
-      as="section"
+    <PlacementContextPanel
       ariaLabel="建筑放置参数"
       icon={Building2}
       title="建筑放置"
       subtitle="八角楼阁式木塔"
       closeLabel="退出建筑放置"
-      legacyGameplayClass={false}
-      className="gameplay-left-context-surface tool-overlay building-placement-prototype"
-      bodyClassName="tool-body building-placement-prototype__body"
+      className="building-placement-prototype"
+      bodyClassName="building-placement-prototype__body"
       onClose={onClose}
       dataAttributes={{ 'data-terrain': terrainMode, 'data-adjustment': adjustmentMode }}
     >
@@ -124,6 +123,6 @@ export function BuildingPlacementOverlay({ terrainMode, adjustmentMode, onClose,
         <TerrainSummary key={terrainMode} mode={terrainMode} onDirty={onDirty} />
         <ModeParameters key={adjustmentMode} mode={adjustmentMode} onDirty={onDirty} />
       </div>
-    </LeftContextPanel>
+    </PlacementContextPanel>
   );
 }
