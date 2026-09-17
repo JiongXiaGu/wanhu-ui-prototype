@@ -27,6 +27,7 @@ async function setRangeValue(locator, value) {
 async function openEnvironment(variant, hour) {
   const url = new URL(baseUrl);
   url.searchParams.set('review', 'weather');
+  url.searchParams.set('study', 'glass');
   await page.goto(url.toString(), { waitUntil: 'networkidle' });
   await page.waitForSelector('.gameplay-context-panel--weather');
 
