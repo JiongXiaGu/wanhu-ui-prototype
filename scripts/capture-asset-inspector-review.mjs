@@ -31,6 +31,10 @@ function alphaFromCssColor(value) {
   return match[1] === undefined ? 1 : Number(match[1]);
 }
 
+function usesBackdropBlur(value) {
+  return Boolean(value && value !== 'none');
+}
+
 async function inspectElevatedMaterial(inspector, label) {
   const visual = await inspector.evaluate((node) => {
     const style = getComputedStyle(node);
@@ -47,7 +51,7 @@ async function inspectElevatedMaterial(inspector, label) {
     };
   });
 
-  if (visual.backdropFilter !== 'none' || visual.webkitBackdropFilter !== 'none') {
+  if (usesBackdropBlur(visual.backdropFilter) || usesBackdropBlur(visual.webkitBackdropFilter)) {
     throw new Error(`${label} Inspector must not depend on UI-over-UI backdrop blur. visual=${JSON.stringify(visual)}`);
   }
   if (!visual.backgroundImage.includes('glass-noise-soft.png')) {
