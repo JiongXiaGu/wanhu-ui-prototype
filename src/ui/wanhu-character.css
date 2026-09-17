@@ -1,15 +1,6 @@
-/* Wanhu Character Pass v2 — structural states only.
+/* Wanhu Character Pass v3 — structural states only.
    Character belongs to meaningful state markers, not decorative header beams.
-   90% functional modern UI, 10% abstracted timber-frame / platform construction language. */
-
-.gameplay-screen{
-  --wanhu-character-gold:#d2b36f;
-  --wanhu-character-gold-hi:#e4c983;
-  --wanhu-character-gold-soft:rgba(210,179,111,.18);
-  --wanhu-character-joint:rgba(210,179,111,.82);
-  --wanhu-character-rule:rgba(221,215,202,.18);
-  --wanhu-character-beam:rgba(236,231,220,.34);
-}
+   Palette ownership lives in wanhu-theme-tokens.css; component skin owns fills. */
 
 /* Top metric slots keep a quiet structural separator and tabular values. */
 .gameplay-screen .gameplay-top-status__resources>span{
@@ -41,10 +32,7 @@
   align-items:center;
 }
 
-/* Context Filter: current component = text state + one tenon node, no underline / L-joint. */
-.gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active{
-  background:linear-gradient(90deg,rgba(210,179,111,.045),rgba(210,179,111,.012) 62%,transparent);
-}
+/* Context Filter: current component owns the fill; Character contributes only the tenon node. */
 .gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after{
   content:'';
   position:absolute;
