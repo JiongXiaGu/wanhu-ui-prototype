@@ -107,7 +107,7 @@
 
 .gameplay-screen .workspace--design .workspace-title>b,
 .gameplay-screen .gameplay-context-panel__title{
-  color:var(--wanhu-tonal-paper,#eee9df);
+  color:var(--wanhu-color-paper-primary,#eee9df);
   font-size:16px;
   font-weight:600;
   line-height:1.08;
