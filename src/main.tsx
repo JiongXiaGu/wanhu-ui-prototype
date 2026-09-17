@@ -23,6 +23,7 @@ import './settings/settings-bindings.css';
 import './settings/settings-safe-confirmation.css';
 import './fullscreen-actions.css';
 import './tools/placement/placement-action-bar.css';
+import './tools/placement/placement-context-panel.css';
 import './tools/building-placement/building-placement.css';
 import './tools/road-placement/road-placement.css';
 import './gameplay/city-management.css';
