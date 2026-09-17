@@ -32,8 +32,8 @@ import './gameplay/operation-hints-refined.css';
 import './gameplay/world-utility-toolbar.css';
 import './gameplay/gameplay-hud-layout.css';
 
-/* Canonical theme contract. Component CSS below owns geometry; material recipes are
-   applied later by wanhu-surface-system.css. */
+/* Canonical theme contract. Component CSS owns geometry/local hierarchy; material
+   recipes are applied later by wanhu-surface-system.css. */
 import './ui/wanhu-theme-tokens.css';
 import './ui/ui-visual-system.css';
 import './ui/ui-control-system.css';
@@ -42,14 +42,12 @@ import './gameplay/weather-mist-glass.css';
 import './gameplay/weather-visual-controls.css';
 import './gameplay/weather-art-pass.css';
 import './ui/wanhu-mist-glass-production.css';
-import './ui/wanhu-contrast-identity.css';
 import './ui/wanhu-edge-elevation.css';
 import './ui/wanhu-character.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
-import './ui/wanhu-tonal-material.css';
 
-/* Formal material owner for Workspace, Environment and persistent Gameplay HUD. */
+/* Formal material owner for Workspace, Context Panels and persistent Gameplay HUD. */
 import './ui/wanhu-surface-system.css';
 import './ui/wanhu-icon-led-header.css';
 import './ui/wanhu-top-resource-shortcuts.css';
