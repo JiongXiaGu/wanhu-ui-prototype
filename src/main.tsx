@@ -39,6 +39,7 @@ import './gameplay/weather-art-pass.css';
 import './ui/wanhu-mist-glass.css';
 import './ui/wanhu-hud-glass.css';
 import './ui/wanhu-contrast-identity.css';
+import './ui/wanhu-edge-elevation-study.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
 import './fixed-canvas-guards.css';
