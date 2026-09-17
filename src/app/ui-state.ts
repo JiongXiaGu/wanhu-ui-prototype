@@ -1,6 +1,6 @@
 export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'loading' | 'gameplay';
 export type ContextPanel = 'none' | 'camera' | 'weather';
-export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'policy' | 'commerce' | 'governance' | 'military';
+export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
 export type Tool = 'none' | 'building-placement' | 'road-placement';
