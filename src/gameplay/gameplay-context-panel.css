@@ -1,292 +1,302 @@
-/* Shared lower-left context surface for scene controls and future selection inspectors.
-   Screen-slot geometry is owned by gameplay-hud-layout.css; this file owns component visuals. */
+/* Shared lower-left Context Panel system.
+   Camera, Environment and placement parameter panels use the same structural and control language.
+   Camera/Environment material remains owned by wanhu-surface-system.css; tool panels consume the same formal Context tokens here. */
 
-.gameplay-context-panel{
+.left-context-panel{
   position:absolute;
   display:flex;
   flex-direction:column;
   overflow:hidden;
-  border:1px solid var(--hud-border-strong,rgba(239,233,221,.14));
+  border:1px solid var(--wanhu-surface-context-edge,var(--hud-border-strong,rgba(239,233,221,.14)));
   border-radius:var(--hud-radius-lg,18px);
-  background:linear-gradient(180deg,var(--hud-surface-context-top,var(--hud-surface-secondary-top)),var(--hud-surface-context-bottom,var(--hud-surface-secondary-bottom)));
-  box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
-  backdrop-filter:var(--hud-glass-filter,blur(14px));
+  background:transparent;
+  box-shadow:none;
   animation:gameplay-context-enter .18s cubic-bezier(.2,.75,.25,1) both;
   z-index:28;
 }
 
-.gameplay-context-panel>header{
+/* Placement tools do not carry the legacy scene-panel class, but use the exact same Context recipe. */
+.gameplay-screen .left-context-panel:not(.gameplay-context-panel){
+  background-color:var(--wanhu-surface-context-bg,rgba(23,29,31,.82));
+  background-image:
+    linear-gradient(180deg,var(--wanhu-material-highlight,rgba(255,255,255,.014)),var(--wanhu-material-shade,rgba(0,0,0,.022))),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-color:var(--wanhu-surface-context-edge);
+  box-shadow:var(--wanhu-surface-context-shadow);
+  backdrop-filter:var(--wanhu-surface-context-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-context-filter);
+}
+
+.left-context-panel>header{
   height:58px;
   min-height:58px;
   flex:0 0 58px;
-  padding:0 12px 0 16px;
-  border-bottom:1px solid var(--hud-rule,rgba(239,233,221,.065));
-  background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.003));
+  padding:0 12px 0 14px;
+  border-bottom:1px solid var(--wanhu-surface-context-rule,var(--hud-rule,rgba(239,233,221,.065)));
+  background:rgba(255,255,255,.007);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
   display:flex;
   align-items:center;
   justify-content:space-between;
 }
 
-.gameplay-context-panel__heading{display:flex;align-items:center;gap:10px}
-.gameplay-context-panel__heading-copy{display:flex;flex-direction:column;justify-content:center;gap:2px}
-.gameplay-context-panel__heading-copy>span{color:#7f8780;font-size:8px;line-height:1;letter-spacing:.045em}
-.gameplay-context-panel__heading-icon{
-  width:28px;
-  height:28px;
+.left-context-panel__heading{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.left-context-panel__heading-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:3px;
+}
+.left-context-panel__heading-copy>span{
+  color:#888d8a;
+  font-size:9px;
+  line-height:1;
+  letter-spacing:.035em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.left-context-panel__heading-icon{
+  width:19px;
+  height:19px;
+  flex:0 0 19px;
   display:grid;
   place-items:center;
-  color:#a7a99f;
-  border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
-  border-radius:9px;
-  background:rgba(255,255,255,.012);
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#bbb5aa;
+  box-shadow:none;
 }
-.gameplay-context-panel__heading-icon svg{width:14px;height:14px;stroke-width:1.6}
-.gameplay-context-panel__title{color:var(--hud-text,#e5dfd4);font-size:14px;font-weight:550;line-height:1;letter-spacing:.025em}
+.left-context-panel__heading-icon svg{
+  width:19px;
+  height:19px;
+  stroke-width:1.78;
+}
+.left-context-panel__title{
+  color:var(--wanhu-color-paper-primary,#eee9df);
+  font-size:16px;
+  font-weight:600;
+  line-height:1.08;
+  letter-spacing:.012em;
+}
 
-.gameplay-context-panel>header .icon-button{
+.left-context-panel>header>.icon-button{
   width:30px;
   height:30px;
-  color:#797f78;
   border-radius:9px;
+  color:#808582;
+  background:transparent;
 }
-.gameplay-context-panel>header .icon-button:hover{color:#d4d1c7;background:rgba(255,255,255,.035)}
+.left-context-panel>header>.icon-button:hover{
+  color:#d8d3ca;
+  background:rgba(255,255,255,.035);
+}
 
-.gameplay-context-panel__body{
+.left-context-panel__body{
   flex:1 1 auto;
   min-height:0;
   max-height:calc(var(--hud-left-context-max-height,720px) - 58px);
-  padding:12px 16px 16px;
+  padding:10px 12px 12px;
   overflow:auto;
   scrollbar-width:thin;
 }
+.left-context-panel.has-footer>.left-context-panel__body{
+  max-height:calc(var(--hud-left-context-max-height,720px) - 106px);
+}
 
-.gameplay-context-panel__section{padding:4px 0 13px}
-.gameplay-context-panel__section + .gameplay-context-panel__section{padding-top:13px;border-top:1px solid var(--hud-rule,rgba(239,233,221,.065))}
-.gameplay-context-panel__section-title{min-height:22px;margin-bottom:6px;display:flex;align-items:center}
-.gameplay-context-panel__section-title b{color:#b8b6ae;font-size:10px;font-weight:500;letter-spacing:.025em}
-.gameplay-context-panel__section-title--action{gap:8px}
-.gameplay-context-panel__section-title--action>i{flex:1;height:1px;background:linear-gradient(90deg,rgba(239,233,221,.045),transparent)}
-.gameplay-context-panel__inline-action{
-  min-width:0;
-  height:24px;
-  padding:0 7px;
+.left-context-panel__section{
+  margin:0;
+  padding:10px 1px 11px;
   border:0;
-  border-radius:7px;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.left-context-panel__section:first-child{padding-top:2px}
+.left-context-panel__section + .left-context-panel__section{
+  border-top:1px solid var(--wanhu-surface-context-rule,rgba(238,233,223,.055));
+}
+.left-context-panel__section-title{
+  min-height:20px;
+  margin:0 1px 6px;
   display:flex;
   align-items:center;
-  gap:5px;
-  background:transparent;
-  color:#747c75;
-  font-size:8.5px;
-  cursor:pointer;
+  gap:8px;
 }
-.gameplay-context-panel__inline-action:hover{background:rgba(255,255,255,.025);color:#bebbb2}
-
-.gameplay-context-panel .segment{
-  min-height:34px;
-  border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
-  border-radius:10px;
-  overflow:hidden;
-  background:rgba(255,255,255,.008);
+.left-context-panel__section-title>b{
+  color:#b0ada5;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.025em;
+  white-space:nowrap;
 }
-.gameplay-context-panel .segment button{position:relative;height:33px;border-right-color:rgba(239,233,221,.055);color:#818880;font-size:9px}
-.gameplay-context-panel .segment button:hover{background:rgba(255,255,255,.025);color:#bab9b1}
-.gameplay-context-panel .segment button.is-active{background:linear-gradient(180deg,rgba(201,165,95,.085),rgba(201,165,95,.022));color:#d5b873}
-.gameplay-context-panel .segment button.is-active::before{content:'';position:absolute;left:20%;right:20%;top:-1px;height:2px;background:var(--hud-accent,#c9a55f)}
-
-.gameplay-context-panel .parameter-row{min-height:41px;grid-template-columns:78px 27px minmax(90px,1fr) 27px 58px;gap:6px}
-.gameplay-context-panel .parameter-row>span{color:#8e948c;font-size:9px}
-.gameplay-context-panel .parameter-row>button{
-  width:27px;
-  height:27px;
-  border-radius:8px;
-  border-color:var(--hud-border-soft,rgba(239,233,221,.085));
-  background:rgba(255,255,255,.012);
-  color:#9da097;
-}
-.gameplay-context-panel .parameter-row>button:hover{background:rgba(255,255,255,.04);color:#d0cdc4}
-.gameplay-context-panel .parameter-row output{
-  height:27px;
-  border-color:var(--hud-border-soft,rgba(239,233,221,.085));
-  border-radius:8px;
-  background:rgba(255,255,255,.011);
-  color:#c0bdb4;
-  font-size:8.5px;
-  font-variant-numeric:tabular-nums;
-}
-.gameplay-context-panel .track{height:3px;background:rgba(235,228,211,.12)}
-.gameplay-context-panel .track i{background:#b99b60}
-
-/* Weather: bottom-anchored three-zone context panel ----------------------
-   Header/Footer carry the same low-saturation slate-blue glass.
-   Body stays neutral so world colour can provide ambience without tinting every control. */
-.gameplay-context-panel--weather{
-  --weather-slate-top:rgba(67,84,116,.84);
-  --weather-slate-bottom:rgba(49,64,91,.78);
-  --weather-body-top:rgba(43,48,55,.68);
-  --weather-body-bottom:rgba(29,34,40,.64);
-  --weather-border:rgba(198,209,226,.16);
-  --weather-rule:rgba(191,204,222,.10);
-  --weather-blue:#7e95b9;
-  --weather-blue-bright:#a8b8cf;
-  --weather-paper:#e6e2da;
-  --weather-muted:#9da6b0;
-  --weather-gold:#c3a86a;
-
-  border-color:var(--weather-border);
-  background:linear-gradient(180deg,var(--weather-body-top),var(--weather-body-bottom));
-  box-shadow:0 18px 46px rgba(4,8,13,.27),inset 0 1px 0 rgba(255,255,255,.018);
-  backdrop-filter:blur(17px) saturate(.78) brightness(1.04);
-  -webkit-backdrop-filter:blur(17px) saturate(.78) brightness(1.04);
-}
-
-.gameplay-context-panel--weather>header{
-  border-bottom-color:rgba(207,218,234,.15);
-  background:
-    linear-gradient(90deg,rgba(118,143,183,.10),transparent 52%),
-    linear-gradient(180deg,var(--weather-slate-top),var(--weather-slate-bottom));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
-}
-.gameplay-context-panel--weather .gameplay-context-panel__heading-icon{
-  color:#c8d4e4;
-  border-color:rgba(211,222,237,.16);
-  background:rgba(227,235,246,.055);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
-}
-.gameplay-context-panel--weather .gameplay-context-panel__title{color:var(--weather-paper)}
-.gameplay-context-panel--weather .gameplay-context-panel__heading-copy>span{color:#a7b6ca}
-.gameplay-context-panel--weather>header .icon-button{color:#9ba9bc}
-.gameplay-context-panel--weather>header .icon-button:hover{color:#eef1f5;background:rgba(230,237,247,.07)}
-
-.gameplay-context-panel__body--weather{
-  max-height:calc(var(--hud-left-context-max-height,720px) - 114px);
-  padding:12px 16px 12px;
-  background:
-    radial-gradient(ellipse at 76% 12%,rgba(112,137,177,.040),transparent 34%),
-    linear-gradient(180deg,rgba(255,255,255,.010),rgba(255,255,255,0));
-}
-.gameplay-context-panel__body--weather.is-world-follow{padding-top:11px;padding-bottom:14px}
-
-.gameplay-context-panel--weather .gameplay-context-panel__section + .gameplay-context-panel__section{
-  border-top-color:var(--weather-rule);
-}
-.gameplay-context-panel--weather .gameplay-context-panel__section-title{gap:8px}
-.gameplay-context-panel--weather .gameplay-context-panel__section-title::after{
+.left-context-panel__section-title.is-action::after{
   content:'';
   height:1px;
   flex:1;
-  margin-left:2px;
-  background:linear-gradient(90deg,rgba(164,181,205,.16),rgba(164,181,205,.03) 74%,transparent);
-}
-.gameplay-context-panel--weather .gameplay-context-panel__section-title b{
-  color:#b8c4d3;
-  font-weight:560;
-  letter-spacing:.035em;
+  background:linear-gradient(90deg,rgba(238,233,223,.065),transparent);
 }
 
-.gameplay-context-panel--weather .parameter-row>span{color:#a7afb8;font-size:9.2px}
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button{
-  border-color:rgba(188,201,219,.13);
-  background:rgba(218,226,237,.035);
-  color:#abb5c1;
+/* Shared parameter controls ------------------------------------------------ */
+.left-context-panel .parameter-row{
+  min-height:35px;
+  grid-template-columns:86px 28px minmax(100px,1fr) 28px 50px;
+  gap:5px;
 }
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
-  border-color:rgba(188,204,226,.23);
-  background:rgba(131,154,190,.10);
-  color:#eef1f4;
-}
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-value-field{
-  border-color:rgba(188,201,219,.12);
-  background:rgba(224,230,239,.030);
-  color:#d9dce1;
-}
-.gameplay-context-panel--weather .ui-slider__track{
-  background:rgba(174,188,207,.15);
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.15);
-}
-.gameplay-context-panel--weather .ui-slider__track>i{
-  background:linear-gradient(90deg,#6881aa,#8da4c5);
-  box-shadow:0 0 8px rgba(106,133,174,.10);
-}
-.gameplay-context-panel--weather .ui-slider__thumb{
-  background:#e6e2da;
-  border-color:rgba(248,246,239,.96);
-  box-shadow:0 2px 5px rgba(0,0,0,.30),0 0 0 1px rgba(109,134,174,.14);
-}
-.gameplay-context-panel--weather .ui-slider:hover .ui-slider__thumb{
-  box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(117,145,187,.10);
-}
-.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__track{
-  box-shadow:0 0 0 1px rgba(121,149,192,.34);
-}
-.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__thumb{
-  box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 5px rgba(121,149,192,.12);
-}
-
-.gameplay-context-panel__footer{
-  flex:0 0 56px;
-  min-height:56px;
-  padding:9px 14px;
-  border-top:1px solid var(--weather-rule);
-}
-.gameplay-context-panel__footer--weather-mode{
-  background:
-    linear-gradient(90deg,rgba(118,143,183,.07),transparent 52%),
-    linear-gradient(180deg,var(--weather-slate-top),var(--weather-slate-bottom));
-  border-top-color:rgba(207,218,234,.15);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
-}
-.game-canvas .gameplay-context-panel--weather .gameplay-context-panel__footer .segment{
-  min-height:36px;
-  height:36px;
-  padding:2px;
-  gap:2px;
-  border:1px solid rgba(203,214,230,.12);
-  border-radius:8px;
-  background:rgba(11,17,27,.18);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.012);
-}
-.game-canvas .gameplay-context-panel--weather .gameplay-context-panel__footer .segment>button{
-  height:30px;
-  min-height:30px;
-  border-radius:6px;
-  color:#aeb9c8;
-  font-size:9.6px;
+.left-context-panel .parameter-row>span{
+  color:#969a97;
+  font-size:11px;
   font-weight:520;
 }
-.game-canvas .gameplay-context-panel--weather .gameplay-context-panel__footer .segment>button:hover{
-  background:rgba(224,232,242,.055);
-  color:#eef1f5;
+.game-canvas .left-context-panel .ui-parameter-row>.ui-stepper-button{
+  width:28px;
+  height:28px;
+  border-color:var(--wanhu-control-border-soft,rgba(238,233,223,.065));
+  border-radius:8px;
+  background:rgba(255,255,255,.020);
+  color:#b7b8b2;
 }
-.game-canvas .gameplay-context-panel--weather .gameplay-context-panel__footer .segment>button.is-active{
-  background:rgba(226,233,242,.070);
-  color:#f0f2f5;
-  box-shadow:inset 0 -2px 0 rgba(195,168,106,.86),inset 0 1px 0 rgba(255,255,255,.018);
+.game-canvas .left-context-panel .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
+  border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));
+  background:rgba(255,255,255,.060);
+  color:#eee9df;
+}
+.game-canvas .left-context-panel .ui-parameter-row>.ui-value-field{
+  height:28px;
+  padding:0 1px 0 4px;
+  border-color:transparent;
+  border-radius:0;
+  background:transparent;
+  color:#f0ece4;
+  font-size:11px;
+  font-weight:580;
+}
+.left-context-panel .ui-slider__track{
+  height:3px;
+  background:rgba(238,233,223,.13);
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.14);
+}
+.left-context-panel .ui-slider__track>i{
+  background:#aaa9a3;
+  box-shadow:none;
+}
+.left-context-panel .ui-slider__thumb{
+  width:11px;
+  height:11px;
+  background:var(--wanhu-color-paper-primary,#eee9df);
+  border-color:rgba(244,239,229,.92);
+  box-shadow:0 2px 5px rgba(0,0,0,.26);
+}
+.left-context-panel .ui-slider:hover .ui-slider__thumb{
+  width:12px;
+  height:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.28),0 0 0 3px rgba(169,132,75,.07);
+}
+.left-context-panel .ui-slider:focus-within .ui-slider__track{
+  box-shadow:0 0 0 1px rgba(169,132,75,.28);
+}
+.left-context-panel .ui-slider:focus-within .ui-slider__thumb{
+  width:12px;
+  height:12px;
+  background:#f0e7d6;
+  box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(169,132,75,.11);
 }
 
-.weather-world-summary{padding-bottom:3px}
-.weather-world-summary__rows{display:flex;flex-direction:column;margin-top:1px}
-.weather-world-summary__rows>div{
-  min-height:39px;
+/* Shared segmented controls ----------------------------------------------- */
+.game-canvas .left-context-panel .segment{
+  min-height:34px;
+  height:34px;
+  padding:0;
+  gap:6px;
+  border:0;
+  border-radius:0;
+  overflow:visible;
+  background:transparent;
+  box-shadow:none;
+}
+.game-canvas .left-context-panel .segment>button{
+  position:relative;
+  height:34px;
+  min-height:34px;
+  padding:0 10px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#999d99;
+  font-size:10.5px;
+  font-weight:560;
+}
+.game-canvas .left-context-panel .segment>button:hover{
+  background:rgba(255,255,255,.035);
+  color:#d6d1c8;
+}
+.game-canvas .left-context-panel .segment>button.is-active{
+  background:rgba(169,132,75,.075);
+  color:var(--wanhu-color-paper-primary,#eee9df);
+  box-shadow:inset 0 -2px 0 rgba(169,132,75,.78);
+}
+.game-canvas .left-context-panel .segment>button.is-active::before{display:none}
+
+.left-context-panel__labeled-control{
+  min-height:40px;
+  display:grid;
+  grid-template-columns:86px minmax(0,1fr);
+  align-items:center;
+  gap:5px;
+}
+.left-context-panel__labeled-control>span{
+  color:#969a97;
+  font-size:11px;
+  font-weight:520;
+}
+
+/* Shared mode footer ------------------------------------------------------- */
+.left-context-panel__footer{
+  flex:0 0 48px;
+  min-height:48px;
+  padding:6px 12px 7px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:14px;
-  border-bottom:1px solid rgba(188,201,219,.075);
+  gap:12px;
+  border-top:1px solid var(--wanhu-surface-context-rule,rgba(238,233,223,.055));
+  background:rgba(255,255,255,.008);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.010);
 }
-.weather-world-summary__rows>div:last-child{border-bottom:0}
-.weather-world-summary__rows span{color:#969fa9;font-size:9px}
-.weather-world-summary__rows b{color:#dce0e5;font-size:9.5px;font-weight:540;font-variant-numeric:tabular-nums}
-.weather-world-summary p{
-  margin:11px 0 1px;
-  padding:10px 11px;
-  border:1px solid rgba(184,198,218,.085);
+.context-panel-reset-button{
+  height:32px;
+  min-height:32px;
+  padding:0 9px;
+  border:0;
   border-radius:8px;
-  background:rgba(221,229,240,.025);
-  color:#858f9b;
-  font-size:8.5px;
-  line-height:1.65;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  background:transparent;
+  color:#9d9f9a;
+  font-size:10px;
+  font-weight:560;
+  cursor:pointer;
 }
+.context-panel-reset-button svg{width:13px;height:13px;stroke-width:1.8}
+.context-panel-reset-button:hover:not(:disabled){
+  background:var(--wanhu-control-hover-strong,rgba(255,255,255,.052));
+  color:var(--wanhu-color-paper-primary,#eee9df);
+}
+.context-panel-reset-button:focus-visible{outline:1px solid rgba(169,132,75,.40);outline-offset:1px}
+.context-panel-reset-button:disabled{opacity:.34;cursor:default}
+.context-panel-mode-switch{min-width:190px;margin-left:auto}
+.context-panel-mode-switch .segment{width:100%}
 
 @keyframes gameplay-context-enter{
   from{transform:translateY(12px);opacity:.72}

@@ -1,6 +1,6 @@
-/* Environment component skin.
-   Outer material/elevation belong to wanhu-surface-system.css.
-   This file owns Environment content rhythm, controls and local interaction hierarchy. */
+/* Environment content skin.
+   Shell/header/footer/common controls are shared with Camera and placement panels via gameplay-context-panel.css.
+   This file owns only weather-specific content: presets, world summary and time/season rhythm. */
 
 .gameplay-context-panel--weather{
   --weather-paper:var(--wanhu-color-paper-primary,#eee9df);
@@ -12,44 +12,16 @@
   --weather-gold-soft:var(--wanhu-color-brass-soft,rgba(169,132,75,.105));
 }
 
-/* Header geometry is shared with the icon-led header system; Environment only hides
-   the optional subtitle and keeps its identity content compact. */
-.gameplay-context-panel--weather .gameplay-context-panel__heading{gap:9px}
-.gameplay-context-panel--weather .gameplay-context-panel__heading-copy>span{display:none}
-.gameplay-context-panel--weather>header .icon-button{color:#bcbab4}
-.gameplay-context-panel--weather>header .icon-button:hover{
-  color:#fffdf7;
-  background:rgba(255,255,255,.070);
-}
-
 .gameplay-context-panel__body--weather{
-  max-height:calc(var(--hud-left-context-max-height,720px) - 98px);
   padding:10px 12px 8px;
   background:transparent;
 }
 .gameplay-context-panel__body--weather.is-world-follow{padding-top:10px;padding-bottom:10px}
 
-/* Presets float directly on the parent glass. */
+/* Presets are the only compact card-like controls inside Environment. */
 .weather-preset-section{
-  margin:0 0 2px!important;
-  padding:1px 1px 9px!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-}
-.weather-preset-section__heading{
-  min-height:22px;
-  margin:0 1px 6px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-.weather-preset-section__heading>b{
-  color:var(--weather-paper);
-  font-size:12px;
-  font-weight:600;
-  letter-spacing:.025em;
+  padding-top:2px;
+  padding-bottom:9px;
 }
 .weather-preset-grid{
   display:grid;
@@ -98,175 +70,33 @@
   white-space:nowrap;
 }
 
-/* Secondary sections use rhythm + one rule instead of grey-card-inside-grey-card. */
-.gameplay-context-panel__body--weather.is-scene-simulation>
-.gameplay-context-panel__section:not(.weather-preset-section),
-.gameplay-context-panel__body--weather.is-world-follow>.weather-world-summary{
-  margin:0;
-  padding:11px 1px 10px;
-  border:0!important;
-  border-radius:0;
-  background:transparent!important;
-  box-shadow:none;
-}
-.gameplay-context-panel__body--weather.is-scene-simulation>
-.gameplay-context-panel__section:not(.weather-preset-section)+.gameplay-context-panel__section,
-.gameplay-context-panel__body--weather.is-world-follow>.weather-world-summary{
-  border-top:1px solid var(--weather-rule)!important;
-}
+.weather-time-season-section{padding-bottom:5px}
 
-.gameplay-context-panel--weather .gameplay-context-panel__section-title{
-  min-height:20px;
-  margin-bottom:4px;
-  gap:0;
+.weather-world-summary{padding-bottom:7px}
+.weather-world-summary__rows{
+  display:flex;
+  flex-direction:column;
+  margin-top:1px;
 }
-.gameplay-context-panel--weather .gameplay-context-panel__section-title::before,
-.gameplay-context-panel--weather .gameplay-context-panel__section-title::after{display:none!important}
-.gameplay-context-panel--weather .gameplay-context-panel__section-title b{
-  color:#b0ada5;
-  font-size:12px;
-  font-weight:600;
-  letter-spacing:.025em;
-}
-
-/* Parameter rows: labels stay calm; current values carry the second reading level. */
-.gameplay-context-panel--weather .parameter-row{
-  min-height:35px;
-  grid-template-columns:86px 28px minmax(100px,1fr) 28px 50px;
-  gap:5px;
-}
-.gameplay-context-panel--weather .parameter-row>span{
-  color:#969a97;
-  font-size:11px;
-  font-weight:520;
-}
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button{
-  width:28px;
-  height:28px;
-  border-color:var(--wanhu-control-border-soft,rgba(238,233,223,.065));
-  border-radius:8px;
-  background:rgba(255,255,255,.030);
-  color:#cbc8c1;
-}
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
-  border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));
-  background:rgba(255,255,255,.080);
-  color:#fffdf7;
-}
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button:focus-visible{outline-color:rgba(169,132,75,.42)}
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-value-field{
-  height:28px;
-  padding:0 1px 0 4px;
-  border-color:transparent;
-  border-radius:0;
-  background:transparent;
-  color:#f0ece4;
-  font-size:11px;
-  font-weight:580;
-}
-
-.gameplay-context-panel--weather .ui-slider__track{
-  height:3px;
-  background:rgba(238,233,223,.13);
-  box-shadow:inset 0 1px 0 rgba(0,0,0,.14);
-}
-.gameplay-context-panel--weather .ui-slider__track>i{background:#a9aaa4;box-shadow:none}
-.gameplay-context-panel--weather .ui-slider__thumb{
-  width:11px;
-  height:11px;
-  background:var(--weather-paper);
-  border-color:rgba(244,239,229,.92);
-  box-shadow:0 2px 6px rgba(0,0,0,.36);
-}
-.gameplay-context-panel--weather .ui-slider:hover .ui-slider__thumb{
-  width:12px;
-  height:12px;
-  box-shadow:0 2px 6px rgba(0,0,0,.36),0 0 0 3px rgba(169,132,75,.07);
-}
-.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__track{box-shadow:0 0 0 1px rgba(169,132,75,.28)}
-.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__thumb{
-  width:12px;
-  height:12px;
-  background:#f0e7d6;
-  box-shadow:0 2px 6px rgba(0,0,0,.36),0 0 0 4px rgba(169,132,75,.11);
-}
-
-/* Footer is a light command line: restore on the left, mode selector on the right. */
-.gameplay-context-panel__footer--weather-mode{
-  flex-basis:48px;
-  min-height:48px;
-  padding:6px 12px 7px;
+.weather-world-summary__rows>div{
+  min-height:36px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:12px;
+  gap:14px;
+  border-bottom:1px solid rgba(255,255,255,.065);
 }
-.environment-reset-button{
-  height:32px;
-  min-height:32px;
-  padding:0 9px;
-  border:0;
-  border-radius:8px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  background:transparent;
-  color:var(--weather-muted);
-  font-size:10px;
-  font-weight:560;
-  cursor:pointer;
-}
-.environment-reset-button svg{width:13px;height:13px;stroke-width:1.8}
-.environment-reset-button:hover:not(:disabled){background:var(--wanhu-control-hover-strong,rgba(255,255,255,.052));color:var(--weather-paper)}
-.environment-reset-button:focus-visible{
-  outline:1px solid rgba(169,132,75,.40);
-  outline-offset:1px;
-}
-.environment-reset-button:disabled{opacity:.34;cursor:default}
-.environment-mode-switch{min-width:190px;margin-left:auto}
-.game-canvas .gameplay-context-panel--weather .environment-mode-switch .segment{
-  height:34px;
-  min-height:34px;
-  padding:0;
-  gap:8px;
-  border:0;
-  border-radius:0;
-  background:transparent;
-  box-shadow:none;
-}
-.game-canvas .gameplay-context-panel--weather .environment-mode-switch .segment>button{
-  height:34px;
-  min-height:34px;
-  padding:0 12px;
-  border-radius:8px;
-  background:transparent;
-  color:#999d99;
-  font-size:10.5px;
-  font-weight:560;
-}
-.game-canvas .gameplay-context-panel--weather .environment-mode-switch .segment>button:hover{
-  background:rgba(255,255,255,.035);
-  color:#d6d1c8;
-}
-.game-canvas .gameplay-context-panel--weather .environment-mode-switch .segment>button.is-active{
-  background:rgba(169,132,75,.075);
-  color:var(--weather-paper);
-  box-shadow:inset 0 -2px 0 rgba(169,132,75,.78);
-}
-
-.weather-world-summary{padding-bottom:7px!important}
-.weather-world-summary__rows{margin-top:1px}
-.weather-world-summary__rows>div{min-height:36px;border-bottom-color:rgba(255,255,255,.065)}
+.weather-world-summary__rows>div:last-child{border-bottom:0}
 .weather-world-summary__rows span{color:var(--weather-muted);font-size:11px;font-weight:500}
-.weather-world-summary__rows b{color:var(--weather-paper);font-size:11px;font-weight:570}
+.weather-world-summary__rows b{color:var(--weather-paper);font-size:11px;font-weight:570;font-variant-numeric:tabular-nums}
 .weather-world-summary p{
   margin:8px 0 0;
   padding:6px 0 0;
   border:0;
-  border-radius:0;
   background:transparent;
   color:#b1aea7;
   font-size:9px;
   line-height:1.5;
 }
+
+.environment-mode-switch{min-width:190px}
