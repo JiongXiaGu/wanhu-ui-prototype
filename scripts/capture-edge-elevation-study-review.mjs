@@ -11,6 +11,7 @@ const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, de
 async function open(review, waitFor) {
   const url = new URL(baseUrl);
   url.searchParams.set('review', review);
+  url.searchParams.set('study', 'edge');
   await page.goto(url.toString(), { waitUntil: 'networkidle' });
   await page.waitForSelector(waitFor);
   await page.waitForTimeout(180);
