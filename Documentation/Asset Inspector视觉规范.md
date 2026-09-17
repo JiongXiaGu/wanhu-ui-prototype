@@ -35,27 +35,31 @@ OcclusionPlate：
 - 与 Inspector 尺寸一致或略向内收；
 - 不 Blur；
 - 不接收输入；
-- 中性深灰，低到中等 Alpha；
+- 中性深灰，中等 Alpha；
 - 只遮挡 Inspector 正下方，不使用全屏 Scrim。
 
 ## Elevated Glass v1
 
+人工审图后的正式基线以“底层 UI 不明显穿透”为优先，不追求 Inspector 自身的高透明度。
+
 白天：
 
-- Surface：`rgba(64,67,65,.76)`
-- Local Occlusion：`rgba(18,21,20,.22)`
-- Edge：`rgba(255,255,255,.26)`
-- Rule：`rgba(255,255,255,.075)`
+- Surface：`rgba(64,67,65,.84)`
+- Local Occlusion：`rgba(18,21,20,.30)`
+- Edge：`rgba(255,255,255,.28)`
+- Rule：`rgba(255,255,255,.085)`
 - Scene/UI Backdrop Blur：Inspector 自身为 `none`
 
 夜晚：
 
-- Surface：`rgba(72,75,73,.74)`
-- Local Occlusion：`rgba(16,18,17,.26)`
-- Edge：`rgba(255,255,255,.28)`
-- Rule：`rgba(255,255,255,.085)`
+- Surface：`rgba(72,75,73,.82)`
+- Local Occlusion：`rgba(16,18,17,.32)`
+- Edge：`rgba(255,255,255,.30)`
+- Rule：`rgba(255,255,255,.095)`
 
 阴影比 Workspace 明显一档；顶部只保留极弱纸白高光，不使用暖金描边。
+
+这组参数的目的不是让 Inspector 变成不透明卡片，而是在 **UI Toolkit 无法模糊底层 UI** 的前提下，把 Workspace 的文字、缩略图和状态线压到约一成左右的残余可见度。
 
 ## 内容层级
 
