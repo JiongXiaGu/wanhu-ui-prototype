@@ -1,22 +1,6 @@
-/* Building Placement content skin.
-   Shared shell/header/footer/control language belongs to gameplay-context-panel.css.
-   This file owns only building-specific geometry, terrain summaries and mode-content rhythm. */
-
-.gameplay-screen .tool-overlay.building-placement-prototype{
-  top:auto;
-  width:400px;
-  max-height:calc(100% - 92px);
-  transform:none;
-  z-index:22;
-}
-
-.gameplay-screen .tool-overlay.building-placement-prototype .tool-body{
-  max-height:calc(100vh - 150px);
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding:10px 12px 12px;
-  scrollbar-width:thin;
-}
+/* Building Placement business content only.
+   Placement positioning belongs to placement-context-panel.css.
+   Shared shell/header/material/control language belongs to the Left Context System. */
 
 .bp-context-panel{display:flex;flex-direction:column;gap:0}
 
