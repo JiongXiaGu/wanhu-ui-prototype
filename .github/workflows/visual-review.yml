@@ -35,10 +35,10 @@ jobs:
         run: npm install --prefer-offline --no-audit --no-fund
       - name: Cache Playwright browser
         id: cache-playwright
-        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-1.55.0-chromium
+        uses: actions/cache@v4
       - name: Install Playwright package
         run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
       - name: Install Chromium
@@ -69,6 +69,7 @@ jobs:
           node scripts/capture-edge-elevation-study-review.mjs
           node scripts/capture-character-pass-review.mjs
           node scripts/capture-inventory-shortcut-review.mjs
+          node scripts/capture-surface-system-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
