@@ -164,6 +164,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
   const footer = isCamera ? (
     <LeftContextModeFooter
       actionLabel="恢复默认"
+      actionAriaLabel="恢复默认镜头参数"
       actionTitle={cameraModified ? '恢复经营模式默认镜头参数' : '当前已是默认镜头参数'}
       actionDisabled={!cameraModified}
       actionClassName="camera-reset-button"
@@ -175,6 +176,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
   ) : (
     <LeftContextModeFooter
       actionLabel="恢复当前"
+      actionAriaLabel="恢复当前游戏环境"
       actionTitle={weatherLocked ? '跟随世界时由世界系统驱动' : environmentModified ? '恢复到打开环境面板时的游戏状态' : '当前已与游戏环境一致'}
       actionDisabled={weatherLocked || !environmentModified}
       actionClassName="environment-reset-button"
