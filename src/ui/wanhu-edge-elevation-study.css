@@ -1,0 +1,157 @@
+/* Wanhu Edge & Elevation Study — review only.
+   A = current baseline. B = directional edge. C = borderless large surfaces.
+   This file must not change the default runtime unless data-edge-study is present. */
+
+.gameplay-screen[data-edge-study="b"]{
+  --wanhu-edge-light:rgba(255,255,255,.14);
+  --wanhu-edge-light-soft:rgba(255,255,255,.09);
+  --wanhu-edge-dark:rgba(8,11,10,.24);
+  --wanhu-edge-dark-soft:rgba(8,11,10,.16);
+}
+
+/* B — directional edge: light source comes from upper-left. */
+.gameplay-screen[data-edge-study="b"] .gameplay-top-status,
+.gameplay-screen[data-edge-study="b"] .workspace--design,
+.gameplay-screen[data-edge-study="b"] .command-bar,
+.gameplay-screen[data-edge-study="b"] > .world-utility-toolbar.command-utility,
+.gameplay-screen[data-edge-study="b"] .gameplay-operation-hints,
+.gameplay-screen[data-edge-study="b"] .gameplay-system-menu-button,
+.gameplay-screen[data-edge-study="b"] .asset-inspector-popover{
+  border-top-color:var(--wanhu-edge-light);
+  border-left-color:var(--wanhu-edge-light-soft);
+  border-right-color:var(--wanhu-edge-dark-soft);
+  border-bottom-color:var(--wanhu-edge-dark);
+}
+
+.gameplay-screen[data-edge-study="b"] .gameplay-top-status{
+  box-shadow:
+    0 18px 40px rgba(3,5,4,.23),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 1px 0 0 rgba(255,255,255,.035),
+    inset 0 -1px 0 rgba(0,0,0,.13);
+}
+.gameplay-screen[data-edge-study="b"] .gameplay-top-navigation{
+  border-top-color:rgba(255,255,255,.035);
+  border-left-color:rgba(255,255,255,.085);
+  border-right-color:rgba(8,11,10,.13);
+  border-bottom-color:rgba(8,11,10,.22);
+  box-shadow:
+    0 13px 28px rgba(3,5,4,.17),
+    inset 1px 0 0 rgba(255,255,255,.025),
+    inset 0 -1px 0 rgba(0,0,0,.10);
+}
+.gameplay-screen[data-edge-study="b"] .workspace--design{
+  box-shadow:
+    0 25px 58px rgba(4,6,5,.27),
+    inset 0 1px 0 rgba(255,255,255,.09),
+    inset 1px 0 0 rgba(255,255,255,.035),
+    inset 0 -1px 0 rgba(0,0,0,.15);
+}
+.gameplay-screen[data-edge-study="b"] .workspace--design .workspace-header{
+  border-bottom-color:rgba(8,11,10,.14);
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.028);
+}
+.gameplay-screen[data-edge-study="b"] .workspace--design .workspace-context-filter{
+  border-bottom-color:rgba(8,11,10,.11);
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.022);
+}
+.gameplay-screen[data-edge-study="b"] .command-bar{
+  box-shadow:
+    0 13px 32px rgba(3,5,4,.30),
+    inset 0 1px 0 rgba(255,255,255,.095),
+    inset 0 -1px 0 rgba(0,0,0,.18);
+}
+.gameplay-screen[data-edge-study="b"] > .world-utility-toolbar.command-utility,
+.gameplay-screen[data-edge-study="b"] .gameplay-system-menu-button{
+  box-shadow:
+    0 11px 24px rgba(3,5,4,.16),
+    inset 0 1px 0 rgba(255,255,255,.065),
+    inset 0 -1px 0 rgba(0,0,0,.11);
+}
+.gameplay-screen[data-edge-study="b"] .gameplay-operation-hints{
+  box-shadow:
+    0 9px 20px rgba(3,5,4,.13),
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -1px 0 rgba(0,0,0,.10);
+}
+.gameplay-screen[data-edge-study="b"] .asset-inspector-popover{
+  border-top-color:rgba(255,255,255,.22);
+  border-left-color:rgba(255,255,255,.15);
+  border-right-color:rgba(5,8,7,.30);
+  border-bottom-color:rgba(5,8,7,.36);
+  box-shadow:
+    0 24px 52px rgba(2,4,3,.38),
+    0 7px 18px rgba(2,4,3,.24),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 1px 0 0 rgba(255,255,255,.04),
+    inset 0 -1px 0 rgba(0,0,0,.16);
+}
+
+/* C — borderless large surfaces: tone, highlight and shadow do the structural work. */
+.gameplay-screen[data-edge-study="c"] .gameplay-top-status,
+.gameplay-screen[data-edge-study="c"] .gameplay-top-navigation,
+.gameplay-screen[data-edge-study="c"] .workspace--design,
+.gameplay-screen[data-edge-study="c"] .command-bar,
+.gameplay-screen[data-edge-study="c"] > .world-utility-toolbar.command-utility,
+.gameplay-screen[data-edge-study="c"] .gameplay-operation-hints,
+.gameplay-screen[data-edge-study="c"] .gameplay-system-menu-button{
+  border-color:transparent;
+}
+.gameplay-screen[data-edge-study="c"] .gameplay-top-status{
+  box-shadow:
+    0 18px 42px rgba(3,5,4,.24),
+    inset 0 1px 0 rgba(255,255,255,.105),
+    inset 0 -1px 0 rgba(0,0,0,.14);
+}
+.gameplay-screen[data-edge-study="c"] .gameplay-top-navigation{
+  box-shadow:
+    0 13px 29px rgba(3,5,4,.18),
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -1px 0 rgba(0,0,0,.13);
+}
+.gameplay-screen[data-edge-study="c"] .workspace--design{
+  box-shadow:
+    0 27px 62px rgba(4,6,5,.30),
+    inset 0 1px 0 rgba(255,255,255,.10),
+    inset 0 -1px 0 rgba(0,0,0,.18);
+}
+.gameplay-screen[data-edge-study="c"] .workspace--design .workspace-header{
+  border-bottom-color:rgba(8,11,10,.12);
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.025);
+}
+.gameplay-screen[data-edge-study="c"] .workspace--design .workspace-context-filter{
+  border-bottom-color:rgba(8,11,10,.085);
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.018);
+}
+.gameplay-screen[data-edge-study="c"] .command-bar{
+  box-shadow:
+    0 14px 34px rgba(3,5,4,.33),
+    inset 0 1px 0 rgba(255,255,255,.11),
+    inset 0 -1px 0 rgba(0,0,0,.20);
+}
+.gameplay-screen[data-edge-study="c"] > .world-utility-toolbar.command-utility,
+.gameplay-screen[data-edge-study="c"] .gameplay-system-menu-button{
+  box-shadow:
+    0 10px 24px rgba(3,5,4,.15),
+    inset 0 1px 0 rgba(255,255,255,.060),
+    inset 0 -1px 0 rgba(0,0,0,.10);
+}
+.gameplay-screen[data-edge-study="c"] .gameplay-operation-hints{
+  box-shadow:
+    0 8px 19px rgba(3,5,4,.12),
+    inset 0 1px 0 rgba(255,255,255,.050),
+    inset 0 -1px 0 rgba(0,0,0,.09);
+}
+
+/* Elevated surfaces keep a contour even in C because they overlap other UI. */
+.gameplay-screen[data-edge-study="c"] .asset-inspector-popover{
+  border-top-color:rgba(255,255,255,.18);
+  border-left-color:rgba(255,255,255,.11);
+  border-right-color:rgba(5,8,7,.28);
+  border-bottom-color:rgba(5,8,7,.34);
+  box-shadow:
+    0 26px 58px rgba(2,4,3,.40),
+    0 8px 20px rgba(2,4,3,.25),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(0,0,0,.18);
+}
