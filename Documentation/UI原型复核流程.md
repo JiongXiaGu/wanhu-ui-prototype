@@ -20,6 +20,8 @@ Vercel 线上页面是否已经更新不作为截图复核的前置条件；GitH
 本项目把“原型开发与复核”和“线上 Production 发布”分开处理：
 
 - Agent 默认工作到 Git / GitHub Actions / Review 为止；代码、测试、Review Scenario 和文档确认后合入 `main`，并完成 Build、Visual Review 与人工审图；
+- 重要 UI 修改优先在 `tmp-*` 临时复核分支完成；Build 与 Visual Review 均允许这些分支触发，审图通过后再快进或合入 `main`；
+- 临时分支与 `main` 的 Visual Review 使用各自独立的 concurrency group，避免审图分支与正式分支互相取消；
 - `main` 已包含确认后的修改后，本轮 UI 工程任务即可结束，不需要等待 Vercel 部署完成；
 - Vercel Production 的 Deploy / Promote / Redeploy 默认由用户手动操作；除非用户明确要求排查 Vercel，否则 Agent 不主动调用 Vercel、不查询部署状态或日志、不等待部署，也不尝试推进 Production；
 - 不允许创建空提交、`deploy-only` 提交、无内容重试提交，或为了刷新 Vercel 页面而污染 Git 历史；
