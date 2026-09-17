@@ -1,10 +1,9 @@
-/* Wanhu Mist Glass v1
-   Shared material language for Gameplay glass surfaces.
-   Default runtime uses the selected high-transparency baseline. Environment and
-   Design Workspace differ by Surface Tier, not by hue. Review-only A/B/C
-   attributes preserve the comparison baselines without changing gameplay state. */
+/* Wanhu Mist Glass v1 — REVIEW ONLY
+   Production material ownership lives in wanhu-theme-tokens.css + wanhu-surface-system.css.
+   This file owns the historical A/B/C comparison fixtures, including applying each
+   study variable to the rendered surface so no production compatibility layer is needed. */
 
-/* ---- Default / C: selected production baseline ---- */
+/* ---- Default / C: selected historical baseline ---- */
 .gameplay-screen .gameplay-context-panel--weather{
   --weather-mist-surface:rgba(86,88,86,.31);
   --weather-mist-card:rgba(255,255,255,.040);
@@ -29,12 +28,8 @@
   -webkit-backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
 }
 .gameplay-screen .gameplay-context-panel--weather>header,
-.gameplay-screen .workspace--design .workspace-header{
-  background:rgba(255,255,255,.012);
-}
-.gameplay-screen .gameplay-context-panel__footer--weather-mode{
-  background:rgba(255,255,255,.010);
-}
+.gameplay-screen .workspace--design .workspace-header{background:rgba(255,255,255,.012)}
+.gameplay-screen .gameplay-context-panel__footer--weather-mode{background:rgba(255,255,255,.010)}
 
 .gameplay-screen .workspace--design{
   --workspace-glass-surface:rgba(86,88,86,.34);
@@ -87,7 +82,6 @@
 }
 .gameplay-screen[data-glass-study="a"] .gameplay-context-panel--weather>header{background:rgba(255,255,255,.018)}
 .gameplay-screen[data-glass-study="a"] .gameplay-context-panel__footer--weather-mode{background:rgba(255,255,255,.016)}
-
 .gameplay-screen[data-glass-study="a"] .workspace--design{
   --workspace-glass-surface:rgba(74,76,75,.52);
   --workspace-glass-body:rgba(43,47,45,.66);
@@ -141,7 +135,6 @@
 .gameplay-screen[data-glass-study="b"] .gameplay-context-panel--weather>header,
 .gameplay-screen[data-glass-study="b"] .workspace--design .workspace-header{background:rgba(255,255,255,.016)}
 .gameplay-screen[data-glass-study="b"] .gameplay-context-panel__footer--weather-mode{background:rgba(255,255,255,.014)}
-
 .gameplay-screen[data-glass-study="b"] .workspace--design{
   --workspace-glass-surface:rgba(82,84,82,.42);
   --workspace-glass-body:rgba(51,54,52,.52);
@@ -214,4 +207,22 @@
   --workspace-rule:rgba(255,255,255,.11);
   backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
   -webkit-backdrop-filter:blur(26px) saturate(.61) brightness(1.09);
+}
+
+/* Apply the historical variables inside the review fixture itself. This logic used
+   to live in production tonal-texture.css and is now deliberately isolated here. */
+.gameplay-screen[data-glass-study] .gameplay-context-panel--weather{
+  background-color:var(--weather-mist-surface);
+  background-image:var(--wanhu-material-noise,url('/assets/ui/materials/glass-noise-soft.png'));
+  background-repeat:repeat;
+  background-size:256px 256px;
+}
+.gameplay-screen[data-glass-study] .workspace--design{
+  background-color:var(--workspace-glass-surface);
+  background-image:var(--wanhu-material-noise,url('/assets/ui/materials/glass-noise-soft.png'));
+  background-repeat:repeat;
+  background-size:256px 256px;
+}
+.gameplay-screen[data-glass-study] .workspace--design .workspace-body{
+  background:var(--workspace-glass-body);
 }
