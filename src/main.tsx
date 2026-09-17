@@ -45,6 +45,7 @@ import './ui/wanhu-character.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
 import './ui/wanhu-tonal-material.css';
+import './ui/wanhu-tonal-texture.css';
 import './fixed-canvas-guards.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
