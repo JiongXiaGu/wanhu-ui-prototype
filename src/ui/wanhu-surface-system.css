@@ -1,6 +1,22 @@
-/* Wanhu Surface System v2
+/* Wanhu Surface System v3
    Formal material owner for gameplay surfaces.
-   Theme tokens own palette/material recipes; component CSS owns geometry only. */
+   Theme tokens own palette/material recipes; component CSS owns geometry and local content hierarchy. */
+
+/* ---------------------------------------------------------------------
+   Context Surface — shared context panels (Camera etc.)
+   --------------------------------------------------------------------- */
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel{
+  background-color:var(--wanhu-surface-context-generic-bottom);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-context-generic-top),var(--wanhu-surface-context-generic-bottom)),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-color:var(--wanhu-surface-context-edge);
+  box-shadow:var(--wanhu-surface-context-shadow);
+  backdrop-filter:var(--wanhu-surface-context-filter);
+  -webkit-backdrop-filter:var(--wanhu-surface-context-filter);
+}
 
 /* ---------------------------------------------------------------------
    Context Surface — Environment
@@ -53,7 +69,7 @@
   --workspace-glass-card:var(--wanhu-surface-work-card);
   --workspace-glass-card-hover:var(--wanhu-surface-work-card-hover);
   --workspace-paper:var(--wanhu-color-paper-primary);
-  --workspace-text:#d4cfc6;
+  --workspace-text:var(--wanhu-color-text-secondary);
   --workspace-muted:#a19f99;
   --workspace-faint:var(--wanhu-color-paper-tertiary);
   --workspace-edge:var(--wanhu-surface-work-edge);
@@ -125,11 +141,6 @@
   backdrop-filter:var(--wanhu-surface-info-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-info-filter);
 }
-/* Tonal Material still contains an old night-specific literal with higher specificity.
-   Keep the canonical recipe authoritative until that historical pass is retired. */
-.gameplay-screen[data-time-of-day="night"] .gameplay-top-status{
-  background-color:var(--wanhu-surface-info-bg);
-}
 .gameplay-screen .gameplay-top-shell.has-navigation .gameplay-top-status{
   border-bottom-color:var(--wanhu-surface-info-rule);
 }
@@ -138,13 +149,13 @@
 .gameplay-screen .gameplay-top-status__weather-state{color:#bcb6aa}
 .gameplay-screen .gameplay-top-status__weather-state b{color:#d4cec2}
 .gameplay-screen .gameplay-top-status__resources>span{color:#8d918f}
-.gameplay-screen .gameplay-top-status__resources svg{color:#858a88;opacity:.92}
+.gameplay-screen .gameplay-top-status__resources svg{color:var(--wanhu-color-icon);opacity:.92}
 .gameplay-screen .gameplay-top-status__resources small{color:#999b97}
 .gameplay-screen .gameplay-top-status__resources b{color:var(--wanhu-color-paper-primary);font-weight:640}
 .gameplay-screen .gameplay-top-status__clock::before,
 .gameplay-screen .gameplay-top-status__resources>span{border-color:rgba(238,233,223,.075)}
 .gameplay-screen .gameplay-top-speed-button{color:#7f8583}
-.gameplay-screen .gameplay-top-speed-button:hover{color:#d8d3ca;background:rgba(255,255,255,.035)}
+.gameplay-screen .gameplay-top-speed-button:hover{color:var(--wanhu-color-icon-hover);background:rgba(255,255,255,.035)}
 .gameplay-screen .gameplay-top-speed-button.is-active{
   color:var(--wanhu-color-brass-high);
   background:linear-gradient(180deg,rgba(169,132,75,.13),rgba(169,132,75,.030));
@@ -171,7 +182,7 @@
 }
 .gameplay-screen .gameplay-top-navigation::before{background:rgba(255,255,255,.018)}
 .gameplay-screen .gameplay-top-navigation__button{color:#7f8583}
-.gameplay-screen .gameplay-top-navigation__button:hover{color:#d4cfc6;background:rgba(255,255,255,.035)}
+.gameplay-screen .gameplay-top-navigation__button:hover{color:var(--wanhu-color-text-secondary);background:rgba(255,255,255,.035)}
 .gameplay-screen .gameplay-top-navigation__button.is-active{
   color:var(--wanhu-color-brass-high);
   background:var(--wanhu-control-active-bg);
@@ -193,8 +204,8 @@
   box-shadow:var(--wanhu-surface-command-shadow);
   backdrop-filter:var(--wanhu-surface-command-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-command-filter);
-  --command-icon:#858a88;
-  --command-icon-hover:#d8d3ca;
+  --command-icon:var(--wanhu-color-icon);
+  --command-icon-hover:var(--wanhu-color-icon-hover);
   --command-icon-active:var(--wanhu-color-brass-high);
   --command-divider:var(--wanhu-surface-command-rule);
   --command-hover:rgba(255,255,255,.044);
@@ -202,9 +213,9 @@
   --command-active-bottom:rgba(169,132,75,.024);
 }
 .gameplay-screen .command-bar .mode-rail button,
-.gameplay-screen .command-bar .category-row button{color:#858a88}
+.gameplay-screen .command-bar .category-row button{color:var(--wanhu-color-icon)}
 .gameplay-screen .command-bar .mode-rail button:hover,
-.gameplay-screen .command-bar .category-row button:hover{color:#d8d3ca}
+.gameplay-screen .command-bar .category-row button:hover{color:var(--wanhu-color-icon-hover)}
 .gameplay-screen .command-bar .mode-rail button.is-active,
 .gameplay-screen .command-bar .category-row button.is-active{
   color:var(--wanhu-color-brass-high);
@@ -246,7 +257,7 @@
 .gameplay-screen .gameplay-system-menu-button:hover{
   background-color:rgba(33,39,41,.44);
   border-color:rgba(189,153,89,.025);
-  color:#d8d3ca;
+  color:var(--wanhu-color-icon-hover);
 }
 
 /* ---------------------------------------------------------------------
