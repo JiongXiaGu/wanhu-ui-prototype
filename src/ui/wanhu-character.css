@@ -1,0 +1,173 @@
+/* Wanhu Character Pass v1
+   A restrained identity layer above Mist Glass / Contrast / Edge & Elevation.
+   90% functional modern UI, 10% abstracted timber-frame / platform construction language.
+   No decorative traditional patterns, no extra panel frames, and no geometry changes. */
+
+.gameplay-screen{
+  --wanhu-character-gold:#d2b36f;
+  --wanhu-character-gold-hi:#e4c983;
+  --wanhu-character-gold-soft:rgba(210,179,111,.18);
+  --wanhu-character-joint:rgba(210,179,111,.78);
+  --wanhu-character-rule:rgba(221,215,202,.18);
+}
+
+/* ---------- Top HUD: information joints, not a generic resource table ---------- */
+.gameplay-screen .gameplay-top-status__weather-state{
+  position:relative;
+}
+.gameplay-screen .gameplay-top-status__weather-state::after{
+  content:'';
+  position:absolute;
+  left:22px;
+  bottom:2px;
+  width:36px;
+  height:4px;
+  pointer-events:none;
+  opacity:.78;
+  background:
+    radial-gradient(circle at 31px 2px,var(--wanhu-character-joint) 0 1.35px,transparent 1.7px),
+    linear-gradient(90deg,var(--wanhu-character-gold) 0 28px,transparent 28px);
+  transform-origin:left center;
+  animation:wanhu-character-beam-enter .18s cubic-bezier(.2,.72,.24,1) both;
+}
+
+.gameplay-screen .gameplay-top-status__resources>span{
+  position:relative;
+  border-right:0;
+}
+.gameplay-screen .gameplay-top-status__resources>span::after{
+  content:'';
+  position:absolute;
+  right:0;
+  top:50%;
+  width:1px;
+  height:12px;
+  transform:translateY(-50%);
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(222,218,207,.20) 28%,rgba(222,218,207,.20) 72%,transparent);
+}
+.gameplay-screen .gameplay-top-status__resources>span:last-child::after{display:none}
+.gameplay-screen .gameplay-top-status__resources small{letter-spacing:.028em}
+.gameplay-screen .gameplay-top-status__resources b{font-variant-numeric:tabular-nums lining-nums}
+
+/* ---------- Workspace: beam head title + component-joint filter state ---------- */
+.gameplay-screen .workspace--design .workspace-title{
+  position:relative;
+  align-self:stretch;
+  display:flex;
+  align-items:center;
+}
+.gameplay-screen .workspace--design .workspace-title::after{
+  content:'';
+  position:absolute;
+  left:26px;
+  bottom:5px;
+  width:36px;
+  height:4px;
+  pointer-events:none;
+  opacity:.74;
+  background:
+    radial-gradient(circle at 31px 2px,var(--wanhu-character-joint) 0 1.35px,transparent 1.7px),
+    linear-gradient(90deg,var(--wanhu-character-gold) 0 28px,transparent 28px);
+  transform-origin:left center;
+  animation:wanhu-character-beam-enter .18s cubic-bezier(.2,.72,.24,1) both;
+}
+
+.gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after{
+  content:'';
+  position:absolute;
+  left:10px;
+  right:auto;
+  top:auto;
+  bottom:0;
+  width:15px;
+  height:6px;
+  border:0;
+  border-left:1px solid var(--wanhu-character-gold);
+  border-bottom:2px solid var(--wanhu-character-gold);
+  border-radius:0 0 0 1px;
+  background:transparent;
+  box-shadow:none;
+  transform-origin:left bottom;
+  animation:wanhu-character-joint-enter .16s cubic-bezier(.2,.72,.24,1) both;
+}
+
+/* Keep the active filter surface quiet: the construction joint owns identity. */
+.gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active{
+  background:linear-gradient(180deg,rgba(210,179,111,.070),rgba(210,179,111,.012));
+}
+
+/* ---------- Main Dock: active tool rests on a small platform / tenon base ---------- */
+.gameplay-screen .command-bar .category-row button.is-active{
+  background:linear-gradient(180deg,rgba(210,179,111,0) 12%,rgba(210,179,111,.020) 54%,rgba(210,179,111,.085) 100%);
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.025);
+}
+.gameplay-screen .command-bar .category-row button.is-active::before{
+  content:'';
+  position:absolute;
+  left:31%;
+  right:31%;
+  top:auto;
+  bottom:2px;
+  height:2px;
+  border-radius:1px;
+  background:var(--wanhu-character-gold);
+  box-shadow:none;
+  transform-origin:center;
+  animation:wanhu-character-base-enter .16s cubic-bezier(.2,.72,.24,1) both;
+}
+.gameplay-screen .command-bar .category-row button.is-active::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  bottom:1px;
+  width:4px;
+  height:4px;
+  border-radius:1px;
+  background:var(--wanhu-character-gold-hi);
+  box-shadow:0 0 6px rgba(210,179,111,.16);
+  transform:translate(-50%,50%) rotate(45deg);
+  animation:wanhu-character-node-enter .16s cubic-bezier(.2,.72,.24,1) both;
+}
+
+/* Mode rail remains subordinate, but its active state uses the same construction family. */
+.gameplay-screen .command-bar .mode-rail button{position:relative}
+.gameplay-screen .command-bar .mode-rail button.is-active{
+  background:linear-gradient(90deg,rgba(210,179,111,.075),rgba(210,179,111,.012) 72%,transparent);
+}
+.gameplay-screen .command-bar .mode-rail button.is-active::after{
+  content:'';
+  position:absolute;
+  left:10px;
+  top:50%;
+  width:12px;
+  height:1px;
+  background:var(--wanhu-character-gold);
+  transform:translateY(-50%);
+  opacity:.72;
+}
+
+@keyframes wanhu-character-beam-enter{
+  from{opacity:0;transform:scaleX(.2)}
+  to{opacity:.78;transform:scaleX(1)}
+}
+@keyframes wanhu-character-joint-enter{
+  from{opacity:0;transform:scaleX(.25)}
+  to{opacity:1;transform:scaleX(1)}
+}
+@keyframes wanhu-character-base-enter{
+  from{opacity:0;transform:scaleX(.16)}
+  to{opacity:1;transform:scaleX(1)}
+}
+@keyframes wanhu-character-node-enter{
+  from{opacity:0;transform:translate(-50%,50%) rotate(45deg) scale(.35)}
+  to{opacity:1;transform:translate(-50%,50%) rotate(45deg) scale(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .gameplay-screen .gameplay-top-status__weather-state::after,
+  .gameplay-screen .workspace--design .workspace-title::after,
+  .gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after,
+  .gameplay-screen .command-bar .category-row button.is-active::before,
+  .gameplay-screen .command-bar .category-row button.is-active::after{animation:none}
+}
