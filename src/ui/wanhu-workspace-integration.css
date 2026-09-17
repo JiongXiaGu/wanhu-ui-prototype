@@ -11,7 +11,7 @@
   --workspace-glass-card:transparent;
   --workspace-glass-card-hover:rgba(255,255,255,.034);
   --workspace-edge:rgba(238,233,223,.018);
-  --workspace-rule:rgba(238,233,223,.045);
+  --workspace-rule:rgba(238,233,223,.062);
 
   background-color:var(--workspace-glass-surface);
   background-image:
@@ -27,7 +27,7 @@
 .gameplay-screen[data-time-of-day="night"]:not([data-glass-study]):not([data-edge-study]) .workspace--design{
   --workspace-glass-surface:rgba(27,33,35,.58);
   --workspace-glass-body:rgba(15,21,23,.36);
-  --workspace-rule:rgba(238,233,223,.048);
+  --workspace-rule:rgba(238,233,223,.064);
   backdrop-filter:blur(20px) saturate(.90) brightness(1.0);
   -webkit-backdrop-filter:blur(20px) saturate(.90) brightness(1.0);
 }
@@ -50,10 +50,10 @@
    divider and the active-state marker. */
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-primary-rail{
   background:transparent;
-  border-right-color:rgba(238,233,223,.040);
+  border-right-color:rgba(238,233,223,.045);
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-primary-rail__divider{
-  background:rgba(238,233,223,.035);
+  background:rgba(238,233,223,.038);
 }
 
 /* Catalog itself stays visually open so empty areas continue to carry some world
@@ -63,7 +63,7 @@
   background:transparent;
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-context-filter{
-  border-bottom-color:rgba(238,233,223,.040);
+  border-bottom-color:rgba(238,233,223,.060);
 }
 
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .design-item-card{
