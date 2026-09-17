@@ -45,11 +45,44 @@ await page.waitForSelector('.workspace--building');
 await page.locator('.building-card').first().click();
 const building = page.locator('.building-placement-prototype');
 await building.waitFor();
-if (!(await building.getAttribute('class'))?.includes('left-context-panel')) throw new Error('Building Placement must consume the shared Left Context shell.');
-if ((await building.getAttribute('class'))?.includes('gameplay-context-panel')) throw new Error('Building Placement should not masquerade as an open Camera/Environment scene panel.');
+const buildingClassName = await building.getAttribute('class');
+if (!buildingClassName?.includes('left-context-panel')) throw new Error('Building Placement must consume the shared Left Context shell.');
+if (!buildingClassName?.includes('placement-context-panel')) throw new Error('Building Placement must enter Left Context through PlacementContextPanel.');
+if (buildingClassName.includes('gameplay-context-panel')) throw new Error('Building Placement should not masquerade as an open Camera/Environment scene panel.');
 if ((await building.locator('.gameplay-context-panel__heading-icon').count()) !== 1) throw new Error('Building Placement must use the shared icon-led header.');
 if ((await building.locator('.ui-parameter-row').count()) < 2) throw new Error('Building Placement parameters must use shared RuntimeParameterRow controls.');
 if ((await building.locator('> footer').count()) !== 0) throw new Error('Building Placement must not duplicate the central Action Bar with a Context footer.');
+const buildingHeaderHeight = await building.locator('> header').evaluate((node) => getComputedStyle(node).height);
+const buildingWidth = await building.evaluate((node) => getComputedStyle(node).width);
 await page.screenshot({ path: `${outDir}/58-left-context-building.png` });
+
+await page.keyboard.press('Escape');
+await page.waitForSelector('.workspace--building');
+await mainDock.locator('.category-row').getByRole('button', { name: '道路', exact: true }).click();
+const roadWorkspace = page.locator('.workspace--design[data-design-category="road"]');
+await roadWorkspace.waitFor();
+await roadWorkspace.locator('.design-item-card').first().click();
+
+const road = page.locator('.road-placement-prototype');
+await road.waitFor();
+const roadClassName = await road.getAttribute('class');
+if (!roadClassName?.includes('left-context-panel')) throw new Error('Road Placement must consume the shared Left Context shell.');
+if (!roadClassName?.includes('placement-context-panel')) throw new Error('Road Placement must enter Left Context through PlacementContextPanel.');
+if (roadClassName.includes('gameplay-context-panel')) throw new Error('Road Placement should not masquerade as an open Camera/Environment scene panel.');
+if ((await road.locator('.left-context-panel__section').count()) !== 2) throw new Error('Road Placement must express its content through shared LeftContextSection blocks.');
+if ((await road.locator('.ui-parameter-row').count()) !== 3) throw new Error('Smart-curve Road Placement should expose three shared RuntimeParameterRow controls.');
+if ((await road.locator('> footer').count()) !== 0) throw new Error('Road Placement modes and commit actions belong to the central Placement Action Bar, not the Context footer.');
+
+const roadHeaderHeight = await road.locator('> header').evaluate((node) => getComputedStyle(node).height);
+const roadWidth = await road.evaluate((node) => getComputedStyle(node).width);
+if (roadHeaderHeight !== buildingHeaderHeight) throw new Error('Building and Road Placement must share the same Left Context header geometry.');
+if (roadWidth !== buildingWidth) throw new Error('Building and Road Placement must share the same Placement Context width.');
+
+const roadActionBar = page.getByLabel('道路铺设操作栏');
+await roadActionBar.getByRole('button', { name: '直线', exact: true }).click();
+if ((await road.getAttribute('data-road-mode')) !== 'straight') throw new Error('Road draw mode must remain owned by the central Placement Action Bar.');
+if ((await road.locator('.ui-parameter-row').count()) !== 2) throw new Error('Straight road mode should hide the curve-smoothing business parameter.');
+if (!(await road.locator('.left-context-panel__section-title').first().textContent())?.includes('直线')) throw new Error('Road Context content must react to the shared Road draw-mode state.');
+await page.screenshot({ path: `${outDir}/58-left-context-road.png` });
 
 await browser.close();
