@@ -3,14 +3,6 @@
    than their accompanying text. Top HUD stays compact; panel headers get a clearer
    16px title -> 18/19px icon hierarchy. */
 
-/* Decorative edge beams stay retired. */
-.gameplay-screen .gameplay-top-status::before,
-.gameplay-screen .workspace--design .workspace-header::before{
-  content:none;
-  animation:none;
-  background:none;
-}
-
 /* ---------------------------------------------------------------------
    Compact world-state identity in the Top HUD
    --------------------------------------------------------------------- */
@@ -157,8 +149,3 @@
   box-shadow:none;
 }
 .gameplay-screen .gameplay-context-panel--weather .gameplay-context-panel__heading-copy>span{color:#888d8a}
-
-@media (prefers-reduced-motion:reduce){
-  .gameplay-screen .gameplay-top-status::before,
-  .gameplay-screen .workspace--design .workspace-header::before{animation:none}
-}
