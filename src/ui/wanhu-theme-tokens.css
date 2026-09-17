@@ -1,0 +1,64 @@
+/* Wanhu Theme Tokens v1
+   Canonical gameplay palette + material recipe values.
+   Component CSS should consume these tokens instead of inventing local surface colours. */
+
+.gameplay-screen{
+  /* Palette */
+  --wanhu-color-ink-950:#171c1e;
+  --wanhu-color-ink-900:#1d2325;
+  --wanhu-color-ink-800:#272d2f;
+  --wanhu-color-paper-primary:#eee9df;
+  --wanhu-color-paper-secondary:#b7b3aa;
+  --wanhu-color-paper-tertiary:#818685;
+  --wanhu-color-brass:#a9844b;
+  --wanhu-color-brass-high:#bd9959;
+  --wanhu-color-brass-soft:rgba(169,132,75,.105);
+  --wanhu-color-cinnabar:#985447;
+
+  /* Shared material assets */
+  --wanhu-material-noise:url('/assets/ui/materials/glass-noise-soft.png');
+  --wanhu-material-highlight:rgba(255,255,255,.014);
+  --wanhu-material-shade:rgba(0,0,0,.022);
+
+  /* Context surface: compact working panels such as Environment. */
+  --wanhu-surface-context-bg:rgba(23,29,31,.82);
+  --wanhu-surface-context-edge:rgba(238,233,223,.10);
+  --wanhu-surface-context-rule:rgba(238,233,223,.055);
+  --wanhu-surface-context-card:transparent;
+  --wanhu-surface-context-card-hover:rgba(255,255,255,.035);
+  --wanhu-surface-context-shadow:0 20px 50px rgba(2,4,5,.36),inset 0 1px 0 rgba(255,255,255,.032);
+  --wanhu-surface-context-filter:blur(15px) saturate(.92) brightness(.98);
+
+  /* Work sheet: large browsing surfaces such as Design Workspace.
+     The base sheet stays relatively transparent; the body adds a smoke overlay. */
+  --wanhu-surface-work-sheet-bg:rgba(24,30,32,.56);
+  --wanhu-surface-work-body-overlay:rgba(14,20,22,.34);
+  --wanhu-surface-work-edge:rgba(238,233,223,.018);
+  --wanhu-surface-work-rule:rgba(238,233,223,.062);
+  --wanhu-surface-work-card:transparent;
+  --wanhu-surface-work-card-hover:rgba(255,255,255,.034);
+  --wanhu-surface-work-focus:rgba(169,132,75,.040);
+  --wanhu-surface-work-shadow:0 18px 44px rgba(2,4,5,.28),inset 0 1px 0 rgba(255,255,255,.028);
+  --wanhu-surface-work-filter:blur(20px) saturate(.92) brightness(.985);
+
+  /* Common control tones used inside Context / Work surfaces. */
+  --wanhu-control-hover:rgba(255,255,255,.040);
+  --wanhu-control-hover-strong:rgba(255,255,255,.052);
+  --wanhu-control-border-soft:rgba(238,233,223,.065);
+  --wanhu-control-border-hover:rgba(238,233,223,.15);
+  --wanhu-control-active-bg:rgba(169,132,75,.075);
+  --wanhu-control-active-line:rgba(169,132,75,.78);
+}
+
+.gameplay-screen[data-time-of-day="night"]{
+  --wanhu-surface-context-bg:rgba(26,32,34,.84);
+  --wanhu-surface-context-edge:rgba(238,233,223,.105);
+  --wanhu-surface-context-rule:rgba(238,233,223,.058);
+  --wanhu-surface-context-card-hover:rgba(255,255,255,.038);
+  --wanhu-surface-context-filter:blur(15px) saturate(.90) brightness(1.0);
+
+  --wanhu-surface-work-sheet-bg:rgba(27,33,35,.58);
+  --wanhu-surface-work-body-overlay:rgba(15,21,23,.36);
+  --wanhu-surface-work-rule:rgba(238,233,223,.064);
+  --wanhu-surface-work-filter:blur(20px) saturate(.90) brightness(1.0);
+}
