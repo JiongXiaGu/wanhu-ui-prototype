@@ -1,4 +1,4 @@
-/* Wanhu Theme Tokens v2
+/* Wanhu Theme Tokens v3
    Canonical gameplay palette + material recipe values.
    Component CSS should consume these tokens instead of inventing local surface colours. */
 
@@ -10,6 +10,10 @@
   --wanhu-color-paper-primary:#eee9df;
   --wanhu-color-paper-secondary:#b7b3aa;
   --wanhu-color-paper-tertiary:#818685;
+  --wanhu-color-text-secondary:#d4cfc6;
+  --wanhu-color-text-muted:#999c98;
+  --wanhu-color-icon:#858a88;
+  --wanhu-color-icon-hover:#d8d3ca;
   --wanhu-color-brass:#a9844b;
   --wanhu-color-brass-high:#bd9959;
   --wanhu-color-brass-soft:rgba(169,132,75,.105);
@@ -22,6 +26,8 @@
 
   /* Context surface: compact working panels such as Environment. */
   --wanhu-surface-context-bg:rgba(23,29,31,.82);
+  --wanhu-surface-context-generic-top:rgba(28,34,36,.80);
+  --wanhu-surface-context-generic-bottom:rgba(17,22,24,.78);
   --wanhu-surface-context-edge:rgba(238,233,223,.10);
   --wanhu-surface-context-rule:rgba(238,233,223,.055);
   --wanhu-surface-context-card:transparent;
@@ -94,6 +100,84 @@
   --wanhu-control-border-hover:rgba(238,233,223,.15);
   --wanhu-control-active-bg:rgba(169,132,75,.075);
   --wanhu-control-active-line:rgba(169,132,75,.78);
+
+  /* Compatibility aliases. These keep legacy component geometry functional while
+     visual ownership lives in this token contract rather than in historical Pass files. */
+  --wanhu-tonal-ink-950:var(--wanhu-color-ink-950);
+  --wanhu-tonal-ink-900:var(--wanhu-color-ink-900);
+  --wanhu-tonal-ink-800:var(--wanhu-color-ink-800);
+  --wanhu-tonal-paper:var(--wanhu-color-paper-primary);
+  --wanhu-tonal-secondary:var(--wanhu-color-paper-secondary);
+  --wanhu-tonal-tertiary:var(--wanhu-color-paper-tertiary);
+  --wanhu-tonal-brass:var(--wanhu-color-brass);
+  --wanhu-tonal-brass-hi:var(--wanhu-color-brass-high);
+  --wanhu-tonal-brass-soft:var(--wanhu-color-brass-soft);
+  --wanhu-tonal-cinnabar:var(--wanhu-color-cinnabar);
+
+  --hud-text:var(--wanhu-color-paper-primary);
+  --hud-text-secondary:var(--wanhu-color-paper-secondary);
+  --hud-icon:var(--wanhu-color-paper-tertiary);
+  --hud-accent:var(--wanhu-color-brass);
+  --hud-accent-text:var(--wanhu-color-brass-high);
+  --hud-accent-bg:var(--wanhu-color-brass-soft);
+  --hud-border-strong:rgba(238,233,223,.12);
+  --hud-border-soft:rgba(238,233,223,.075);
+  --hud-rule:rgba(238,233,223,.055);
+  --hud-shadow-primary:0 18px 46px rgba(2,4,5,.33),inset 0 1px 0 rgba(255,255,255,.035);
+  --hud-shadow-secondary:0 12px 30px rgba(2,4,5,.24),inset 0 1px 0 rgba(255,255,255,.025);
+  --hud-glass-filter:blur(16px) saturate(.92) brightness(.98);
+  --hud-glass-filter-soft:blur(13px) saturate(.94) brightness(.985);
+
+  --hud-surface-ambient-top:rgba(29,35,36,.66);
+  --hud-surface-ambient-bottom:rgba(20,25,27,.62);
+  --hud-surface-context-top:rgba(30,36,38,.78);
+  --hud-surface-context-bottom:rgba(20,25,27,.75);
+  --hud-surface-work-top:rgba(29,35,37,.86);
+  --hud-surface-work-bottom:rgba(18,23,25,.84);
+  --hud-surface-blocking-top:rgba(27,32,34,.93);
+  --hud-surface-blocking-bottom:rgba(16,21,23,.92);
+
+  --command-surface-lg-top:rgba(28,34,36,.84);
+  --command-surface-lg-bottom:rgba(17,22,24,.82);
+  --command-surface-md-top:rgba(28,34,36,.88);
+  --command-surface-md-bottom:rgba(17,22,24,.86);
+  --command-surface-sm-top:rgba(29,35,37,.69);
+  --command-surface-sm-bottom:rgba(19,24,26,.65);
+  --command-border:rgba(238,233,223,.095);
+  --command-divider:rgba(238,233,223,.052);
+  --command-hover:rgba(255,255,255,.045);
+  --command-active-top:rgba(169,132,75,.115);
+  --command-active-bottom:rgba(169,132,75,.024);
+  --command-icon:var(--wanhu-color-icon);
+  --command-icon-hover:var(--wanhu-color-icon-hover);
+  --command-icon-active:var(--wanhu-color-brass-high);
+  --command-blur:13px;
+  --command-blur-lg:14px;
+  --command-blur-md:13px;
+  --command-blur-sm:11px;
+
+  --wanhu-hud-paper:var(--wanhu-color-paper-primary);
+  --wanhu-hud-text:var(--wanhu-color-text-secondary);
+  --wanhu-hud-muted:var(--wanhu-color-paper-secondary);
+  --wanhu-hud-faint:var(--wanhu-color-paper-tertiary);
+  --wanhu-hud-gold:var(--wanhu-color-brass);
+  --wanhu-hud-filter:blur(16px) saturate(.92) brightness(.98);
+  --wanhu-hud-filter-soft:blur(13px) saturate(.94) brightness(.985);
+
+  --wanhu-identity-paper:var(--wanhu-color-paper-primary);
+  --wanhu-identity-text:var(--wanhu-color-text-secondary);
+  --wanhu-identity-secondary:var(--wanhu-color-paper-secondary);
+  --wanhu-identity-muted:#969a98;
+  --wanhu-identity-faint:var(--wanhu-color-paper-tertiary);
+  --wanhu-identity-gold:var(--wanhu-color-brass);
+  --wanhu-identity-gold-hi:var(--wanhu-color-brass-high);
+
+  --wanhu-character-gold:var(--wanhu-color-brass);
+  --wanhu-character-gold-hi:var(--wanhu-color-brass-high);
+  --wanhu-character-gold-soft:rgba(169,132,75,.14);
+  --wanhu-character-joint:rgba(189,153,89,.78);
+  --wanhu-character-rule:rgba(218,213,203,.13);
+  --wanhu-character-beam:rgba(231,226,216,.24);
 }
 
 .gameplay-screen[data-time-of-day="night"]{
@@ -111,4 +195,13 @@
   /* Persistent HUD keeps the reviewed role separation at night. Only the top
      information strip needs a small density lift; detached controls stay stable. */
   --wanhu-surface-info-bg:rgba(28,34,36,.52);
+
+  --hud-surface-ambient-top:rgba(33,39,41,.69);
+  --hud-surface-ambient-bottom:rgba(21,27,29,.66);
+  --hud-surface-context-top:rgba(34,40,42,.80);
+  --hud-surface-context-bottom:rgba(21,27,29,.78);
+  --hud-surface-work-top:rgba(32,38,40,.88);
+  --hud-surface-work-bottom:rgba(19,25,27,.86);
+  --wanhu-hud-filter:blur(16px) saturate(.90) brightness(1.0);
+  --wanhu-hud-filter-soft:blur(13px) saturate(.92) brightness(1.0);
 }
