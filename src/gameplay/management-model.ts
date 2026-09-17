@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Building2, Coins, Scale, ScrollText, Shield, Store, Users } from 'lucide-react';
+import { Building2, Coins, Scale, ScrollText, Shield, Store, Users, Warehouse } from 'lucide-react';
 import type { ManagementView } from '../app/ui-state';
 
 export type ManagementSection = Exclude<ManagementView, 'none'>;
@@ -24,6 +24,7 @@ export const MANAGEMENT_NAV_ITEMS: ManagementNavItem[] = [
   { id: 'city', label: '城市概况', shortLabel: '概况', icon: Building2 },
   { id: 'population', label: '户籍民生', shortLabel: '户籍', icon: Users },
   { id: 'finance', label: '财政税赋', shortLabel: '财政', icon: Coins },
+  { id: 'inventory', label: '库存仓储', shortLabel: '库存', icon: Warehouse },
   { id: 'policy', label: '政令政策', shortLabel: '政策', icon: ScrollText },
   { id: 'commerce', label: '商贸物流', shortLabel: '商贸', icon: Store },
   { id: 'governance', label: '城市治理', shortLabel: '治理', icon: Scale },
@@ -95,6 +96,28 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
       { label: '最大收入来源', value: '商税 31%' },
       { label: '最大支出项目', value: '公共营造 28%' },
       { label: '预计下月结余', value: '+2,460' },
+    ],
+  },
+  inventory: {
+    title: '库存仓储',
+    icon: Warehouse,
+    status: '城市与周边供给总体稳定',
+    stats: [
+      { label: '商货总值', value: '12,430', delta: '+4.6%' },
+      { label: '城市库存', value: '11,420', delta: '+2.1%' },
+      { label: '仓储占用', value: '68%', delta: '+3%' },
+      { label: '周边供给点', value: '6', delta: '+1' },
+    ],
+    rows: [
+      { label: '城市总库存', value: '稳定', description: '粮食、木材、石料、铁料与民生物资总量' },
+      { label: '仓库分布', value: '4 座', description: '城内仓库容量、占用与实际存放资源' },
+      { label: '村庄专项资源', value: '6 处', description: '周边村庄各自专项资源储量与日产量' },
+      { label: '运输状态', value: '顺畅', description: '村庄到城市的运输路线与在途货量' },
+    ],
+    notes: [
+      { label: '当前紧张资源', value: '铁料' },
+      { label: '最大储备', value: '粮食 12,480' },
+      { label: '在途货量', value: '860' },
     ],
   },
   policy: {
