@@ -30,6 +30,9 @@
     inset 1px 0 0 rgba(255,255,255,.035),
     inset 0 -1px 0 rgba(0,0,0,.13);
 }
+.gameplay-screen[data-edge-study="b"] .gameplay-top-shell.has-navigation .gameplay-top-status{
+  border-bottom-color:var(--wanhu-edge-dark);
+}
 .gameplay-screen[data-edge-study="b"] .gameplay-top-navigation{
   border-top-color:rgba(255,255,255,.035);
   border-left-color:rgba(255,255,255,.085);
@@ -95,6 +98,9 @@
 .gameplay-screen[data-edge-study="c"] > .world-utility-toolbar.command-utility,
 .gameplay-screen[data-edge-study="c"] .gameplay-operation-hints,
 .gameplay-screen[data-edge-study="c"] .gameplay-system-menu-button{
+  border-color:transparent;
+}
+.gameplay-screen[data-edge-study="c"] .gameplay-top-shell.has-navigation .gameplay-top-status{
   border-color:transparent;
 }
 .gameplay-screen[data-edge-study="c"] .gameplay-top-status{
