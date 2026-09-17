@@ -39,6 +39,8 @@ import './ui/ui-visual-system.css';
 import './ui/ui-control-system.css';
 import './workspace/workspace-world-first-glass.css';
 import './gameplay/weather-mist-glass.css';
+import './gameplay/camera-context-skin.css';
+import './gameplay/management-panel-skin.css';
 import './gameplay/weather-visual-controls.css';
 import './gameplay/weather-art-pass.css';
 import './ui/wanhu-mist-glass-production.css';
