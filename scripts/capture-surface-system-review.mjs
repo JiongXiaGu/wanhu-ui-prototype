@@ -29,7 +29,12 @@ function sameColor(a, b) {
 
 async function assertNoRetiredRuntimeSheets() {
   const hrefs = await page.evaluate(() => Array.from(document.styleSheets).map((sheet) => sheet.href || ''));
-  for (const retired of ['wanhu-workspace-integration.css', 'wanhu-tonal-texture.css']) {
+  for (const retired of [
+    'wanhu-workspace-integration.css',
+    'wanhu-tonal-texture.css',
+    'wanhu-hud-glass.css',
+    'wanhu-tonal-hud-roles.css',
+  ]) {
     if (hrefs.some((href) => href.includes(retired))) throw new Error(`Retired stylesheet is still loaded: ${retired}`);
   }
 }
@@ -80,10 +85,11 @@ async function assertEnvironment(period) {
   if (!values.filter || values.filter === 'none') throw new Error(`${period} Environment must retain Context blur.`);
 }
 
-async function openWorkspace(hour) {
+async function openGameplay(hour) {
   const url = new URL(baseUrl);
   url.searchParams.set('review', 'gameplay');
   await page.goto(url.toString(), { waitUntil: 'networkidle' });
+  await page.waitForSelector('.gameplay-top-status');
   if (hour >= 18 || hour < 6) {
     await page.getByRole('button', { name: '环境控制', exact: true }).click();
     await page.waitForSelector('.gameplay-context-panel--weather');
@@ -92,6 +98,61 @@ async function openWorkspace(hour) {
     await page.waitForFunction(() => document.querySelector('.gameplay-screen')?.getAttribute('data-time-of-day') === 'night');
     await page.getByRole('button', { name: '关闭面板', exact: true }).click();
   }
+  await page.waitForTimeout(100);
+}
+
+async function assertPersistentHud(period) {
+  const values = await page.evaluate(() => {
+    const screen = document.querySelector('.gameplay-screen');
+    const screenStyle = screen ? getComputedStyle(screen) : null;
+    const inspect = (selector) => {
+      const node = document.querySelector(selector);
+      if (!node) return null;
+      const style = getComputedStyle(node);
+      return {
+        backgroundColor: style.backgroundColor,
+        backgroundImage: style.backgroundImage,
+        filter: style.backdropFilter || style.webkitBackdropFilter,
+      };
+    };
+    return {
+      tokens: {
+        info: screenStyle?.getPropertyValue('--wanhu-surface-info-bg').trim() || '',
+        control: screenStyle?.getPropertyValue('--wanhu-surface-control-bg').trim() || '',
+        command: screenStyle?.getPropertyValue('--wanhu-surface-command-bg').trim() || '',
+        ambient: screenStyle?.getPropertyValue('--wanhu-surface-ambient-bg').trim() || '',
+        ambientSoft: screenStyle?.getPropertyValue('--wanhu-surface-ambient-soft-bg').trim() || '',
+        readout: screenStyle?.getPropertyValue('--wanhu-surface-readout-bg').trim() || '',
+      },
+      info: inspect('.gameplay-top-status'),
+      control: inspect('.gameplay-top-navigation'),
+      command: inspect('.command-bar'),
+      ambient: inspect('.world-utility-toolbar.command-utility'),
+      menu: inspect('.gameplay-system-menu-button'),
+      readout: inspect('.gameplay-operation-hints'),
+    };
+  });
+
+  const checks = [
+    ['Top Status', values.tokens.info, values.info],
+    ['Control Tray', values.tokens.control, values.control],
+    ['Main Dock', values.tokens.command, values.command],
+    ['World Utility', values.tokens.ambient, values.ambient],
+    ['System Menu', values.tokens.ambientSoft, values.menu],
+    ['Operation Hint', values.tokens.readout, values.readout],
+  ];
+  for (const [name, expected, actual] of checks) {
+    if (!actual) throw new Error(`${period} ${name} was not rendered.`);
+    if (!sameColor(expected, actual.backgroundColor)) {
+      throw new Error(`${period} ${name} must consume its Surface System token. expected=${expected} actual=${actual.backgroundColor}`);
+    }
+    if (!actual.backgroundImage.includes('glass-noise-soft')) throw new Error(`${period} ${name} must retain shared material noise.`);
+    if (!actual.filter || actual.filter === 'none') throw new Error(`${period} ${name} must retain its shared surface blur.`);
+  }
+}
+
+async function openWorkspace(hour) {
+  await openGameplay(hour);
   await page.locator('.command-bar .category-row').getByRole('button', { name: '桥梁', exact: true }).click();
   await page.waitForSelector('.workspace--design[data-design-category="bridge"]');
   await page.waitForTimeout(100);
@@ -131,6 +192,14 @@ await page.screenshot({ path: `${outDir}/55-surface-system-environment-day.png` 
 await openEnvironment(22);
 await assertEnvironment('night');
 await page.screenshot({ path: `${outDir}/55-surface-system-environment-night.png` });
+
+await openGameplay(14.5);
+await assertPersistentHud('day');
+await page.screenshot({ path: `${outDir}/56-surface-system-persistent-hud-day.png` });
+
+await openGameplay(22);
+await assertPersistentHud('night');
+await page.screenshot({ path: `${outDir}/56-surface-system-persistent-hud-night.png` });
 
 await openWorkspace(14.5);
 await assertWorkspace('day');
