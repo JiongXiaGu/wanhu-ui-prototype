@@ -125,6 +125,11 @@
   backdrop-filter:var(--wanhu-surface-info-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-info-filter);
 }
+/* Tonal Material still contains an old night-specific literal with higher specificity.
+   Keep the canonical recipe authoritative until that historical pass is retired. */
+.gameplay-screen[data-time-of-day="night"] .gameplay-top-status{
+  background-color:var(--wanhu-surface-info-bg);
+}
 .gameplay-screen .gameplay-top-shell.has-navigation .gameplay-top-status{
   border-bottom-color:var(--wanhu-surface-info-rule);
 }
@@ -220,6 +225,7 @@
   box-shadow:var(--wanhu-surface-ambient-shadow);
   backdrop-filter:var(--wanhu-surface-ambient-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-ambient-filter);
+  --command-divider:rgba(255,255,255,.060);
   --command-icon:#7b817f;
   --command-icon-hover:#cecac2;
   --command-icon-active:var(--wanhu-color-brass-high);
