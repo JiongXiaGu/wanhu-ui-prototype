@@ -58,6 +58,7 @@ jobs:
           node scripts/capture-review-v2.mjs
           node scripts/capture-management-review.mjs
           node scripts/capture-design-workspace-review.mjs
+          node scripts/capture-asset-inspector-review.mjs
           node scripts/capture-visual-system-review.mjs
           node scripts/capture-night-review.mjs
           node scripts/capture-weather-preset-review.mjs
