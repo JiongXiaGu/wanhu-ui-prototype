@@ -2,7 +2,9 @@ name: Visual Review
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'tmp-*'
     paths:
       - 'src/**'
       - 'scripts/**'
@@ -14,7 +16,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: visual-review-main
+  group: visual-review-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
