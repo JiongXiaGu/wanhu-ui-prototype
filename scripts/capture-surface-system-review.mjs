@@ -34,6 +34,8 @@ async function assertNoRetiredRuntimeSheets() {
     'wanhu-tonal-texture.css',
     'wanhu-hud-glass.css',
     'wanhu-tonal-hud-roles.css',
+    'wanhu-contrast-identity.css',
+    'wanhu-tonal-material.css',
   ]) {
     if (hrefs.some((href) => href.includes(retired))) throw new Error(`Retired stylesheet is still loaded: ${retired}`);
   }
