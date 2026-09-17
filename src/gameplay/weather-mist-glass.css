@@ -1,70 +1,21 @@
-/* Environment visual skin: Wanhu Mist Glass / World-first Glass.
-   The world supplies the illustration. UI hierarchy comes from restrained
-   neutral surfaces, typography, subtle material texture and a small amount of
-   old-gold interaction colour so the same language can map cleanly to USS. */
+/* Environment component skin.
+   P1-A: outer material/elevation belong to wanhu-surface-system.css.
+   This file keeps Environment-specific content rhythm, controls and local interaction hierarchy. */
 
 .gameplay-context-panel--weather{
-  --weather-mist-surface:rgba(76,78,77,.48);
-  --weather-mist-card:rgba(255,255,255,.060);
-  --weather-mist-card-hover:rgba(255,255,255,.086);
-  --weather-paper:#f0ede6;
-  --weather-text:#d8d5ce;
-  --weather-muted:#b9b6af;
-  --weather-faint:#92938f;
-  --weather-edge:rgba(255,255,255,.19);
-  --weather-rule:rgba(255,255,255,.085);
-  --weather-gold:#c9aa68;
-  --weather-gold-focus:#d8ba77;
-  --weather-gold-soft:rgba(201,170,104,.11);
-  --weather-jade:#9eaaa3;
-
-  border-color:var(--weather-edge);
-  background:var(--weather-mist-surface);
-  box-shadow:
-    0 20px 48px rgba(5,7,7,.27),
-    inset 0 1px 0 rgba(255,255,255,.15);
-  backdrop-filter:blur(20px) saturate(.70) brightness(1.02);
-  -webkit-backdrop-filter:blur(20px) saturate(.70) brightness(1.02);
+  --weather-paper:var(--wanhu-color-paper-primary,#eee9df);
+  --weather-text:#cbc6bd;
+  --weather-muted:#9d9f9a;
+  --weather-faint:#7e8381;
+  --weather-gold:var(--wanhu-color-brass,#a9844b);
+  --weather-gold-focus:var(--wanhu-color-brass-high,#bd9959);
+  --weather-gold-soft:var(--wanhu-color-brass-soft,rgba(169,132,75,.105));
 }
 
-.gameplay-screen[data-time-of-day="night"] .gameplay-context-panel--weather{
-  --weather-mist-surface:rgba(106,108,106,.45);
-  --weather-mist-card:rgba(255,255,255,.068);
-  --weather-mist-card-hover:rgba(255,255,255,.096);
-  --weather-edge:rgba(255,255,255,.21);
-  --weather-rule:rgba(255,255,255,.095);
-  backdrop-filter:blur(20px) saturate(.67) brightness(1.055);
-  -webkit-backdrop-filter:blur(20px) saturate(.67) brightness(1.055);
-}
-
-/* Header belongs to the same glass sheet; no separate title colour block. */
-.gameplay-context-panel--weather>header{
-  height:50px;
-  min-height:50px;
-  flex-basis:50px;
-  padding-left:15px;
-  border-bottom-color:var(--weather-rule);
-  background:rgba(255,255,255,.018);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
-}
+/* Header geometry is shared with the icon-led header system; Environment only hides
+   the optional subtitle and keeps its identity content compact. */
 .gameplay-context-panel--weather .gameplay-context-panel__heading{gap:9px}
 .gameplay-context-panel--weather .gameplay-context-panel__heading-copy>span{display:none}
-.gameplay-context-panel--weather .gameplay-context-panel__heading-icon{
-  width:28px;
-  height:28px;
-  color:var(--weather-jade);
-  border-color:rgba(255,255,255,.095);
-  border-radius:9px;
-  background:rgba(255,255,255,.042);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
-}
-.gameplay-context-panel--weather .gameplay-context-panel__heading-icon svg{width:14px;height:14px}
-.gameplay-context-panel--weather .gameplay-context-panel__title{
-  color:var(--weather-paper);
-  font-size:14px;
-  font-weight:600;
-  letter-spacing:.018em;
-}
 .gameplay-context-panel--weather>header .icon-button{color:#bcbab4}
 .gameplay-context-panel--weather>header .icon-button:hover{
   color:#fffdf7;
@@ -78,8 +29,7 @@
 }
 .gameplay-context-panel__body--weather.is-world-follow{padding-top:10px;padding-bottom:10px}
 
-/* Presets float directly on the parent glass. Their default outlines stay quiet;
-   selection and hover supply the interaction hierarchy. */
+/* Presets float directly on the parent glass. */
 .weather-preset-section{
   margin:0 0 8px!important;
   padding:1px 1px 7px!important;
@@ -128,10 +78,10 @@
   color:#fffdf7;
 }
 .weather-preset-card.is-active{
-  border-color:rgba(216,186,119,.56);
+  border-color:rgba(189,153,89,.56);
   background:var(--weather-gold-soft);
   color:#fff9eb;
-  box-shadow:inset 0 -2px 0 rgba(201,170,104,.78);
+  box-shadow:inset 0 -2px 0 rgba(169,132,75,.78);
 }
 .weather-preset-card__icon{
   width:18px;
@@ -154,8 +104,7 @@
 .weather-preset-card[data-preset-id="snow"] .weather-preset-card__icon{color:#e9eeeb}
 .weather-preset-card[data-preset-id="fog"] .weather-preset-card__icon{color:#d3d7d3}
 
-/* Secondary cards are intentionally more surface than frame: weaker outline,
-   slightly denser fill and smaller radius reduce the nested-box feeling. */
+/* Secondary sections use spacing and a weak local surface, not nested heavy cards. */
 .gameplay-context-panel__body--weather.is-scene-simulation>
 .gameplay-context-panel__section:not(.weather-preset-section),
 .gameplay-context-panel__body--weather.is-world-follow>.weather-world-summary{
@@ -163,7 +112,7 @@
   padding:9px 11px 8px;
   border:1px solid rgba(255,255,255,.075);
   border-radius:10px;
-  background:var(--weather-mist-card);
+  background:var(--wanhu-surface-context-card,transparent);
   box-shadow:none;
 }
 .gameplay-context-panel__body--weather.is-scene-simulation>
@@ -199,17 +148,17 @@
 .game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button{
   width:28px;
   height:28px;
-  border-color:rgba(255,255,255,.065);
+  border-color:var(--wanhu-control-border-soft,rgba(238,233,223,.065));
   border-radius:8px;
   background:rgba(255,255,255,.030);
   color:#cbc8c1;
 }
 .game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
-  border-color:rgba(255,255,255,.15);
+  border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));
   background:rgba(255,255,255,.080);
   color:#fffdf7;
 }
-.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button:focus-visible{outline-color:rgba(201,170,104,.42)}
+.game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-stepper-button:focus-visible{outline-color:rgba(169,132,75,.42)}
 .game-canvas .gameplay-context-panel--weather .ui-parameter-row>.ui-value-field{
   height:28px;
   padding:0 1px 0 4px;
@@ -237,25 +186,21 @@
 .gameplay-context-panel--weather .ui-slider:hover .ui-slider__thumb{
   width:12px;
   height:12px;
-  box-shadow:0 2px 6px rgba(0,0,0,.22),0 0 0 3px rgba(201,170,104,.08);
+  box-shadow:0 2px 6px rgba(0,0,0,.22),0 0 0 3px rgba(169,132,75,.08);
 }
-.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__track{box-shadow:0 0 0 1px rgba(201,170,104,.32)}
+.gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__track{box-shadow:0 0 0 1px rgba(169,132,75,.32)}
 .gameplay-context-panel--weather .ui-slider:focus-within .ui-slider__thumb{
   width:12px;
   height:12px;
   background:#f3ead8;
-  box-shadow:0 2px 6px rgba(0,0,0,.23),0 0 0 4px rgba(201,170,104,.13);
+  box-shadow:0 2px 6px rgba(0,0,0,.23),0 0 0 4px rgba(169,132,75,.13);
 }
 
-/* Footer is one light command line: one-shot restore action on the left, mode
-   selector on the right. It remains fixed while body content changes. */
+/* Footer is a light command line: restore on the left, mode selector on the right. */
 .gameplay-context-panel__footer--weather-mode{
   flex-basis:48px;
   min-height:48px;
   padding:6px 12px 7px;
-  border-top-color:var(--weather-rule);
-  background:rgba(255,255,255,.016);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -278,9 +223,9 @@
   cursor:pointer;
 }
 .environment-reset-button svg{width:13px;height:13px;stroke-width:1.8}
-.environment-reset-button:hover:not(:disabled){background:rgba(255,255,255,.052);color:var(--weather-paper)}
+.environment-reset-button:hover:not(:disabled){background:var(--wanhu-control-hover-strong,rgba(255,255,255,.052));color:var(--weather-paper)}
 .environment-reset-button:focus-visible{
-  outline:1px solid rgba(201,170,104,.40);
+  outline:1px solid rgba(169,132,75,.40);
   outline-offset:1px;
 }
 .environment-reset-button:disabled{opacity:.34;cursor:default}
@@ -312,7 +257,7 @@
 .game-canvas .gameplay-context-panel--weather .environment-mode-switch .segment>button.is-active{
   background:rgba(255,255,255,.034);
   color:#fff9ec;
-  box-shadow:inset 0 -2px 0 rgba(201,170,104,.86);
+  box-shadow:inset 0 -2px 0 rgba(169,132,75,.86);
 }
 
 .weather-world-summary{padding-bottom:7px!important}
