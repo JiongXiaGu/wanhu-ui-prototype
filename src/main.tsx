@@ -37,11 +37,10 @@ import './workspace/workspace-world-first-glass.css';
 import './gameplay/weather-mist-glass.css';
 import './gameplay/weather-visual-controls.css';
 import './gameplay/weather-art-pass.css';
-import './ui/wanhu-mist-glass.css';
+import './ui/wanhu-mist-glass-production.css';
 import './ui/wanhu-hud-glass.css';
 import './ui/wanhu-contrast-identity.css';
 import './ui/wanhu-edge-elevation.css';
-import './ui/wanhu-edge-elevation-study.css';
 import './ui/wanhu-character.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
@@ -53,10 +52,22 @@ import './ui/wanhu-icon-led-header.css';
 import './ui/wanhu-top-resource-shortcuts.css';
 import './fixed-canvas-guards.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <DialogProvider>
-      <App />
-    </DialogProvider>
-  </React.StrictMode>,
-);
+async function loadReviewOnlyStyles() {
+  const study = new URLSearchParams(window.location.search).get('study');
+  if (study === 'glass') await import('./review/styles/glass-study.css');
+  if (study === 'edge') await import('./review/styles/edge-elevation-study.css');
+}
+
+async function bootstrap() {
+  await loadReviewOnlyStyles();
+
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <DialogProvider>
+        <App />
+      </DialogProvider>
+    </React.StrictMode>,
+  );
+}
+
+void bootstrap();
