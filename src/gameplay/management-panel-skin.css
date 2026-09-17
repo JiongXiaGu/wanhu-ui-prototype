@@ -1,0 +1,164 @@
+/* P2-A Management Panel Skin
+   Formal component skin for city / population / finance / inventory / policy / military management workspaces.
+   Geometry stays in city-management.css; this file owns the shared Graphite / Paper / Brass presentation. */
+
+.management-space{
+  --management-paper:var(--wanhu-color-paper-primary,#eee9df);
+  --management-secondary:var(--wanhu-color-text-secondary,#d4cfc6);
+  --management-muted:var(--wanhu-color-text-muted,#999c98);
+  --management-faint:var(--wanhu-color-paper-tertiary,#818685);
+  --management-brass:var(--wanhu-color-brass,#a9844b);
+  --management-brass-high:var(--wanhu-color-brass-high,#bd9959);
+  --management-rule:rgba(238,233,223,.055);
+  --management-rule-strong:rgba(238,233,223,.085);
+}
+
+.management-space__scrim{
+  background:rgba(5,8,9,.38);
+  backdrop-filter:blur(2px) saturate(.78) brightness(.82);
+  -webkit-backdrop-filter:blur(2px) saturate(.78) brightness(.82);
+}
+
+.management-space__panel{
+  border-color:var(--wanhu-surface-context-edge,rgba(238,233,223,.10));
+  border-radius:16px;
+  background-color:var(--wanhu-color-ink-950,#171c1e);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-surface-context-generic-top,rgba(28,34,36,.80)),var(--wanhu-surface-context-generic-bottom,rgba(17,22,24,.78))),
+    var(--wanhu-material-noise,url('/assets/ui/materials/glass-noise-soft.png'));
+  background-repeat:no-repeat,repeat;
+  background-size:auto,256px 256px;
+  box-shadow:0 28px 78px rgba(2,4,5,.42),inset 0 1px 0 rgba(255,255,255,.025);
+  backdrop-filter:var(--wanhu-surface-context-filter,blur(15px) saturate(.92) brightness(.98));
+  -webkit-backdrop-filter:var(--wanhu-surface-context-filter,blur(15px) saturate(.92) brightness(.98));
+}
+
+.management-space__header{
+  height:64px;
+  flex-basis:64px;
+  padding:0 18px 0 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  border-bottom-color:var(--management-rule);
+  background:rgba(255,255,255,.007);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
+}
+.management-space__heading{gap:10px}
+.management-space__heading-icon{
+  width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#aaa59a;
+}
+.management-space__heading-icon svg{width:20px;height:20px;stroke-width:1.75}
+.management-space__heading h2{
+  color:var(--management-paper);
+  font-size:19px;
+  font-weight:600;
+  letter-spacing:.015em;
+}
+.management-space__close{
+  width:30px;
+  height:30px;
+  border-radius:9px;
+  color:#808582;
+  background:transparent;
+}
+.management-space__close:hover{background:rgba(255,255,255,.035);color:#d8d3ca}
+
+.management-space__body{padding:20px 24px 24px}
+.management-metrics{
+  height:84px;
+  margin-bottom:18px;
+  border-top-color:var(--management-rule);
+  border-bottom-color:var(--management-rule);
+  background:rgba(255,255,255,.006);
+}
+.management-metric{padding:13px 20px 12px;gap:8px}
+.management-metric+.management-metric{border-left-color:var(--management-rule)}
+.management-metric small{color:var(--management-faint);font-size:9px}
+.management-metric strong{color:var(--management-paper);font-size:21px;font-weight:590}
+.management-metric em{color:#a99468;font-size:8.5px}
+
+.management-overview-grid,.management-finance-layout{height:calc(100% - 102px)}
+.management-section{
+  border-top-color:var(--management-rule-strong);
+  background:transparent;
+}
+.management-section__title{
+  height:46px;
+  padding:0 14px;
+  border-bottom-color:var(--management-rule);
+}
+.management-section__title b{color:#c5c1b8;font-size:11px;font-weight:560}
+.management-section__title>i{background:linear-gradient(90deg,var(--management-rule-strong),transparent 88%)}
+.management-section__title>span{color:#7f8481;font-size:8.5px}
+
+.management-task-list{padding:2px 12px 12px}
+.management-task-row{min-height:80px;border-bottom-color:var(--management-rule);border-radius:8px;padding:10px 8px}
+.management-task-row:hover{background:rgba(255,255,255,.022)}
+.management-task-row>span b{color:#d0cbc2;font-size:11px;font-weight:560}
+.management-task-row>span small{color:#858a87}
+.management-task-row em{color:#b2a17a}
+.management-task-row>svg{color:#6f7672}
+.management-task-row:hover>svg{color:var(--management-brass-high);transform:translateX(2px)}
+
+.management-note-row{border-bottom-color:var(--management-rule)}
+.management-note-row small{color:#858a87}
+.management-note-row b{color:#c9c4bb;font-weight:540}
+.management-space__quiet-graph{
+  border-bottom-color:var(--management-rule-strong);
+  background:repeating-linear-gradient(180deg,transparent 0 41px,rgba(238,233,223,.022) 42px);
+}
+.management-space__quiet-graph span{
+  background:linear-gradient(180deg,rgba(169,132,75,.48),rgba(104,111,108,.18));
+  border-top-color:rgba(189,153,89,.42);
+}
+
+.management-finance-trend .management-section__title>span .is-income{background:var(--management-brass-high)}
+.management-finance-trend .management-section__title>span .is-expense{background:#747d79}
+.finance-chart{background:repeating-linear-gradient(180deg,transparent 0 49px,rgba(238,233,223,.024) 50px)}
+.finance-chart__bars{border-bottom-color:var(--management-rule-strong)}
+.finance-chart__bars .is-income{background:linear-gradient(180deg,rgba(189,153,89,.78),rgba(137,108,65,.34));border-top-color:rgba(207,174,105,.52)}
+.finance-chart__bars .is-expense{background:linear-gradient(180deg,rgba(116,125,121,.62),rgba(72,81,78,.30));border-top-color:rgba(140,149,145,.36)}
+.finance-chart__month small{color:#7f8581}
+.finance-breakdown-row{border-bottom-color:rgba(238,233,223,.043)}
+.finance-breakdown-row span{color:#8d918e}
+.finance-breakdown-row b{color:#c9c4bb}
+.finance-breakdown-row>i{background:rgba(238,233,223,.050)}
+.finance-breakdown-row>i em{background:linear-gradient(90deg,#8f7449,var(--management-brass-high))}
+.finance-tax-row{border-bottom-color:rgba(238,233,223,.043)}
+.finance-tax-row b{color:#c5c1b8;font-weight:560}
+.finance-tax-row small{color:#7d8380}
+.finance-tax-row input{accent-color:var(--management-brass-high)}
+.finance-tax-row output{
+  border-color:var(--wanhu-control-border-soft,rgba(238,233,223,.065));
+  border-radius:8px;
+  color:#c9b078;
+  background:rgba(255,255,255,.010);
+}
+
+.management-space--inventory .inventory-management__tabs{border-bottom-color:var(--management-rule)}
+.management-space--inventory .inventory-management__tabs button{color:#858a87}
+.management-space--inventory .inventory-management__tabs button:hover{color:#c8c4bc;background:rgba(255,255,255,.018)}
+.management-space--inventory .inventory-management__tabs button.is-active{color:var(--management-paper)}
+.management-space--inventory .inventory-management__tabs button.is-active::after{background:var(--management-brass)}
+.management-space--inventory .inventory-kpi-list,
+.management-space--inventory .inventory-location-detail__metrics{background:var(--management-rule)}
+.management-space--inventory .inventory-kpi-list>div,
+.management-space--inventory .inventory-location-detail__metrics>div{background:rgba(255,255,255,.010)}
+.management-space--inventory .inventory-location-list__body>button.is-active{background:rgba(169,132,75,.045)}
+.management-space--inventory .inventory-location-list__body>button.is-active::before,
+.management-space--inventory .inventory-content-list>div>i>em,
+.management-space--inventory .inventory-route-card>svg{background-color:var(--management-brass);color:var(--management-brass)}
+.management-space--inventory .inventory-village-focus{background:rgba(255,255,255,.008);border-color:var(--management-rule)}
+
+@media (prefers-reduced-motion:reduce){
+  .management-space__panel{animation:none}
+}
