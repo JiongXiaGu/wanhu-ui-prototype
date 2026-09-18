@@ -24,6 +24,41 @@ function assertCanonicalShell(name, className) {
   if (tokens.has('gameplay-context-panel')) throw new Error(`${name} must not use the removed legacy gameplay-context-panel shell class.`);
 }
 
+async function assertNumericRowsFillContext(panel, label) {
+  const rows = panel.locator('.ui-parameter-row');
+  const count = await rows.count();
+  if (count === 0) throw new Error(`${label} must expose shared RuntimeParameterRow controls.`);
+
+  for (let index = 0; index < count; index += 1) {
+    const row = rows.nth(index);
+    const directChildren = await row.locator(':scope > *').count();
+    if (directChildren !== 2) throw new Error(`${label} parameter row ${index} must be Label + NumericSliderField. children=${directChildren}`);
+
+    const gridColumns = await row.evaluate((node) => getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/));
+    if (gridColumns.length !== 2) throw new Error(`${label} parameter row ${index} must resolve to two grid columns. columns=${JSON.stringify(gridColumns)}`);
+
+    const field = row.locator(':scope > .ui-numeric-slider-field');
+    if ((await field.count()) !== 1) throw new Error(`${label} parameter row ${index} must contain exactly one NumericSliderField.`);
+
+    const slider = field.locator('.ui-slider');
+    const value = field.locator('.ui-value-field');
+    const [rowBox, fieldBox, sliderBox, valueBox] = await Promise.all([
+      row.boundingBox(),
+      field.boundingBox(),
+      slider.boundingBox(),
+      value.boundingBox(),
+    ]);
+    if (!rowBox || !fieldBox || !sliderBox || !valueBox) throw new Error(`${label} parameter row ${index} geometry unavailable.`);
+
+    const rowRight = rowBox.x + rowBox.width;
+    const fieldRight = fieldBox.x + fieldBox.width;
+    const valueRight = valueBox.x + valueBox.width;
+    if (Math.abs(rowRight - fieldRight) > 1.5) throw new Error(`${label} NumericSliderField must fill the second row column. gap=${rowRight - fieldRight}px`);
+    if (Math.abs(rowRight - valueRight) > 1.5) throw new Error(`${label} ValueField must terminate at the row right edge; stale columns are reserving whitespace. gap=${rowRight - valueRight}px`);
+    if (sliderBox.width < 96) throw new Error(`${label} Slider is over-compressed. width=${sliderBox.width}px`);
+  }
+}
+
 async function materialFingerprint(locator) {
   return locator.evaluate((node) => {
     const root = getComputedStyle(node);
@@ -54,6 +89,7 @@ if ((await camera.locator('.gameplay-context-panel__body .segment').count()) !==
 if ((await camera.locator('> footer .segment').count()) !== 1) throw new Error('Camera footer must contain one mode selector.');
 const cameraHeaderHeight = await camera.locator('> header').evaluate((node) => getComputedStyle(node).height);
 const canonicalMaterial = await materialFingerprint(camera);
+await assertNumericRowsFillContext(camera, 'Camera');
 await camera.getByRole('button', { name: '规划', exact: true }).click();
 if (Number(await camera.getByRole('slider', { name: '镜头高度', exact: true }).inputValue()) !== 62) throw new Error('Planning camera preset must apply its camera parameters.');
 await page.screenshot({ path: `${outDir}/58-left-context-camera.png` });
@@ -67,6 +103,9 @@ if (JSON.stringify(await materialFingerprint(environment)) !== JSON.stringify(ca
 if ((await environment.locator('> footer').count()) !== 1) throw new Error('Environment must use the shared Context footer.');
 const environmentHeaderHeight = await environment.locator('> header').evaluate((node) => getComputedStyle(node).height);
 if (cameraHeaderHeight !== environmentHeaderHeight) throw new Error('Camera and Environment must share header geometry.');
+await assertNumericRowsFillContext(environment, 'Environment');
+const environmentWidth = Number.parseFloat(await environment.evaluate((node) => getComputedStyle(node).width));
+if (Math.abs(environmentWidth - 400) > .5) throw new Error(`Environment panel width should remain 400px; fix parameter geometry instead of shrinking the panel. width=${environmentWidth}`);
 await page.screenshot({ path: `${outDir}/58-left-context-environment.png` });
 await environmentButton.click();
 

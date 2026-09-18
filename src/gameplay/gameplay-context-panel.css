@@ -128,32 +128,41 @@
   background:linear-gradient(90deg,rgba(238,233,223,.065),transparent);
 }
 
-/* Shared parameter controls ------------------------------------------------ */
-.left-context-panel .parameter-row{
+/* Shared parameter controls ------------------------------------------------
+   RuntimeParameterRow now owns only two direct columns:
+   Label | NumericSliderField. The field itself owns - / Slider / + / Value.
+   Left Context adapts dimensions through inherited tokens instead of restoring
+   the retired five-column row layout. */
+.left-context-panel .ui-parameter-row{
+  --ui-parameter-label-width:86px;
+  --ui-parameter-step-size:28px;
+  --ui-parameter-value-width:50px;
   min-height:35px;
-  grid-template-columns:86px 28px minmax(100px,1fr) 28px 50px;
   gap:5px;
 }
-.left-context-panel .parameter-row>span{
+.left-context-panel .ui-parameter-row>span{
   color:#969a97;
   font-size:11px;
   font-weight:520;
 }
-.game-canvas .left-context-panel .ui-parameter-row>.ui-stepper-button{
-  width:28px;
-  height:28px;
+.left-context-panel .ui-numeric-slider-field{
+  gap:5px;
+}
+.game-canvas .left-context-panel .ui-numeric-slider-field>.ui-stepper-button{
+  width:var(--ui-parameter-step-size);
+  height:var(--ui-parameter-step-size);
   border-color:var(--wanhu-control-border-soft,rgba(238,233,223,.065));
   border-radius:8px;
   background:rgba(255,255,255,.020);
   color:#b7b8b2;
 }
-.game-canvas .left-context-panel .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
+.game-canvas .left-context-panel .ui-numeric-slider-field>.ui-stepper-button:hover:not(:disabled){
   border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));
   background:rgba(255,255,255,.060);
   color:#eee9df;
 }
-.game-canvas .left-context-panel .ui-parameter-row>.ui-value-field{
-  height:28px;
+.game-canvas .left-context-panel .ui-numeric-slider-field>.ui-value-field{
+  height:var(--ui-parameter-step-size);
   padding:0 1px 0 4px;
   border-color:transparent;
   border-radius:0;

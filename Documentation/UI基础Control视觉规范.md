@@ -98,6 +98,14 @@ onChange
 
 Settings 与运行时 Tool 的连续数值都组合共享 `NumericSliderField = - │ Slider │ + │ Value`。页面只负责外部 Label 和列宽；Stepper / Slider / ValueField 的视觉与状态全部由 Control System 统一维护。
 
+Context Geometry 规则：
+
+- `RuntimeParameterRow` 外层永远只有 `Label + NumericSliderField` 两列；
+- Context / Tool 页面通过 `--ui-parameter-label-width / --ui-parameter-step-size / --ui-parameter-value-width` 调尺寸；
+- 页面不得重新把 `.ui-parameter-row` 写成历史的 `Label │ - │ Slider │ + │ Value` 五列 Grid；
+- Stepper / Value 已经是 `NumericSliderField` 的子节点，Context Selector 不得再使用 `.ui-parameter-row > .ui-stepper-button` 这类过期 direct-child 结构；
+- 这条结构直接对应最终 Unity UXML：外层 Labeled Row + 内层 WanhuNumericSliderField。
+
 ## 5. Stepper Button
 
 用于 Numeric Field 的 `- / +`：
