@@ -3,8 +3,8 @@
 
 .game-canvas{
   --ui-field-height:34px;
-  --ui-field-radius:10px;
-  --ui-field-radius-inner:8px;
+  --ui-field-radius:7px;
+  --ui-field-radius-inner:5px;
   --ui-field-border:rgba(239,233,221,.105);
   --ui-field-border-hover:rgba(239,233,221,.18);
   --ui-field-border-focus:rgba(201,165,95,.38);
@@ -17,14 +17,14 @@
 
   --ui-slider-track:rgba(235,228,211,.115);
   --ui-slider-track-hover:rgba(235,228,211,.17);
-  --ui-slider-fill-start:#9e8656;
-  --ui-slider-fill-end:#c6a765;
-  --ui-slider-thumb:#b99b60;
+  --ui-slider-fill-start:#898e8b;
+  --ui-slider-fill-end:#b1b0aa;
+  --ui-slider-thumb:var(--wanhu-color-paper-primary,#eee9df);
   --ui-slider-thumb-border:rgba(244,239,226,.92);
   --ui-slider-focus:rgba(201,165,95,.075);
 
-  --ui-toggle-off:#737b74;
-  --ui-toggle-on:#c9a55f;
+  --ui-toggle-off:#858a86;
+  --ui-toggle-on:var(--wanhu-color-brass-high,#bd9959);
 }
 
 /* Slider ------------------------------------------------------------ */
@@ -96,6 +96,21 @@
 .ui-slider.is-disabled{cursor:default;opacity:var(--ui-field-disabled)}
 .ui-slider.is-disabled input{cursor:default}
 
+/* Standalone numeric control -------------------------------------- */
+.ui-numeric-control{
+  --ui-numeric-step-size:30px;
+  --ui-numeric-value-width:64px;
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:var(--ui-numeric-step-size) minmax(120px,1fr) var(--ui-numeric-step-size) var(--ui-numeric-value-width);
+  align-items:center;
+  gap:7px;
+}
+.ui-numeric-control>.ui-slider{min-width:0}
+.ui-numeric-control.is-disabled{opacity:var(--ui-field-disabled)}
+.ui-numeric-control.is-disabled .ui-slider{opacity:1}
+
 /* Numeric parameter row -------------------------------------------- */
 .ui-parameter-row{
   --ui-parameter-label-width:78px;
@@ -108,7 +123,7 @@
   gap:6px;
 }
 .ui-parameter-row>span{color:var(--ui-field-muted);font-size:9px}
-.game-canvas .ui-parameter-row>.ui-stepper-button{
+.game-canvas .ui-stepper-button{
   width:var(--ui-parameter-step-size);
   height:var(--ui-parameter-step-size);
   padding:0;
@@ -116,20 +131,21 @@
   place-items:center;
   border:1px solid var(--ui-field-border);
   border-radius:var(--ui-field-radius-inner);
-  background:var(--ui-field-surface);
-  color:#9ca198;
+  background:linear-gradient(180deg,rgba(255,255,255,.032),rgba(255,255,255,.010));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),inset 0 -1px 0 rgba(0,0,0,.16);
+  color:#a4a8a1;
   cursor:pointer;
   transition:background .12s ease,border-color .12s ease,color .12s ease,transform .08s ease;
 }
-.game-canvas .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
+.game-canvas .ui-stepper-button:hover:not(:disabled){
   background:var(--ui-field-surface-hover);
   border-color:var(--ui-field-border-hover);
   color:#d4d0c6;
 }
-.game-canvas .ui-parameter-row>.ui-stepper-button:active:not(:disabled){transform:translateY(1px)}
-.game-canvas .ui-parameter-row>.ui-stepper-button:focus-visible{outline:1px solid rgba(201,165,95,.34);outline-offset:2px}
-.game-canvas .ui-parameter-row>.ui-stepper-button:disabled{opacity:var(--ui-field-disabled);cursor:default}
-.game-canvas .ui-parameter-row>.ui-value-field{
+.game-canvas .ui-stepper-button:active:not(:disabled){transform:translateY(1px)}
+.game-canvas .ui-stepper-button:focus-visible{outline:1px solid rgba(201,165,95,.34);outline-offset:2px}
+.game-canvas .ui-stepper-button:disabled{opacity:var(--ui-field-disabled);cursor:default}
+.game-canvas .ui-value-field{
   min-width:0;
   height:var(--ui-parameter-step-size);
   padding:0 8px;
@@ -138,7 +154,8 @@
   justify-content:flex-end;
   border:1px solid var(--ui-field-border);
   border-radius:var(--ui-field-radius-inner);
-  background:var(--ui-field-surface);
+  background:linear-gradient(180deg,rgba(255,255,255,.024),rgba(0,0,0,.025));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018),inset 0 -1px 0 rgba(0,0,0,.14);
   color:var(--ui-field-text);
   font-size:9px;
   font-variant-numeric:tabular-nums;
@@ -160,8 +177,9 @@
   gap:12px;
   border:1px solid var(--ui-field-border);
   border-radius:var(--ui-field-radius);
-  background:var(--ui-field-surface);
-  color:#aaa9a2;
+  background:linear-gradient(180deg,rgba(255,255,255,.026),rgba(255,255,255,.008));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.018),inset 0 -1px 0 rgba(0,0,0,.12);
+  color:var(--wanhu-color-paper-secondary,#b7b3aa);
   font:inherit;
   font-size:10.5px;
   cursor:pointer;
@@ -183,7 +201,7 @@
   padding:4px;
   border:1px solid rgba(239,233,221,.105);
   border-radius:var(--ui-field-radius);
-  background:rgba(24,33,28,.965);
+  background:var(--wanhu-surface-blocking-menu,rgba(24,30,32,.965));
   box-shadow:0 16px 36px rgba(4,7,6,.36),inset 0 1px 0 rgba(255,255,255,.020);
   backdrop-filter:blur(12px) saturate(.86) brightness(1.04);
   -webkit-backdrop-filter:blur(12px) saturate(.86) brightness(1.04);
@@ -200,26 +218,62 @@
   border:0;
   border-radius:var(--ui-field-radius-inner);
   background:transparent;
-  color:#9ea49e;
+  color:var(--wanhu-color-text-muted,#999c98);
   font:inherit;
   font-size:10.5px;
   text-align:left;
   cursor:pointer;
 }
 .ui-select__menu button:hover,.ui-select__menu button.is-highlighted{background:rgba(255,255,255,.035);color:#d8d4ca}
-.ui-select__menu button.is-selected{color:#d6b973;background:rgba(201,165,95,.07)}
-.ui-select__menu button svg{color:#c9a55f;stroke-width:1.8}
+.ui-select__menu button.is-selected{color:var(--wanhu-color-brass-high,#bd9959);background:var(--wanhu-control-active-bg,rgba(169,132,75,.075))}
+.ui-select__menu button svg{color:var(--wanhu-color-brass,#a9844b);stroke-width:1.8}
 
-/* Toggle ------------------------------------------------------------ */
-.ui-toggle{width:52px;height:32px;padding:0;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;outline:none}
-.ui-toggle>i{position:relative;width:38px;height:20px;border:1px solid var(--ui-field-border);border-radius:10px;background:var(--ui-field-surface);transition:border-color .12s ease,background .12s ease,box-shadow .12s ease}
-.ui-toggle>i::after{content:'';position:absolute;left:3px;top:3px;width:12px;height:12px;border-radius:6px;background:var(--ui-toggle-off);transition:left .15s ease,background .15s ease,box-shadow .15s ease,transform .08s ease}
-.ui-toggle:hover>i{border-color:var(--ui-field-border-hover);background:var(--ui-field-surface-hover)}
-.ui-toggle:active>i::after{transform:scale(.88)}
-.ui-toggle:focus-visible>i{box-shadow:0 0 0 3px rgba(201,165,95,.07);border-color:var(--ui-field-border-focus)}
-.ui-toggle.is-on>i{border-color:rgba(201,165,95,.31);background:rgba(201,165,95,.065)}
-.ui-toggle.is-on>i::after{left:21px;background:var(--ui-toggle-on);box-shadow:0 0 8px rgba(201,165,95,.13)}
-.ui-toggle.is-on:hover>i{border-color:rgba(201,165,95,.46);background:rgba(201,165,95,.085)}
+/* Toggle ------------------------------------------------------------
+   Instrument-style two-position switch: neutral metal when off, brass is
+   reserved for the active indicator rather than filling the whole control. */
+.ui-toggle{width:56px;height:34px;padding:0;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;outline:none}
+.ui-toggle>i{
+  position:relative;
+  width:44px;
+  height:22px;
+  overflow:hidden;
+  border:1px solid var(--ui-field-border);
+  border-radius:5px;
+  background:linear-gradient(180deg,rgba(255,255,255,.030),rgba(0,0,0,.055));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.028),inset 0 -1px 2px rgba(0,0,0,.22);
+  transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;
+}
+.ui-toggle>i::before{
+  content:'';
+  position:absolute;
+  left:5px;
+  right:5px;
+  bottom:3px;
+  height:2px;
+  border-radius:1px;
+  background:rgba(238,233,223,.10);
+  transition:background .15s ease,box-shadow .15s ease;
+}
+.ui-toggle>i::after{
+  content:'';
+  position:absolute;
+  left:3px;
+  top:3px;
+  width:16px;
+  height:14px;
+  border:1px solid rgba(238,233,223,.16);
+  border-radius:3px;
+  background:linear-gradient(180deg,#a1a5a0,#747b77);
+  box-shadow:0 2px 4px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12);
+  transition:left .15s cubic-bezier(.2,.75,.25,1),background .15s ease,border-color .15s ease,transform .08s ease;
+}
+.ui-toggle:hover>i{border-color:var(--ui-field-border-hover);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.045))}
+.ui-toggle:active>i::after{transform:translateY(1px)}
+.ui-toggle:focus-visible>i{box-shadow:0 0 0 3px rgba(169,132,75,.07),inset 0 1px 0 rgba(255,255,255,.028);border-color:var(--ui-field-border-focus)}
+.ui-toggle.is-on>i{border-color:rgba(189,153,89,.34);background:linear-gradient(180deg,rgba(169,132,75,.055),rgba(0,0,0,.045))}
+.ui-toggle.is-on>i::before{background:var(--wanhu-color-brass-high,#bd9959);box-shadow:0 0 6px rgba(169,132,75,.16)}
+.ui-toggle.is-on>i::after{left:23px;border-color:rgba(238,233,223,.24);background:linear-gradient(180deg,#eee9df,#bdbab1);box-shadow:0 2px 4px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18)}
+.ui-toggle.is-on:hover>i{border-color:rgba(189,153,89,.46)}
 .ui-toggle:disabled{opacity:var(--ui-field-disabled);cursor:default}
 
 /* Text input -------------------------------------------------------- */
@@ -232,31 +286,30 @@
 @keyframes ui-select-open{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 
 /* Compatibility bridges -------------------------------------------------
-   Existing screens adopt the shared visual contract before their component logic is migrated. */
-.settings-slider::before{height:4px;border-radius:2px;background:var(--ui-slider-track)!important;box-shadow:inset 0 1px 0 rgba(0,0,0,.12)}
-.settings-slider>i{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--ui-slider-fill-start),var(--ui-slider-fill-end))!important}
-.settings-slider>em{width:11px!important;height:11px!important;border:2px solid var(--ui-slider-thumb-border)!important;border-radius:50%!important;background:var(--ui-slider-thumb)!important}
-.settings-slider:hover::before{background:var(--ui-slider-track-hover)!important}
-.settings-slider:hover>em{width:13px!important;height:13px!important;box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(201,165,95,.055)!important}
-.settings-slider:focus-visible::before{box-shadow:0 0 0 1px rgba(201,165,95,.24)!important}
-.settings-slider:focus-visible>em{box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 5px var(--ui-slider-focus)!important}
-.settings-slider.is-dragging>i{background:linear-gradient(90deg,#a88d58,#d0ad66)!important}
-.settings-slider.is-dragging>em{background:#c9a55f!important;box-shadow:0 2px 7px rgba(0,0,0,.32),0 0 0 6px rgba(201,165,95,.10)!important}
-
-.settings-select-value{border:1px solid var(--ui-field-border)!important;border-radius:var(--ui-field-radius)!important;background:var(--ui-field-surface)!important}
-.settings-select-value:hover:not(:disabled){border-color:var(--ui-field-border-hover)!important;background:var(--ui-field-surface-hover)!important}
-.settings-select-value:focus-visible{outline:0!important;border-color:var(--ui-field-border-focus)!important;background:var(--ui-field-surface-focus)!important;box-shadow:0 0 0 3px rgba(201,165,95,.045)!important}
-.settings-select-root.is-open .settings-select-value{border-color:rgba(201,165,95,.38)!important;background:var(--ui-field-surface-focus)!important}
-.settings-select-menu{border-color:var(--ui-field-border)!important;border-radius:var(--ui-field-radius)!important;background:rgba(24,33,28,.965)!important;box-shadow:0 16px 36px rgba(4,7,6,.36),inset 0 1px 0 rgba(255,255,255,.020)!important;backdrop-filter:blur(12px) saturate(.86) brightness(1.04);-webkit-backdrop-filter:blur(12px) saturate(.86) brightness(1.04)}
-.settings-select-menu button{border-radius:var(--ui-field-radius-inner)!important}
-.settings-select-menu button:hover,.settings-select-menu button.is-highlighted{background:rgba(255,255,255,.035)!important}
-.settings-select-menu button.is-selected{background:rgba(201,165,95,.07)!important;color:#d6b973!important}
-
-.settings-toggle>i,.archive-hide-outdated>i{width:38px!important;height:20px!important;border:1px solid var(--ui-field-border)!important;border-radius:10px!important;background:var(--ui-field-surface)!important}
-.settings-toggle>i::after,.archive-hide-outdated>i>em{left:3px!important;top:3px!important;width:12px!important;height:12px!important;border-radius:6px!important;background:var(--ui-toggle-off)!important}
-.settings-toggle:hover>i,.archive-hide-outdated:hover>i{border-color:var(--ui-field-border-hover)!important;background:var(--ui-field-surface-hover)!important}
-.settings-toggle.is-on>i,.archive-hide-outdated.is-on>i{border-color:rgba(201,165,95,.31)!important;background:rgba(201,165,95,.065)!important}
-.settings-toggle.is-on>i::after,.archive-hide-outdated.is-on>i>em{left:21px!important;background:var(--ui-toggle-on)!important;box-shadow:0 0 8px rgba(201,165,95,.13)!important}
+   Only screens that have not migrated to shared React control primitives stay here.
+   Settings is intentionally absent: it now consumes Controls.tsx directly. */
+.archive-hide-outdated>i{
+  position:relative;
+  width:44px!important;
+  height:22px!important;
+  overflow:hidden;
+  border:1px solid var(--ui-field-border)!important;
+  border-radius:5px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.030),rgba(0,0,0,.055))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.028),inset 0 -1px 2px rgba(0,0,0,.22);
+}
+.archive-hide-outdated>i>em{
+  left:3px!important;
+  top:3px!important;
+  width:16px!important;
+  height:14px!important;
+  border:1px solid rgba(238,233,223,.16)!important;
+  border-radius:3px!important;
+  background:linear-gradient(180deg,#a1a5a0,#747b77)!important;
+  box-shadow:0 2px 4px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12)!important;
+}
+.archive-hide-outdated.is-on>i{border-color:rgba(189,153,89,.34)!important;background:linear-gradient(180deg,rgba(169,132,75,.055),rgba(0,0,0,.045))!important}
+.archive-hide-outdated.is-on>i>em{left:23px!important;border-color:rgba(238,233,223,.24)!important;background:linear-gradient(180deg,#eee9df,#bdbab1)!important;box-shadow:0 2px 4px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18)!important}
 
 .ui-dialog-input input,.archive-group-card input,.archive-save-card input{border:1px solid var(--ui-field-border)!important;border-radius:var(--ui-field-radius)!important;background:var(--ui-field-surface)!important;color:#eee8dc!important;caret-color:#d3b66e;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease!important}
 .ui-dialog-input input:hover,.archive-group-card input:hover,.archive-save-card input:hover{border-color:var(--ui-field-border-hover)!important;background:var(--ui-field-surface-hover)!important}
