@@ -187,7 +187,7 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
   }
 
   return (
-    <section className="new-game-space flow-frame" aria-label="新建游戏">
+    <section className="new-game-space flow-frame wanhu-global-space" aria-label="新建游戏">
       <header className="global-space-header new-game-space__header">
         <div className="global-space-heading"><h1>新建游戏</h1></div>
       </header>
@@ -200,7 +200,6 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
                 <button key={item.key} type="button" className={filter === item.key ? 'is-active' : ''} aria-pressed={filter === item.key} onClick={() => chooseFilter(item.key)}>{item.label}</button>
               ))}
             </nav>
-            <span>{visibleMaps.length} 张地图</span>
           </header>
 
           <div className="new-game-map-grid">
@@ -290,7 +289,7 @@ function GeneratorGroup({ label, values, value, onChange }: { label: string; val
     <section className="new-game-plan__group">
       <span>{label}</span>
       <div className="new-game-segmented">
-        {values.map((item) => <button key={item} type="button" className={item === value ? 'is-active' : ''} onClick={() => onChange(item)}>{item}</button>)}
+        {values.map((item) => <button key={item} type="button" className={item === value ? 'is-active' : ''} aria-pressed={item === value} onClick={() => onChange(item)}>{item}</button>)}
       </div>
     </section>
   );

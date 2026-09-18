@@ -60,6 +60,16 @@ const settingsStyle = await snapshotStyle(settingsRoot);
 if ((await page.locator('.settings-blocking-backdrop').count()) !== 0) throw new Error('Settings must not keep a page-private backdrop layer.');
 await page.screenshot({ path: `${outDir}/global-family-settings.png` });
 
+await open('new-game', '.new-game-space.wanhu-global-space');
+const newGameRoot = page.locator('.new-game-space.wanhu-global-space');
+const newGameStyle = await snapshotStyle(newGameRoot);
+assertSame('Settings vs New Game Global Space', settingsStyle, newGameStyle);
+if ((await page.locator('.new-game-map-browser__head > span').count()) !== 0) throw new Error('New Game must not show redundant map-count metadata.');
+const mapCard = page.locator('.new-game-map-card').first();
+const mapRadius = Number.parseFloat(await mapCard.evaluate((node) => getComputedStyle(node).borderRadius));
+if (mapRadius < 8) throw new Error(`New Game map cards must use the shared rounded language. radius=${mapRadius}`);
+await page.screenshot({ path: `${outDir}/global-family-new-game.png` });
+
 await open('load', '.archive-space--load.wanhu-global-space');
 const loadRoot = page.locator('.archive-space--load.wanhu-global-space');
 const loadStyle = await snapshotStyle(loadRoot);

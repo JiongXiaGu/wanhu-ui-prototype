@@ -1,10 +1,10 @@
 # Global Space Visual System 设计规范
 
-Settings / Load / Save 属于同一类长时全屏系统空间。它们的信息架构不同，但视觉母版必须相同。
+Settings / Load / Save / New Game 属于同一类长时全屏系统空间。它们的信息架构不同，但视觉母版必须相同。
 
 ## 1. 共享契约
 
-三页 Root 必须使用：
+四页 Root 必须使用：
 
 ```text
 .wanhu-global-space
@@ -22,12 +22,12 @@ wanhu-surface-system.css
         ↓
 ui-control-system.css / ui-visual-system.css
         ↓
-settings / archive / save geometry CSS
+settings / archive / save / new-game geometry CSS
 ```
 
 ## 2. 必须一致
 
-Settings / Load / Save 在相同昼夜状态下必须共享：
+Settings / Load / Save / New Game 在相同视觉状态下必须共享：
 
 - Smoked Graphite Hue；
 - Global Noise；
@@ -49,7 +49,8 @@ Settings / Load / Save 在相同昼夜状态下必须共享：
 - 列表、卡片、参数行的 Geometry；
 - Settings Tabs；
 - Load 游戏组列表；
-- Save 当前游戏摘要。
+- Save 当前游戏摘要；
+- New Game 地图浏览 / 开局方案双栏结构。
 
 ## 4. 状态语义
 
@@ -66,7 +67,7 @@ Settings / Load / Save 在相同昼夜状态下必须共享：
 
 ## 6. Review 门槛
 
-Playwright 必须比较 Settings / Load / Save 的 computed style，而不只依赖截图：
+Playwright 必须比较 Settings / Load / Save / New Game 的 computed style，而不只依赖截图：
 
 - Root background-image；
 - backdrop-filter；
@@ -79,5 +80,6 @@ Playwright 必须比较 Settings / Load / Save 的 computed style，而不只依
 - Settings day；
 - Load day；
 - Save day；
+- New Game；
 - Settings night；
 - Save night。
