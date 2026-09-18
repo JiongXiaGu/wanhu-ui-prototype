@@ -31,7 +31,7 @@ export function ManagementSpace({ view, motionPhase = 'steady', onClose }: Manag
           <button type="button" className="management-space__close icon-button" aria-label="关闭城市管理" onClick={onClose}><X /></button>
         </header>
 
-        <div className="management-space__body">
+        <div className="management-space__body management-space__motion-content" key={view}>
           <section className="management-metrics" aria-label="关键指标">
             {panel.stats.map((stat) => (
               <div key={stat.label} className="management-metric">

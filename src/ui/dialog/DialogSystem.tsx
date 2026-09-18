@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Check, CircleX, Info, Trash2, TriangleAlert } from 'lucide-react';
 import { TextInput } from '../Controls';
+import { usePresence, type MotionPhase } from '../motion';
 
 type DialogTone = 'primary' | 'danger';
 type DialogVisualTone = 'neutral' | 'warning' | 'danger';
@@ -100,13 +101,19 @@ export function useDialogSystem(){const value=useContext(DialogContext);if(!valu
 
 export function DialogHost(){
   const {dialog,dismissDialog}=useDialogSystem();
-  if(!dialog)return null;
+  const presence=usePresence(dialog!==null);
+  const retained=useRef<DialogRequest|null>(dialog);
+  if(dialog)retained.current=dialog;
+  const request=dialog??retained.current;
+  if(!presence.mounted||!request)return null;
+  const interactive=dialog!==null&&presence.phase!=='exiting';
   const onDismiss=()=>dismissDialog(false);
-  if(dialog.kind==='input')return <InputDialogView key={dialog.id} request={dialog} onDismiss={onDismiss}/>;
-  if(dialog.kind==='number')return <NumberDialogView key={dialog.id} request={dialog} onDismiss={onDismiss}/>;
-  if(dialog.kind==='binding')return <BindingDialogView key={dialog.id} request={dialog} onDismiss={onDismiss}/>;
-  if(dialog.kind==='timed')return <TimedDialogView key={dialog.id} request={dialog} onDismiss={onDismiss}/>;
-  return <ConfirmDialogView key={dialog.id} request={dialog} onDismiss={onDismiss}/>;
+  const shared={onDismiss,interactive,motionPhase:presence.phase};
+  if(request.kind==='input')return <InputDialogView key={request.id} request={request} {...shared}/>;
+  if(request.kind==='number')return <NumberDialogView key={request.id} request={request} {...shared}/>;
+  if(request.kind==='binding')return <BindingDialogView key={request.id} request={request} {...shared}/>;
+  if(request.kind==='timed')return <TimedDialogView key={request.id} request={request} {...shared}/>;
+  return <ConfirmDialogView key={request.id} request={request} {...shared}/>;
 }
 
 export function NotificationHost(){
@@ -118,30 +125,30 @@ export function NotificationHost(){
   })}</div>;
 }
 
-function DialogFrame({title,message,visualTone='neutral',children,actions}:{title:string;message?:string;visualTone?:DialogVisualTone;children?:ReactNode;actions:ReactNode}){
+function DialogFrame({title,message,visualTone='neutral',motionPhase='steady',children,actions}:{title:string;message?:string;visualTone?:DialogVisualTone;motionPhase?:MotionPhase;children?:ReactNode;actions:ReactNode}){
   const ToneIcon=visualTone==='warning'?TriangleAlert:visualTone==='danger'?CircleX:null;
-  return <div className="ui-modal-layer" role="presentation"><div className="ui-modal-backdrop"/><section className={`ui-dialog is-tone-${visualTone}`} role="dialog" aria-modal="true" aria-labelledby="ui-dialog-title"><header className="ui-dialog__header"><div className="ui-dialog__heading">{ToneIcon&&<ToneIcon className="ui-dialog__tone-icon" size={16}/>}<h2 id="ui-dialog-title">{title}</h2></div>{message&&<p>{message}</p>}</header>{children&&<div className="ui-dialog__body">{children}</div>}<footer className="ui-dialog__actions">{actions}</footer></section></div>;
+  return <div className={`ui-modal-layer is-${motionPhase}`} role="presentation"><div className="ui-modal-backdrop"/><section className={`ui-dialog is-tone-${visualTone} motion-center-surface is-${motionPhase}`} role="dialog" aria-modal="true" aria-labelledby="ui-dialog-title"><header className="ui-dialog__header"><div className="ui-dialog__heading">{ToneIcon&&<ToneIcon className="ui-dialog__tone-icon" size={16}/>}<h2 id="ui-dialog-title">{title}</h2></div>{message&&<p>{message}</p>}</header>{children&&<div className="ui-dialog__body">{children}</div>}<footer className="ui-dialog__actions">{actions}</footer></section></div>;
 }
 
-function ConfirmDialogView({request,onDismiss}:{request:ConfirmDialogRequest;onDismiss:()=>void}){
+function ConfirmDialogView({request,onDismiss,interactive,motionPhase}:{request:ConfirmDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
   const cancelRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null);
-  useEffect(()=>{(request.tone==='danger'?cancelRef.current:confirmRef.current)?.focus();const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'){event.preventDefault();event.stopPropagation();request.onConfirm();onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss]);
+  useEffect(()=>{if(!interactive)return;(request.tone==='danger'?cancelRef.current:confirmRef.current)?.focus();const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'){event.preventDefault();event.stopPropagation();request.onConfirm();onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,interactive]);
   const cancelAction=()=>{request.onCancel?.();onDismiss()};
-  return <DialogFrame title={request.title} message={request.message} visualTone={request.visualTone} actions={<><button ref={cancelRef} type="button" className="ui-dialog-button is-secondary" onClick={cancelAction}>{request.cancelText}</button><button ref={confirmRef} type="button" className={`ui-dialog-button ${request.tone==='danger'?'is-danger':'is-primary'}`} onClick={()=>{request.onConfirm();onDismiss()}}>{request.tone==='danger'&&<Trash2 size={14}/>} {request.confirmText}</button></>}/>;
+  return <DialogFrame title={request.title} message={request.message} visualTone={request.visualTone} motionPhase={motionPhase} actions={<><button ref={cancelRef} type="button" className="ui-dialog-button is-secondary" onClick={cancelAction}>{request.cancelText}</button><button ref={confirmRef} type="button" className={`ui-dialog-button ${request.tone==='danger'?'is-danger':'is-primary'}`} onClick={()=>{request.onConfirm();onDismiss()}}>{request.tone==='danger'&&<Trash2 size={14}/>} {request.confirmText}</button></>}/>;
 }
 
-function InputDialogView({request,onDismiss}:{request:InputDialogRequest;onDismiss:()=>void}){
+function InputDialogView({request,onDismiss,interactive,motionPhase}:{request:InputDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
   const [value,setValue]=useState(request.initialValue);
   const inputRef=useRef<HTMLInputElement>(null);
   const trimmed=value.trim();
   const error=trimmed.length===0?'请输入内容。':request.validate?.(trimmed)??'';
   const canConfirm=!error;
-  useEffect(()=>{inputRef.current?.focus();inputRef.current?.select()},[request.id]);
-  useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,canConfirm]);
-  return <DialogFrame title={request.title} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed);onDismiss()}}}>{request.confirmText}</button></>}><label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={value} inputMode={request.inputMode??'text'} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label></DialogFrame>;
+  useEffect(()=>{if(interactive){inputRef.current?.focus();inputRef.current?.select()}},[request.id,interactive]);
+  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,canConfirm,interactive]);
+  return <DialogFrame title={request.title} motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed);onDismiss()}}}>{request.confirmText}</button></>}><label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={value} inputMode={request.inputMode??'text'} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label></DialogFrame>;
 }
 
-function NumberDialogView({request,onDismiss}:{request:NumberDialogRequest;onDismiss:()=>void}){
+function NumberDialogView({request,onDismiss,interactive,motionPhase}:{request:NumberDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
   const [draft,setDraft]=useState(String(request.initialValue));
   const inputRef=useRef<HTMLInputElement>(null);
   const numeric=Number(draft.trim());
@@ -154,9 +161,9 @@ function NumberDialogView({request,onDismiss}:{request:NumberDialogRequest;onDis
   const canConfirm=!error;
   const helper=`范围 ${format(request.min)} – ${format(request.max)} · 步进 ${request.step}`;
   const commit=()=>{if(!canConfirm)return;request.onConfirm(Number(numeric.toFixed(request.decimals)));onDismiss()};
-  useEffect(()=>{inputRef.current?.focus();inputRef.current?.select()},[request.id]);
-  useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();commit()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,numeric,canConfirm]);
-  return <DialogFrame title={request.title} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={commit}>{request.confirmText}</button></>}><label className={`ui-dialog-input ui-dialog-number-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={draft} inputMode="decimal" aria-invalid={Boolean(error)} onChange={event=>setDraft(event.target.value)}/><small className={error?'is-error':''}>{error||helper}</small></label></DialogFrame>;
+  useEffect(()=>{if(interactive){inputRef.current?.focus();inputRef.current?.select()}},[request.id,interactive]);
+  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();commit()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,numeric,canConfirm,interactive]);
+  return <DialogFrame title={request.title} motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={commit}>{request.confirmText}</button></>}><label className={`ui-dialog-input ui-dialog-number-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={draft} inputMode="decimal" aria-invalid={Boolean(error)} onChange={event=>setDraft(event.target.value)}/><small className={error?'is-error':''}>{error||helper}</small></label></DialogFrame>;
 }
 
 function formatCapturedBinding(event:KeyboardEvent){
@@ -166,19 +173,19 @@ function formatCapturedBinding(event:KeyboardEvent){
   const parts:string[]=[];if(event.ctrlKey)parts.push('Ctrl');if(event.shiftKey)parts.push('Shift');if(event.altKey)parts.push('Alt');if(event.metaKey)parts.push('Meta');parts.push(base);return parts.join(' + ');
 }
 
-function BindingDialogView({request,onDismiss}:{request:BindingDialogRequest;onDismiss:()=>void}){
+function BindingDialogView({request,onDismiss,interactive,motionPhase}:{request:BindingDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
   const [draft,setDraft]=useState(request.initialValue),[listening,setListening]=useState(true);
   const captureRef=useRef<HTMLButtonElement>(null);
   const error=request.validate?.(draft)??'';
   const canConfirm=!listening&&!error;
-  useEffect(()=>{captureRef.current?.focus()},[request.id]);
-  useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss();return}if(!listening){if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(draft);onDismiss()}return}event.preventDefault();event.stopPropagation();if(event.key==='Backspace'||event.key==='Delete'){setDraft('');setListening(false);return}const next=formatCapturedBinding(event);if(!next)return;setDraft(next);setListening(false)};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,draft,listening,canConfirm]);
-  return <DialogFrame title={request.title} message={`${request.actionLabel} · ${request.slotLabel}`} actions={<><button type="button" className="ui-dialog-button is-secondary ui-dialog-binding-clear" onClick={()=>{setDraft('');setListening(false)}}>{request.clearText}</button><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(draft);onDismiss()}}}>{request.confirmText}</button></>}><div className="ui-binding-dialog-current"><span>当前绑定</span><b>{request.initialValue||'未设置'}</b></div><button ref={captureRef} type="button" className={`ui-binding-capture ${listening?'is-listening':''}`} aria-label="按键输入区域" onClick={()=>setListening(true)}><span>{listening?'正在等待输入':'新的绑定'}</span><strong>{listening?'请按下新的按键组合…':(draft||'未设置')}</strong><small>{listening?'按 Esc 取消，Backspace / Delete 清除':'点击这里重新输入'}</small></button>{error&&<div className="ui-dialog-validation-error" role="alert">{error}</div>}</DialogFrame>;
+  useEffect(()=>{if(interactive)captureRef.current?.focus()},[request.id,interactive]);
+  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss();return}if(!listening){if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(draft);onDismiss()}return}event.preventDefault();event.stopPropagation();if(event.key==='Backspace'||event.key==='Delete'){setDraft('');setListening(false);return}const next=formatCapturedBinding(event);if(!next)return;setDraft(next);setListening(false)};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,draft,listening,canConfirm,interactive]);
+  return <DialogFrame title={request.title} message={`${request.actionLabel} · ${request.slotLabel}`} motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary ui-dialog-binding-clear" onClick={()=>{setDraft('');setListening(false)}}>{request.clearText}</button><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(draft);onDismiss()}}}>{request.confirmText}</button></>}><div className="ui-binding-dialog-current"><span>当前绑定</span><b>{request.initialValue||'未设置'}</b></div><button ref={captureRef} type="button" className={`ui-binding-capture ${listening?'is-listening':''}`} aria-label="按键输入区域" onClick={()=>setListening(true)}><span>{listening?'正在等待输入':'新的绑定'}</span><strong>{listening?'请按下新的按键组合…':(draft||'未设置')}</strong><small>{listening?'按 Esc 取消，Backspace / Delete 清除':'点击这里重新输入'}</small></button>{error&&<div className="ui-dialog-validation-error" role="alert">{error}</div>}</DialogFrame>;
 }
 
-function TimedDialogView({request,onDismiss}:{request:TimedDialogRequest;onDismiss:()=>void}){
+function TimedDialogView({request,onDismiss,interactive,motionPhase}:{request:TimedDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
   const [seconds,setSeconds]=useState(request.seconds);
-  useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel();onDismiss()}else if(event.key==='Enter'){event.preventDefault();event.stopPropagation();request.onConfirm();onDismiss()}};window.addEventListener('keydown',handleKey,true);const timer=window.setInterval(()=>setSeconds(current=>current-1),1000);return()=>{window.removeEventListener('keydown',handleKey,true);window.clearInterval(timer)}},[request,onDismiss]);
-  useEffect(()=>{if(seconds>0)return;request.onCancel();onDismiss()},[seconds,request,onDismiss]);
-  return <DialogFrame title={request.title} message={request.message} visualTone="warning" actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" onClick={()=>{request.onConfirm();onDismiss()}}><Check size={14}/>{request.confirmText}</button></>}>{(request.summaryLabel||request.summaryValue)&&<div className="ui-dialog-change"><span>{request.summaryLabel}</span><b>{request.summaryValue}</b></div>}<div className="ui-dialog-countdown" aria-live="polite"><strong>{Math.max(0,seconds)}</strong><span>秒后自动恢复</span></div></DialogFrame>;
+  useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel();onDismiss()}else if(event.key==='Enter'){event.preventDefault();event.stopPropagation();request.onConfirm();onDismiss()}};window.addEventListener('keydown',handleKey,true);const timer=window.setInterval(()=>setSeconds(current=>current-1),1000);return()=>{window.removeEventListener('keydown',handleKey,true);window.clearInterval(timer)}},[request,onDismiss,interactive]);
+  useEffect(()=>{if(!interactive||seconds>0)return;request.onCancel();onDismiss()},[seconds,request,onDismiss,interactive]);
+  return <DialogFrame title={request.title} message={request.message} visualTone="warning" motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" onClick={()=>{request.onConfirm();onDismiss()}}><Check size={14}/>{request.confirmText}</button></>}>{(request.summaryLabel||request.summaryValue)&&<div className="ui-dialog-change"><span>{request.summaryLabel}</span><b>{request.summaryValue}</b></div>}<div className="ui-dialog-countdown" aria-live="polite"><strong>{Math.max(0,seconds)}</strong><span>秒后自动恢复</span></div></DialogFrame>;
 }

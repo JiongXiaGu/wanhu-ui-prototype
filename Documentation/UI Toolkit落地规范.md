@@ -10,7 +10,7 @@
 - 验证构图、尺寸和空间关系；
 - 验证信息架构与交互流程；
 - 快速比较不同视觉方案；
-- 通过固定 1920×1080 场景和 Visual Review 做持续美术审查；
+- 通过固定 1920×1080 设计基准做持续美术审查；
 - 为正式 UXML / USS / C# 提供稳定参考。
 
 因此任何重要设计都必须能回答：
@@ -321,17 +321,21 @@ Tool = road-placement
 
 ## 10. 动效规范
 
-正式 Unity 优先使用：Opacity / Translate / Scale / USS Transition / 必要时 C#。
+正式规则见 `Documentation/UI Motion System设计规范.md`。
 
-建议：
+Unity 优先使用 Opacity / Translate / USS Transition；Scale 只保留给极小型 Elevated 反馈，不用于大型 Surface。
 
-- Hover：约 100 ms；
-- Tab / Selected：约 120–160 ms；
-- Workspace / Context Surface：约 160–220 ms；
-- 分组分页：约 160–200 ms；
-- Tooltip：约 320–400 ms 延迟。
+统一时长：
 
-避免频繁动画 Width / Height / Layout Position。
+- Fast：100ms；
+- Control：120ms；
+- Surface：160ms；
+- Space：200ms；
+- Tooltip Delay：约 320ms。
+
+正式 Unity 建议一个薄层 `UITransitionController` 管理 Presence Class、PickingMode、延迟隐藏和 Rebind 时机。
+
+避免动画 Width / Height / Layout Position、Blur Radius、Bounce、Overshoot 和大幅横向飞入。
 
 ## 11. Tooltip
 

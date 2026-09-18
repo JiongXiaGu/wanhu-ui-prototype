@@ -228,7 +228,21 @@ Tool Context 切换时不动画 Width：
 
 正式 Unity UI Toolkit 应使用一个固定 Host + 一个复用 Toolbar，通过 USS Class / C# Rebind 完成切换，不常驻多份 Building / Road / Bridge Toolbar。
 
-## 7. 输入与语义
+## 7. Tool Handoff Motion
+
+Workspace → Placement：
+
+- Workspace / Main Dock / Control Tray 先用 Fast Exit 收起；
+- Tool 业务状态立即成立；
+- 约 100ms 后 Placement Context 从左侧进入；
+- Placement Action Bar 从底部进入；
+- Context Utility 同期完成 World → Tool Definition Swap。
+
+Placement → Workspace 反向执行。
+
+该流程映射 Unity UI Toolkit 的 Presence Class，不允许用业务延迟等待动画结束。
+
+## 8. 输入与语义
 
 交互类型不能混用：
 
@@ -240,7 +254,7 @@ Tool Context 切换时不动画 Width：
 
 Action Bar 的 Quick Action 不得因为执行一次动作就改变当前 Mode。
 
-## 8. 视觉基线
+## 9. 视觉基线
 
 1080p 当前原型基线：
 
@@ -258,7 +272,7 @@ Action Bar 的 Quick Action 不得因为执行一次动作就改变当前 Mode�
 
 Action Bar 是当前任务主控，其视觉权重高于 Context Utility，但不通过另一套材质表达。Main Dock / Placement / Context Utility 分别对应 Bottom Command Visual System 的 L / M / S 三档。
 
-## 9. Review 要求
+## 10. 验收要求
 
 Placement Tool 相关改动至少检查：
 

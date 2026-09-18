@@ -179,6 +179,17 @@ C# 只切换状态 Class；不从颜色反推业务状态。
 
 ## 9. Context Utility 切换
 
+Bottom Command 的切换必须消费共享 Motion System：
+
+- Exit = Fast 100ms；
+- Enter = Surface 160ms；
+- Bottom Preset = Fade + Y 8px；
+- Context Utility Rebind 只在 Hidden 阶段发生；
+- 不动画 Toolbar Width；
+- 动画阶段 Pointer Input 关闭。
+
+
+
 Context Utility 使用一个稳定 Host，而不是为 World / Building / Road 常驻三棵 VisualTree。
 
 正式切换：

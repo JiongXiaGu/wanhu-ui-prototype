@@ -3,7 +3,7 @@ import type { PauseView } from '../app/ui-state';
 import { SaveGameSpace } from '../archive/SaveGameSpace';
 import { SettingsPanel } from '../settings/SettingsPanel';
 import { useDialogSystem } from '../ui/dialog/DialogSystem';
-import type { MotionPhase } from '../ui/motion';
+import { MOTION_MS, usePresence, type MotionPhase } from '../ui/motion';
 
 interface PauseLayerProps {
   view: PauseView;
@@ -25,6 +25,22 @@ type PauseAction = (typeof items)[number]['action'];
 
 export function PauseLayer({ view, motionPhase = 'steady', interactive = true, onViewChange, onResume, onMainMenu }: PauseLayerProps) {
   const dialogs = useDialogSystem();
+  const previousViewRef = useRef(view);
+  const transitionFromRef = useRef(view);
+  if (previousViewRef.current !== view) {
+    transitionFromRef.current = previousViewRef.current;
+    previousViewRef.current = view;
+  }
+  const transitionFrom = transitionFromRef.current;
+  const menuPresence = usePresence(view === 'menu', {
+    enterDelayMs: transitionFrom !== 'menu' && view === 'menu' ? MOTION_MS.fast : 0,
+  });
+  const secondaryPresence = usePresence(view !== 'menu', {
+    enterDelayMs: transitionFrom === 'menu' && view !== 'menu' ? MOTION_MS.fast : 0,
+  });
+  const lastSecondaryView = useRef<Exclude<PauseView, 'menu'>>('save');
+  if (view !== 'menu') lastSecondaryView.current = view;
+  const renderedSecondaryView = view !== 'menu' ? view : lastSecondaryView.current;
   const menuButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
@@ -99,8 +115,8 @@ export function PauseLayer({ view, motionPhase = 'steady', interactive = true, o
       <div className="pause-shade" />
       <div className="pause-atmosphere" />
 
-      {view === 'menu' && (
-        <section className="pause-command-surface">
+      {menuPresence.mounted && (
+        <section className={`pause-command-surface motion-center-surface is-${menuPresence.phase}`}>
           <header className="pause-heading">
             <h2>暂停</h2>
             <p>昭平城 · 第十二年秋</p>
@@ -118,13 +134,13 @@ export function PauseLayer({ view, motionPhase = 'steady', interactive = true, o
         </section>
       )}
 
-      {view === 'save' && (
-        <div className="pause-secondary-surface">
+      {secondaryPresence.mounted && renderedSecondaryView === 'save' && (
+        <div className={`pause-secondary-surface motion-fade-surface is-${secondaryPresence.phase}`}>
           <SaveGameSpace context="pause" onBack={() => onViewChange('menu')} />
         </div>
       )}
-      {view === 'settings' && (
-        <div className="pause-secondary-surface">
+      {secondaryPresence.mounted && renderedSecondaryView === 'settings' && (
+        <div className={`pause-secondary-surface motion-fade-surface is-${secondaryPresence.phase}`}>
           <SettingsPanel context="pause" onClose={() => onViewChange('menu')} onApply={() => onViewChange('menu')} />
         </div>
       )}

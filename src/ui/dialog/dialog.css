@@ -6,7 +6,15 @@
   place-items:center;
   pointer-events:auto;
 }
-.ui-modal-backdrop{position:absolute;inset:0}
+.ui-modal-backdrop{
+  position:absolute;
+  inset:0;
+  opacity:1;
+  transition:opacity var(--wanhu-motion-control,120ms) ease;
+}
+.ui-modal-layer.is-entering .ui-modal-backdrop,
+.ui-modal-layer.is-exiting .ui-modal-backdrop{opacity:0}
+.ui-modal-layer.is-exiting{pointer-events:none}
 .ui-dialog{
   position:relative;
   z-index:1;
@@ -20,7 +28,7 @@
   background:transparent;
   box-shadow:none;
   color:var(--wanhu-color-paper-primary,#eee9df);
-  animation:ui-dialog-enter .15s cubic-bezier(.2,.7,.25,1) both;
+  animation:none;
 }
 .ui-dialog__header{
   position:relative;
@@ -232,7 +240,7 @@
   bottom:0;
   min-width:240px;
   max-width:420px;
-  transition:transform .2s cubic-bezier(.2,.72,.25,1);
+  transition:transform var(--wanhu-motion-space,200ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
   will-change:transform;
 }
 .ui-toast__surface{
@@ -249,13 +257,13 @@
   color:var(--wanhu-color-paper-secondary,#b9b5ab);
   font-size:10px;
   white-space:nowrap;
-  animation:ui-toast-enter .18s cubic-bezier(.2,.72,.25,1) both;
+  animation:ui-toast-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }
 .ui-toast__surface svg{flex:0 0 auto;color:var(--wanhu-color-paper-tertiary,#8c8f89)}
 .ui-toast.is-success .ui-toast__surface svg{color:#a8b68f}
 .ui-toast.is-warning .ui-toast__surface svg{color:var(--wanhu-color-brass-high,#bd9959)}
 .ui-toast.is-error .ui-toast__surface svg{color:#cf8e82}
-.ui-toast.is-exiting .ui-toast__surface{animation:ui-toast-exit .22s ease-in forwards}
+.ui-toast.is-exiting .ui-toast__surface{animation:ui-toast-exit var(--wanhu-motion-space,200ms) var(--wanhu-motion-ease-in,ease-in) forwards}
 
 @keyframes ui-dialog-enter{
   from{opacity:0;transform:translateY(7px) scale(.994)}
