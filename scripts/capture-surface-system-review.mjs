@@ -121,7 +121,8 @@ async function assertPersistentHud(period) {
       tokens: {
         info: screenStyle?.getPropertyValue('--wanhu-surface-info-bg').trim() || '',
         control: screenStyle?.getPropertyValue('--wanhu-surface-control-bg').trim() || '',
-        command: screenStyle?.getPropertyValue('--wanhu-surface-command-bg').trim() || '',
+        commandLg: screenStyle?.getPropertyValue('--wanhu-bottom-command-lg-bg').trim() || '',
+        commandSm: screenStyle?.getPropertyValue('--wanhu-bottom-command-sm-bg').trim() || '',
         ambient: screenStyle?.getPropertyValue('--wanhu-surface-ambient-bg').trim() || '',
         ambientSoft: screenStyle?.getPropertyValue('--wanhu-surface-ambient-soft-bg').trim() || '',
         readout: screenStyle?.getPropertyValue('--wanhu-surface-readout-bg').trim() || '',
@@ -138,8 +139,8 @@ async function assertPersistentHud(period) {
   const checks = [
     ['Top Status', values.tokens.info, values.info],
     ['Control Tray', values.tokens.control, values.control],
-    ['Main Dock', values.tokens.command, values.command],
-    ['World Utility', values.tokens.ambient, values.ambient],
+    ['Main Dock', values.tokens.commandLg, values.command],
+    ['World Utility', values.tokens.commandSm, values.ambient],
     ['System Menu', values.tokens.ambientSoft, values.menu],
     ['Operation Hint', values.tokens.readout, values.readout],
   ];
