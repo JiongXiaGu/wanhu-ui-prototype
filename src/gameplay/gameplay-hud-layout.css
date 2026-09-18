@@ -53,7 +53,8 @@
   --hud-core-width:940px;
   --hud-command-height:var(--command-height-lg);
   --hud-world-tools-width:458px;
-  --hud-world-tools-height:var(--command-height-sm);
+  --hud-tool-tools-width:304px;
+  --hud-utility-tools-height:var(--command-height-sm);
   --hud-context-weather-width:400px;
   --hud-context-camera-width:360px;
   --hud-left-context-max-height:720px;
@@ -89,16 +90,18 @@
   bottom:var(--hud-edge);
 }
 
-.gameplay-screen > .world-utility-toolbar.command-utility{
+.gameplay-screen > .context-utility-toolbar.command-utility{
   right:var(--hud-edge);
   bottom:var(--hud-edge);
-  width:var(--hud-world-tools-width);
-  height:var(--hud-world-tools-height);
+  height:var(--hud-utility-tools-height);
 }
+.gameplay-screen > .context-utility-toolbar[data-utility-context="world"]{width:var(--hud-world-tools-width)}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="building-placement"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"]{width:var(--hud-tool-tools-width)}
 
 .gameplay-screen .gameplay-operation-hints{
   right:var(--hud-edge);
-  bottom:calc(var(--hud-edge) + var(--hud-world-tools-height) + var(--hud-gap-md));
+  bottom:calc(var(--hud-edge) + var(--hud-utility-tools-height) + var(--hud-gap-md));
 }
 
 .gameplay-screen .workspace{

@@ -4,7 +4,7 @@ Bottom Command Visual System 统一 Gameplay 底部三类持续操作面：
 
 - **Main Dock = L**：选择“要建造 / 浏览什么”；
 - **Placement Action Bar = M**：当前 Tool 的模式、快捷动作与完成 / 取消；
-- **World Utility Toolbar = S**：跨 Workspace / Tool 的世界级辅助能力。
+- **Context Utility Toolbar = S**：右下固定辅助槽；Gameplay / Workspace 显示 World Utility，Tool 中切换为对应 Tool Utility。
 
 三者是同一套 **Smoked Graphite / 烟墨熟铜** Command 家族，不是三套 Toolbar 皮肤。
 
@@ -15,7 +15,7 @@ Bottom Command Visual System 统一 Gameplay 底部三类持续操作面：
 ```text
 L  Main Dock              主入口 / Work
 M  Placement Action Bar   当前任务主控 / Focused Work
-S  World Utility          全局辅助 / Ambient
+S  Context Utility        上下文辅助 / Ambient
 ```
 
 稳定规则：
@@ -46,12 +46,13 @@ S  World Utility          全局辅助 / Ambient
 - Building / Road / Wall / Bridge 等全部复用同一外壳；
 - 14px Surface Radius。
 
-### S — World Utility
+### S — Context Utility
 
 - 高约 `56px`；
 - Button `42 × 42px`；
 - Icon 约 `20px`；
-- 右下常驻；
+- 右下固定 Host 常驻于 Gameplay / Workspace / Tool；
+- World / Building / Road 等 Context 可以直接切换内容与宽度；
 - 14px Surface Radius。
 
 不要为了整齐把三者做成同宽同高。
@@ -73,7 +74,7 @@ Component CSS
 
 - `gameplay-hud-layout.css` 只负责尺寸、位置、安全边距；
 - `bottom-command-system.css` 只保留共享 Shell Geometry；
-- Main Dock、Placement、World Utility 的业务 CSS 不重新定义 Root Surface；
+- Main Dock、Placement、Context Utility 的业务 CSS 不重新定义 Root Surface；
 - Noise / Edge / Shadow / Blur 必须来自同一 Surface System。
 
 三个 Tier 的 RGB Hue 应保持接近中性；绿色植被背景下不得读成墨绿色 Toolbar。
@@ -116,7 +117,7 @@ One-shot Action：
 
 - 不使用 Selected；
 - Press 后不残留金色；
-- Placement 旋转 / 镜像 / 道路反转与 World Utility 普通 One-shot 使用同一中性语言。
+- Placement 旋转 / 镜像 / 道路反转与 Context Utility 普通 One-shot 使用同一中性语言。
 
 ### Placement Confirm
 
@@ -144,7 +145,7 @@ Tooltip：
 - 9px 左右文字；
 - 320–400ms Hover Delay；
 - 不可交互；
-- Placement / World Utility 使用同一材质。
+- Placement / Context Utility 使用同一材质。
 
 ## 7. 昼夜
 
@@ -176,14 +177,40 @@ C# 只切换状态 Class；不从颜色反推业务状态。
 
 正式 Unity 使用共享 Scene Blur / Surface Asset，不给 L / M / S 创建三套独立 Blur 或材质。
 
-## 9. Review 门槛
+## 9. Context Utility 切换
+
+Context Utility 使用一个稳定 Host，而不是为 World / Building / Road 常驻三棵 VisualTree。
+
+正式切换：
+
+```text
+GameplayUiState.tool
+        ↓
+Utility Context Resolver
+        ↓
+Utility Definition
+        ↓
+ContextUtilityToolbar
+```
+
+动画只使用 Opacity + TranslateY：
+
+- Exit：约 100ms，向下 6px 淡出；
+- Hidden：直接 Rebind Items 与 Width；
+- Enter：约 140ms，从下方 6px 淡入；
+- 不动画 Width / Height，不做横向飞入；
+- Exit / Enter 阶段 Pointer Input 关闭。
+
+Unity UI Toolkit 建议单实例 `UtilityToolbarHost` + `ContextUtilityToolbar`，C# 重绑 Definition，并通过 USS Class 驱动 `opacity / translate` Transition。
+
+## 10. 验收门槛
 
 Bottom Command 修改至少检查：
 
-- 白天 Main Dock + World Utility；
-- 白天 Building Placement + World Utility；
-- 白天 Road Placement + World Utility；
-- 夜晚 Main Dock + World Utility；
+- 白天 Main Dock + World Utility Context；
+- 白天 Building Placement + Building Utility Context；
+- 白天 Road Placement + Road Utility Context；
+- 夜晚 Main Dock + World Utility Context；
 - 夜晚 Building Placement；
 - 夜晚 Road Placement；
 - 三档 Surface Hue 是否保持中性；
@@ -191,4 +218,6 @@ Bottom Command 修改至少检查：
 - Active / Toggle On 是否只使用少量熟铜；
 - Quick Action 是否不残留 Selected；
 - Placement Confirm 是否是唯一明显 Primary；
+- Building / Road Context 中世界级地图 / 区域 / 地形 / 配色入口必须退出；
+- Tool Context 中 Grid / History 必须继续存在；
 - 左侧 Context + 中下 M + 右下 S 是否组成一套 Tool UI。

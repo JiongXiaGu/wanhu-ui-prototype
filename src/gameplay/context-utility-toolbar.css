@@ -1,10 +1,13 @@
-/* Persistent World Utility Toolbar.
-   Geometry is owned by gameplay-hud-layout.css; this is the small tier of the shared Bottom Command Visual System. */
+/* Contextual Bottom Utility System.
+   The host is stable; content changes with GameplayUiState.tool.
+   Width switches instantly while hidden. Motion is opacity + translateY so the
+   same interaction maps cleanly to Unity UI Toolkit USS transitions. */
 
-.gameplay-screen > .world-utility-toolbar.command-utility{
+.gameplay-screen > .context-utility-toolbar.command-utility{
   position:absolute;
   left:auto;
   z-index:23;
+  height:var(--hud-utility-tools-height,var(--command-height-sm,56px));
   padding:6px;
   display:flex;
   align-items:center;
@@ -13,18 +16,33 @@
   opacity:1;
   visibility:visible;
   pointer-events:auto;
-  transform:none;
-  transition:opacity .15s ease,transform .15s ease,visibility .15s ease;
+  transform:translateY(0);
+  transition-property:opacity,transform;
+  transition-duration:140ms;
+  transition-timing-function:ease;
 }
 
-.world-utility-toolbar__group{
+.gameplay-screen > .context-utility-toolbar.is-exiting{
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(6px);
+  transition-duration:100ms;
+}
+
+.gameplay-screen > .context-utility-toolbar.is-entering{
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(6px);
+}
+
+.context-utility-toolbar__group{
   height:100%;
   display:flex;
   align-items:center;
   gap:0;
 }
 
-.world-utility-toolbar__separator{
+.context-utility-toolbar__separator{
   width:1px;
   height:var(--command-divider-height,24px);
   flex:0 0 1px;
@@ -32,7 +50,7 @@
   background:var(--command-divider,rgba(238,233,223,.052));
 }
 
-.world-utility-toolbar__button{
+.context-utility-toolbar__button{
   position:relative;
   width:var(--command-control-sm,42px);
   height:var(--command-control-sm,42px);
@@ -48,27 +66,26 @@
   transition:background .13s ease,color .13s ease,transform .09s ease;
 }
 
-.world-utility-toolbar__button svg{
+.context-utility-toolbar__button svg{
   width:var(--command-icon-size,20px);
   height:var(--command-icon-size,20px);
   stroke-width:1.55;
   pointer-events:none;
 }
 
-.world-utility-toolbar__button:hover{
+.context-utility-toolbar__button:hover:not(:disabled){
   background:var(--command-hover,rgba(255,255,255,.030));
   color:var(--command-icon-hover,#d8d3ca);
 }
 
-.world-utility-toolbar__button:active{transform:translateY(1px)}
+.context-utility-toolbar__button:active:not(:disabled){transform:translateY(1px)}
 
-/* Bottom command surfaces point their persistent selected state upward toward the world/content they control. */
-.world-utility-toolbar__button.is-active{
+.context-utility-toolbar__button.is-active{
   color:var(--command-icon-active,#bd9959);
   background:linear-gradient(180deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
 }
 
-.world-utility-toolbar__button.is-active::before{
+.context-utility-toolbar__button.is-active::before{
   content:'';
   position:absolute;
   left:11px;
@@ -79,14 +96,19 @@
   background:var(--command-active-line,rgba(169,132,75,.84));
 }
 
-.world-utility-toolbar__button:disabled{
+.context-utility-toolbar__button:disabled{
   opacity:.27;
   cursor:default;
   background:transparent;
   transform:none;
 }
 
-.world-utility-toolbar__button[data-tooltip]::after{
+.context-utility-toolbar.is-exiting .context-utility-toolbar__button,
+.context-utility-toolbar.is-entering .context-utility-toolbar__button{
+  opacity:.55;
+}
+
+.context-utility-toolbar__button[data-tooltip]::after{
   content:attr(data-tooltip);
   position:absolute;
   left:50%;
@@ -110,7 +132,7 @@
   transition-delay:0s;
 }
 
-.world-utility-toolbar__button:hover::after{
+.context-utility-toolbar__button:hover:not(:disabled)::after{
   opacity:1;
   visibility:visible;
   transform:translate(-50%,0);

@@ -277,7 +277,7 @@ Design Workspace 当前每页 8 个可见 Asset，很适合有限预览池。
 
 正式规则：`Documentation/Bottom Command Visual System设计规范.md`。
 
-Unity 不应为 Main Dock / Placement Action Bar / World Utility 各复制一套 USS。
+Unity 不应为 Main Dock / Placement Action Bar / Context Utility 各复制一套 USS。
 
 建议：
 
@@ -291,6 +291,33 @@ BottomCommandSurface
 ```
 
 L / M / S 只决定尺寸和 Shadow Tier；Surface、Hover、Active、Divider、Tooltip 共用视觉契约。
+
+### Context Utility Host
+
+右下 S 档使用固定 `UtilityToolbarHost`，内容由当前 Tool Context 决定：
+
+```text
+Tool = none
+→ World Utility Definition
+
+Tool = building-placement
+→ Building Utility Definition
+
+Tool = road-placement
+→ Road Utility Definition
+```
+
+正式 Unity 建议：
+
+- 一个 Toolbar VisualElement 实例；
+- C# Tool Controller / UI State 决定当前 Definition；
+- 切换时先添加 `is-exiting`；
+- 约 100ms 后 Rebind 子按钮并直接更新 Width；
+- 添加 `is-entering`，下一帧移除该 Class；
+- USS 只动画 `opacity / translate`，约 140ms；
+- Exit / Enter 阶段设置 `picking-mode: Ignore` 或禁用输入；
+- 不动画 Width / Height；
+- 不同时常驻 World / Building / Road 三份 Toolbar。
 
 ## 10. 动效规范
 

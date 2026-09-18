@@ -8,16 +8,16 @@ Placement Tool 固定分成三类 UI：
 
 - **左侧 Placement Context**：当前工具的详细参数、数值、Slider、Segmented Control、状态摘要；属于统一 `Left Context System`；
 - **中下 Placement Action Bar**：模式切换、高频 One-shot Quick Action、完成 / 取消；
-- **右下 World Utility Toolbar**：跨工具全局能力，例如 Grid Snap / Grid Visible / Undo / Redo。
+- **右下 Context Utility Toolbar**：固定槽位，按当前 Tool Context 切换辅助能力；Gameplay / Workspace 显示 World Utility，Placement 显示 Tool Utility。
 
-不要把详细参数塞进 Placement Action Bar，也不要把当前任务的完成 / 取消塞进 World Utility Toolbar。
+不要把详细参数塞进 Placement Action Bar，也不要把当前任务的完成 / 取消塞进 Context Utility Toolbar。
 
 玩家认知应保持：
 
 ```text
 左侧：这个模式具体怎么调
 中下：我现在在做什么 / 立即执行什么
-右下：全局怎么辅助编辑世界
+右下：当前上下文有哪些辅助编辑能力
 ```
 
 ## 2. Placement Action Bar
@@ -52,7 +52,7 @@ Action Bar 外壳约 `68px` 高，固定屏幕下方居中；宽度由当前 Too
 - 属于 One-shot Action，不使用 `aria-pressed`，不留下持续 Selected；
 - 点击后执行一次，并保持玩家当前 Mode 不变；
 - 只放高频即时动作，不放 Slider / 数值参数；
-- 视觉上与 World Utility 的普通 One-shot Action 使用同一中性按钮语言。
+- 视觉上与 Context Utility 的普通 One-shot Action 使用同一中性按钮语言。
 
 典型能力：旋转、镜像、反转方向、回退控制点等。
 
@@ -176,18 +176,57 @@ PlacementActionBar
 - 参数内容可以滚动，Header 保持稳定；
 - Placement Context 默认不使用 Footer，避免与中央 Placement Action Bar 重复职责。
 
-## 6. World Utility 不变量
+## 6. Context Utility 不变量
 
-Placement Tool 中仍保留右下 World Utility Toolbar：
+右下角不再在所有状态下常驻完整 World Utility。正式结构为一个稳定的 **Context Utility Host**：
+
+```text
+Gameplay / Workspace
+→ World Utility
+
+Building Placement
+→ Building Utility
+
+Road Placement
+→ Road Utility
+
+Future Bridge / Wall / Platform
+→ 对应 Tool Utility Definition
+```
+
+进入 Placement Tool 后，以下世界级入口退出：
+
+- 地图解锁；
+- 编辑区域；
+- 地形编辑；
+- 配色工具；
+- 范围复制 / 范围移动。
+
+Placement 继续保留所有工具共享的：
 
 - Grid Snap；
 - Grid Visible；
-- Undo / Redo；
-- 以及其它跨工具世界级辅助能力。
+- Undo / Redo。
 
-这些状态进入 Tool 时不重置，也不在具体 Building / Road Tool 内复制一份。
+并在中间插入 Tool-specific One-shot Action：
 
-World Utility 是 Bottom Command Visual System 的 **S 档**，与 Placement 使用同一 Surface / Hover / Active / Divider 语言，仅尺寸与阴影层级更低。
+- Building：对齐最近道路 / 校准建筑基底；
+- Road：拉直当前道路段 / 连接最近道路节点；
+- Bridge / Wall 等后续通过 Definition 增加，不复制新的 Toolbar Shell。
+
+Context Utility 是 Bottom Command Visual System 的 **S 档**，与 Placement 使用同一 Surface / Hover / Active / Divider 语言，仅内容定义与宽度随 Tool Context 切换。
+
+### 切换动画
+
+Tool Context 切换时不动画 Width：
+
+1. 旧 Toolbar：约 `100ms`，Opacity `1 → 0` + `translateY(0 → 6px)`；
+2. Hidden 状态下直接替换 Definition 与 Width；
+3. 新 Toolbar：约 `140ms`，Opacity `0 → 1` + `translateY(6px → 0)`。
+
+退出 / 进入阶段立即阻断 Pointer Input，避免透明旧按钮仍可点击。
+
+正式 Unity UI Toolkit 应使用一个固定 Host + 一个复用 Toolbar，通过 USS Class / C# Rebind 完成切换，不常驻多份 Building / Road / Bridge Toolbar。
 
 ## 7. 输入与语义
 
@@ -196,7 +235,8 @@ World Utility 是 Bottom Command Visual System 的 **S 档**，与 Placement 使
 - ModeGroup：Exclusive Selector；
 - Quick Action：One-shot Action；
 - 完成 / 取消：One-shot Commit Action；
-- Grid Snap / Grid Visible：全局 Toggle Setting。
+- Grid Snap / Grid Visible：跨 Context Toggle Setting；
+- Tool-specific Utility：One-shot Action，不残留 Selected。
 
 Action Bar 的 Quick Action 不得因为执行一次动作就改变当前 Mode。
 
@@ -214,9 +254,9 @@ Action Bar 的 Quick Action 不得因为执行一次动作就改变当前 Mode�
 - Quick Action 默认中性灰白；
 - 完成是唯一明显 Primary，但仍保持 Toolbar 图标按钮语言；
 - 取消不使用强烈危险红；
-- 分隔线高约 `24px`，与 World Utility 共用视觉规则。
+- 分隔线高约 `24px`，与 Context Utility 共用视觉规则。
 
-Action Bar 是当前任务主控，其视觉权重高于 World Utility，但不通过另一套材质表达。Main Dock / Placement / World Utility 分别对应 Bottom Command Visual System 的 L / M / S 三档。
+Action Bar 是当前任务主控，其视觉权重高于 Context Utility，但不通过另一套材质表达。Main Dock / Placement / Context Utility 分别对应 Bottom Command Visual System 的 L / M / S 三档。
 
 ## 9. Review 要求
 
@@ -236,6 +276,8 @@ Placement Tool 相关改动至少检查：
 - 详细参数仍留在左侧 Context；
 - Placement Context 不增加 Footer 与中央 Action Bar 重复模式/提交职责；
 - Tool 中 Control Tray / Main Dock / Scene Context Surface 不回归；
-- World Utility 与 Compass 继续保留；
-- Placement / World Utility 的 Surface、按钮 Hover、Active Tone、状态线方向与分隔节奏保持同一视觉家族；
+- Tool 中完整 World Utility 不再保留；右下固定槽位切换为对应 Context Utility；
+- Building / Road Tool Utility 必须隐藏地图解锁 / 区域 / 地形 / 配色等世界级入口；
+- Grid Snap / Grid Visible / Undo / Redo 跨 Tool Context 保留；
+- Placement / Context Utility 的 Surface、按钮 Hover、Active Tone、状态线方向与分隔节奏保持同一视觉家族；
 - 完成后返回对应 Design Workspace。

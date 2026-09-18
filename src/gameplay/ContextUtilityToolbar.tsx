@@ -1,0 +1,209 @@
+import { useEffect, useRef, useState } from 'react';
+import type { LucideIcon } from 'lucide-react';
+import {
+  Building2,
+  Copy,
+  DoorOpen,
+  Grid3X3,
+  Magnet,
+  Mountain,
+  Move,
+  Palette,
+  Redo2,
+  Route,
+  Ruler,
+  ScanLine,
+  Undo2,
+} from 'lucide-react';
+import type { Tool } from '../app/ui-state';
+
+export type UtilityContext = 'world' | 'building-placement' | 'road-placement';
+type UtilityKind = 'toggle' | 'action' | 'history';
+type UtilityItemId =
+  | 'unlock'
+  | 'region'
+  | 'terrain'
+  | 'palette'
+  | 'grid-snap'
+  | 'grid-visible'
+  | 'copy'
+  | 'move'
+  | 'undo'
+  | 'redo'
+  | 'building-align-road'
+  | 'building-calibrate-footprint'
+  | 'road-straighten-segment'
+  | 'road-connect-node';
+
+interface UtilityItem {
+  id: UtilityItemId;
+  label: string;
+  icon: LucideIcon;
+  kind: UtilityKind;
+}
+
+interface ContextUtilityToolbarProps {
+  tool: Tool;
+  gridSnap: boolean;
+  gridVisible: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  onToggleGridSnap: () => void;
+  onToggleGridVisible: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  onToolAction: (id: UtilityItemId) => void;
+}
+
+const WORLD_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'unlock', label: '地图解锁', icon: DoorOpen, kind: 'action' },
+    { id: 'region', label: '编辑区域', icon: ScanLine, kind: 'action' },
+    { id: 'terrain', label: '地形编辑', icon: Mountain, kind: 'action' },
+    { id: 'palette', label: '配色工具', icon: Palette, kind: 'action' },
+  ],
+  [
+    { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
+    { id: 'copy', label: '范围复制', icon: Copy, kind: 'action' },
+    { id: 'move', label: '范围移动', icon: Move, kind: 'action' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
+const BUILDING_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
+  ],
+  [
+    { id: 'building-align-road', label: '对齐最近道路', icon: Route, kind: 'action' },
+    { id: 'building-calibrate-footprint', label: '校准建筑基底', icon: Building2, kind: 'action' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
+const ROAD_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
+  ],
+  [
+    { id: 'road-straighten-segment', label: '拉直当前道路段', icon: Ruler, kind: 'action' },
+    { id: 'road-connect-node', label: '连接最近道路节点', icon: Route, kind: 'action' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
+const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> = {
+  world: WORLD_GROUPS,
+  'building-placement': BUILDING_GROUPS,
+  'road-placement': ROAD_GROUPS,
+};
+
+function contextForTool(tool: Tool): UtilityContext {
+  if (tool === 'building-placement') return 'building-placement';
+  if (tool === 'road-placement') return 'road-placement';
+  return 'world';
+}
+
+function ariaLabelForContext(context: UtilityContext) {
+  if (context === 'building-placement') return '建筑放置辅助工具';
+  if (context === 'road-placement') return '道路铺设辅助工具';
+  return '世界工具';
+}
+
+export function ContextUtilityToolbar({
+  tool,
+  gridSnap,
+  gridVisible,
+  canUndo,
+  canRedo,
+  onToggleGridSnap,
+  onToggleGridVisible,
+  onUndo,
+  onRedo,
+  onToolAction,
+}: ContextUtilityToolbarProps) {
+  const requestedContext = contextForTool(tool);
+  const [displayedContext, setDisplayedContext] = useState<UtilityContext>(requestedContext);
+  const [phase, setPhase] = useState<'steady' | 'exiting' | 'entering'>('steady');
+  const swapTimer = useRef<number | null>(null);
+  const enterTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (swapTimer.current !== null) window.clearTimeout(swapTimer.current);
+    if (enterTimer.current !== null) window.clearTimeout(enterTimer.current);
+
+    if (requestedContext === displayedContext) {
+      setPhase('steady');
+      return;
+    }
+
+    setPhase('exiting');
+    swapTimer.current = window.setTimeout(() => {
+      setDisplayedContext(requestedContext);
+      setPhase('entering');
+      enterTimer.current = window.setTimeout(() => setPhase('steady'), 24);
+    }, 100);
+
+    return () => {
+      if (swapTimer.current !== null) window.clearTimeout(swapTimer.current);
+      if (enterTimer.current !== null) window.clearTimeout(enterTimer.current);
+    };
+  }, [requestedContext]);
+
+  function getState(item: UtilityItem) {
+    if (item.id === 'grid-snap') return { active: gridSnap, pressed: gridSnap, onClick: onToggleGridSnap };
+    if (item.id === 'grid-visible') return { active: gridVisible, pressed: gridVisible, onClick: onToggleGridVisible };
+    if (item.id === 'undo') return { disabled: !canUndo, onClick: onUndo };
+    if (item.id === 'redo') return { disabled: !canRedo, onClick: onRedo };
+    if (displayedContext !== 'world') return { onClick: () => onToolAction(item.id) };
+    return {};
+  }
+
+  const groups = DEFINITIONS[displayedContext];
+
+  return (
+    <div
+      className={`context-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm is-${phase}`}
+      data-utility-context={displayedContext}
+      aria-label={ariaLabelForContext(displayedContext)}
+      aria-busy={phase !== 'steady'}
+    >
+      {groups.map((group, groupIndex) => (
+        <span className="context-utility-toolbar__group" key={group[0].id}>
+          {groupIndex > 0 && <i className="context-utility-toolbar__separator" aria-hidden="true" />}
+          {group.map((item) => {
+            const Icon = item.icon;
+            const state = getState(item);
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={`context-utility-toolbar__button ${state.active ? 'is-active' : ''}`}
+                data-utility-kind={item.kind}
+                data-tooltip={item.label}
+                aria-label={item.label}
+                aria-pressed={item.kind === 'toggle' ? state.pressed : undefined}
+                disabled={state.disabled || phase !== 'steady'}
+                onClick={state.onClick}
+              >
+                <Icon />
+              </button>
+            );
+          })}
+        </span>
+      ))}
+    </div>
+  );
+}

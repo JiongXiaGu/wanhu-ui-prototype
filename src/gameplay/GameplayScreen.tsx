@@ -7,7 +7,8 @@ import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPl
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
 import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
 import { RoadPlacementDock } from '../tools/road-placement/RoadPlacementDock';
-import { CommandBar, WorldUtilityToolbar } from './CommandBar';
+import { CommandBar } from './CommandBar';
+import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
 import { GameplayCompassHud, GameplaySystemMenuButton } from './GameplayCornerHud';
 import { GameplayHUD } from './GameplayHUD';
@@ -30,7 +31,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const roadToolOpen = state.tool === 'road-placement';
   const toolOpen = state.tool !== 'none';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
-  const showWorldUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
+  const showContextUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
   const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const isNight = dayTime >= 18 || dayTime < 6;
@@ -110,8 +111,9 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
       />
 
-      {showWorldUtilityToolbar && (
-        <WorldUtilityToolbar
+      {showContextUtilityToolbar && (
+        <ContextUtilityToolbar
+          tool={state.tool}
           gridSnap={state.gridSnap}
           gridVisible={state.gridVisible}
           canUndo={state.canUndo}
@@ -120,6 +122,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
           onUndo={() => dispatch({ type: 'UNDO' })}
           onRedo={() => dispatch({ type: 'REDO' })}
+          onToolAction={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
         />
       )}
 

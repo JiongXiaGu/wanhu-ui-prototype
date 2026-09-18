@@ -28,7 +28,7 @@ import './gameplay/city-management.css';
 import './gameplay/inventory-management.css';
 import './gameplay/gameplay-top-shell.css';
 import './gameplay/operation-hints-refined.css';
-import './gameplay/world-utility-toolbar.css';
+import './gameplay/context-utility-toolbar.css';
 import './gameplay/gameplay-hud-layout.css';
 
 /* Canonical theme contract. Component CSS owns geometry/local hierarchy; material
