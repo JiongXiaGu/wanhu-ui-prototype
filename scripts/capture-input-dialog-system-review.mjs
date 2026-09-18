@@ -31,7 +31,7 @@ if((await page.locator('.new-game-plan input').count())!==0)throw new Error('New
 const cityButton=page.getByRole('button',{name:/修改城市名称/});await cityButton.click();
 dialog=page.getByRole('dialog',{name:'修改城市名称'});await dialog.getByLabel('城市名称').fill('云河城');await page.keyboard.press('Enter');
 if(!(await cityButton.textContent())?.includes('云河城'))throw new Error('City name must use Text Input Dialog.');
-await page.getByRole('button',{name:'随机世界',exact:true}).click();
+await page.locator('.new-game-map-card[data-map-kind="random"]').click();
 const seedButton=page.getByRole('button',{name:/修改随机种子/});await seedButton.click();
 dialog=page.getByRole('dialog',{name:'输入随机种子'});input=dialog.getByLabel('随机种子');await input.fill('abc');
 if(!(await dialog.getByRole('button',{name:'确认'}).isDisabled()))throw new Error('Seed Dialog must reject non-digits.');
