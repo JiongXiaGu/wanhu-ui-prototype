@@ -5,13 +5,13 @@ import {
   ChevronRight,
   Gamepad2,
   Monitor,
-  Plus,
   RotateCcw,
   Settings2,
   SlidersHorizontal,
   Speaker,
 } from 'lucide-react';
-import { SelectControl, SliderControl, ToggleSwitch } from '../ui/Controls';
+import { InputBindingField, NumericSliderField, SelectControl, ToggleSwitch } from '../ui/Controls';
+import { useDialogSystem } from '../ui/dialog/DialogSystem';
 
 export type SettingsContext = 'menu' | 'pause';
 
@@ -61,15 +61,6 @@ type BindingGroup = {
 
 type ListeningBinding = { id: string; slot: BindingSlot } | null;
 type BindingConflict = { id: string; slot: BindingSlot; owner: string } | null;
-type SafeConfirmation = {
-  previousValues: Record<string, SettingValue>;
-  changedId: string;
-  changedTitle: string;
-  previousValue: SettingValue;
-  nextValue: SettingValue;
-} | null;
-
-const SAFE_CONFIRM_SECONDS = 15;
 const SAFE_DISPLAY_SETTING_IDS = new Set(['display-mode', 'monitor', 'resolution', 'refresh-rate', 'hdr-output', 'ui-scale']);
 
 const categories: { key: Category; icon: typeof Monitor; detail: string }[] = [
@@ -278,6 +269,7 @@ function displaySettingValue(value: SettingValue) {
 }
 
 export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps) {
+  const dialogs = useDialogSystem();
   void onApply;
   const defaults = useMemo(createDefaultSettings, []);
   const defaultBindings = useMemo(createDefaultBindings, []);
@@ -287,46 +279,16 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
   const [openBindingGroups, setOpenBindingGroups] = useState<string[]>(['basic']);
   const [listening, setListening] = useState<ListeningBinding>(null);
   const [bindingConflict, setBindingConflict] = useState<BindingConflict>(null);
-  const [safeConfirmation, setSafeConfirmation] = useState<SafeConfirmation>(null);
-  const [safeSeconds, setSafeSeconds] = useState(SAFE_CONFIRM_SECONDS);
-
-  function rollbackSafeSettings() {
-    if (!safeConfirmation) return;
-    setValues(safeConfirmation.previousValues);
-    setSafeConfirmation(null);
-    setSafeSeconds(SAFE_CONFIRM_SECONDS);
-  }
-
-  function keepSafeSettings() {
-    setSafeConfirmation(null);
-    setSafeSeconds(SAFE_CONFIRM_SECONDS);
-  }
-
-  useEffect(() => {
-    if (!safeConfirmation) return;
-    setSafeSeconds(SAFE_CONFIRM_SECONDS);
-    const timer = window.setInterval(() => setSafeSeconds((current) => current - 1), 1000);
-    return () => window.clearInterval(timer);
-  }, [safeConfirmation]);
-
-  useEffect(() => {
-    if (safeConfirmation && safeSeconds <= 0) rollbackSafeSettings();
-  }, [safeSeconds, safeConfirmation]);
 
   useEffect(() => {
     const handleEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape') return;
-      if (safeConfirmation) {
-        event.preventDefault();
-        rollbackSafeSettings();
-        return;
-      }
       if (listening) return;
       onClose();
     };
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [safeConfirmation, listening, onClose]);
+  }, [listening, onClose]);
 
   function setSetting(row: SettingRow, value: SettingValue) {
     const previousValue = values[row.id];
@@ -335,12 +297,16 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
     if (SAFE_DISPLAY_SETTING_IDS.has(row.id)) {
       const previousValues = { ...values };
       setValues((current) => ({ ...current, [row.id]: value }));
-      setSafeConfirmation({
-        previousValues,
-        changedId: row.id,
-        changedTitle: row.title,
-        previousValue,
-        nextValue: value,
+      dialogs.timed({
+        title: '保留这些显示设置？',
+        message: '如果画面或界面显示异常，设置将在倒计时结束后自动恢复。',
+        summaryLabel: row.title,
+        summaryValue: `${displaySettingValue(previousValue)} → ${displaySettingValue(value)}`,
+        seconds: 15,
+        confirmText: '保留设置',
+        cancelText: '恢复原设置',
+        onConfirm: () => undefined,
+        onCancel: () => setValues(previousValues),
       });
       return;
     }
@@ -364,12 +330,16 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
     setValues(nextValues);
 
     if (hasDangerousDisplayChange) {
-      setSafeConfirmation({
-        previousValues,
-        changedId: 'display-defaults',
-        changedTitle: '显示设置默认值',
-        previousValue: '当前设置',
-        nextValue: '默认设置',
+      dialogs.timed({
+        title: '保留这些显示设置？',
+        message: '显示分类的默认值包含可回滚设置；如果显示异常，将自动恢复。',
+        summaryLabel: '显示设置默认值',
+        summaryValue: '当前设置 → 默认设置',
+        seconds: 15,
+        confirmText: '保留设置',
+        cancelText: '恢复原设置',
+        onConfirm: () => undefined,
+        onCancel: () => setValues(previousValues),
       });
     }
   }
@@ -425,13 +395,15 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
 
   return (
     <section className={`settings-space settings-panel--${context}`} data-active={active} aria-label="游戏设置">
+      <div className="settings-blocking-backdrop" aria-hidden="true" />
+      <div className="settings-command-surface">
       <header className="global-space-header settings-space__header">
         <div className="global-space-heading"><h1>游戏设置</h1></div>
       </header>
 
       <nav className="settings-space__tabs" aria-label="设置分类">
-        {categories.map(({ key, icon: Icon, detail }) => (
-          <button key={key} type="button" className={active === key ? 'is-active' : ''} title={detail} onClick={() => setActive(key)}>
+        {categories.map(({ key, icon: Icon }) => (
+          <button key={key} type="button" className={active === key ? 'is-active' : ''} onClick={() => setActive(key)}>
             <Icon size={16} /><span>{key}</span>
           </button>
         ))}
@@ -481,45 +453,8 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
         </div>
         <div className="settings-space__footer-right" aria-hidden="true" />
       </footer>
-
-      {safeConfirmation && (
-        <SafeDisplayConfirmation
-          confirmation={safeConfirmation}
-          seconds={safeSeconds}
-          onRollback={rollbackSafeSettings}
-          onKeep={keepSafeSettings}
-        />
-      )}
+      </div>
     </section>
-  );
-}
-
-function SafeDisplayConfirmation({ confirmation, seconds, onRollback, onKeep }: {
-  confirmation: NonNullable<SafeConfirmation>;
-  seconds: number;
-  onRollback: () => void;
-  onKeep: () => void;
-}) {
-  return (
-    <div className="settings-safe-layer" role="dialog" aria-modal="true" aria-label="保留显示设置">
-      <div className="settings-safe-layer__shade" />
-      <section className="settings-safe-dialog">
-        <header>
-          <h2>保留这些显示设置？</h2>
-          <p>如果画面或界面显示异常，设置将在倒计时结束后自动恢复。</p>
-        </header>
-        <div className="settings-safe-dialog__change">
-          <span>{confirmation.changedTitle}</span>
-          <b>{displaySettingValue(confirmation.previousValue)} <i>→</i> {displaySettingValue(confirmation.nextValue)}</b>
-        </div>
-        <div className="settings-safe-dialog__countdown" aria-live="polite">{Math.max(0, seconds)}</div>
-        <footer>
-          <button type="button" className="settings-safe-dialog__rollback" onClick={onRollback}>恢复原设置</button>
-          <button type="button" className="settings-safe-dialog__keep" onClick={onKeep}><Check size={14} />保留设置</button>
-        </footer>
-        <small><kbd>Esc</kbd> 恢复原设置</small>
-      </section>
-    </div>
   );
 }
 
@@ -590,19 +525,17 @@ function SettingsRowView({ row, value, disabled, onChange }: { row: SettingRow; 
       <span className="settings-row__label"><b>{row.title}</b></span>
       <div className={`settings-row__control settings-row__control--${row.kind}`}>
         {row.kind === 'slider' && (
-          <>
-            <SliderControl
-              ariaLabel={row.title}
-              value={Number(value)}
-              min={row.min ?? 0}
-              max={row.max ?? 100}
-              step={row.step ?? 1}
-              disabled={disabled}
-              className="ui-slider--settings settings-slider-control"
-              onChange={onChange}
-            />
-            <output className="settings-slider-value">{formatSliderValue(row, Number(value))}</output>
-          </>
+          <NumericSliderField
+            ariaLabel={row.title}
+            value={Number(value)}
+            min={row.min ?? 0}
+            max={row.max ?? 100}
+            step={row.step ?? 1}
+            format={(next) => formatSliderValue(row, next)}
+            disabled={disabled}
+            className="settings-numeric-field"
+            onChange={onChange}
+          />
         )}
         {row.kind === 'select' && (
           <SelectControl
@@ -610,7 +543,7 @@ function SettingsRowView({ row, value, disabled, onChange }: { row: SettingRow; 
             value={String(value)}
             options={row.options ?? []}
             disabled={disabled}
-            className="ui-select--settings settings-select-control"
+            className="settings-select-control"
             onChange={onChange}
           />
         )}
@@ -619,7 +552,7 @@ function SettingsRowView({ row, value, disabled, onChange }: { row: SettingRow; 
             label={row.title}
             value={Boolean(value)}
             disabled={disabled}
-            className="ui-toggle--settings settings-toggle-control"
+            className="settings-toggle-control"
             onChange={onChange}
           />
         )}
@@ -648,9 +581,15 @@ function BindingRow({ binding, value, listening, conflict, onStartListening, onK
     const isConflict = conflict?.id === binding.id && conflict.slot === slot;
     const text = value?.[slot] ?? '';
     return (
-      <button type="button" className={`settings-binding-cell ${slot === 'primary' ? 'settings-binding-cell--primary' : 'settings-binding-cell--secondary'} ${isListening ? 'is-listening' : ''} ${isConflict ? 'is-conflict' : ''} ${!text ? 'is-empty' : ''}`} aria-label={`${binding.label}${slot === 'primary' ? '主要按键' : '次要按键'}：${text || '未设置'}`} onClick={() => onStartListening(binding.id, slot)} onKeyDown={(event) => onKeyDown(event, binding.id, slot)}>
-        {isListening ? <span>按下新的按键…</span> : text ? <kbd>{text}</kbd> : <span className="settings-binding-cell__empty"><Plus size={12} />添加</span>}
-      </button>
+      <InputBindingField
+        ariaLabel={`${binding.label}${slot === 'primary' ? '主要按键' : '次要按键'}：${text || '未设置'}`}
+        value={text}
+        listening={isListening}
+        conflict={isConflict}
+        className="settings-binding-control"
+        onClick={() => onStartListening(binding.id, slot)}
+        onKeyDown={(event) => onKeyDown(event, binding.id, slot)}
+      />
     );
   };
   const rowConflict = conflict?.id === binding.id ? `与“${conflict.owner}”冲突` : '';

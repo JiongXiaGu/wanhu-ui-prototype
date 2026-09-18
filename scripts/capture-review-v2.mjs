@@ -175,10 +175,11 @@ await open('settings', '.settings-panel--menu');
 const scale = page.locator('[data-setting-id="ui-scale"] .ui-select__trigger');
 await scale.click();
 await page.getByRole('option', { name: '125%', exact: true }).click();
-await page.waitForSelector('.settings-safe-layer');
+await page.getByRole('dialog', { name: '保留这些显示设置？' }).waitFor();
 await page.screenshot({ path: `${outDir}/27-dialog-safe-display.png` });
-const countdown = Number((await page.locator('.settings-safe-dialog__countdown').textContent())?.trim());
+const countdown = Number((await page.locator('.ui-dialog-countdown strong').textContent())?.trim());
 if (!(countdown > 0 && countdown <= 15)) throw new Error('Timed display confirmation must show a countdown.');
+if ((await page.locator('.settings-safe-layer, .settings-safe-dialog').count()) !== 0) throw new Error('Settings must use shared TimedDialog.');
 await page.keyboard.press('Escape');
 
 // Settings control migration: logic must come from shared primitives, while the
@@ -187,14 +188,15 @@ await open('settings', '.settings-panel--menu');
 if ((await page.locator('.settings-slider, .settings-toggle, .settings-select-root').count()) !== 0) {
   throw new Error('Settings must not render legacy local Slider / Toggle / Select implementations.');
 }
-if ((await page.locator('.settings-row .ui-select--settings').count()) === 0 || (await page.locator('.settings-row .ui-toggle--settings').count()) === 0) {
+if ((await page.locator('.settings-row .ui-select').count()) === 0 || (await page.locator('.settings-row .ui-toggle').count()) === 0) {
   throw new Error('Display Settings must consume shared Select and Toggle primitives.');
 }
+if ((await page.locator('.ui-select--settings, .ui-slider--settings, .ui-toggle--settings').count()) !== 0) throw new Error('Settings must not use page-private control variants.');
 await page.getByRole('button', { name: '图形', exact: true }).click();
 const renderScale = page.getByRole('slider', { name: '渲染比例', exact: true });
 await renderScale.waitFor();
-if (!(await renderScale.locator('xpath=..').getAttribute('class'))?.includes('ui-slider--settings')) {
-  throw new Error('Settings slider must use the shared SliderControl settings variant.');
+if ((await renderScale.locator('xpath=../..').getAttribute('class'))?.includes('ui-numeric-slider-field') !== true) {
+  throw new Error('Settings slider must be composed inside shared NumericSliderField.');
 }
 const scaleBeforeKeyboard = Number(await renderScale.inputValue());
 await renderScale.focus();

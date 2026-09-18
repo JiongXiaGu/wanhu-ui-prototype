@@ -17,9 +17,11 @@
 
   --ui-slider-track:rgba(235,228,211,.115);
   --ui-slider-track-hover:rgba(235,228,211,.17);
-  --ui-slider-fill-start:var(--wanhu-color-brass,#a9844b);
-  --ui-slider-fill-end:var(--wanhu-color-brass-high,#bd9959);
-  --ui-slider-thumb:var(--wanhu-color-brass-high,#bd9959);
+  --ui-slider-fill-start:rgba(205,201,192,.52);
+  --ui-slider-fill-end:rgba(238,233,223,.72);
+  --ui-slider-fill-focus-start:var(--wanhu-color-brass,#a9844b);
+  --ui-slider-fill-focus-end:var(--wanhu-color-brass-high,#bd9959);
+  --ui-slider-thumb:var(--wanhu-color-paper-primary,#eee9df);
   --ui-slider-thumb-border:rgba(244,239,226,.92);
   --ui-slider-focus:rgba(201,165,95,.075);
 
@@ -56,6 +58,7 @@
   inset:0 auto 0 0;
   border-radius:inherit;
   background:linear-gradient(90deg,var(--ui-slider-fill-start),var(--ui-slider-fill-end));
+  transition:background .12s ease;
 }
 .ui-slider__thumb{
   position:absolute;
@@ -88,6 +91,7 @@
   box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(201,165,95,.055);
 }
 .ui-slider:focus-within .ui-slider__track{box-shadow:0 0 0 1px rgba(201,165,95,.24)}
+.ui-slider:focus-within .ui-slider__track>i{background:linear-gradient(90deg,var(--ui-slider-fill-focus-start),var(--ui-slider-fill-focus-end))}
 .ui-slider:focus-within .ui-slider__thumb{
   width:13px;
   height:13px;
@@ -96,56 +100,17 @@
 .ui-slider.is-disabled{cursor:default;opacity:var(--ui-field-disabled)}
 .ui-slider.is-disabled input{cursor:default}
 
-/* Numeric parameter row -------------------------------------------- */
-.ui-parameter-row{
-  --ui-parameter-label-width:78px;
-  --ui-parameter-step-size:28px;
-  --ui-parameter-value-width:58px;
-  min-height:42px;
-  display:grid;
-  grid-template-columns:var(--ui-parameter-label-width) var(--ui-parameter-step-size) minmax(86px,1fr) var(--ui-parameter-step-size) var(--ui-parameter-value-width);
-  align-items:center;
-  gap:6px;
-}
-.ui-parameter-row>span{color:var(--ui-field-muted);font-size:9px}
-.game-canvas .ui-parameter-row>.ui-stepper-button{
-  width:var(--ui-parameter-step-size);
-  height:var(--ui-parameter-step-size);
-  padding:0;
-  display:grid;
-  place-items:center;
-  border:1px solid var(--ui-field-border);
-  border-radius:var(--ui-field-radius-inner);
-  background:var(--ui-field-surface);
-  color:#9ca198;
-  cursor:pointer;
-  transition:background .12s ease,border-color .12s ease,color .12s ease,transform .08s ease;
-}
-.game-canvas .ui-parameter-row>.ui-stepper-button:hover:not(:disabled){
-  background:var(--ui-field-surface-hover);
-  border-color:var(--ui-field-border-hover);
-  color:#d4d0c6;
-}
-.game-canvas .ui-parameter-row>.ui-stepper-button:active:not(:disabled){transform:translateY(1px)}
-.game-canvas .ui-parameter-row>.ui-stepper-button:focus-visible{outline:1px solid rgba(201,165,95,.34);outline-offset:2px}
-.game-canvas .ui-parameter-row>.ui-stepper-button:disabled{opacity:var(--ui-field-disabled);cursor:default}
-.game-canvas .ui-parameter-row>.ui-value-field{
-  min-width:0;
-  height:var(--ui-parameter-step-size);
-  padding:0 8px;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  border:1px solid var(--ui-field-border);
-  border-radius:var(--ui-field-radius-inner);
-  background:var(--ui-field-surface);
-  color:var(--ui-field-text);
-  font-size:9px;
-  font-variant-numeric:tabular-nums;
-  white-space:nowrap;
-}
-.ui-parameter-row.is-disabled>span,
-.game-canvas .ui-parameter-row.is-disabled>.ui-value-field{opacity:.72}
+/* Numeric slider field ------------------------------------------------ */
+.ui-numeric-slider-field{--ui-parameter-step-size:28px;--ui-parameter-value-width:58px;width:100%;min-width:0;display:grid;grid-template-columns:var(--ui-parameter-step-size) minmax(86px,1fr) var(--ui-parameter-step-size) var(--ui-parameter-value-width);align-items:center;gap:6px}
+.game-canvas .ui-numeric-slider-field>.ui-stepper-button{width:var(--ui-parameter-step-size);height:var(--ui-parameter-step-size);padding:0;display:grid;place-items:center;border:1px solid var(--ui-field-border);border-radius:var(--ui-field-radius-inner);background:var(--ui-field-surface);color:var(--ui-field-muted);cursor:pointer;transition:background .12s ease,border-color .12s ease,color .12s ease,transform .08s ease}
+.game-canvas .ui-numeric-slider-field>.ui-stepper-button:hover:not(:disabled){background:var(--ui-field-surface-hover);border-color:var(--ui-field-border-hover);color:var(--wanhu-color-text-secondary,#d4cfc6)}
+.game-canvas .ui-numeric-slider-field>.ui-stepper-button:active:not(:disabled){transform:translateY(1px)}
+.game-canvas .ui-numeric-slider-field>.ui-stepper-button:focus-visible{outline:1px solid var(--ui-field-border-focus);outline-offset:2px}
+.game-canvas .ui-numeric-slider-field>.ui-stepper-button:disabled{opacity:var(--ui-field-disabled);cursor:default}
+.game-canvas .ui-numeric-slider-field>.ui-value-field{min-width:0;height:var(--ui-parameter-step-size);padding:0 8px;display:flex;align-items:center;justify-content:flex-end;border:1px solid var(--ui-field-border);border-radius:var(--ui-field-radius-inner);background:var(--ui-field-surface);color:var(--ui-field-text);font-size:9px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ui-numeric-slider-field.is-disabled{opacity:.72}
+.ui-parameter-row{--ui-parameter-label-width:78px;--ui-parameter-step-size:28px;--ui-parameter-value-width:58px;min-height:42px;display:grid;grid-template-columns:var(--ui-parameter-label-width) minmax(0,1fr);align-items:center;gap:6px}
+.ui-parameter-row>span{color:var(--ui-field-muted);font-size:9px}.ui-parameter-row.is-disabled>span{opacity:.72}
 
 /* Select ------------------------------------------------------------ */
 .ui-select{position:relative;width:100%;z-index:2}
@@ -183,7 +148,7 @@
   padding:4px;
   border:1px solid rgba(239,233,221,.105);
   border-radius:var(--ui-field-radius);
-  background:rgba(24,33,28,.965);
+  background:var(--wanhu-surface-blocking-menu,rgba(25,31,33,.975));
   box-shadow:0 16px 36px rgba(4,7,6,.36),inset 0 1px 0 rgba(255,255,255,.020);
   backdrop-filter:blur(12px) saturate(.86) brightness(1.04);
   -webkit-backdrop-filter:blur(12px) saturate(.86) brightness(1.04);
@@ -209,74 +174,6 @@
 .ui-select__menu button:hover,.ui-select__menu button.is-highlighted{background:rgba(255,255,255,.035);color:#d8d4ca}
 .ui-select__menu button.is-selected{color:#d6b973;background:rgba(201,165,95,.07)}
 .ui-select__menu button svg{color:var(--wanhu-color-brass,#a9844b);stroke-width:1.8}
-
-/* Settings Select variant: same shared interaction logic, quieter full-screen
-   presentation with a value line instead of a boxed application field. */
-.ui-select--settings{width:230px}
-.ui-select--settings .ui-select__trigger{
-  height:34px;
-  padding:0 5px 0 14px;
-  justify-content:flex-end;
-  border:0;
-  border-bottom:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));
-  border-radius:0;
-  background:transparent;
-  box-shadow:none;
-  color:var(--wanhu-color-paper-secondary,#b7b3aa);
-}
-.ui-select--settings .ui-select__trigger:hover:not(:disabled){
-  color:var(--wanhu-color-paper-primary,#eee9df);
-  border-color:rgba(189,153,89,.30);
-  background:linear-gradient(180deg,transparent,rgba(169,132,75,.016));
-}
-.ui-select--settings .ui-select__trigger:focus-visible{
-  border-color:rgba(189,153,89,.42);
-  background:rgba(169,132,75,.020);
-  box-shadow:0 2px 0 -1px rgba(189,153,89,.18);
-}
-.ui-select--settings.is-open .ui-select__trigger{
-  color:var(--wanhu-color-paper-primary,#eee9df);
-  border-color:rgba(189,153,89,.46);
-  background:rgba(169,132,75,.022);
-}
-.ui-select--settings .ui-select__menu{
-  top:38px;
-  border-color:var(--wanhu-surface-blocking-edge,rgba(238,233,223,.075));
-  background-color:var(--wanhu-surface-blocking-menu,rgba(25,31,33,.975));
-  background-image:var(--wanhu-material-noise);
-  background-repeat:repeat;
-  background-size:256px 256px;
-  box-shadow:var(--wanhu-surface-blocking-shadow,0 24px 64px rgba(2,4,5,.40));
-}
-.ui-select--settings.opens-up .ui-select__menu{top:auto;bottom:38px}
-.ui-select--settings .ui-select__menu button:hover,
-.ui-select--settings .ui-select__menu button.is-highlighted{
-  background:var(--wanhu-surface-blocking-menu-hover,rgba(255,255,255,.048));
-  color:var(--wanhu-color-text-secondary,#d4cfc6);
-}
-.ui-select--settings .ui-select__menu button.is-selected{
-  color:var(--wanhu-color-brass-high,#bd9959);
-  background:var(--wanhu-control-active-bg,rgba(169,132,75,.075));
-}
-
-/* Settings Slider variant: keeps the shared Slider contract but uses the same
-   compact instrument proportions as Gameplay Context controls. */
-.ui-slider--settings .ui-slider__track{height:3px;background:rgba(238,233,223,.12)}
-.ui-slider--settings .ui-slider__track>i{
-  background:linear-gradient(90deg,rgba(169,132,75,.72),var(--wanhu-color-brass-high,#bd9959));
-}
-.ui-slider--settings .ui-slider__thumb{
-  width:11px;
-  height:11px;
-  background:var(--wanhu-color-paper-primary,#eee9df);
-  border-color:rgba(244,239,229,.92);
-  box-shadow:0 2px 5px rgba(0,0,0,.28);
-}
-.ui-slider--settings:hover .ui-slider__thumb,
-.ui-slider--settings:focus-within .ui-slider__thumb{
-  width:12px;
-  height:12px;
-}
 
 /* Toggle ------------------------------------------------------------
    Compact instrument switch. It keeps the formal 38×20 / 12px capsule
@@ -324,6 +221,17 @@
 .ui-toggle.is-on>i::after{left:21px;border-color:rgba(238,233,223,.20);background:linear-gradient(180deg,var(--wanhu-color-brass-high,#bd9959),var(--wanhu-color-brass,#a9844b));box-shadow:0 2px 4px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.10)}
 .ui-toggle.is-on:hover>i{border-color:rgba(189,153,89,.46);background:linear-gradient(180deg,rgba(169,132,75,.095),rgba(0,0,0,.030))}
 .ui-toggle:disabled{opacity:var(--ui-field-disabled);cursor:default}
+
+/* Input binding field ----------------------------------------------- */
+.ui-binding-field{width:100%;height:34px;padding:0 10px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--ui-field-border);border-radius:var(--ui-field-radius-inner);background:var(--ui-field-surface);color:var(--ui-field-text);font:inherit;cursor:pointer;transition:border-color .12s ease,background .12s ease,color .12s ease,box-shadow .12s ease}
+.ui-binding-field:hover:not(:disabled){border-color:var(--ui-field-border-hover);background:var(--ui-field-surface-hover);color:var(--wanhu-color-text-secondary,#d4cfc6)}
+.ui-binding-field:focus-visible{outline:0;border-color:var(--ui-field-border-focus);background:var(--ui-field-surface-focus);box-shadow:0 0 0 3px rgba(201,165,95,.045)}
+.ui-binding-field kbd{max-width:100%;overflow:hidden;border:0;background:transparent;color:inherit;font:inherit;font-size:9.5px;white-space:nowrap;text-overflow:ellipsis}
+.ui-binding-field.is-empty{border-style:dashed;color:var(--ui-field-muted)}.ui-binding-field__empty{display:flex;align-items:center;gap:5px;font-size:9px}
+.ui-binding-field.is-listening{border-color:var(--ui-field-border-focus);background:var(--wanhu-control-active-bg,rgba(169,132,75,.075));color:var(--wanhu-color-brass-high,#bd9959);box-shadow:0 0 0 2px rgba(169,132,75,.05)}
+.ui-binding-field.is-listening>span{font-size:9px;letter-spacing:.02em}
+.ui-binding-field.is-conflict{border-color:rgba(152,84,71,.62);background:rgba(152,84,71,.085);color:#d3a097;box-shadow:0 0 0 2px rgba(152,84,71,.045)}
+.ui-binding-field:disabled{opacity:var(--ui-field-disabled);cursor:default}
 
 /* Text input -------------------------------------------------------- */
 .ui-text-input{height:40px;padding:0 12px;border:1px solid var(--ui-field-border);border-radius:var(--ui-field-radius);outline:0;background:var(--ui-field-surface);color:#eee8dc;font:inherit;font-size:12px;caret-color:#d3b66e;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease,color .12s ease}

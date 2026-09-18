@@ -42,7 +42,7 @@
 - Visual Track：约 4px；
 - Hit Area：约 24px 或更高；
 - Thumb：默认约 11px，Hover / Focus 可提升到约 13px；
-- Fill：低饱和暖金或中性浅灰，具体由语义变体决定；
+- Fill：默认中性浅灰 / Paper Smoke；只有 Focus / Dragging 等高价值状态切换为低饱和熟铜；
 - Empty Track：低亮纸灰 / 中性烟灰；
 - Context 高密度参数面板允许使用中性 Progress + Paper Thumb，把熟铜集中到 Focus / Dragging，避免一屏大量金线；
 - Focus：弱暖金 Ring，不使用高亮粗描边；
@@ -96,7 +96,7 @@ onChange
 
 不要再为每个 Tool 创建自己的 Track / Thumb。
 
-Settings 的普通连续参数仍采用 `Label │ Slider │ Value`，不因为底层 Slider 已共享就强行加入 `- / +` Stepper。Stepper 属于运行时 Numeric Slider Field 的高频精调语义，不是所有 Slider 的统一外形。
+Settings 与运行时 Tool 的连续数值都组合共享 `NumericSliderField = - │ Slider │ + │ Value`。页面只负责外部 Label 和列宽；Stepper / Slider / ValueField 的视觉与状态全部由 Control System 统一维护。
 
 ## 5. Stepper Button
 
@@ -305,3 +305,25 @@ UIControls.uss
 - Focus 仍使用低强度暖金；
 - Select Popup / Text Field 自己保持稳定玉青 Tint；
 - Blur 只提供环境色，不负责对比度。
+
+
+## 15. NumericSliderField 与 InputBindingField
+
+共享 Control System 新增：
+
+```text
+NumericSliderField
+├ Minus Stepper
+├ SliderControl
+├ Plus Stepper
+└ ValueField
+
+InputBindingField
+├ Default / Empty
+├ Hover / Focus
+├ Listening
+├ Conflict
+└ Disabled
+```
+
+Settings、Camera、Weather、Placement 等页面不得重新绘制这些 Control 的 Border / Surface / Focus / Brass 状态，只允许设置尺寸与布局。

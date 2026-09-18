@@ -84,18 +84,17 @@ await expectSharedSlider(cameraPanel, 'Camera context panel');
 
 // Settings keeps its richer interaction implementation but its skin is bridged to the shared field tokens.
 await open('settings', '.settings-panel--menu');
-const settingsFooter = page.locator('.settings-space__footer');
-await expectBlur(settingsFooter, 'Settings footer');
+const settingsSurface = page.locator('.settings-command-surface');
+await expectBlur(settingsSurface, 'Settings blocking surface');
 await expectRounded(page.getByRole('button', { name: '返回', exact: true }), 'Settings back button');
-const settingsSlider = page.locator('.settings-slider').first();
-if ((await settingsSlider.count()) === 1) {
-  const settingsThumb = settingsSlider.locator('> em');
-  const size = await settingsThumb.evaluate((node) => Number.parseFloat(getComputedStyle(node).width));
-  if (size < 10 || size > 13) throw new Error(`Settings slider must share the compact thumb baseline. size=${size}`);
+const settingsNumeric = page.locator('.settings-row .ui-numeric-slider-field').first();
+if ((await settingsNumeric.count()) === 1) {
+  await expectSharedSlider(settingsNumeric, 'Settings NumericSliderField');
+  await expectRounded(settingsNumeric.locator('.ui-stepper-button').first(), 'Settings stepper button', 7);
 }
-const settingsSelect = page.locator('.settings-select-value').first();
-if ((await settingsSelect.count()) === 1) await expectRounded(settingsSelect, 'Settings select trigger', 9);
-const settingsToggleTrack = page.locator('.settings-toggle > i').first();
+const settingsSelect = page.locator('.settings-row .ui-select__trigger').first();
+if ((await settingsSelect.count()) === 1) await expectRounded(settingsSelect, 'Settings select trigger', 8);
+const settingsToggleTrack = page.locator('.settings-row .ui-toggle > i').first();
 if ((await settingsToggleTrack.count()) === 1) await expectRounded(settingsToggleTrack, 'Settings toggle track', 9);
 await page.screenshot({ path: `${outDir}/31-visual-system-settings-footer.png` });
 

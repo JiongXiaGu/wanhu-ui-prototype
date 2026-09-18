@@ -158,9 +158,10 @@ if ((await screen.getAttribute('data-time-of-day')) !== 'night') {
 if ((await nightSettings.locator('.settings-slider, .settings-toggle, .settings-select-root').count()) !== 0) {
   throw new Error('Night Settings must not fall back to legacy local controls.');
 }
-if ((await nightSettings.locator('.ui-select--settings').count()) === 0 || (await nightSettings.locator('.ui-toggle--settings').count()) === 0) {
+if ((await nightSettings.locator('.ui-select').count()) === 0 || (await nightSettings.locator('.ui-toggle').count()) === 0) {
   throw new Error('Night Settings must retain shared Select and Toggle controls.');
 }
+if ((await nightSettings.locator('.ui-select--settings, .ui-slider--settings, .ui-toggle--settings').count()) !== 0) throw new Error('Night Settings must not restore page-private control skins.');
 await page.waitForTimeout(160);
 await page.screenshot({ path: `${outDir}/40-settings-night.png` });
 await nightSettings.getByRole('button', { name: '返回', exact: true }).click();

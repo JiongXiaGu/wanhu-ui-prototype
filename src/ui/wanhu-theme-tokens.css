@@ -67,6 +67,14 @@
   --wanhu-surface-blocking-menu:rgba(25,31,33,.975);
   --wanhu-surface-blocking-menu-hover:rgba(255,255,255,.048);
   --wanhu-surface-blocking-shadow:0 24px 64px rgba(2,4,5,.40),inset 0 1px 0 rgba(255,255,255,.028);
+  --wanhu-surface-blocking-panel-bg:rgba(36,38,36,.94);
+  --wanhu-surface-blocking-panel-highlight:rgba(255,249,238,.018);
+  --wanhu-surface-blocking-panel-shade:rgba(8,10,9,.050);
+  --wanhu-surface-blocking-panel-edge:rgba(238,233,223,.072);
+  --wanhu-surface-blocking-panel-shadow:0 28px 78px rgba(4,6,5,.34),inset 0 1px 0 rgba(255,255,255,.024);
+  --wanhu-surface-blocking-panel-filter:blur(14px) saturate(.84) brightness(.99);
+  --wanhu-surface-blocking-backdrop:rgba(9,11,10,.18);
+  --wanhu-surface-blocking-scene-filter:blur(6px) brightness(.84) saturate(.80);
 
   /* Pause Blocking Space: same graphite family, tuned for a frozen-world overlay. */
   --wanhu-pause-dim:rgba(12,14,13,.48);
@@ -278,6 +286,8 @@
   --wanhu-pause-dim:rgba(10,12,11,.50);
   --wanhu-pause-surface-bg:rgba(37,39,36,.95);
   --wanhu-pause-scene-filter:blur(9px) brightness(.72) saturate(.72);
+  --wanhu-surface-blocking-panel-bg:rgba(39,41,38,.95);
+  --wanhu-surface-blocking-scene-filter:blur(6px) brightness(.88) saturate(.76);
 
   /* Persistent HUD keeps the reviewed role separation at night. Only the top
      information strip needs a small density lift; detached controls stay stable. */

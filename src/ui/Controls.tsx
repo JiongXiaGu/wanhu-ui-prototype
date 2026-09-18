@@ -7,7 +7,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, Plus } from 'lucide-react';
 
 export function SegmentedControl({ items, active, onChange }: { items: string[]; active: string; onChange?: (value: string) => void }) {
   return (
@@ -89,6 +89,47 @@ export function SliderControl({ ariaLabel, value, min, max, step, disabled = fal
   );
 }
 
+interface NumericSliderFieldProps {
+  ariaLabel: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  format?: (value: number) => string;
+  disabled?: boolean;
+  className?: string;
+  onChange: (value: number) => void;
+}
+
+export function NumericSliderField({
+  ariaLabel,
+  value,
+  min,
+  max,
+  step,
+  format,
+  disabled = false,
+  className = '',
+  onChange,
+}: NumericSliderFieldProps) {
+  const decimals = Math.min(4, decimalsForStep(step));
+
+  function commit(next: number) {
+    const clamped = clamp(next, min, max);
+    const stepped = min + Math.round((clamped - min) / step) * step;
+    onChange(Number(clamp(stepped, min, max).toFixed(decimals)));
+  }
+
+  return (
+    <div className={`ui-numeric-slider-field ${disabled ? 'is-disabled' : ''} ${className}`.trim()}>
+      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value - step)} aria-label={`${ariaLabel}减小`}>−</button>
+      <SliderControl ariaLabel={ariaLabel} value={value} min={min} max={max} step={step} disabled={disabled} onChange={commit} />
+      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value + step)} aria-label={`${ariaLabel}增大`}>＋</button>
+      <output className="ui-value-field">{format ? format(value) : value}</output>
+    </div>
+  );
+}
+
 interface RuntimeParameterRowProps {
   label: string;
   value: number;
@@ -101,19 +142,10 @@ interface RuntimeParameterRowProps {
 }
 
 export function RuntimeParameterRow({ label, value, min, max, step, format, disabled = false, onChange }: RuntimeParameterRowProps) {
-  const decimals = Math.min(4, decimalsForStep(step));
-
-  function commit(next: number) {
-    onChange(Number(clamp(next, min, max).toFixed(decimals)));
-  }
-
   return (
     <div className={`parameter-row runtime-parameter-row ui-parameter-row ${disabled ? 'is-disabled' : ''}`}>
       <span>{label}</span>
-      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value - step)} aria-label={`${label}减小`}>−</button>
-      <SliderControl ariaLabel={label} value={value} min={min} max={max} step={step} disabled={disabled} onChange={commit} />
-      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value + step)} aria-label={`${label}增大`}>＋</button>
-      <output className="ui-value-field">{format ? format(value) : value}</output>
+      <NumericSliderField ariaLabel={label} value={value} min={min} max={max} step={step} format={format} disabled={disabled} onChange={onChange} />
     </div>
   );
 }
@@ -235,11 +267,43 @@ export function ToggleSwitch({ label, value, disabled = false, className = '', o
   );
 }
 
+export function InputBindingField({
+  ariaLabel,
+  value,
+  listening = false,
+  conflict = false,
+  disabled = false,
+  className = '',
+  onClick,
+  onKeyDown,
+}: {
+  ariaLabel: string;
+  value: string;
+  listening?: boolean;
+  conflict?: boolean;
+  disabled?: boolean;
+  className?: string;
+  onClick: () => void;
+  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={`ui-binding-field ${listening ? 'is-listening' : ''} ${conflict ? 'is-conflict' : ''} ${!value ? 'is-empty' : ''} ${className}`.trim()}
+      aria-label={ariaLabel}
+      disabled={disabled}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+    >
+      {listening ? <span>按下新的按键…</span> : value ? <kbd>{value}</kbd> : <span className="ui-binding-field__empty"><Plus size={12} />添加</span>}
+    </button>
+  );
+}
+
 export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function TextInput({ className = '', ...props }, ref) {
   return <input {...props} ref={ref} className={`ui-text-input ${className}`.trim()} />;
 });
 
-// Legacy static row kept for existing prototype surfaces that have not migrated yet.
 export function ParameterRow({ label, value, pct }: { label: string; value: string; pct: number }) {
   return (
     <div className="parameter-row">
