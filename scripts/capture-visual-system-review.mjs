@@ -84,8 +84,8 @@ await expectSharedSlider(cameraPanel, 'Camera context panel');
 
 // Settings keeps its richer interaction implementation but its skin is bridged to the shared field tokens.
 await open('settings', '.settings-panel--menu');
-const settingsBackdrop = page.locator('.settings-blocking-backdrop');
-await expectBlur(settingsBackdrop, 'Settings blocking backdrop');
+const settingsGlobalRoot = page.locator('.settings-space.wanhu-global-space');
+await expectBlur(settingsGlobalRoot, 'Settings Global Space root');
 await expectRounded(page.getByRole('button', { name: '返回', exact: true }), 'Settings back button');
 const settingsNumeric = page.locator('.settings-row .ui-numeric-slider-field').first();
 if ((await settingsNumeric.count()) === 1) {
