@@ -4,9 +4,14 @@
 
 ## Surface
 
-- World / Menu Context → Blocking Backdrop → 1180×850 Settings Command Surface；
-- 18px Radius；
-- 世界继续可见，不再由 Settings Root 覆盖 94%～96% 的黑色 Surface；
+第一版曾尝试 1180×850 中央 Blocking Surface；真实截图复核后撤回该空间形态。Settings 与 Save / Load 都是长时 Global Space，不应被误做成 Pause 风格的中央窗口。
+
+最终规则：
+
+- World / Menu Context → Blocking Backdrop → **Full-screen Settings Global Surface**；
+- 不使用外框、18px 外圆角或浮窗 Shadow；
+- Header / Tabs / Footer 横跨全屏，正文保持约 940px 稳定阅读宽度；
+- 世界继续低频可见，但 Settings Surface 自身保持足够中性 Graphite Tint；
 - Material Owner：`wanhu-theme-tokens.css → wanhu-surface-system.css`。
 
 ## Controls

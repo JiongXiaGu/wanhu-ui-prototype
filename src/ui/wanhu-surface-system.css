@@ -181,16 +181,76 @@
 }
 
 /* ---------------------------------------------------------------------
-   Settings Blocking Space
+   Settings Global Blocking Space
+   Full-screen sibling of Save / Load / New Game, not a floating Pause card.
    --------------------------------------------------------------------- */
-.settings-space .settings-blocking-backdrop{background:var(--wanhu-surface-blocking-backdrop);backdrop-filter:var(--wanhu-surface-blocking-scene-filter);-webkit-backdrop-filter:var(--wanhu-surface-blocking-scene-filter)}
-.settings-panel--pause .settings-blocking-backdrop{background:rgba(9,11,10,.08);backdrop-filter:blur(2px) brightness(.96) saturate(.90);-webkit-backdrop-filter:blur(2px) brightness(.96) saturate(.90)}
-.settings-space .settings-command-surface{background-color:var(--wanhu-surface-blocking-panel-bg);background-image:linear-gradient(180deg,var(--wanhu-surface-blocking-panel-highlight),var(--wanhu-surface-blocking-panel-shade)),var(--wanhu-material-noise);background-repeat:repeat,repeat;background-size:auto,256px 256px;border-color:var(--wanhu-surface-blocking-panel-edge);box-shadow:var(--wanhu-surface-blocking-panel-shadow);backdrop-filter:var(--wanhu-surface-blocking-panel-filter);-webkit-backdrop-filter:var(--wanhu-surface-blocking-panel-filter)}
-.settings-space .settings-space__header{background:rgba(255,255,255,.010);border-bottom-color:var(--wanhu-surface-blocking-rule)}.settings-space .settings-space__tabs{background:rgba(255,255,255,.004);border-bottom-color:var(--wanhu-surface-blocking-rule)}.settings-space .settings-space__footer{background:rgba(8,10,9,.045);border-top-color:var(--wanhu-surface-blocking-rule)}
-.settings-space .global-space-heading h1{color:var(--wanhu-color-paper-primary)}.settings-space .settings-space__tabs button{background:transparent;color:var(--wanhu-color-paper-tertiary)}.settings-space .settings-space__tabs button:hover{color:var(--wanhu-color-text-secondary);background:var(--wanhu-control-hover)}.settings-space .settings-space__tabs button.is-active{color:var(--wanhu-color-brass-high);background:linear-gradient(180deg,rgba(169,132,75,.030),rgba(169,132,75,.008))}.settings-space .settings-space__tabs button::after{background:var(--wanhu-control-active-line)}
-.settings-space .settings-section__title{color:var(--wanhu-color-paper-secondary)}.settings-space .settings-section__title i{background:linear-gradient(90deg,var(--wanhu-surface-blocking-rule),rgba(238,233,223,.018) 72%,transparent)}.settings-space .settings-row{background:transparent;box-shadow:inset 0 -1px 0 rgba(238,233,223,.022)}.settings-space .settings-row:hover{background:var(--wanhu-surface-blocking-row-hover)}.settings-space .settings-row__label b{color:var(--wanhu-color-text-secondary)}.settings-space .settings-row:hover .settings-row__label b{color:var(--wanhu-color-paper-primary)}
-.settings-space .settings-binding-table-header{color:var(--wanhu-color-paper-tertiary)}.settings-space .settings-binding-row__label>b{color:var(--wanhu-color-text-secondary)}
-.settings-space .settings-footer-back{color:var(--wanhu-color-paper-secondary);border-color:var(--wanhu-control-border-soft);background:var(--ui-field-surface)}.settings-space .settings-footer-back:hover{color:var(--wanhu-color-paper-primary);border-color:var(--wanhu-control-border-hover);background:var(--wanhu-control-hover)}.settings-space .settings-footer-back svg{color:var(--wanhu-color-icon)}.settings-space .settings-footer-back:hover svg{color:var(--wanhu-color-icon-hover)}.settings-space .settings-restore{color:var(--wanhu-color-paper-tertiary);background:transparent}.settings-space .settings-restore:hover{color:var(--wanhu-color-paper-secondary);background:var(--wanhu-control-hover)}
+.settings-space .settings-blocking-backdrop{
+  background:var(--wanhu-global-space-backdrop);
+  backdrop-filter:var(--wanhu-global-space-filter);
+  -webkit-backdrop-filter:var(--wanhu-global-space-filter);
+}
+.settings-panel--pause .settings-blocking-backdrop{
+  background:rgba(9,11,10,.04);
+  backdrop-filter:blur(3px) brightness(.96) saturate(.88);
+  -webkit-backdrop-filter:blur(3px) brightness(.96) saturate(.88);
+}
+.settings-space .settings-command-surface{
+  background-color:transparent;
+  background-image:
+    linear-gradient(180deg,var(--wanhu-global-space-top),var(--wanhu-global-space-bottom)),
+    linear-gradient(180deg,var(--wanhu-global-space-highlight),var(--wanhu-global-space-shade)),
+    var(--wanhu-material-noise);
+  background-repeat:no-repeat,no-repeat,repeat;
+  background-size:auto,auto,256px 256px;
+  border:0;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.settings-space .settings-space__header{
+  background:rgba(255,255,255,.012);
+  border-bottom-color:var(--wanhu-surface-blocking-rule);
+}
+.settings-space .settings-space__tabs{
+  background:rgba(255,255,255,.005);
+  border-bottom-color:var(--wanhu-surface-blocking-rule);
+}
+.settings-space .settings-space__footer{
+  background:rgba(8,10,9,.050);
+  border-top-color:var(--wanhu-surface-blocking-rule);
+}
+.settings-space .global-space-heading h1{color:var(--wanhu-color-paper-primary)}
+.settings-space .settings-space__tabs button{background:transparent;color:var(--wanhu-color-paper-tertiary)}
+.settings-space .settings-space__tabs button:hover{color:var(--wanhu-color-text-secondary);background:var(--wanhu-control-hover)}
+.settings-space .settings-space__tabs button.is-active{
+  color:var(--wanhu-color-brass-high);
+  background:linear-gradient(180deg,rgba(169,132,75,.025),rgba(169,132,75,.006));
+}
+.settings-space .settings-space__tabs button::after{background:var(--wanhu-control-active-line)}
+.settings-space .settings-section__title{color:var(--wanhu-color-paper-secondary)}
+.settings-space .settings-section__title i{
+  background:linear-gradient(90deg,var(--wanhu-surface-blocking-rule),rgba(238,233,223,.018) 72%,transparent);
+}
+.settings-space .settings-row{background:transparent;box-shadow:inset 0 -1px 0 rgba(238,233,223,.022)}
+.settings-space .settings-row:hover{background:var(--wanhu-surface-blocking-row-hover)}
+.settings-space .settings-row__label b{color:var(--wanhu-color-text-secondary)}
+.settings-space .settings-row:hover .settings-row__label b{color:var(--wanhu-color-paper-primary)}
+.settings-space .settings-binding-table-header{color:var(--wanhu-color-paper-tertiary)}
+.settings-space .settings-binding-row__label>b{color:var(--wanhu-color-text-secondary)}
+.settings-space .settings-footer-back{
+  color:var(--wanhu-color-paper-secondary);
+  border-color:var(--wanhu-control-border-soft);
+  background:var(--ui-field-surface);
+}
+.settings-space .settings-footer-back:hover{
+  color:var(--wanhu-color-paper-primary);
+  border-color:var(--wanhu-control-border-hover);
+  background:var(--wanhu-control-hover);
+}
+.settings-space .settings-footer-back svg{color:var(--wanhu-color-icon)}
+.settings-space .settings-footer-back:hover svg{color:var(--wanhu-color-icon-hover)}
+.settings-space .settings-restore{color:var(--wanhu-color-paper-tertiary);background:transparent}
+.settings-space .settings-restore:hover{color:var(--wanhu-color-paper-secondary);background:var(--wanhu-control-hover)}
 
 /* ---------------------------------------------------------------------
    Management Surface — large blocking information workspaces
