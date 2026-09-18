@@ -569,7 +569,7 @@
 .archive-space--load .global-space-heading{
   width:min(1480px,calc(100% - 128px));
   margin:0 auto;
-  text-align:left;
+  text-align:center;
 }
 .archive-space--load .global-space-heading h1{
   margin:0;
