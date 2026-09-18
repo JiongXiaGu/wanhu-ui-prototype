@@ -150,7 +150,7 @@ await page.keyboard.press('Escape');
 
 // Settings timed safe confirmation keeps the same visual language.
 await open('settings', '.settings-panel--menu');
-const scale = page.locator('[data-setting-id="ui-scale"] .settings-select-value');
+const scale = page.locator('[data-setting-id="ui-scale"] .ui-select__trigger');
 await scale.click();
 await page.getByRole('option', { name: '125%', exact: true }).click();
 await page.waitForSelector('.settings-safe-layer');
@@ -158,6 +158,31 @@ await page.screenshot({ path: `${outDir}/27-dialog-safe-display.png` });
 const countdown = Number((await page.locator('.settings-safe-dialog__countdown').textContent())?.trim());
 if (!(countdown > 0 && countdown <= 15)) throw new Error('Timed display confirmation must show a countdown.');
 await page.keyboard.press('Escape');
+
+// Settings must consume the shared control primitives instead of compatibility skins.
+await open('settings', '.settings-panel--menu');
+if ((await page.locator('.settings-slider, .settings-toggle, .settings-select-root').count()) !== 0) {
+  throw new Error('Settings must not render legacy local Slider / Toggle / Select controls.');
+}
+if ((await page.locator('.settings-row .ui-select').count()) === 0 || (await page.locator('.settings-row .ui-toggle').count()) === 0) {
+  throw new Error('Display settings must render shared Select and Toggle primitives.');
+}
+
+await page.getByRole('button', { name: '图形', exact: true }).click();
+const renderScale = page.locator('[data-setting-id="render-scale"]');
+await renderScale.locator('.ui-numeric-control').waitFor();
+if ((await renderScale.locator('.ui-stepper-button').count()) !== 2 || (await renderScale.locator('.ui-slider').count()) !== 1 || (await renderScale.locator('.ui-value-field').count()) !== 1) {
+  throw new Error('Settings numeric rows must use the shared stepper / slider / value instrument structure.');
+}
+await page.screenshot({ path: `${outDir}/59-settings-graphics-controls.png` });
+
+await page.getByRole('button', { name: '音频', exact: true }).click();
+await page.locator('[data-setting-id="master-volume"] .ui-numeric-control').waitFor();
+await page.screenshot({ path: `${outDir}/59-settings-audio-controls.png` });
+
+await page.getByRole('button', { name: '游戏', exact: true }).click();
+await page.locator('[data-setting-id="construction-tutorial"] .ui-toggle').waitFor();
+await page.screenshot({ path: `${outDir}/59-settings-game-controls.png` });
 
 // Save/Load must retain the same shared card structure.
 await open('pause-save', '.save-game-space');
