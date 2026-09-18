@@ -289,7 +289,8 @@
   z-index:1;
   min-width:0;
   flex:1 1 auto;
-  padding:12px 230px 12px 12px;
+  margin-right:230px;
+  padding:12px;
   display:flex;
   align-items:center;
   gap:15px;
@@ -531,7 +532,7 @@
   .archive-groups{flex-basis:306px;padding-right:22px}
   .archive-group-card__image{flex-basis:86px}
   .archive-save-card__image{flex-basis:128px}
-  .archive-save-card__select{padding-right:214px}
+  .archive-save-card__select{margin-right:214px}
   .archive-save-type-tabs button{min-width:78px}
 }
 
