@@ -4,7 +4,8 @@
    detailed parameters remain in the left Tool Parameter Panel. */
 
 .gameplay-screen .building-placement-toolbar-cluster,
-.gameplay-screen .road-placement-toolbar-cluster{
+.gameplay-screen .road-placement-toolbar-cluster,
+.gameplay-screen .terrain-edit-toolbar-cluster{
   left:50%;
   transform:translateX(-50%);
   z-index:24;
@@ -58,7 +59,8 @@
   background:transparent;
   color:var(--command-icon,#8a8d87);
   cursor:pointer;
-  transition:background .13s ease,color .13s ease,transform .09s ease;
+  transition-property:background,color,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
 }
 .placement-action-bar__button svg{
   width:var(--command-icon-size,20px);
@@ -146,12 +148,13 @@
   opacity:0;
   visibility:hidden;
   transform:translate(-50%,4px);
-  transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
+  transition-property:opacity,transform,visibility;
+  transition-duration:var(--wanhu-motion-fast,100ms);
   z-index:60;
 }
 .placement-action-bar__button[data-tooltip]:hover::after{
   opacity:1;
   visibility:visible;
   transform:translate(-50%,0);
-  transition-delay:.32s;
+  transition-delay:var(--wanhu-tooltip-delay,320ms);
 }

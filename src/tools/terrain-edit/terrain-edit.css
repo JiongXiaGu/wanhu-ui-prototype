@@ -1,0 +1,139 @@
+/* Terrain Edit World Tool.
+   Panel material comes from LeftContext/Surface System; this file owns terrain-specific geometry and world-preview placeholders only. */
+
+.gameplay-screen .tool-overlay.terrain-edit-prototype{
+  left:var(--hud-edge);
+  bottom:var(--hud-edge);
+  width:400px;
+  max-height:var(--hud-left-context-max-height);
+}
+
+.terrain-edit-prototype__body{
+  max-height:calc(100vh - 150px);
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.gameplay-screen .terrain-edit-toolbar-cluster{
+  left:50%;
+  bottom:var(--hud-edge);
+  transform:translateX(-50%);
+  z-index:24;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.terrain-edit-mode-section{
+  animation:terrain-edit-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
+}
+
+.terrain-edit-sample-action{
+  width:100%;
+  height:32px;
+  margin-top:7px;
+  border:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));
+  border-radius:8px;
+  background:rgba(255,255,255,.018);
+  color:var(--wanhu-color-text-muted,#999b96);
+  cursor:pointer;
+  transition-property:background,color,border-color;
+  transition-duration:var(--wanhu-motion-control,120ms);
+}
+.terrain-edit-sample-action:hover{
+  border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));
+  background:rgba(255,255,255,.045);
+  color:var(--wanhu-color-paper-primary,#eee9df);
+}
+
+.terrain-edit-metrics{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.terrain-edit-metrics>span{
+  min-height:26px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.terrain-edit-metrics small{
+  color:var(--wanhu-color-text-muted,#999b96);
+  font-size:10px;
+}
+.terrain-edit-metrics b{
+  color:var(--wanhu-color-paper-secondary,#d4cfc6);
+  font-size:10.5px;
+  font-weight:580;
+  font-variant-numeric:tabular-nums;
+}
+.terrain-edit-note{
+  margin:10px 0 0;
+  color:var(--wanhu-color-text-muted,#999b96);
+  font-size:9.5px;
+  line-height:1.65;
+}
+
+.terrain-brush-preview{
+  position:absolute;
+  z-index:8;
+  left:57%;
+  top:53%;
+  width:176px;
+  height:176px;
+  translate:-50% -50%;
+  pointer-events:none;
+  opacity:.9;
+  transition-property:opacity;
+  transition-duration:var(--wanhu-motion-control,120ms);
+}
+.terrain-brush-preview__outer,
+.terrain-brush-preview__inner{
+  position:absolute;
+  left:50%;
+  top:50%;
+  translate:-50% -50%;
+  border:1px solid rgba(231,224,211,.68);
+  border-radius:50%;
+  box-shadow:0 0 0 1px rgba(8,10,9,.22);
+}
+.terrain-brush-preview__outer{width:100%;height:100%}
+.terrain-brush-preview__inner{border-color:rgba(183,153,89,.62)}
+.terrain-brush-preview__cross{
+  position:absolute;
+  left:50%;
+  top:50%;
+  translate:-50% -50%;
+  background:rgba(238,233,223,.76);
+  box-shadow:0 0 4px rgba(8,10,9,.38);
+}
+.terrain-brush-preview__cross--h{width:14px;height:1px}
+.terrain-brush-preview__cross--v{width:1px;height:14px}
+.terrain-brush-preview__label{
+  position:absolute;
+  left:50%;
+  top:calc(100% + 10px);
+  translate:-50% 0;
+  min-width:max-content;
+  padding:5px 8px;
+  border:1px solid rgba(238,233,223,.075);
+  border-radius:8px;
+  background:rgba(34,36,34,.88);
+  color:#c8c4ba;
+  font-size:9px;
+  letter-spacing:.02em;
+}
+.terrain-brush-preview--raise .terrain-brush-preview__inner,
+.terrain-brush-preview--flatten .terrain-brush-preview__inner{border-color:rgba(189,153,89,.72)}
+.terrain-brush-preview--lower .terrain-brush-preview__inner,
+.terrain-brush-preview--smooth .terrain-brush-preview__inner{border-color:rgba(180,185,178,.56)}
+.terrain-brush-preview--slope .terrain-brush-preview__outer{border-style:dashed}
+
+@keyframes terrain-edit-content-enter{
+  from{opacity:.45;translate:0 4px}
+  to{opacity:1;translate:0 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .terrain-edit-mode-section{animation:none}
+}

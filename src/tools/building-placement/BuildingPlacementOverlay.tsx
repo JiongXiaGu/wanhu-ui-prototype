@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Building2 } from 'lucide-react';
-import type { AdjustmentMode, TerrainMode } from '../../app/ui-state';
+import type { AdjustmentMode, BuildingTerrainMode } from '../../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 import type { MotionPhase } from '../../ui/motion';
 
 interface BuildingPlacementOverlayProps {
-  terrainMode: TerrainMode;
+  terrainMode: BuildingTerrainMode;
   motionPhase?: MotionPhase;
   adjustmentMode: AdjustmentMode;
   onClose: () => void;
@@ -53,7 +53,7 @@ function SegmentRow({ label, items, defaultValue, onDirty }: { label: string; it
   );
 }
 
-function TerrainSummary({ mode, onDirty }: { mode: TerrainMode; onDirty: () => void }) {
+function TerrainSummary({ mode, onDirty }: { mode: BuildingTerrainMode; onDirty: () => void }) {
   if (mode === 'fill-only') {
     return (
       <LeftContextSection title="只填不挖" className="bp-terrain-summary" tooltip="只允许填高地形，不进行挖方。">

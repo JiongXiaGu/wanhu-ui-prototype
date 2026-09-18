@@ -3,8 +3,9 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement' | 'road-placement';
-export type TerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
+export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit';
+export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
+export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
 export type RoadDrawMode = 'smart-curve' | 'curve' | 'straight';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
@@ -33,6 +34,10 @@ export type BlueprintDockCategory =
   | 'palace';
 export type DockCategory = DesignDockCategory | BlueprintDockCategory;
 
+export type ToolOrigin =
+  | { kind: 'gameplay' }
+  | { kind: 'design-workspace'; category: DesignDockCategory };
+
 const DESIGN_DOCK_CATEGORIES: readonly DesignDockCategory[] = [
   'road',
   'bridge',
@@ -51,6 +56,7 @@ export function isDesignDockCategory(category: DockCategory | null): category is
 export interface GameplayUiState {
   workspace: Workspace;
   tool: Tool;
+  toolOrigin: ToolOrigin | null;
   contextPanel: ContextPanel;
   management: ManagementView;
   mapView: MapView;
@@ -60,7 +66,11 @@ export interface GameplayUiState {
   speed: Speed;
   dockMode: DockMode;
   dockCategory: DockCategory | null;
-  terrainMode: TerrainMode;
+  buildingTerrainMode: BuildingTerrainMode;
+  terrainEditMode: TerrainEditMode;
+  terrainContours: boolean;
+  terrainSlopeView: boolean;
+  terrainProtectBuilt: boolean;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
@@ -72,6 +82,7 @@ export interface GameplayUiState {
 export const initialGameplayUiState: GameplayUiState = {
   workspace: 'none',
   tool: 'none',
+  toolOrigin: null,
   contextPanel: 'none',
   management: 'none',
   mapView: 'default',
@@ -81,7 +92,11 @@ export const initialGameplayUiState: GameplayUiState = {
   speed: 1,
   dockMode: 'design',
   dockCategory: null,
-  terrainMode: 'balanced-earthwork',
+  buildingTerrainMode: 'balanced-earthwork',
+  terrainEditMode: 'raise',
+  terrainContours: false,
+  terrainSlopeView: false,
+  terrainProtectBuilt: true,
   adjustmentMode: 'position',
   roadDrawMode: 'smart-curve',
   gridSnap: true,
@@ -96,6 +111,7 @@ export type GameplayUiAction =
   | { type: 'CLOSE_WORKSPACE' }
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'ENTER_ROAD_PLACEMENT' }
+  | { type: 'ENTER_TERRAIN_EDIT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
   | { type: 'SET_MANAGEMENT'; management: ManagementView }
@@ -105,7 +121,11 @@ export type GameplayUiAction =
   | { type: 'SET_PAUSED'; paused: boolean }
   | { type: 'SET_PAUSE_VIEW'; view: PauseView }
   | { type: 'SET_SPEED'; speed: Speed }
-  | { type: 'SET_TERRAIN_MODE'; mode: TerrainMode }
+  | { type: 'SET_BUILDING_TERRAIN_MODE'; mode: BuildingTerrainMode }
+  | { type: 'SET_TERRAIN_EDIT_MODE'; mode: TerrainEditMode }
+  | { type: 'TOGGLE_TERRAIN_CONTOURS' }
+  | { type: 'TOGGLE_TERRAIN_SLOPE_VIEW' }
+  | { type: 'TOGGLE_TERRAIN_PROTECTION' }
   | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
   | { type: 'SET_ROAD_DRAW_MODE'; mode: RoadDrawMode }
   | { type: 'TOGGLE_GRID_SNAP' }
@@ -121,6 +141,13 @@ function togglePanel<T>(current: T, requested: T, closed: T): T {
 
 function workspaceForDockSelection(mode: DockMode, category: DockCategory | null): Workspace {
   return mode === 'design' && isDesignDockCategory(category) ? 'design' : 'none';
+}
+
+function captureToolOrigin(state: GameplayUiState): ToolOrigin {
+  if (state.workspace === 'design' && isDesignDockCategory(state.dockCategory)) {
+    return { kind: 'design-workspace', category: state.dockCategory };
+  }
+  return { kind: 'gameplay' };
 }
 
 export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiAction): GameplayUiState {
@@ -157,13 +184,14 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
     case 'ENTER_BUILDING_PLACEMENT':
       return {
         ...state,
+        toolOrigin: captureToolOrigin(state),
         workspace: 'none',
         tool: 'building-placement',
         management: 'none',
         contextPanel: 'none',
         mapView: 'default',
         mapPanelOpen: false,
-        terrainMode: 'balanced-earthwork',
+        buildingTerrainMode: 'balanced-earthwork',
         adjustmentMode: 'position',
         canUndo: false,
         canRedo: false,
@@ -171,6 +199,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
     case 'ENTER_ROAD_PLACEMENT':
       return {
         ...state,
+        toolOrigin: captureToolOrigin(state),
         workspace: 'none',
         tool: 'road-placement',
         management: 'none',
@@ -181,13 +210,31 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canUndo: false,
         canRedo: false,
       };
+    case 'ENTER_TERRAIN_EDIT':
+      return {
+        ...state,
+        toolOrigin: captureToolOrigin(state),
+        workspace: 'none',
+        tool: 'terrain-edit',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        terrainEditMode: 'raise',
+        canUndo: false,
+        canRedo: false,
+      };
     case 'EXIT_TOOL': {
-      const returnCategory: DesignDockCategory = state.tool === 'road-placement' ? 'road' : 'building';
+      const returnCategory = state.toolOrigin?.kind === 'design-workspace'
+        ? state.toolOrigin.category
+        : null;
+      const returningToWorkspace = returnCategory !== null;
       return {
         ...state,
         tool: 'none',
-        workspace: 'design',
-        dockMode: 'design',
+        toolOrigin: null,
+        workspace: returningToWorkspace ? 'design' : 'none',
+        dockMode: returningToWorkspace ? 'design' : state.dockMode,
         dockCategory: returnCategory,
         management: 'none',
         contextPanel: 'none',
@@ -218,6 +265,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management,
         workspace: opening ? 'none' : state.workspace,
         tool: opening ? 'none' : state.tool,
+        toolOrigin: opening ? null : state.toolOrigin,
         dockCategory: opening && state.workspace !== 'none' ? null : state.dockCategory,
         contextPanel: opening ? 'none' : state.contextPanel,
         mapView: opening ? 'default' : state.mapView,
@@ -257,8 +305,16 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return state.paused ? { ...state, pauseView: action.view } : state;
     case 'SET_SPEED':
       return { ...state, speed: action.speed };
-    case 'SET_TERRAIN_MODE':
-      return { ...state, terrainMode: action.mode, canUndo: true, canRedo: false };
+    case 'SET_BUILDING_TERRAIN_MODE':
+      return { ...state, buildingTerrainMode: action.mode, canUndo: true, canRedo: false };
+    case 'SET_TERRAIN_EDIT_MODE':
+      return { ...state, terrainEditMode: action.mode };
+    case 'TOGGLE_TERRAIN_CONTOURS':
+      return { ...state, terrainContours: !state.terrainContours };
+    case 'TOGGLE_TERRAIN_SLOPE_VIEW':
+      return { ...state, terrainSlopeView: !state.terrainSlopeView };
+    case 'TOGGLE_TERRAIN_PROTECTION':
+      return { ...state, terrainProtectBuilt: !state.terrainProtectBuilt };
     case 'SET_ADJUSTMENT_MODE':
       return { ...state, adjustmentMode: action.mode, canUndo: true, canRedo: false };
     case 'SET_ROAD_DRAW_MODE':

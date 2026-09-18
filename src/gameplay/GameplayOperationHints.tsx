@@ -1,4 +1,4 @@
-import type { AdjustmentMode, RoadDrawMode, Tool } from '../app/ui-state';
+import type { AdjustmentMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
 
 type HintRow = { binding: string; description: string; primary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
@@ -97,6 +97,60 @@ const roadPresets: Record<RoadDrawMode, HintPreset> = {
   },
 };
 
+
+const terrainPresets: Record<TerrainEditMode, HintPreset> = {
+  raise: {
+    task: '地形 · 抬高',
+    rows: [
+      { binding: '鼠标左键', description: '连续抬高', primary: true },
+      { binding: '拖动', description: '连续编辑' },
+      { binding: '鼠标滚轮', description: '调整笔刷半径' },
+      { binding: 'Shift', description: '临时降低强度' },
+      { binding: 'Ctrl + Z', description: '撤销' },
+      { binding: 'Esc', description: '退出工具' },
+    ],
+  },
+  lower: {
+    task: '地形 · 降低',
+    rows: [
+      { binding: '鼠标左键', description: '连续降低', primary: true },
+      { binding: '拖动', description: '连续编辑' },
+      { binding: '鼠标滚轮', description: '调整笔刷半径' },
+      { binding: 'Ctrl + Z', description: '撤销' },
+      { binding: 'Esc', description: '退出工具' },
+    ],
+  },
+  flatten: {
+    task: '地形 · 整平',
+    rows: [
+      { binding: '鼠标左键', description: '按目标高度整平', primary: true },
+      { binding: 'Alt + 左键', description: '取样高度' },
+      { binding: '鼠标滚轮', description: '调整笔刷半径' },
+      { binding: 'Ctrl + Z', description: '撤销' },
+      { binding: 'Esc', description: '退出工具' },
+    ],
+  },
+  smooth: {
+    task: '地形 · 平滑',
+    rows: [
+      { binding: '鼠标左键', description: '平滑地形', primary: true },
+      { binding: '拖动', description: '连续平滑' },
+      { binding: '鼠标滚轮', description: '调整笔刷半径' },
+      { binding: 'Ctrl + Z', description: '撤销' },
+      { binding: 'Esc', description: '退出工具' },
+    ],
+  },
+  slope: {
+    task: '地形 · 坡面',
+    rows: [
+      { binding: '鼠标左键', description: '指定起点 / 终点', primary: true },
+      { binding: '鼠标右键', description: '取消当前坡面' },
+      { binding: 'Ctrl + Z', description: '撤销' },
+      { binding: 'Esc', description: '退出工具' },
+    ],
+  },
+};
+
 function Keycap({ binding }: { binding: string }) {
   return (
     <span className="operation-hints__binding">
@@ -118,14 +172,17 @@ interface Props {
   tool: Tool;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
+  terrainEditMode: TerrainEditMode;
 }
 
-export function GameplayOperationHints({ tool, adjustmentMode, roadDrawMode }: Props) {
+export function GameplayOperationHints({ tool, adjustmentMode, roadDrawMode, terrainEditMode }: Props) {
   const preset = tool === 'building-placement'
     ? buildingPresets[adjustmentMode]
     : tool === 'road-placement'
       ? roadPresets[roadDrawMode]
-      : gameplayPreset;
+      : tool === 'terrain-edit'
+        ? terrainPresets[terrainEditMode]
+        : gameplayPreset;
 
   return (
     <aside className="gameplay-operation-hints" aria-label="当前操作提示">

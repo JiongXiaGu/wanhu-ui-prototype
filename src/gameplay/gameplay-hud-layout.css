@@ -97,7 +97,8 @@
 }
 .gameplay-screen > .context-utility-toolbar[data-utility-context="world"]{width:var(--hud-world-tools-width)}
 .gameplay-screen > .context-utility-toolbar[data-utility-context="building-placement"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"]{width:var(--hud-tool-tools-width)}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="terrain-edit"]{width:var(--hud-tool-tools-width)}
 
 .gameplay-screen .gameplay-operation-hints{
   right:var(--hud-edge);
@@ -119,13 +120,15 @@
 .gameplay-screen .gameplay-context-panel--weather{width:var(--hud-context-weather-width)}
 
 .gameplay-screen .tool-overlay.building-placement-prototype,
-.gameplay-screen .tool-overlay.road-placement-prototype{
+.gameplay-screen .tool-overlay.road-placement-prototype,
+.gameplay-screen .tool-overlay.terrain-edit-prototype{
   left:var(--hud-edge);
   bottom:var(--hud-edge);
 }
 
 .gameplay-screen .tool-bottom-cluster,
 .gameplay-screen .building-placement-toolbar-cluster,
-.gameplay-screen .road-placement-toolbar-cluster{
+.gameplay-screen .road-placement-toolbar-cluster,
+.gameplay-screen .terrain-edit-toolbar-cluster{
   bottom:var(--hud-edge);
 }

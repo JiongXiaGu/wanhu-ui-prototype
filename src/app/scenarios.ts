@@ -22,6 +22,7 @@ export type ReviewScenario =
   | 'road-smart'
   | 'road-curve'
   | 'road-straight'
+  | 'terrain-edit'
   | 'camera'
   | 'weather'
   | 'pause'
@@ -71,19 +72,21 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
     case 'workspace-city-wall':
       return designWorkspace(gameplay, 'city-wall');
     case 'building-position':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building' } };
     case 'building-massing':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', adjustmentMode: 'massing' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building', adjustmentMode: 'massing' } };
     case 'building-roof':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', adjustmentMode: 'roof' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building', adjustmentMode: 'roof' } };
     case 'building-height':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', dockMode: 'design', dockCategory: 'building', terrainMode: 'manual-elevation' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building', buildingTerrainMode: 'manual-elevation' } };
     case 'road-smart':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'smart-curve' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', toolOrigin: { kind: 'design-workspace', category: 'road' }, dockMode: 'design', dockCategory: 'road', roadDrawMode: 'smart-curve' } };
     case 'road-curve':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'curve' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', toolOrigin: { kind: 'design-workspace', category: 'road' }, dockMode: 'design', dockCategory: 'road', roadDrawMode: 'curve' } };
     case 'road-straight':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', dockMode: 'design', dockCategory: 'road', roadDrawMode: 'straight' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', toolOrigin: { kind: 'design-workspace', category: 'road' }, dockMode: 'design', dockCategory: 'road', roadDrawMode: 'straight' } };
+    case 'terrain-edit':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'terrain-edit', toolOrigin: { kind: 'gameplay' }, terrainEditMode: 'raise' } };
     case 'camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, contextPanel: 'camera' } };
     case 'weather':

@@ -7,6 +7,7 @@ import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPl
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
 import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
 import { RoadPlacementDock } from '../tools/road-placement/RoadPlacementDock';
+import { TerrainEditTool } from '../tools/terrain-edit/TerrainEditTool';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -153,11 +154,20 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           gridVisible={state.gridVisible}
           canUndo={state.canUndo}
           canRedo={state.canRedo}
+          terrainContours={state.terrainContours}
+          terrainSlopeView={state.terrainSlopeView}
+          terrainProtectBuilt={state.terrainProtectBuilt}
           onToggleGridSnap={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}
           onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
           onUndo={() => dispatch({ type: 'UNDO' })}
           onRedo={() => dispatch({ type: 'REDO' })}
-          onToolAction={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+          onToggleTerrainContours={() => dispatch({ type: 'TOGGLE_TERRAIN_CONTOURS' })}
+          onToggleTerrainSlopeView={() => dispatch({ type: 'TOGGLE_TERRAIN_SLOPE_VIEW' })}
+          onToggleTerrainProtection={() => dispatch({ type: 'TOGGLE_TERRAIN_PROTECTION' })}
+          onToolAction={(id) => {
+            if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
+            else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
+          }}
         />
       )}
 
@@ -197,7 +207,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       {toolPresence.mounted && renderedTool === 'building-placement' && (
         <>
           <BuildingPlacementOverlay
-            terrainMode={state.terrainMode}
+            terrainMode={state.buildingTerrainMode}
             motionPhase={toolPresence.phase}
             adjustmentMode={state.adjustmentMode}
             onClose={exitTool}
@@ -219,8 +229,22 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         </>
       )}
 
+      {toolPresence.mounted && renderedTool === 'terrain-edit' && (
+        <TerrainEditTool
+          state={state}
+          motionPhase={toolPresence.phase}
+          dispatch={dispatch}
+          onExit={exitTool}
+        />
+      )}
+
       {space !== 'management' && !state.paused && (
-        <GameplayOperationHints tool={state.tool} adjustmentMode={state.adjustmentMode} roadDrawMode={state.roadDrawMode} />
+        <GameplayOperationHints
+          tool={state.tool}
+          adjustmentMode={state.adjustmentMode}
+          roadDrawMode={state.roadDrawMode}
+          terrainEditMode={state.terrainEditMode}
+        />
       )}
 
       {managementPresence.mounted && renderedManagement !== 'none' && (

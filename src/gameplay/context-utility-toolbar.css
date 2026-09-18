@@ -64,7 +64,8 @@
   background:transparent;
   color:var(--command-icon,#8a8d87);
   cursor:pointer;
-  transition:background .13s ease,color .13s ease,transform .09s ease;
+  transition-property:background,color,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
 }
 
 .context-utility-toolbar__button svg{
@@ -129,7 +130,8 @@
   font-size:9px;
   letter-spacing:.02em;
   z-index:60;
-  transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
+  transition-property:opacity,transform,visibility;
+  transition-duration:var(--wanhu-motion-fast,100ms);
   transition-delay:0s;
 }
 
@@ -137,5 +139,5 @@
   opacity:1;
   visibility:visible;
   transform:translate(-50%,0);
-  transition-delay:.32s;
+  transition-delay:var(--wanhu-tooltip-delay,320ms);
 }
