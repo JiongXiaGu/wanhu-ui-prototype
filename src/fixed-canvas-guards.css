@@ -8,12 +8,12 @@
  * across browser sizes/zoom levels; only the outer canvas scale may change.
  */
 
-/* NewGameSpace keeps the old .flow-frame review selector without inheriting the legacy inset frame. */
+/* NewGameSpace keeps the old .flow-frame review selector without inheriting the legacy inset frame.
+   Material is owned exclusively by .wanhu-global-space; this guard must never paint a theme. */
 .new-game-space.flow-frame {
   inset: 0;
   border: 0;
   box-shadow: none;
-  background: linear-gradient(180deg, rgba(13, 20, 17, .92), rgba(9, 15, 13, .97));
 }
 
 /* Settings canonical 1920 layout. Wider than the old 900px column so the page
