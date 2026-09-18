@@ -394,9 +394,8 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
   }
 
   return (
-    <section className={`settings-space settings-panel--${context}`} data-active={active} aria-label="游戏设置">
-      <div className="settings-blocking-backdrop" aria-hidden="true" />
-      <div className="settings-command-surface">
+    <section className={`settings-space settings-panel--${context} wanhu-global-space`} data-active={active} aria-label="游戏设置">
+      <div className="settings-command-surface wanhu-global-space__content">
       <header className="global-space-header settings-space__header">
         <div className="global-space-heading"><h1>游戏设置</h1></div>
       </header>

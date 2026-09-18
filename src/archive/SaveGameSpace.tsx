@@ -220,7 +220,7 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
   }
 
   return (
-    <section className={`save-game-space save-game-space--${context}`} aria-label="保存游戏">
+    <section className={`save-game-space save-game-space--${context} wanhu-global-space`} aria-label="保存游戏">
       <header className="global-space-header save-game-space__header"><div className="global-space-heading"><h1>保存游戏</h1></div></header>
 
       <main className="save-game-space__body">

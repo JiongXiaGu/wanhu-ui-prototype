@@ -11,7 +11,6 @@
   overflow:hidden;
 }
 .settings-panel--pause{position:absolute;inset:0;z-index:2}
-.settings-blocking-backdrop{position:absolute;inset:-16px;pointer-events:none}
 
 .settings-command-surface{
   position:absolute;

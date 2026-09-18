@@ -14,9 +14,9 @@
   --ui-segment-active-top:rgba(201,165,95,.115);
   --ui-segment-active-bottom:rgba(201,165,95,.040);
 
-  --ui-footer-surface-top:rgba(27,37,31,.48);
-  --ui-footer-surface-bottom:rgba(15,23,19,.66);
-  --ui-footer-backdrop:blur(12px) saturate(.86) brightness(1.04);
+  --ui-footer-surface-top:rgba(255,255,255,.006);
+  --ui-footer-surface-bottom:rgba(8,10,9,.080);
+  --ui-footer-backdrop:blur(10px) saturate(.82) brightness(1.00);
 }
 
 /* Gameplay glass surfaces keep a jade tone of their own, then let a softened world image show through.
@@ -119,7 +119,7 @@
   border-radius:var(--ui-control-radius);
   background:rgba(255,255,255,.012);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
-  color:#9ea39c;
+  color:var(--wanhu-color-paper-secondary);
   font-size:9.5px;
   font-weight:500;
   letter-spacing:.018em;
@@ -129,7 +129,7 @@
 .global-space-secondary svg,
 .global-space-primary svg{stroke-width:1.55}
 .global-space-secondary:hover:not(:disabled){
-  color:#ded9cf;
+  color:var(--wanhu-color-paper-primary);
   border-color:var(--ui-control-border-hover);
   background:rgba(255,255,255,.030);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.022);

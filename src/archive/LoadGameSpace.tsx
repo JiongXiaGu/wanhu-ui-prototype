@@ -177,7 +177,7 @@ export function LoadGameSpace({ context, onBack, onLoad }: LoadGameSpaceProps) {
   }
 
   return (
-    <section className={`archive-space archive-space--load archive-space--${context}`} aria-label="读取游戏">
+    <section className={`archive-space archive-space--load archive-space--${context} wanhu-global-space`} aria-label="读取游戏">
       <header className="global-space-header archive-space__header"><div className="global-space-heading"><h1>读取游戏</h1></div></header>
 
       <div className="archive-space__layout archive-space__layout--browser">
