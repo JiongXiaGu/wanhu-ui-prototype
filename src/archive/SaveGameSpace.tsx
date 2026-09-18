@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, Pencil, Save, Trash2, Zap } from 'lucide-react';
+import { ToggleSwitch } from '../ui/Controls';
 import { useDialogSystem } from '../ui/dialog/DialogSystem';
 import { SaveEntryCard, type SaveCompatibility, type SaveEntryCardData, type SaveKind } from './SaveEntryCard';
 
@@ -232,7 +233,7 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
           <nav className="archive-save-type-tabs" aria-label="存档类型筛选">
             {filterItems.map((item) => <button key={item.key} type="button" className={filter === item.key ? 'is-active' : ''} aria-pressed={filter === item.key} onClick={() => setFilter(item.key)}>{item.label}</button>)}
           </nav>
-          <button type="button" className={`archive-hide-outdated ${hideOutdated ? 'is-on' : ''}`} role="switch" aria-checked={hideOutdated} onClick={() => setHideOutdated((current) => !current)}><span>隐藏过时存档</span><i><em /></i></button>
+          <div className="archive-hide-outdated"><span>隐藏过时存档</span><ToggleSwitch label="隐藏过时存档" value={hideOutdated} className="archive-hide-outdated__toggle" onChange={setHideOutdated} /></div>
         </header>
 
         <div className="archive-save-list save-game-space__list">

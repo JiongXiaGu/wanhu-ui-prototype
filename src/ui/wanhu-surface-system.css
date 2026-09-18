@@ -181,6 +181,33 @@
 }
 
 /* ---------------------------------------------------------------------
+   Archive Global Space — Load / Save share full-screen Smoked Graphite
+   --------------------------------------------------------------------- */
+.archive-space--load,
+.save-game-space{
+  color:var(--wanhu-color-paper-primary);
+  background-color:transparent;
+  background-image:
+    radial-gradient(ellipse at 50% 40%,rgba(255,249,238,.014),transparent 52%),
+    linear-gradient(180deg,var(--wanhu-global-space-top),var(--wanhu-global-space-bottom)),
+    var(--wanhu-material-noise);
+  background-repeat:no-repeat,no-repeat,repeat;
+  background-size:auto,auto,256px 256px;
+  backdrop-filter:var(--wanhu-global-space-filter);
+  -webkit-backdrop-filter:var(--wanhu-global-space-filter);
+}
+.archive-space--load .global-space-header,
+.save-game-space .global-space-header{
+  background:rgba(255,255,255,.010);
+  border-bottom-color:var(--wanhu-surface-blocking-rule);
+}
+.archive-space--load .global-space-footer,
+.save-game-space .global-space-footer{
+  background:rgba(8,10,9,.050);
+  border-top-color:var(--wanhu-surface-blocking-rule);
+}
+
+/* ---------------------------------------------------------------------
    Settings Global Blocking Space
    Full-screen sibling of Save / Load / New Game, not a floating Pause card.
    --------------------------------------------------------------------- */

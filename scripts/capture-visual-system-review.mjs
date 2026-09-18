@@ -113,7 +113,7 @@ await page.screenshot({ path: `${outDir}/32-visual-system-new-game-footer.png` }
 await open('load', '.archive-space--load');
 await expectBlur(page.locator('.archive-space__footer'), 'Load footer');
 await expectRounded(page.getByRole('button', { name: '返回', exact: true }), 'Load back button');
-await expectRounded(page.locator('.archive-hide-outdated > i'), 'Archive toggle track', 9);
+await expectRounded(page.locator('.archive-hide-outdated .ui-toggle > i'), 'Archive toggle track', 9);
 await page.screenshot({ path: `${outDir}/33-visual-system-load-footer.png` });
 
 await open('pause-save', '.save-game-space');
