@@ -501,7 +501,7 @@ function ControlsSettingsView({
             return (
               <section className={`settings-binding-group ${open ? 'is-open' : ''}`} key={group.id}>
                 <button type="button" className="settings-binding-group__header" onClick={() => onToggleGroup(group.id)} aria-expanded={open}>
-                  <ChevronRight size={14} /><b>{group.title}</b><span>{group.bindings.length} 项</span>
+                  <ChevronRight size={14} /><b>{group.title}</b>
                 </button>
                 {open && (
                   <div className="settings-binding-group__rows">
