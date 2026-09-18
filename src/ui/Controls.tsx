@@ -70,6 +70,44 @@ export function SliderControl({ ariaLabel, value, min, max, step, disabled = fal
   );
 }
 
+interface NumericControlProps {
+  ariaLabel: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  format?: (value: number) => string;
+  disabled?: boolean;
+  className?: string;
+  onChange: (value: number) => void;
+}
+
+function NumericControlFields({ ariaLabel, value, min, max, step, format, disabled = false, onChange }: NumericControlProps) {
+  const decimals = Math.min(4, decimalsForStep(step));
+
+  function commit(next: number) {
+    onChange(Number(clamp(next, min, max).toFixed(decimals)));
+  }
+
+  return (
+    <>
+      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value - step)} aria-label={`${ariaLabel}减小`}>−</button>
+      <SliderControl ariaLabel={ariaLabel} value={value} min={min} max={max} step={step} disabled={disabled} onChange={commit} />
+      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value + step)} aria-label={`${ariaLabel}增大`}>＋</button>
+      <output className="ui-value-field">{format ? format(value) : value}</output>
+    </>
+  );
+}
+
+export function NumericControl(props: NumericControlProps) {
+  const { className = '', disabled = false } = props;
+  return (
+    <div className={`ui-numeric-control ${disabled ? 'is-disabled' : ''} ${className}`.trim()}>
+      <NumericControlFields {...props} />
+    </div>
+  );
+}
+
 interface RuntimeParameterRowProps {
   label: string;
   value: number;
@@ -82,19 +120,10 @@ interface RuntimeParameterRowProps {
 }
 
 export function RuntimeParameterRow({ label, value, min, max, step, format, disabled = false, onChange }: RuntimeParameterRowProps) {
-  const decimals = Math.min(4, decimalsForStep(step));
-
-  function commit(next: number) {
-    onChange(Number(clamp(next, min, max).toFixed(decimals)));
-  }
-
   return (
     <div className={`parameter-row runtime-parameter-row ui-parameter-row ${disabled ? 'is-disabled' : ''}`}>
       <span>{label}</span>
-      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value - step)} aria-label={`${label}减小`}>−</button>
-      <SliderControl ariaLabel={label} value={value} min={min} max={max} step={step} disabled={disabled} onChange={commit} />
-      <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value + step)} aria-label={`${label}增大`}>＋</button>
-      <output className="ui-value-field">{format ? format(value) : value}</output>
+      <NumericControlFields ariaLabel={label} value={value} min={min} max={max} step={step} format={format} disabled={disabled} onChange={onChange} />
     </div>
   );
 }
