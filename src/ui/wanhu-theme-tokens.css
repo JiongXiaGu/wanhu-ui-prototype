@@ -69,8 +69,8 @@
   --wanhu-surface-blocking-shadow:0 24px 64px rgba(2,4,5,.40),inset 0 1px 0 rgba(255,255,255,.028);
   /* Full-screen Global Space material. Settings consumes it first; Save / Load can
      migrate to the same recipe without becoming floating windows. */
-  --wanhu-global-space-top:rgba(43,45,42,.90);
-  --wanhu-global-space-bottom:rgba(27,30,28,.93);
+  --wanhu-global-space-top:rgba(48,50,46,.89);
+  --wanhu-global-space-bottom:rgba(31,34,31,.92);
   --wanhu-global-space-highlight:rgba(255,249,238,.014);
   --wanhu-global-space-shade:rgba(7,9,8,.055);
   --wanhu-global-space-backdrop:rgba(9,11,10,.10);
@@ -286,8 +286,8 @@
   --wanhu-pause-dim:rgba(10,12,11,.50);
   --wanhu-pause-surface-bg:rgba(37,39,36,.95);
   --wanhu-pause-scene-filter:blur(9px) brightness(.72) saturate(.72);
-  --wanhu-global-space-top:rgba(46,48,45,.91);
-  --wanhu-global-space-bottom:rgba(30,33,30,.94);
+  --wanhu-global-space-top:rgba(51,53,49,.90);
+  --wanhu-global-space-bottom:rgba(34,37,34,.93);
   --wanhu-global-space-filter:blur(7px) saturate(.74) brightness(.92);
 
   /* Persistent HUD keeps the reviewed role separation at night. Only the top

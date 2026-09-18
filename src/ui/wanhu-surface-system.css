@@ -197,11 +197,12 @@
 .settings-space .settings-command-surface{
   background-color:transparent;
   background-image:
+    radial-gradient(ellipse at 50% 42%,rgba(255,249,238,.016),transparent 48%),
     linear-gradient(180deg,var(--wanhu-global-space-top),var(--wanhu-global-space-bottom)),
     linear-gradient(180deg,var(--wanhu-global-space-highlight),var(--wanhu-global-space-shade)),
     var(--wanhu-material-noise);
-  background-repeat:no-repeat,no-repeat,repeat;
-  background-size:auto,auto,256px 256px;
+  background-repeat:no-repeat,no-repeat,no-repeat,repeat;
+  background-size:auto,auto,auto,256px 256px;
   border:0;
   box-shadow:none;
   backdrop-filter:none;
