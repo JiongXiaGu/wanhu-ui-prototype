@@ -100,8 +100,8 @@ await page.screenshot({ path: `${outDir}/31-visual-system-settings-footer.png` }
 
 // New Game: primary / secondary footer actions and segmented controls use the same control family.
 await open('new-game', '.new-game-space');
-const newGameFooter = page.locator('.new-game-space__footer');
-await expectBlur(newGameFooter, 'New Game footer');
+const newGameRoot = page.locator('.new-game-space.wanhu-global-space');
+await expectBlur(newGameRoot, 'New Game Global Space root');
 await expectRounded(page.getByRole('button', { name: '开始营造', exact: true }), 'New Game primary action');
 await expectRounded(page.getByRole('button', { name: '返回', exact: true }), 'New Game back action');
 const newGameSegment = page.locator('.new-game-segmented').first();
