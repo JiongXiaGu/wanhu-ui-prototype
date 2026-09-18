@@ -113,6 +113,11 @@ if (!nightBackground.includes('wanhu-gameplay-city-night.png')) {
 const clock = (await page.locator('.gameplay-top-status__clock').textContent())?.trim() ?? '';
 if (!clock.includes('22:00')) throw new Error(`Top HUD clock must follow the environment-panel day time. clock=${clock}`);
 
+const nightContextColor = await panel.evaluate((node) => getComputedStyle(node).backgroundColor);
+const nightContextChannels = (nightContextColor.match(/[\d.]+/g) ?? []).slice(0,3).map(Number);
+if (nightContextChannels.length !== 3 || Math.max(...nightContextChannels) - Math.min(...nightContextChannels) > 6) {
+  throw new Error(`Night Environment must retain neutral Smoked Graphite instead of shifting green/blue. background=${nightContextColor}`);
+}
 await page.screenshot({ path: `${outDir}/35-weather-night.png` });
 
 await restoreCurrent.click();

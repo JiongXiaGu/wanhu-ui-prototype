@@ -17,9 +17,9 @@
 
 /* Placement tools do not carry the legacy scene-panel class, but use the exact same Context recipe. */
 .gameplay-screen .left-context-panel:not(.gameplay-context-panel){
-  background-color:var(--wanhu-surface-context-bg,rgba(23,29,31,.82));
+  background-color:var(--wanhu-surface-context-bg,rgba(45,47,44,.82));
   background-image:
-    linear-gradient(180deg,var(--wanhu-material-highlight,rgba(255,255,255,.014)),var(--wanhu-material-shade,rgba(0,0,0,.022))),
+    linear-gradient(180deg,var(--wanhu-surface-context-highlight,rgba(255,249,238,.022)),var(--wanhu-surface-context-shade,rgba(7,9,8,.055))),
     var(--wanhu-material-noise);
   background-repeat:repeat,repeat;
   background-size:auto,256px 256px;
@@ -35,7 +35,7 @@
   flex:0 0 58px;
   padding:0 12px 0 14px;
   border-bottom:1px solid var(--wanhu-surface-context-rule,var(--hud-rule,rgba(239,233,221,.065)));
-  background:rgba(255,255,255,.007);
+  background:var(--wanhu-surface-context-header,rgba(255,249,238,.018));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
   display:flex;
   align-items:center;
@@ -108,6 +108,7 @@
   padding:10px 12px 12px;
   overflow:auto;
   scrollbar-width:thin;
+  background:linear-gradient(180deg,rgba(255,255,255,.003),var(--wanhu-surface-context-body,rgba(8,10,9,.085)));
 }
 .left-context-panel.has-footer>.left-context-panel__body{
   max-height:calc(var(--hud-left-context-max-height,720px) - 106px);
@@ -269,7 +270,7 @@
   justify-content:space-between;
   gap:12px;
   border-top:1px solid var(--wanhu-surface-context-rule,rgba(238,233,223,.055));
-  background:rgba(255,255,255,.008);
+  background:var(--wanhu-surface-context-footer,rgba(8,10,9,.055));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.010);
 }
 .context-panel-reset-button{

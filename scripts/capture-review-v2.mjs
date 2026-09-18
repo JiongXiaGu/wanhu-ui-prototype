@@ -40,6 +40,28 @@ for (const [file, review, waitFor] of staticScenarios) {
   await page.screenshot({ path: `${outDir}/${file}` });
 }
 
+// Context / Work art-direction pair: review the same daytime world with each
+// mutually-exclusive surface separately, then compare them side by side.
+await open('weather', '.gameplay-context-panel--weather');
+const dayEnvironment = page.locator('.gameplay-context-panel--weather');
+const dayEnvironmentColor = await dayEnvironment.evaluate((node) => getComputedStyle(node).backgroundColor);
+const dayEnvironmentChannels = (dayEnvironmentColor.match(/[\d.]+/g) ?? []).slice(0,3).map(Number);
+if (dayEnvironmentChannels.length !== 3 || Math.max(...dayEnvironmentChannels) - Math.min(...dayEnvironmentChannels) > 6) {
+  throw new Error(`Environment Context surface must remain neutral Smoked Graphite. background=${dayEnvironmentColor}`);
+}
+const inactivePreset = page.locator('.weather-preset-card:not(.is-active)').first();
+const inactivePresetStyle = await inactivePreset.evaluate((node) => {
+  const style = getComputedStyle(node);
+  return { border: style.borderTopWidth, background: style.backgroundColor };
+});
+if (inactivePresetStyle.border !== '0px' || !inactivePresetStyle.background.includes('0)')) {
+  throw new Error(`Weather presets must not render persistent mini-card boxes. style=${JSON.stringify(inactivePresetStyle)}`);
+}
+await page.screenshot({ path: `${outDir}/61-art-pair-environment-day.png` });
+
+await open('workspace-building', '.workspace--design');
+await page.screenshot({ path: `${outDir}/62-art-pair-workspace-day.png` });
+
 // Continue Game intentionally bypasses the loading screen for fast prototype iteration.
 await open('menu', '.main-menu-screen');
 await page.getByRole('button', { name: /^继续游戏/ }).click();

@@ -1,37 +1,15 @@
-/* Environment Control Material Pass.
-   World-first direction: the world supplies illustration and colour. The UI uses
-   neutral frosted surfaces, restrained gradients and standard controls that map
-   directly to Unity UI Toolkit / USS. */
+/* Environment semantic visual tracks.
+   Panel material is owned exclusively by wanhu-surface-system.css.
+   This file only expresses the time-of-day / season colour semantics. */
 
-/* Frosted glass texture ------------------------------------------------ */
-.gameplay-context-panel--weather{
-  background-color:var(--weather-mist-surface);
-  background-image:url('/assets/ui/materials/glass-noise-soft.png');
-  background-repeat:repeat;
-  background-size:256px 256px;
-}
-
-.gameplay-context-panel__body--weather.is-scene-simulation>
-.gameplay-context-panel__section:not(.weather-preset-section),
-.gameplay-context-panel__body--weather.is-world-follow>.weather-world-summary{
-  background-color:var(--weather-mist-card);
-  background-image:url('/assets/ui/materials/glass-noise-soft.png');
-  background-repeat:repeat;
-  background-size:192px 192px;
-}
-
-/* Time + season ---------------------------------------------------------
-   No scene artwork. Colour alone communicates each cycle. These tracks are only
-   one tier thicker than ordinary parameter sliders, so they remain part of the
-   same control family rather than reading as banners. */
 .weather-time-track,
 .weather-season-track{
-  background:#45484b;
+  background:#474945;
 }
 .weather-time-track__segments,
 .weather-season-track__segments{
   display:block;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -4px 7px rgba(0,0,0,.06);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),inset 0 -4px 7px rgba(0,0,0,.055);
 }
 
 /* 00:00 -> dawn -> noon -> dusk -> 24:00. */
@@ -54,13 +32,13 @@
 .weather-season-track__segments{
   background-image:linear-gradient(
     90deg,
-    #8a7d82 0%,
-    #87847e 16%,
-    #788475 29%,
-    #72806e 42%,
-    #7f7968 55%,
-    #968166 69%,
+    #827a78 0%,
+    #85827a 16%,
+    #7d8477 29%,
+    #77806f 42%,
+    #807a69 55%,
+    #958166 69%,
     #858078 82%,
-    #748087 100%
+    #788083 100%
   );
 }

@@ -1,4 +1,4 @@
-/* Wanhu Surface System v4
+/* Wanhu Surface System v5
    Formal material owner for gameplay surfaces.
    Theme tokens own palette/material recipes; component CSS owns geometry and local content hierarchy. */
 
@@ -6,9 +6,9 @@
    Context Surface — shared context panels (Camera etc.)
    --------------------------------------------------------------------- */
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel{
-  background-color:var(--wanhu-surface-context-generic-bottom);
+  background-color:var(--wanhu-surface-context-bg);
   background-image:
-    linear-gradient(180deg,var(--wanhu-surface-context-generic-top),var(--wanhu-surface-context-generic-bottom)),
+    linear-gradient(180deg,var(--wanhu-surface-context-highlight),var(--wanhu-surface-context-shade)),
     var(--wanhu-material-noise);
   background-repeat:repeat,repeat;
   background-size:auto,256px 256px;
@@ -19,8 +19,25 @@
 }
 
 /* ---------------------------------------------------------------------
-   Context Surface — Environment
+   Context Surface — shared Root / Header / Body / Footer
    --------------------------------------------------------------------- */
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel>header{
+  background:var(--wanhu-surface-context-header);
+  border-bottom-color:var(--wanhu-surface-context-rule);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
+}
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel>.left-context-panel__body{
+  background:linear-gradient(180deg,rgba(255,255,255,.003),var(--wanhu-surface-context-body));
+}
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel>.left-context-panel__footer{
+  background:var(--wanhu-surface-context-footer);
+  border-top-color:var(--wanhu-surface-context-rule);
+}
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel .left-context-panel__heading-icon{
+  color:#aaa9a2;
+}
+
+/* Environment is content-specialized, not material-specialized. */
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel--weather{
   --weather-mist-surface:var(--wanhu-surface-context-bg);
   --weather-mist-card:var(--wanhu-surface-context-card);
@@ -28,35 +45,12 @@
   --weather-paper:var(--wanhu-color-paper-primary);
   --weather-text:#cbc6bd;
   --weather-muted:#9d9f9a;
-  --weather-faint:#7e8381;
+  --weather-faint:#858984;
   --weather-edge:var(--wanhu-surface-context-edge);
   --weather-rule:var(--wanhu-surface-context-rule);
   --weather-gold:var(--wanhu-color-brass);
   --weather-gold-focus:var(--wanhu-color-brass-high);
   --weather-gold-soft:var(--wanhu-color-brass-soft);
-
-  background-color:var(--wanhu-surface-context-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-material-highlight),var(--wanhu-material-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
-  border-color:var(--wanhu-surface-context-edge);
-  box-shadow:var(--wanhu-surface-context-shadow);
-  backdrop-filter:var(--wanhu-surface-context-filter);
-  -webkit-backdrop-filter:var(--wanhu-surface-context-filter);
-}
-
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel--weather>header{
-  background:rgba(255,255,255,.010);
-  border-bottom-color:var(--wanhu-surface-context-rule);
-}
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel--weather .gameplay-context-panel__heading-icon{
-  color:#9b9e99;
-}
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel__footer--weather-mode{
-  background:rgba(255,255,255,.008);
-  border-top-color:var(--wanhu-surface-context-rule);
 }
 
 /* ---------------------------------------------------------------------

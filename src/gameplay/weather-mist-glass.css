@@ -18,7 +18,7 @@
 }
 .gameplay-context-panel__body--weather.is-world-follow{padding-top:10px;padding-bottom:10px}
 
-/* Presets are the only compact card-like controls inside Environment. */
+/* Presets are lightweight choices, not a row of persistent mini-cards. */
 .weather-preset-section{
   padding-top:2px;
   padding-bottom:9px;
@@ -26,42 +26,64 @@
 .weather-preset-grid{
   display:grid;
   grid-template-columns:repeat(7,minmax(0,1fr));
-  gap:4px;
+  gap:3px;
 }
 .weather-preset-card{
+  position:relative;
   min-width:0;
-  height:52px;
-  padding:5px 2px 4px;
-  border:1px solid rgba(238,233,223,.060);
-  border-radius:10px;
+  height:50px;
+  padding:5px 2px 6px;
+  border:0;
+  border-radius:8px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   gap:4px;
-  background:rgba(255,255,255,.022);
-  color:#999d99;
+  background:transparent;
+  color:#999d98;
   box-shadow:none;
   cursor:pointer;
+  transition:background .12s ease,color .12s ease;
+}
+.weather-preset-card::after{
+  content:'';
+  position:absolute;
+  left:33%;
+  right:33%;
+  bottom:2px;
+  height:2px;
+  border-radius:1px;
+  opacity:0;
+  transform:scaleX(.65);
+  background:var(--weather-gold);
+  transition:opacity .12s ease,transform .14s ease;
 }
 .weather-preset-card:hover{
-  border-color:rgba(238,233,223,.11);
-  background:rgba(255,255,255,.045);
+  background:rgba(255,255,255,.030);
   color:#d6d1c8;
 }
+.weather-preset-card:focus-visible{
+  outline:1px solid rgba(169,132,75,.34);
+  outline-offset:1px;
+}
 .weather-preset-card.is-active{
-  border-color:rgba(189,153,89,.42);
-  background:rgba(169,132,75,.085);
-  color:var(--weather-paper);
-  box-shadow:inset 0 -2px 0 rgba(169,132,75,.76);
+  background:rgba(169,132,75,.045);
+  color:var(--weather-gold-focus);
+  box-shadow:none;
+}
+.weather-preset-card.is-active::after{
+  opacity:.82;
+  transform:scaleX(1);
 }
 .weather-preset-card__icon{
   width:18px;
   height:18px;
-  stroke-width:1.75;
-  color:#a3a6a1;
+  stroke-width:1.72;
+  color:#a5a69f;
 }
-.weather-preset-card.is-active .weather-preset-card__icon{color:#d1c7b6}
+.weather-preset-card:hover .weather-preset-card__icon{color:#d6d1c8}
+.weather-preset-card.is-active .weather-preset-card__icon{color:var(--weather-gold-focus)}
 .weather-preset-card>span{
   min-width:0;
   font-size:9.6px;
@@ -69,7 +91,6 @@
   line-height:1;
   white-space:nowrap;
 }
-
 .weather-time-season-section{padding-bottom:5px}
 
 .weather-world-summary{padding-bottom:7px}
