@@ -175,7 +175,7 @@
   width:14px;
   height:14px;
   stroke-width:1.65;
-  color:#a9844d;
+  color:var(--management-topic-accent,#8f9c72);
 }
 
 .inventory-split{
@@ -265,7 +265,7 @@
 .inventory-location-list__body>button>i>u{
   display:block;
   height:100%;
-  background:#8d744c;
+  background:var(--management-topic-accent,#8f9c72);
   text-decoration:none;
 }
 

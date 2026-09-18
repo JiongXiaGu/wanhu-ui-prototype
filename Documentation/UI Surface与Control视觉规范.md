@@ -146,6 +146,19 @@ Segmented 表示 2–5 项局部互斥模式。
 - Hover 才出现 Tone；
 - 不长期占据视觉焦点。
 
+## Management Topic Header
+
+Management 是 Blocking Surface，但允许在统一 Graphite Body 上增加受控的专题身份。
+
+规则：
+
+- Root / Body / Section 仍使用统一 Smoked Graphite；
+- Topic Accent 只进入 Header Tint、顶部约 2px 状态线、Bare Icon 与图表主色；
+- 不允许整页换色，也不允许高饱和大色块标题栏；
+- Topic Accent 与交互状态分离：Selected / Focus / Primary 等状态仍使用共享 Control 规则；
+- 允许的 Topic：`overview / civic / economy / resource / governance / defense`；
+- 颜色必须低饱和，服务信息分区，不做“彩虹分类”。
+
 ## 7. Full-screen Action Footer
 
 Settings / New Game / Load / Save 使用统一 `global-space-footer` 语义：

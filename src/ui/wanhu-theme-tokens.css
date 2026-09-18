@@ -98,6 +98,41 @@
   --wanhu-pause-row-focus:rgba(169,132,75,.050);
   --wanhu-pause-focus-line:rgba(169,132,75,.90);
 
+
+  /* Management Topic Visual System: body stays neutral Smoked Graphite;
+     topic identity is restricted to Header / icon / data visualization accents. */
+  --wanhu-management-surface-bg:rgba(39,41,39,.955);
+  --wanhu-management-surface-highlight:rgba(255,249,238,.014);
+  --wanhu-management-surface-shade:rgba(8,10,9,.050);
+  --wanhu-management-surface-edge:rgba(238,233,223,.080);
+  --wanhu-management-rule:rgba(238,233,223,.060);
+  --wanhu-management-header-bg:rgba(255,249,238,.010);
+  --wanhu-management-surface-shadow:0 30px 82px rgba(3,5,4,.42),inset 0 1px 0 rgba(255,255,255,.022);
+
+  --wanhu-topic-overview-accent:#b3a07a;
+  --wanhu-topic-overview-tint:rgba(179,160,122,.105);
+  --wanhu-topic-overview-chart:rgba(179,160,122,.62);
+
+  --wanhu-topic-civic-accent:#b58d78;
+  --wanhu-topic-civic-tint:rgba(181,141,120,.105);
+  --wanhu-topic-civic-chart:rgba(181,141,120,.62);
+
+  --wanhu-topic-economy-accent:#b79255;
+  --wanhu-topic-economy-tint:rgba(183,146,85,.110);
+  --wanhu-topic-economy-chart:rgba(183,146,85,.68);
+
+  --wanhu-topic-resource-accent:#8f9c72;
+  --wanhu-topic-resource-tint:rgba(143,156,114,.100);
+  --wanhu-topic-resource-chart:rgba(143,156,114,.62);
+
+  --wanhu-topic-governance-accent:#8294a0;
+  --wanhu-topic-governance-tint:rgba(130,148,160,.100);
+  --wanhu-topic-governance-chart:rgba(130,148,160,.62);
+
+  --wanhu-topic-defense-accent:#aa6d62;
+  --wanhu-topic-defense-tint:rgba(170,109,98,.105);
+  --wanhu-topic-defense-chart:rgba(170,109,98,.64);
+
   /* Persistent information surface: Top Status. */
   --wanhu-surface-info-bg:rgba(25,31,33,.50);
   --wanhu-surface-info-edge:rgba(238,233,223,.12);

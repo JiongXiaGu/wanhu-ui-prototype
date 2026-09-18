@@ -5,12 +5,45 @@
 .management-space{
   --management-paper:var(--wanhu-color-paper-primary,#eee9df);
   --management-secondary:var(--wanhu-color-text-secondary,#d4cfc6);
-  --management-muted:var(--wanhu-color-text-muted,#999c98);
-  --management-faint:var(--wanhu-color-paper-tertiary,#818685);
+  --management-muted:var(--wanhu-color-text-muted,#999b96);
+  --management-faint:var(--wanhu-color-paper-tertiary,#8c8f89);
   --management-brass:var(--wanhu-color-brass,#a9844b);
   --management-brass-high:var(--wanhu-color-brass-high,#bd9959);
-  --management-rule:rgba(238,233,223,.055);
-  --management-rule-strong:rgba(238,233,223,.085);
+  --management-rule:var(--wanhu-management-rule,rgba(238,233,223,.060));
+  --management-rule-strong:var(--wanhu-management-surface-edge,rgba(238,233,223,.080));
+  --management-topic-accent:var(--wanhu-topic-overview-accent,#b3a07a);
+  --management-topic-tint:var(--wanhu-topic-overview-tint,rgba(179,160,122,.105));
+  --management-topic-chart:var(--wanhu-topic-overview-chart,rgba(179,160,122,.62));
+}
+.management-space--topic-overview{
+  --management-topic-accent:var(--wanhu-topic-overview-accent);
+  --management-topic-tint:var(--wanhu-topic-overview-tint);
+  --management-topic-chart:var(--wanhu-topic-overview-chart);
+}
+.management-space--topic-civic{
+  --management-topic-accent:var(--wanhu-topic-civic-accent);
+  --management-topic-tint:var(--wanhu-topic-civic-tint);
+  --management-topic-chart:var(--wanhu-topic-civic-chart);
+}
+.management-space--topic-economy{
+  --management-topic-accent:var(--wanhu-topic-economy-accent);
+  --management-topic-tint:var(--wanhu-topic-economy-tint);
+  --management-topic-chart:var(--wanhu-topic-economy-chart);
+}
+.management-space--topic-resource{
+  --management-topic-accent:var(--wanhu-topic-resource-accent);
+  --management-topic-tint:var(--wanhu-topic-resource-tint);
+  --management-topic-chart:var(--wanhu-topic-resource-chart);
+}
+.management-space--topic-governance{
+  --management-topic-accent:var(--wanhu-topic-governance-accent);
+  --management-topic-tint:var(--wanhu-topic-governance-tint);
+  --management-topic-chart:var(--wanhu-topic-governance-chart);
+}
+.management-space--topic-defense{
+  --management-topic-accent:var(--wanhu-topic-defense-accent);
+  --management-topic-tint:var(--wanhu-topic-defense-tint);
+  --management-topic-chart:var(--wanhu-topic-defense-chart);
 }
 
 .management-space__scrim{
@@ -21,6 +54,7 @@
 .management-space__panel{border-radius:16px}
 
 .management-space__header{
+  position:relative;
   height:64px;
   flex-basis:64px;
   padding:0 18px 0 22px;
@@ -29,8 +63,20 @@
   justify-content:space-between;
   gap:20px;
   border-bottom-color:var(--management-rule);
-  background:rgba(255,255,255,.007);
+  background:
+    linear-gradient(90deg,var(--management-topic-tint),transparent 68%),
+    var(--wanhu-management-header-bg,rgba(255,249,238,.010));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
+}
+.management-space__header::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:0;
+  width:46%;
+  height:2px;
+  background:linear-gradient(90deg,var(--management-topic-accent),transparent);
+  opacity:.78;
 }
 .management-space__heading{gap:10px}
 .management-space__heading-icon{
@@ -41,7 +87,7 @@
   border:0;
   border-radius:0;
   background:transparent;
-  color:#aaa59a;
+  color:var(--management-topic-accent);
 }
 .management-space__heading-icon svg{width:20px;height:20px;stroke-width:1.75}
 .management-space__heading h2{
@@ -71,7 +117,7 @@
 .management-metric+.management-metric{border-left-color:var(--management-rule)}
 .management-metric small{color:var(--management-faint);font-size:9px}
 .management-metric strong{color:var(--management-paper);font-size:21px;font-weight:590}
-.management-metric em{color:#a99468;font-size:8.5px}
+.management-metric em{color:var(--management-topic-accent);font-size:8.5px}
 
 .management-overview-grid,.management-finance-layout{height:calc(100% - 102px)}
 .management-section{border-top-color:var(--management-rule-strong);background:transparent}
@@ -89,9 +135,9 @@
 .management-task-row:hover{background:rgba(255,255,255,.022)}
 .management-task-row>span b{color:#d0cbc2;font-size:11px;font-weight:560}
 .management-task-row>span small{color:#858a87}
-.management-task-row em{color:#b2a17a}
+.management-task-row em{color:var(--management-topic-accent)}
 .management-task-row>svg{color:#6f7672}
-.management-task-row:hover>svg{color:var(--management-brass-high);transform:translateX(2px)}
+.management-task-row:hover>svg{color:var(--management-topic-accent);transform:translateX(2px)}
 
 .management-note-row{border-bottom-color:var(--management-rule)}
 .management-note-row small{color:#858a87}
@@ -101,22 +147,22 @@
   background:repeating-linear-gradient(180deg,transparent 0 41px,rgba(238,233,223,.022) 42px);
 }
 .management-space__quiet-graph span{
-  background:linear-gradient(180deg,rgba(169,132,75,.48),rgba(104,111,108,.18));
-  border-top-color:rgba(189,153,89,.42);
+  background:linear-gradient(180deg,var(--management-topic-chart),rgba(124,128,123,.16));
+  border-top-color:var(--management-topic-accent);
 }
 
-.management-finance-trend .management-section__title>span .is-income{background:var(--management-brass-high)}
-.management-finance-trend .management-section__title>span .is-expense{background:#747d79}
+.management-finance-trend .management-section__title>span .is-income{background:var(--management-topic-accent)}
+.management-finance-trend .management-section__title>span .is-expense{background:var(--management-faint)}
 .finance-chart{background:repeating-linear-gradient(180deg,transparent 0 49px,rgba(238,233,223,.024) 50px)}
 .finance-chart__bars{border-bottom-color:var(--management-rule-strong)}
-.finance-chart__bars .is-income{background:linear-gradient(180deg,rgba(189,153,89,.78),rgba(137,108,65,.34));border-top-color:rgba(207,174,105,.52)}
-.finance-chart__bars .is-expense{background:linear-gradient(180deg,rgba(116,125,121,.62),rgba(72,81,78,.30));border-top-color:rgba(140,149,145,.36)}
+.finance-chart__bars .is-income{background:linear-gradient(180deg,var(--management-topic-chart),rgba(120,106,80,.22));border-top-color:var(--management-topic-accent)}
+.finance-chart__bars .is-expense{background:linear-gradient(180deg,rgba(154,158,153,.46),rgba(91,96,92,.22));border-top-color:rgba(178,181,176,.30)}
 .finance-chart__month small{color:#7f8581}
 .finance-breakdown-row{border-bottom-color:rgba(238,233,223,.043)}
 .finance-breakdown-row span{color:#8d918e}
 .finance-breakdown-row b{color:#c9c4bb}
 .finance-breakdown-row>i{background:rgba(238,233,223,.050)}
-.finance-breakdown-row>i em{background:linear-gradient(90deg,#8f7449,var(--management-brass-high))}
+.finance-breakdown-row>i em{background:linear-gradient(90deg,rgba(255,255,255,.12),var(--management-topic-accent))}
 .finance-tax-row{border-bottom-color:rgba(238,233,223,.043)}
 .finance-tax-row b{color:#c5c1b8;font-weight:560}
 .finance-tax-row small{color:#7d8380}
@@ -139,8 +185,8 @@
 .management-space--inventory .inventory-location-detail__metrics>div{background:rgba(255,255,255,.010)}
 .management-space--inventory .inventory-location-list__body>button.is-active{background:rgba(169,132,75,.045)}
 .management-space--inventory .inventory-location-list__body>button.is-active::before,
-.management-space--inventory .inventory-content-list>div>i>em{background:var(--management-brass)}
-.management-space--inventory .inventory-route-card>svg{color:var(--management-brass)}
+.management-space--inventory .inventory-content-list>div>i>em{background:var(--management-topic-accent)}
+.management-space--inventory .inventory-route-card>svg{color:var(--management-topic-accent)}
 .management-space--inventory .inventory-village-focus{background:rgba(255,255,255,.008);border-color:var(--management-rule)}
 
 @media (prefers-reduced-motion:reduce){.management-space__panel{animation:none}}

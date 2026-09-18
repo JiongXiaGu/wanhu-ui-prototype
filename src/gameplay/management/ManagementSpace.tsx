@@ -18,7 +18,7 @@ export function ManagementSpace({ view, onClose }: ManagementSpaceProps) {
   const [taxRates, setTaxRates] = useState(DEFAULT_TAX_RATES);
 
   return (
-    <div className={`management-space management-space--${view}`}>
+    <div className={`management-space management-space--${view} management-space--topic-${panel.topic}`} data-management-topic={panel.topic}>
       <div className="management-space__scrim" aria-hidden="true" />
       <section className="management-space__panel" role="dialog" aria-label={panel.title}>
         <header className="management-space__header">

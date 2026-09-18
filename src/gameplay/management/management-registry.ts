@@ -3,6 +3,7 @@ import { Building2, Coins, Scale, ScrollText, Shield, Store, Users, Warehouse } 
 import type { ManagementView } from '../../app/ui-state';
 
 export type ManagementSection = Exclude<ManagementView, 'none'>;
+export type ManagementTopic = 'overview' | 'civic' | 'economy' | 'resource' | 'governance' | 'defense';
 
 export interface ManagementNavItem {
   id: ManagementSection;
@@ -14,6 +15,7 @@ export interface ManagementNavItem {
 export interface ManagementPanelConfig {
   title: string;
   icon: LucideIcon;
+  topic: ManagementTopic;
   status: string;
   stats: Array<{ label: string; value: string; delta?: string }>;
   rows: Array<{ label: string; value: string; description: string }>;
@@ -35,6 +37,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   city: {
     title: '城市概况',
     icon: Building2,
+    topic: 'overview',
     status: '昭平城 · 第十二年 · 秋',
     stats: [
       { label: '常住人口', value: '8,426', delta: '+37' },
@@ -57,6 +60,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   population: {
     title: '户籍民生',
     icon: Users,
+    topic: 'civic',
     status: '人口持续净流入',
     stats: [
       { label: '人口', value: '8,426', delta: '+37' },
@@ -79,6 +83,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   finance: {
     title: '财政税赋',
     icon: Coins,
+    topic: 'economy',
     status: '本月结余 +2,280',
     stats: [
       { label: '库银', value: '24,680', delta: '+10.2%' },
@@ -101,6 +106,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   inventory: {
     title: '库存仓储',
     icon: Warehouse,
+    topic: 'resource',
     status: '城市与周边供给总体稳定',
     stats: [
       { label: '商货总值', value: '12,430', delta: '+4.6%' },
@@ -123,6 +129,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   policy: {
     title: '政令政策',
     icon: ScrollText,
+    topic: 'governance',
     status: '3 项政令正在施行',
     stats: [
       { label: '生效政令', value: '3' },
@@ -145,6 +152,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   commerce: {
     title: '商贸物流',
     icon: Store,
+    topic: 'economy',
     status: '市场供应总体充足',
     stats: [
       { label: '商户', value: '164', delta: '+5' },
@@ -167,6 +175,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   governance: {
     title: '城市治理',
     icon: Scale,
+    topic: 'governance',
     status: '城区秩序良好',
     stats: [
       { label: '治安', value: '86', delta: '+2' },
@@ -189,6 +198,7 @@ export const MANAGEMENT_PANELS: Record<ManagementSection, ManagementPanelConfig>
   military: {
     title: '军务',
     icon: Shield,
+    topic: 'defense',
     status: '城防处于常备状态',
     stats: [
       { label: '驻军', value: '1,240' },
