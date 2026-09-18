@@ -136,6 +136,7 @@ await manualCard.hover();
 await manualCard.getByRole('button', { name: /^覆盖 / }).click();
 dialog = page.getByRole('dialog', { name: '覆盖存档？' });
 await dialog.waitFor();
+if (!(await page.locator('.ui-dialog').getAttribute('class'))?.includes('is-tone-warning')) throw new Error('Overwrite confirmation must use warning dialog tone.');
 await page.screenshot({ path: `${outDir}/22-dialog-overwrite-save.png` });
 await page.keyboard.press('Escape');
 
@@ -144,7 +145,7 @@ await manualCard.hover();
 await manualCard.getByRole('button', { name: /^删除 / }).click();
 dialog = page.getByRole('dialog', { name: '删除存档？' });
 await dialog.waitFor();
-if (!(await page.locator('.ui-dialog').getAttribute('class'))?.includes('is-danger')) throw new Error('Delete confirmation must use danger dialog tone.');
+if (!(await page.locator('.ui-dialog').getAttribute('class'))?.includes('is-tone-danger')) throw new Error('Delete confirmation must use danger dialog tone.');
 await page.screenshot({ path: `${outDir}/23-dialog-delete-save.png` });
 await page.keyboard.press('Escape');
 
@@ -166,7 +167,7 @@ await page.keyboard.press('Escape');
 
 // Load: delete game group confirmation.
 await page.getByRole('button', { name: '删除存档组', exact: true }).click();
-await page.locator('.ui-dialog.is-danger').waitFor();
+await page.locator('.ui-dialog.is-tone-danger').waitFor();
 await page.screenshot({ path: `${outDir}/26-dialog-delete-group.png` });
 await page.keyboard.press('Escape');
 
