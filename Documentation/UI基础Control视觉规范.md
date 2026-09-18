@@ -148,23 +148,77 @@ Settings 与运行时 Tool 的连续数值都组合共享 `NumericSliderField = 
 
 ## 8. Toggle
 
-用于布尔状态：
+用于持续布尔状态：
 
 - 开 / 关；
 - 显示 / 隐藏；
 - 启用 / 禁用某功能。
 
-短胶囊 Track 是允许的语义例外，不代表整体 UI 进入大胶囊风格。
+### 8.1 语义边界
 
-基线：
+只有“持续 Boolean Setting”使用 `ToggleSwitch`。
 
-- Track 约 38×20；
-- Thumb 约 12px；
-- Off 使用中性灰；
-- On 使用暖金；
-- Track 只弱着色，不整块高亮。
+不要把以下状态强行改成胶囊 Switch：
 
-Settings Toggle、Archive“隐藏过时存档”等应使用同一视觉 Token。
+- Toolbar 中的 Grid / Snap 等 Toggle Action：继续使用 Toggle Button；
+- 2～5 项互斥 Mode：使用 Segmented Control；
+- 页面分类、Weather Preset、Asset Card：使用 Selected / Tab / Card 状态。
+
+### 8.2 正式基线
+
+Web / Unity 都使用最普通的 Track + Thumb 结构：
+
+```text
+Off   [ ●          ]
+On    [          ● ]
+```
+
+尺寸：
+
+- Hit Area：约 `52×32`；
+- Track：约 `38×20`；
+- Thumb：约 `14×14`；
+- Track Radius：约 `10px`；
+- Thumb 使用圆形。
+
+视觉：
+
+- Off Track：中性 Smoked Graphite / Paper Gray；
+- Off Thumb：中性 Paper Gray；
+- On Track：极弱 Aged Brass Tone；
+- On Thumb：Aged Brass；
+- Hover：只提高 Border / Track 明度；
+- Focus：Track 外侧弱熟铜 Ring；
+- Pressed：Thumb 轻微 Scale；
+- Disabled：整体降低透明度，但仍能辨识当前 On / Off。
+
+禁止：
+
+- Track 中间轨道线 / Groove；
+- Thumb 内部高光纹理；
+- 复杂双层渐变；
+- Glow；
+- On / Off 常驻文字；
+- ✓ / × 图标。
+
+熟铜只表达 `On` / `Focus`，不表达“这是一个 Toggle”。
+
+### 8.3 代码所有权
+
+`Controls.tsx::ToggleSwitch` 负责结构 / Value / Disabled / Click。
+
+`ui-control-system.css::.ui-toggle` 负责所有 Toggle Material 与状态。
+
+Settings、Load、Save 等页面只允许控制：
+
+- 所在列；
+- 对齐；
+- 外部 Label；
+- 必要的 Layout Width。
+
+不得重新绘制 Track / Thumb。
+
+Settings Toggle 与 Archive“隐藏过时存档”必须使用同一共享 Primitive。
 
 ## 9. Text Input
 

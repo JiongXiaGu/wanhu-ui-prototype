@@ -61,6 +61,7 @@ jobs:
           node scripts/capture-settings-system-review.mjs
           node scripts/capture-load-system-review.mjs
           node scripts/capture-global-space-family-review.mjs
+          node scripts/capture-toggle-system-review.mjs
           node scripts/capture-review-v2.mjs
           node scripts/capture-management-review.mjs
           node scripts/capture-design-workspace-review.mjs

@@ -240,28 +240,6 @@
   cursor:pointer;
 }
 .archive-hide-outdated:hover{color:var(--wanhu-color-paper-secondary);background:rgba(255,255,255,.012)}
-.archive-hide-outdated>i{
-  position:relative;
-  width:34px;
-  height:17px;
-  border:1px solid rgba(239,233,221,.13);
-  border-radius:2px;
-  background:rgba(255,255,255,.014);
-  transition:border-color .12s ease,background .12s ease;
-}
-.archive-hide-outdated>i>em{
-  position:absolute;
-  left:3px;
-  top:3px;
-  width:9px;
-  height:9px;
-  background:#707870;
-  transition:left .15s ease,background .15s ease,box-shadow .15s ease;
-}
-.archive-hide-outdated.is-on{color:#c0aa70}
-.archive-hide-outdated.is-on>i{border-color:rgba(201,165,95,.30);background:rgba(201,165,95,.055)}
-.archive-hide-outdated.is-on>i>em{left:20px;background:#c9a55f;box-shadow:0 0 7px rgba(201,165,95,.12)}
-
 .archive-save-list{
   min-height:0;
   flex:1 1 auto;
