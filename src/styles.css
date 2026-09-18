@@ -40,7 +40,7 @@ button:focus-visible{outline:1px solid var(--gold);outline-offset:1px}
 .brand-rule{width:68px;height:1px;background:var(--gold);margin:24px 0 16px}
 .brand-block p{margin:0;color:#c2beb3;font-size:14px;letter-spacing:.16em}
 .main-menu-list{position:absolute;left:126px;bottom:136px;width:500px;z-index:3;border-top:1px solid rgba(239,233,221,.13);background:linear-gradient(90deg,rgba(18,25,21,.32),rgba(18,25,21,0))}
-.menu-row{width:100%;height:64px;padding:0 14px 0 0;border:0;border-bottom:1px solid rgba(239,233,221,.105);border-radius:0;display:grid;grid-template-columns:42px 34px 1fr 26px;align-items:center;text-align:left;background:transparent;color:#c3c1b8;cursor:pointer;transition:.16s ease}
+.menu-row{width:100%;height:64px;padding:0 14px 0 0;border:0;border-bottom:1px solid rgba(239,233,221,.105);border-radius:0;display:grid;grid-template-columns:42px 34px 1fr 26px;align-items:center;text-align:left;background:transparent;color:#c3c1b8;cursor:pointer;transition:padding var(--wanhu-motion-surface,160ms) ease,background var(--wanhu-motion-surface,160ms) ease,color var(--wanhu-motion-surface,160ms) ease}
 .menu-row:hover{padding-left:8px;background:linear-gradient(90deg,rgba(201,165,95,.11),rgba(201,165,95,.025) 72%,transparent);color:var(--paper)}
 .menu-row.is-primary{height:82px;color:var(--paper);background:linear-gradient(90deg,rgba(201,165,95,.16),rgba(201,165,95,.035) 72%,transparent);border-left:2px solid var(--gold)}
 .menu-index{font-size:9px;color:#858a81}.menu-icon{display:flex;align-items:center;color:#a0a49a}.menu-copy{display:flex;flex-direction:column;gap:5px}.menu-copy b{font-size:16px;font-weight:500;letter-spacing:.04em}.menu-copy small{font-size:10px;color:#969a91;font-weight:400}

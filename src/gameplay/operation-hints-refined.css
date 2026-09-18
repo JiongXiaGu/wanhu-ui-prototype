@@ -44,12 +44,13 @@
 .operation-hints__row{
   min-height:22px;
   height:auto;
-  display:grid;
-  grid-template-columns:96px 1fr;
+  display:flex;
   align-items:center;
-  column-gap:10px;
+  gap:10px;
   background:transparent;
 }
+.operation-hints__row>.operation-hints__binding{flex:0 0 96px}
+.operation-hints__row>.operation-hints__description{flex:1 1 auto}
 .operation-hints__binding{
   min-width:0;
   display:block;
@@ -85,11 +86,3 @@
 .operation-hints__row.is-primary .operation-hints__binding,
 .operation-hints__row.is-primary .operation-hints__binding kbd{color:#b79d62}
 .operation-hints__row.is-primary .operation-hints__description{color:#9e9d95}
-
-/* Only modal/pause states hide the rail. Scene parameter panels never alter it. */
-.gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  transform:translateY(4px);
-}

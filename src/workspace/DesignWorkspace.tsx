@@ -218,6 +218,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
   const safeContentPage = Math.min(contentPage, contentPageCount - 1);
   const pageItems = visibleItems.slice(safeContentPage * CONTENT_PAGE_SIZE, (safeContentPage + 1) * CONTENT_PAGE_SIZE);
   const pagerPages = getPagerWindow(contentPageCount, safeContentPage);
+  const contentRows = [pageItems.slice(0, 4), pageItems.slice(4, 8)].filter((row) => row.length > 0);
   const HeaderIcon = definition.icon;
   const buildingCompatibilityClass = definition.id === 'building' ? 'workspace--building' : '';
   const inspectorFacts = inspector.item ? getInspectorFacts(definition, inspector.item) : [];
@@ -285,8 +286,9 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
             onWheel={(event) => runWheelPaging(event, categoryPageCount, categoryWheel, setCategoryPage)}
           >
             <div className="workspace-primary-rail__content">
-              {categoryPageCount > 1 && (
+              {categoryPageCount > 1 ? (
                 <div className="workspace-rail-pager" aria-label={`${definition.title}分类组`}>
+                  <i className="workspace-rail-pager__track" aria-hidden="true" />
                   {Array.from({ length: categoryPageCount }, (_, index) => (
                     <button
                       key={index}
@@ -302,6 +304,8 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                     </button>
                   ))}
                 </div>
+              ) : (
+                <span className="workspace-rail-pager-marker" aria-hidden="true" />
               )}
 
               <div className="workspace-primary-rail__page" key={categoryPage}>
@@ -347,42 +351,44 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
               className="workspace-content-stage"
               onWheel={(event) => runWheelPaging(event, contentPageCount, contentWheel, setContentPage)}
             >
-              <div className="workspace-content-grid" key={`${definition.id}-${primary}-${filter}-${safeContentPage}`}>
-                {pageItems.map((item) => {
-                  const buildingCompatibilityCardClass = definition.id === 'building' ? 'building-card' : '';
-                  const inspectorOpenForItem = inspector.item?.id === item.id;
-                  return (
-                    <button
-                      type="button"
-                      className={`design-item-card ${buildingCompatibilityCardClass}`.trim()}
-                      key={item.id}
-                      data-item-id={item.id}
-                      aria-describedby={inspectorOpenForItem ? 'design-asset-inspector' : undefined}
-                      onPointerEnter={(event) => {
-                        if (event.pointerType === 'touch') return;
-                        inspector.showPointer(item, event.currentTarget);
-                      }}
-                      onPointerLeave={(event) => inspector.hidePointer(event.currentTarget)}
-                      onFocus={(event) => inspector.showFocus(item, event.currentTarget)}
-                      onBlur={(event) => inspector.hideFocus(event.currentTarget)}
-                      onClick={() => selectItem(item)}
-                    >
-                      <div className={`card-thumb card-thumb--${item.tone}`} aria-hidden="true" />
-                      <div className={`design-item-card__copy ${definition.id === 'building' ? 'building-card__copy' : ''}`}>
-                        <b>{item.name}</b>
-                        <span>{item.meta}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-
-                {pageItems.length === 0 && (
+              <div className="workspace-content-rows" key={`${definition.id}-${primary}-${filter}-${safeContentPage}`}>
+                {pageItems.length === 0 ? (
                   <div className="workspace-empty">{definition.emptyLabel}</div>
-                )}
+                ) : contentRows.map((row, rowIndex) => (
+                  <div className="workspace-content-row" key={`row-${rowIndex}`}>
+                    {row.map((item) => {
+                      const buildingCompatibilityCardClass = definition.id === 'building' ? 'building-card' : '';
+                      const inspectorOpenForItem = inspector.item?.id === item.id;
+                      return (
+                        <button
+                          type="button"
+                          className={`design-item-card ${buildingCompatibilityCardClass}`.trim()}
+                          key={item.id}
+                          data-item-id={item.id}
+                          aria-describedby={inspectorOpenForItem ? 'design-asset-inspector' : undefined}
+                          onPointerEnter={(event) => {
+                            if (event.pointerType === 'touch') return;
+                            inspector.showPointer(item, event.currentTarget);
+                          }}
+                          onPointerLeave={(event) => inspector.hidePointer(event.currentTarget)}
+                          onFocus={(event) => inspector.showFocus(item, event.currentTarget)}
+                          onBlur={(event) => inspector.hideFocus(event.currentTarget)}
+                          onClick={() => selectItem(item)}
+                        >
+                          <div className={`card-thumb card-thumb--${item.tone}`} aria-hidden="true" />
+                          <div className={`design-item-card__copy ${definition.id === 'building' ? 'building-card__copy' : ''}`}>
+                            <b>{item.name}</b>
+                            <span>{item.meta}</span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {contentPageCount > 1 && (
+            {contentPageCount > 1 ? (
               <nav className="workspace-content-pager" aria-label={`${definition.title}内容分页`}>
                 {pagerPages.map((page) => (
                   <button
@@ -399,6 +405,8 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                   </button>
                 ))}
               </nav>
+            ) : (
+              <span className="workspace-content-pager-marker" aria-hidden="true" />
             )}
           </div>
         </div>

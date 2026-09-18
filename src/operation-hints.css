@@ -49,11 +49,12 @@
 
 .operation-hints__row{
   min-height:25px;
-  display:grid;
-  grid-template-columns:minmax(88px,auto) 1fr;
+  display:flex;
   align-items:center;
   gap:8px;
 }
+.operation-hints__row>.operation-hints__binding{flex:0 0 96px}
+.operation-hints__row>.operation-hints__description{flex:1 1 auto}
 
 .operation-hints__binding{
   min-width:0;
@@ -131,11 +132,4 @@
   padding:0 4px;
   color:#898f88;
   font-size:7px;
-}
-
-.gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  transform:translateY(6px);
 }

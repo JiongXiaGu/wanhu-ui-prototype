@@ -404,7 +404,34 @@ Workspace 已确认：
 
 不要因为 CSS 写起来方便新增无法解释 Unity 落地方式的核心交互或结构。
 
-## 15. 当前 Web 是否需要返工
+## 15. Web Prototype Compatibility Profile
+
+Web Prototype 继续服务快速验证，但从现在起遵守迁移护栏：
+
+- Runtime CSS 禁止 `:has()`；
+- 新 Blur 需求不得直接新增组件级 `backdrop-filter` Owner；
+- 新复杂布局优先使用能映射 UXML Flex 的 DOM 层级；
+- 固定容量二维目录优先显式 Row / Column，而不是依赖 CSS Grid 才能成立；
+- 结构性状态线 / Pager Marker 优先真实节点；
+- Motion 必须消费共享 Motion Token；
+- Browser API 只能停留在 Web Adapter 层，不拥有业务状态；
+- Lucide SVG Component 只是 Source Icon，不是 Unity Runtime 依赖。
+
+GitHub Build 在 TypeScript / Vite Build 前执行 `npm run audit:unity`。高风险模式会直接阻止 CI；其它可迁移但需换实现的 CSS 能力作为 Migration Debt 输出，不要求为了 Web 原型全部提前删除。
+
+### 当前官方能力确认
+
+当前目标以 Unity 6 Runtime UI Toolkit 为基线：
+
+- UI Toolkit 是 retained-mode Runtime UI 系统，正式结构使用 UXML、样式使用 USS、行为使用 C#；
+- USS 支持 `opacity / translate / scale / transition-*`，因此当前 Motion Grammar 可直接映射；
+- Runtime 输入可配合 Input System Package 与 UI Toolkit Event System；
+- 大数据列表使用 `ListView` 的 make/bind/unbind 与虚拟化；
+- `VectorImage` 可作为 UI Toolkit 矢量资产类型，SVG 需要 Vector Graphics SVG Importer；项目仍将按实际性能和美术流程决定 Sprite Atlas 与 VectorImage 的使用比例。
+
+详细 Migration Gate 见 `Documentation/Unity UI Toolkit迁移准备清单.md`。
+
+## 16. 当前 Web 是否需要返工
 
 当前结论：**不需要因为迁移问题大规模返工。**
 
@@ -417,7 +444,7 @@ Workspace 已确认：
 
 纯实现差异不构成返工理由。
 
-## 16. 相关文档
+## 17. 相关文档
 
 - `Documentation/项目概览.md`
 - `Documentation/UI设计原则.md`
@@ -428,5 +455,7 @@ Workspace 已确认：
 - `Documentation/Design Workspace设计规范.md`
 - `Documentation/组件设计规范.md`
 - `Documentation/代码审查/2026-09-15-UI Toolkit迁移可行性审查.md`
+- `Documentation/代码审查/2026-09-19-UI Toolkit迁移准备审查.md`
+- `Documentation/Unity UI Toolkit迁移准备清单.md`
 - `Documentation/代码审查/2026-09-16-Surface与Control视觉系统审查.md`
 - `Documentation/工作交接.md`

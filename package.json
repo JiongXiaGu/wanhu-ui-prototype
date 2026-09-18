@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit:unity": "node scripts/audit-unity-migration.mjs",
+    "check": "npm run audit:unity && npm run build"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

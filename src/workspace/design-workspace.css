@@ -13,7 +13,9 @@
 
 .gameplay-screen .workspace--design .workspace-body{
   height:calc(100% - 50px);
-  grid-template-columns:146px minmax(0,1fr);
+}
+.gameplay-screen .workspace--design .workspace-primary-rail{
+  flex-basis:146px;
 }
 
 .gameplay-screen .workspace--design .workspace-primary-rail{
@@ -50,11 +52,8 @@
   text-overflow:ellipsis;
 }
 
-/* The pager slot never visually disappears. When there is only one category
-   group, a quiet vertical bar occupies the same anchor used by the multi-group
-   pager. Final UI Toolkit should keep this as a persistent VisualElement. */
-.gameplay-screen .workspace--design .workspace-primary-rail__content:not(:has(.workspace-rail-pager))::before{
-  content:'';
+/* Single-page marker is a real element so the same structure maps to UXML. */
+.gameplay-screen .workspace--design .workspace-rail-pager-marker{
   position:absolute;
   z-index:4;
   left:3px;
@@ -70,9 +69,8 @@
 
 .gameplay-screen .workspace--design .workspace-catalog{
   padding:4px 12px 4px 16px;
-  grid-template-rows:34px 154px 18px;
-  row-gap:4px;
-  align-content:center;
+  justify-content:center;
+  gap:4px;
 }
 
 .gameplay-screen .workspace--design .workspace-context-filter__scroll{
@@ -89,10 +87,13 @@
   padding:9px 0;
 }
 
-.gameplay-screen .workspace--design .workspace-content-grid{
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  grid-template-rows:repeat(2,64px);
-  gap:8px 10px;
+.gameplay-screen .workspace--design .workspace-content-rows{gap:8px}
+.gameplay-screen .workspace--design .workspace-content-row{
+  height:64px;
+  gap:10px;
+}
+.gameplay-screen .workspace--design .workspace-content-row>*{
+  flex-basis:calc((100% - 30px)/4);
 }
 
 .design-item-card{
@@ -100,8 +101,7 @@
   height:64px;
   min-width:0;
   padding:0 12px 0 0;
-  display:grid;
-  grid-template-columns:64px minmax(0,1fr);
+  display:flex;
   align-items:center;
   gap:14px;
   overflow:hidden;
@@ -163,6 +163,7 @@
 
 .design-item-card__copy{
   min-width:0;
+  flex:1 1 auto;
   align-self:stretch;
   display:flex;
   flex-direction:column;
@@ -201,15 +202,12 @@
   height:18px;
 }
 
-/* Content pager also keeps a stable slot. Single-page results show a muted
-   horizontal dash rather than removing the footer anchor. */
-.gameplay-screen .workspace--design .workspace-catalog:not(:has(.workspace-content-pager))::after{
-  content:'';
-  grid-row:3;
-  justify-self:center;
-  align-self:center;
+/* Single-page footer marker is also a real element for UXML parity. */
+.gameplay-screen .workspace--design .workspace-content-pager-marker{
   width:18px;
   height:3px;
+  flex:0 0 3px;
+  align-self:center;
   border-radius:2px;
   background:#858984;
   opacity:.52;
@@ -228,8 +226,8 @@
 
 @media (max-width:1500px){
   .gameplay-screen .workspace--design{width:1160px;height:280px}
-  .gameplay-screen .workspace--design .workspace-body{grid-template-columns:140px minmax(0,1fr)}
-  .design-item-card{height:64px;grid-template-columns:64px minmax(0,1fr);gap:12px;padding-right:10px}
+  .gameplay-screen .workspace--design .workspace-primary-rail{flex-basis:140px}
+  .design-item-card{height:64px;gap:12px;padding-right:10px}
   .design-item-card .card-thumb{width:64px;height:64px}
   .design-item-card b{font-size:13.8px}
   .design-item-card span{font-size:10.2px}
