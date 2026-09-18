@@ -9,6 +9,7 @@
 - 删除旧绿黑 Gradient 与顶部装饰金线；
 - Dialog Radius 统一为 12px，Button / Input 使用当前 10px Control 语言；
 - Input Default 中性，Focus 才出现弱熟铜；
+- Text / Number Input 已直接迁入共享 `TextInput`，删除 Dialog Input 的兼容桥接皮肤；
 - Confirm / Text / Number / Binding / Timed Confirmation 继续共享唯一 `DialogFrame`；
 - Toast 同步收束为中性 Smoked Graphite 家族；
 - 新增 Dialog Token，并由 `wanhu-surface-system.css` 正式持有材质；

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Check, CircleX, Info, Trash2, TriangleAlert } from 'lucide-react';
+import { TextInput } from '../Controls';
 
 type DialogTone = 'primary' | 'danger';
 type NotificationTone = 'neutral' | 'success' | 'warning' | 'error';
@@ -132,7 +133,7 @@ function InputDialogView({request,onDismiss}:{request:InputDialogRequest;onDismi
   const canConfirm=!error;
   useEffect(()=>{inputRef.current?.focus();inputRef.current?.select()},[request.id]);
   useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,canConfirm]);
-  return <DialogFrame title={request.title} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed);onDismiss()}}}>{request.confirmText}</button></>}><label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><input ref={inputRef} value={value} inputMode={request.inputMode??'text'} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label></DialogFrame>;
+  return <DialogFrame title={request.title} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed);onDismiss()}}}>{request.confirmText}</button></>}><label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={value} inputMode={request.inputMode??'text'} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label></DialogFrame>;
 }
 
 function NumberDialogView({request,onDismiss}:{request:NumberDialogRequest;onDismiss:()=>void}){
@@ -150,7 +151,7 @@ function NumberDialogView({request,onDismiss}:{request:NumberDialogRequest;onDis
   const commit=()=>{if(!canConfirm)return;request.onConfirm(Number(numeric.toFixed(request.decimals)));onDismiss()};
   useEffect(()=>{inputRef.current?.focus();inputRef.current?.select()},[request.id]);
   useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();commit()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,numeric,canConfirm]);
-  return <DialogFrame title={request.title} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={commit}>{request.confirmText}</button></>}><label className={`ui-dialog-input ui-dialog-number-input ${error?'is-invalid':''}`}><span>{request.label}</span><input ref={inputRef} value={draft} inputMode="decimal" aria-invalid={Boolean(error)} onChange={event=>setDraft(event.target.value)}/><small className={error?'is-error':''}>{error||helper}</small></label></DialogFrame>;
+  return <DialogFrame title={request.title} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={commit}>{request.confirmText}</button></>}><label className={`ui-dialog-input ui-dialog-number-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={draft} inputMode="decimal" aria-invalid={Boolean(error)} onChange={event=>setDraft(event.target.value)}/><small className={error?'is-error':''}>{error||helper}</small></label></DialogFrame>;
 }
 
 function formatCapturedBinding(event:KeyboardEvent){

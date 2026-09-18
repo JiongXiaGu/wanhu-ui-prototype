@@ -102,28 +102,11 @@
   color:var(--wanhu-color-paper-tertiary,#8c8f89);
   font-size:10px;
 }
-.ui-dialog-input input{
+.ui-dialog-input>.ui-text-input{
   box-sizing:border-box;
   width:100%;
   height:44px;
-  padding:0 13px;
-  border:1px solid var(--ui-field-border,rgba(239,233,221,.105));
-  border-radius:var(--ui-field-radius,10px);
-  outline:0;
-  background:var(--ui-field-surface,rgba(255,255,255,.014));
-  color:var(--wanhu-color-paper-primary,#eee9df);
-  font:inherit;
-  font-size:12px;
-  transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;
-}
-.ui-dialog-input input:hover{
-  border-color:var(--ui-field-border-hover,rgba(239,233,221,.18));
-  background:var(--ui-field-surface-hover,rgba(255,255,255,.030));
-}
-.ui-dialog-input input:focus{
-  border-color:var(--ui-field-border-focus,rgba(201,165,95,.38));
-  background:var(--ui-field-surface-focus,rgba(201,165,95,.028));
-  box-shadow:0 0 0 3px rgba(169,132,75,.055);
+  padding-inline:13px;
 }
 .ui-dialog-input>small{
   min-height:14px;
@@ -132,7 +115,7 @@
   line-height:1.45;
 }
 .ui-dialog-input>small.is-error{color:#cf8e82}
-.ui-dialog-input.is-invalid input{
+.ui-dialog-input.is-invalid>.ui-text-input{
   border-color:rgba(152,84,71,.42);
   background:rgba(152,84,71,.035);
 }

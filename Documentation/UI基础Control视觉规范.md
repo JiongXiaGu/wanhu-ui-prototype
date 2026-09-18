@@ -356,11 +356,12 @@ UIControls.uss
 - Road Placement Numeric Control 共用共享 Slider；
 - Camera / Weather 的 Runtime Parameter 继续使用同一共享 Slider；
 - Settings Slider / Select / Toggle 已直接迁入共享 `SliderControl / SelectControl / ToggleSwitch`；Settings 页面 CSS 只保留行布局、控件宽度与密度，不再拥有独立 Track / Thumb / Toggle / Popup 交互逻辑；
-- Archive Toggle、Dialog Input、Archive Inline Input、Workspace Search 已开始消费共享 Field Token。
+- Dialog Text / Number Input 已直接使用共享 `TextInput`；
+- Archive Toggle 已直接使用共享 Toggle，Archive Inline Input 继续消费共享 Field Token；
+- Design Workspace Search 已删除。
 
 下一阶段：
 
-- Dialog Text Input 改为直接使用 `TextInput`；
 - 清理 `tool-overlay.css` 中不再运行的旧 `.parameter-row / .segment / .track`；
 - 清理 Settings / Archive 中被共享 Control 完全替代的旧视觉声明。
 
