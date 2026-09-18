@@ -42,7 +42,7 @@ else                      → Gameplay
 - 右上：System Menu + 未来 Notification / Objective；
 - 左下：Context Surface；
 - 中下：Main Dock / Workspace / Tool Dock；
-- 右下：Operation Hints + World Utility Toolbar。
+- 右下：Operation Hints + Context Utility Toolbar；World / Building / Road / Terrain 根据当前 Tool Context 换内容。
 
 外围 HUD 默认 `16px` Safe Edge；同级 Surface 常用约 `12px` 间距。几何 Token 由 `src/gameplay/gameplay-hud-layout.css` 集中维护。
 
@@ -380,6 +380,46 @@ Road：
 - 完成 / 取消。
 
 Grid / Undo / Redo 不复制进 Tool。
+
+## 11. Tool Space
+
+Tool 高于 Workspace / Management，打开后：
+
+- Top Persistent Status Row 保留；
+- Control Tray 收起；
+- Main Dock / Workspace 收起；
+- 左下使用共享 Left Context Shell；
+- 中下使用共享 ToolActionBar；
+- 右下 Context Utility 根据 Tool Definition Rebind；
+- Operation Hints 跟随 Tool / Mode；
+- Compass 保留。
+
+当前 Tool：
+
+- Building Placement；
+- Road Placement；
+- Terrain Edit World Tool。
+
+### 11.1 ToolOrigin
+
+每次进入 Tool 都记录来源：
+
+- `gameplay`；
+- `design-workspace(category)`。
+
+退出时只恢复 Origin，不根据 Tool 类型猜目标空间。
+
+### 11.2 Terrain Edit
+
+Terrain Edit 从 World Utility 的“地形编辑”直接进入，不需要选择资产。
+
+模式：
+
+`抬高 / 降低 / 整平 / 平滑 / 坡面`
+
+UI 只负责参数与状态；真实 Terrain Raycast / Brush / Height Modify / Undo Command / Brush Ring 属于 Unity World Tool Controller。
+
+详细规范：`Documentation/地形编辑工具设计规范.md`。
 
 ## 12. World Utility
 

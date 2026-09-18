@@ -24,10 +24,11 @@ Placement Tool 固定分成三类 UI：
 
 共享组件：
 
-- `src/tools/placement/PlacementActionBar.tsx`
-- `src/tools/placement/placement-action-bar.css`
+- `src/tools/ToolActionBar.tsx`：所有 Tool 的共享模式 / 快捷 / Commit Shell；
+- `src/tools/placement/PlacementActionBar.tsx`：Placement 适配层，固定提供完成 + 取消；
+- `src/tools/placement/placement-action-bar.css`：共享 M 档 Geometry / State。
 
-Placement Action Bar 是 `Bottom Command Visual System` 的 **M 档**。完整材质、状态与 Unity UI Toolkit 映射规则见 `Documentation/Bottom Command Visual System设计规范.md`。
+Placement Action Bar 是共享 `ToolActionBar` 的 Placement Adapter，并属于 `Bottom Command Visual System` 的 **M 档**。完整材质、状态与 Unity UI Toolkit 映射规则见 `Documentation/Bottom Command Visual System设计规范.md`。
 
 稳定结构：
 
@@ -98,7 +99,7 @@ Action Bar 当前包含两组 Mode：
 
 旋转 / 镜像不改变当前调整对象。例如处于屋顶调整时执行旋转，执行后仍保持屋顶调整。
 
-完成 / 取消 Building Placement 后返回 `设计 → 建筑` Design Workspace。
+完成 / 取消 Building Placement 后由 `ToolOrigin` 返回进入前的 Design Workspace；当前正常路径为 `设计 → 建筑`。
 
 ## 4. Road Placement
 
@@ -126,7 +127,7 @@ Action Bar 只有一个道路绘制 ModeGroup：
 
 后续如果真实道路系统需要，可以继续加入“撤回当前控制点 / 翻转道路侧 / 高程方向”等 One-shot Action，但不要把低频配置继续堆进中下 Action Bar。
 
-完成 / 取消 Road Placement 后返回 `设计 → 道路` Design Workspace。
+完成 / 取消 Road Placement 后由 `ToolOrigin` 返回进入前的 Design Workspace；当前正常路径为 `设计 → 道路`。
 
 ## 5. Placement Context 与 Left Context System
 
@@ -295,3 +296,32 @@ Placement Tool 相关改动至少检查：
 - Grid Snap / Grid Visible / Undo / Redo 跨 Tool Context 保留；
 - Placement / Context Utility 的 Surface、按钮 Hover、Active Tone、状态线方向与分隔节奏保持同一视觉家族；
 - 完成后返回对应 Design Workspace。
+
+
+## 11. World Tool 与 ToolOrigin
+
+Placement Tool 不是 Tool Space 的唯一来源。地形编辑属于 **World Tool**：
+
+```text
+Gameplay / Workspace
+  ↓ World Utility
+Terrain Edit Tool
+```
+
+因此 Tool 退出不能继续通过 `if road else building` 猜返回位置。
+
+正式状态：
+
+```text
+ToolOrigin
+├ gameplay
+└ design-workspace(category)
+```
+
+进入任何 Tool 时先捕获 Origin，`EXIT_TOOL` 只消费 Origin 恢复空间。
+
+- Building / Road：通常来自 Design Workspace；
+- Terrain Edit：通常来自 Gameplay；如果在 Workspace 中点击右下地形编辑，则退出后恢复原 Workspace；
+- Future Bridge / Wall / Platform / Shortcut：统一复用同一 Origin 机制。
+
+Terrain Edit 的专用规则见 `Documentation/地形编辑工具设计规范.md`。

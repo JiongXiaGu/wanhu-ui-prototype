@@ -48,12 +48,12 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   }
   const transitionFrom = transitionFromRef.current;
   const enteringFromTool = transitionFrom === 'tool' && space !== 'tool';
-  const enteringToolFromWorkspace = transitionFrom === 'workspace' && space === 'tool';
+  const enteringTool = transitionFrom !== 'tool' && space === 'tool';
 
   const mainDockVisible = space === 'gameplay' || space === 'workspace';
   const mainDockPresence = usePresence(mainDockVisible, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
   const workspacePresence = usePresence(designWorkspace !== null, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
-  const toolPresence = usePresence(toolOpen && !state.paused, { enterDelayMs: enteringToolFromWorkspace ? MOTION_MS.fast : 0 });
+  const toolPresence = usePresence(toolOpen && !state.paused, { enterDelayMs: enteringTool ? MOTION_MS.fast : 0 });
   const contextPresence = usePresence(showContextPanel);
   const managementPresence = usePresence(space === 'management' && state.management !== 'none', { exitMs: MOTION_MS.fast });
   const pausePresence = usePresence(state.paused, { exitMs: MOTION_MS.fast });

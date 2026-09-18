@@ -148,3 +148,37 @@ npm run build
 Audit Failure 必须先修复。
 
 Audit Warning 属于已知可迁移债务，不要求阻塞 Web UI 设计，但不得无理由持续增长。
+
+
+## 10. Terrain Edit Vertical Slice
+
+Terrain Edit 是迁移前非常有价值的第二类 Tool 验证，因为它不是 Asset Placement。
+
+Web → Unity 映射：
+
+```text
+GameplayUiState.tool = terrain-edit
+  → TerrainToolController
+
+TerrainEditTool Left Context
+  → TerrainContext.uxml
+
+ToolActionBar
+  → Shared ToolActionBar.uxml / USS
+
+Terrain Context Utility Definition
+  → UtilityToolbarHost.Rebind(Terrain)
+
+Terrain Brush Preview DOM
+  → 不迁 UI Toolkit
+  → TerrainBrushRenderer / Decal / Procedural Mesh / DebugDraw
+```
+
+约束：
+
+- UI Toolkit 不负责真实 Terrain 修改；
+- Brush Ring / Falloff / Invalid Area 是 World Visualization；
+- Terrain UI 参数只绑定 Controller 数据；
+- Undo / Redo 进入正式 Terrain Command History；
+- ToolOrigin 由 UI State / Tool Controller 持有，不通过 VisualTree 推断；
+- `BuildingTerrainMode` 与 `TerrainEditMode` 必须保持不同类型，避免建筑基底处理和世界地形编辑混淆。
