@@ -37,9 +37,11 @@ Elevated Dialog
 
 1920×1080 基线：
 
-- Width 约 `432px`；
+- Width 约 `448px`；
 - Radius `18px`；
-- Blocking Smoked Graphite；
+- Clean Blocking Smoked Graphite；
+- 面板本体不使用可见颗粒 Noise，也不使用自身 Backdrop Blur；
+- 世界层负责 Dim / Blur，面板通过稳定 Tint / Edge / Shadow 保证可读性；
 - Paper Primary / Secondary；
 - Aged Brass 只表达 Focus；
 - 不使用旧横向渐隐 strip；
@@ -75,10 +77,12 @@ PauseLayer.tsx
 
 规则：
 
+- Header 是独立的轻结构层，使用极弱中性 Graphite Lift + 底部 Rule；
 - 标题约 `27px`；
 - 使用普通 UI 字体体系，不突然切 Serif；
 - Meta 使用 Muted Text；
 - 左对齐；
+- Header 不染金、不使用高饱和色；
 - 不加 Icon Chip、梁线、纹样、英文眉题。
 
 ## 5. Command Hierarchy
@@ -111,7 +115,8 @@ PauseLayer.tsx
 Default：
 
 - Transparent；
-- Paper Secondary。
+- Paper Secondary；
+- Command Row 有稳定的 50px Hit Area，但默认不绘制 Card。
 
 Hover：
 
@@ -176,32 +181,28 @@ PauseRoot
 ```
 
 - Scene Dim / Blur：共享 URP Fullscreen Pass；
-- Surface Tint / Edge / Noise：共享 Blocking USS；
+- Pause Panel 本体：不再二次 Blur；
+- Surface Tint / Edge / Shadow：共享 Blocking USS；
 - Focus：C# / Input System 只切换状态 Class 或真实 Focus；
 - Arrow / Home / End：输入导航逻辑；
 - Esc：按 Pause View 状态回退；
 - 不给每个面板创建单独 RenderTexture Blur。
 
-## 12. Review 门槛
+## 12. 验收门槛
 
-至少真实运行检查：
+默认检查：
 
-- `pause-day`；
-- `pause-night`；
-- `pause-save`；
-- `pause-settings`；
-- `pause-return-main-menu-dialog`。
-
-同时检查：
-
-- 432px / 18px Geometry；
+- Build 必须通过；
+- 448px / 18px Geometry；
+- 世界层保留 Dim / Blur；
+- Pause Panel 本体没有可见颗粒 Noise，也不使用自身 Backdrop Blur；
+- Header 与 Command Body 有轻结构分层；
 - 无旧 `pause-footer` / Esc 提示；
 - 无旧 `90deg` 横向渐隐材质；
 - 3+1 命令结构；
 - `继续游戏` 没有永久 Primary Skin；
 - 默认 Focus 正确；
 - Arrow Up / Down / Home / End 正确；
-- Shared Noise / Blocking Material 存在；
 - 日夜保持同一视觉语言；
 - Pause → Save / Settings → Pause 的 Esc 路径正确；
 - 返回主菜单确认由共享 Dialog System 提供。

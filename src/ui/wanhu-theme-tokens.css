@@ -84,18 +84,19 @@
   --wanhu-global-space-item-selected:rgba(169,132,75,.075);
 
   /* Pause Blocking Space: same graphite family, tuned for a frozen-world overlay. */
-  --wanhu-pause-dim:rgba(12,14,13,.48);
-  --wanhu-pause-vignette:rgba(6,8,7,.16);
-  --wanhu-pause-scene-filter:blur(9px) brightness(.68) saturate(.76);
-  --wanhu-pause-surface-bg:rgba(34,36,34,.94);
-  --wanhu-pause-surface-highlight:rgba(255,249,238,.018);
-  --wanhu-pause-surface-shade:rgba(8,10,9,.060);
-  --wanhu-pause-surface-edge:rgba(238,233,223,.070);
-  --wanhu-pause-surface-shadow:0 26px 72px rgba(4,6,5,.34),inset 0 1px 0 rgba(255,255,255,.024);
-  --wanhu-pause-surface-filter:blur(16px) saturate(.82) brightness(.99);
-  --wanhu-pause-row-hover:rgba(255,255,255,.030);
-  --wanhu-pause-row-focus:rgba(169,132,75,.052);
-  --wanhu-pause-focus-line:rgba(169,132,75,.92);
+  --wanhu-pause-dim:rgba(12,14,13,.44);
+  --wanhu-pause-vignette:rgba(6,8,7,.145);
+  --wanhu-pause-scene-filter:blur(8px) brightness(.70) saturate(.80);
+  --wanhu-pause-surface-bg:rgba(40,42,39,.955);
+  --wanhu-pause-surface-highlight:rgba(255,249,238,.016);
+  --wanhu-pause-surface-shade:rgba(8,10,9,.048);
+  --wanhu-pause-surface-edge:rgba(238,233,223,.082);
+  --wanhu-pause-surface-shadow:0 30px 82px rgba(4,6,5,.40),inset 0 1px 0 rgba(255,255,255,.024);
+  --wanhu-pause-header-bg:rgba(255,249,238,.014);
+  --wanhu-pause-header-rule:rgba(238,233,223,.060);
+  --wanhu-pause-row-hover:rgba(255,255,255,.034);
+  --wanhu-pause-row-focus:rgba(169,132,75,.050);
+  --wanhu-pause-focus-line:rgba(169,132,75,.90);
 
   /* Persistent information surface: Top Status. */
   --wanhu-surface-info-bg:rgba(25,31,33,.50);

@@ -21,7 +21,7 @@
   position:absolute;
   left:50%;
   top:50%;
-  width:432px;
+  width:448px;
   box-sizing:border-box;
   overflow:hidden;
   padding:0;
@@ -33,12 +33,13 @@
 }
 
 .pause-heading{
-  padding:26px 24px 18px;
+  padding:24px 28px 20px;
   display:flex;
   flex-direction:column;
   align-items:flex-start;
   gap:7px;
   text-align:left;
+  border-bottom:1px solid transparent;
 }
 .pause-heading h2{
   margin:0;
@@ -57,7 +58,7 @@
 }
 
 .pause-command-list{
-  padding:0 14px 16px;
+  padding:10px 14px 16px;
   display:flex;
   flex-direction:column;
 }
@@ -69,8 +70,8 @@
 .pause-command-list button{
   position:relative;
   width:100%;
-  height:48px;
-  padding:0 18px;
+  height:50px;
+  padding:0 20px;
   display:flex;
   align-items:center;
   border:0;
@@ -100,13 +101,13 @@
   transform:scaleY(1);
 }
 .pause-command-list button>b{
-  font-size:12.5px;
+  font-size:13px;
   font-weight:560;
   letter-spacing:.026em;
 }
 .pause-command-divider{
   height:1px;
-  margin:9px 12px;
+  margin:10px 20px;
 }
 
 .pause-secondary-surface{

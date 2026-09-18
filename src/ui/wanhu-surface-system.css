@@ -139,15 +139,15 @@
 }
 .gameplay-screen .pause-command-surface{
   background-color:var(--wanhu-pause-surface-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-pause-surface-highlight),var(--wanhu-pause-surface-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-image:linear-gradient(180deg,var(--wanhu-pause-surface-highlight),var(--wanhu-pause-surface-shade));
   border-color:var(--wanhu-pause-surface-edge);
   box-shadow:var(--wanhu-pause-surface-shadow);
-  backdrop-filter:var(--wanhu-pause-surface-filter);
-  -webkit-backdrop-filter:var(--wanhu-pause-surface-filter);
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+}
+.gameplay-screen .pause-heading{
+  background:linear-gradient(180deg,var(--wanhu-pause-header-bg),rgba(255,255,255,.003));
+  border-bottom-color:var(--wanhu-pause-header-rule);
 }
 .gameplay-screen .pause-heading h2{
   color:var(--wanhu-color-paper-primary);
