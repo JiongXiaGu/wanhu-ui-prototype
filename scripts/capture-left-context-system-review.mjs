@@ -41,7 +41,7 @@ async function assertNumericRowsFillContext(panel, label) {
     if ((await field.count()) !== 1) throw new Error(`${label} parameter row ${index} must contain exactly one NumericSliderField.`);
 
     const slider = field.locator('.ui-slider');
-    const value = field.locator('.ui-value-field');
+    const value = field.locator('.ui-value-button');
     const [rowBox, fieldBox, sliderBox, valueBox] = await Promise.all([
       row.boundingBox(),
       field.boundingBox(),

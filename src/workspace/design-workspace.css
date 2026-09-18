@@ -84,11 +84,6 @@
   height:28px;
 }
 
-.gameplay-screen .workspace--design .workspace-search__trigger,
-.gameplay-screen .workspace--design .workspace-search__field{
-  height:28px;
-}
-
 .gameplay-screen .workspace--design .workspace-content-stage{
   height:154px;
   padding:9px 0;

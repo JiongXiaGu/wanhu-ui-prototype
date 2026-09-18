@@ -120,17 +120,25 @@ Context Geometry 规则：
 
 不要把 Stepper 做成明显的 Primary Button。
 
-## 6. Value Field
+## 6. Value Button
 
-默认只读显示：
+Numeric Slider 最右侧是共享 `ValueButton`，不是静态 Output，也不是页面内 TextField：
 
-- 8px Radius；
-- Tabular Number；
-- 与 Stepper 同高度；
-- 右对齐数值；
-- Tool Parameter Panel 如果空间紧，可以用无边框透明变体。
+```text
+Label │ - │ Slider │ + │ ValueButton
+                         ↓
+                   NumberInputDialog
+```
 
-以后确实需要直接输入数字时，再增加 editable 变体；不要默认让所有 Value 都变成文本输入框。
+- 与 Stepper 同高，文字水平 / 垂直居中；
+- 8px Radius，Tabular Number；
+- Default 低存在感，Hover / Focus 明确可点击；
+- Disabled 不允许打开 Dialog；
+- 页面不得重新做成 Borderless Output。
+
+Slider 与 `- / +` 负责快速调整；ValueButton + Number Dialog 负责精确输入。Number Dialog 统一处理 Min / Max / Step / Precision / Formatter / Enter / Esc。
+
+最终 Unity：`WanhuNumericSliderField` 组合 `DecreaseButton / Slider / IncreaseButton / ValueButton`，ValueButton 调用 Global Dialog Host。
 
 ## 7. Select / Dropdown
 
@@ -378,7 +386,7 @@ NumericSliderField
 ├ Minus Stepper
 ├ SliderControl
 ├ Plus Stepper
-└ ValueField
+└ ValueButton → NumberInputDialog
 
 InputBindingField
 ├ Default / Empty
@@ -389,3 +397,18 @@ InputBindingField
 ```
 
 Settings、Camera、Weather、Placement 等页面不得重新绘制这些 Control 的 Border / Surface / Focus / Brass 状态，只允许设置尺寸与布局。
+
+
+## 16. 玩家输入规则
+
+需要提交并保存的玩家输入统一进入 Elevated Dialog：
+
+- 存档 / 存档组命名 → TextInputDialog；
+- 城市名称 → TextInputDialog；
+- 随机种子 → TextInputDialog + Numeric Validation；
+- Numeric Slider 精确值 → NumberInputDialog；
+- 按键绑定 → BindingCaptureDialog。
+
+业务页面只展示当前值和可点击 Value / Binding Button，不长期暴露文本输入框。
+
+Design Workspace Search 已取消并删除。

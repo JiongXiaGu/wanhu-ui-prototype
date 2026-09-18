@@ -58,7 +58,6 @@ export interface DesignWorkspaceDefinition {
   title: string;
   icon: LucideIcon;
   railLabel: string;
-  searchLabel: string;
   emptyLabel: string;
   primaryCategories: readonly DesignWorkspaceRailItem[];
   contextFilters: readonly DesignWorkspaceFilter[];
@@ -70,7 +69,6 @@ const road: DesignWorkspaceDefinition = {
   title: '道路',
   icon: Route,
   railLabel: '道路类型',
-  searchLabel: '搜索道路',
   emptyLabel: '没有符合条件的道路',
   primaryCategories: [
     { key: 'all', label: '全部道路', icon: Grid2X2 },
@@ -104,7 +102,6 @@ const bridge: DesignWorkspaceDefinition = {
   title: '桥梁',
   icon: Bridge,
   railLabel: '桥梁类型',
-  searchLabel: '搜索桥梁',
   emptyLabel: '没有符合条件的桥梁',
   primaryCategories: [
     { key: 'all', label: '全部桥梁', icon: Grid2X2 },
@@ -138,7 +135,6 @@ const building: DesignWorkspaceDefinition = {
   title: '建筑',
   icon: Building2,
   railLabel: '建筑形制',
-  searchLabel: '搜索建筑',
   emptyLabel: '没有符合条件的建筑',
   primaryCategories: [
     { key: 'all', label: '全部建筑', icon: Grid2X2 },
@@ -191,7 +187,6 @@ const platform: DesignWorkspaceDefinition = {
   title: '台基',
   icon: Layers3,
   railLabel: '台基类型',
-  searchLabel: '搜索台基',
   emptyLabel: '没有符合条件的台基',
   primaryCategories: [
     { key: 'all', label: '全部台基', icon: Grid2X2 },
@@ -226,7 +221,6 @@ const cityWall: DesignWorkspaceDefinition = {
   title: '城墙',
   icon: Castle,
   railLabel: '城墙构件',
-  searchLabel: '搜索城墙',
   emptyLabel: '没有符合条件的城墙',
   primaryCategories: [
     { key: 'all', label: '全部城墙', icon: Grid2X2 },
@@ -260,7 +254,6 @@ const wall: DesignWorkspaceDefinition = {
   title: '围墙',
   icon: Fence,
   railLabel: '围墙类型',
-  searchLabel: '搜索围墙',
   emptyLabel: '没有符合条件的围墙',
   primaryCategories: [
     { key: 'all', label: '全部围墙', icon: Grid2X2 },
@@ -294,7 +287,6 @@ const decoration: DesignWorkspaceDefinition = {
   title: '装饰',
   icon: Sparkles,
   railLabel: '装饰类型',
-  searchLabel: '搜索装饰',
   emptyLabel: '没有符合条件的装饰',
   primaryCategories: [
     { key: 'all', label: '全部装饰', icon: Grid2X2 },
@@ -329,7 +321,6 @@ const tree: DesignWorkspaceDefinition = {
   title: '树木',
   icon: Trees,
   railLabel: '植物类型',
-  searchLabel: '搜索树木',
   emptyLabel: '没有符合条件的树木',
   primaryCategories: [
     { key: 'all', label: '全部树木', icon: Grid2X2 },

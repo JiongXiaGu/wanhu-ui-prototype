@@ -244,9 +244,10 @@ const focusedBridgeCard = page.locator('.design-item-card').first();
 await focusedBridgeCard.focus();
 await page.waitForSelector('.asset-inspector-popover');
 if ((await focusedBridgeCard.getAttribute('aria-describedby')) !== 'design-asset-inspector') throw new Error('Focused asset button should reference the shared Inspector.');
-await page.locator('.workspace-search__trigger').focus();
+await page.locator('.workspace-context-filter__scroll button').first().focus();
 await page.waitForTimeout(140);
 if ((await page.locator('.asset-inspector-popover').count()) !== 0) throw new Error('Asset Inspector must dismiss when keyboard focus leaves asset buttons.');
+if ((await page.locator('.workspace-search, .workspace-search__trigger, .workspace-search__field').count()) !== 0) throw new Error('Design Workspace search has been removed from the formal prototype.');
 
 // Building keeps the same shared framework but its content item enters the dedicated placement Tool.
 await categoryRow.getByRole('button', { name: '建筑', exact: true }).click();

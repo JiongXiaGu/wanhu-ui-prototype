@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type WheelEvent } from 'react';
-import { Search, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import {
   AssetInspectorPopover,
   useAssetInspector,
@@ -193,8 +193,6 @@ export function DesignWorkspace({ definition, onClose, onSelectItem }: DesignWor
   const [filter, setFilter] = useState(defaultFilter);
   const [categoryPage, setCategoryPage] = useState(0);
   const [contentPage, setContentPage] = useState(0);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const categoryWheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
   const contentWheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
   const inspector = useAssetInspector<DesignWorkspaceItem>({ openDelay: 280, closeDelay: 90 });
@@ -204,17 +202,14 @@ export function DesignWorkspace({ definition, onClose, onSelectItem }: DesignWor
     categoryPage * CATEGORY_PAGE_SIZE,
     (categoryPage + 1) * CATEGORY_PAGE_SIZE,
   );
-  const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
 
   const visibleItems = useMemo(
     () => definition.items.filter((item) => {
       const matchesCategory = primary === defaultPrimary || item.primary === primary;
       const matchesFilter = filter === defaultFilter || item.filters.includes(filter);
-      const matchesSearch = !normalizedQuery
-        || `${item.name} ${item.meta} ${item.detail}`.toLocaleLowerCase().includes(normalizedQuery);
-      return matchesCategory && matchesFilter && matchesSearch;
+      return matchesCategory && matchesFilter;
     }),
-    [defaultFilter, defaultPrimary, definition.items, filter, normalizedQuery, primary],
+    [defaultFilter, defaultPrimary, definition.items, filter, primary],
   );
 
   const contentPageCount = Math.max(1, Math.ceil(visibleItems.length / CONTENT_PAGE_SIZE));
@@ -262,17 +257,6 @@ export function DesignWorkspace({ definition, onClose, onSelectItem }: DesignWor
 
   function selectFilter(next: string) {
     setFilter(next);
-    resetContentPosition();
-  }
-
-  function updateSearch(next: string) {
-    setSearchQuery(next);
-    resetContentPosition();
-  }
-
-  function closeSearch() {
-    setSearchOpen(false);
-    setSearchQuery('');
     resetContentPosition();
   }
 
@@ -355,41 +339,13 @@ export function DesignWorkspace({ definition, onClose, onSelectItem }: DesignWor
                 ))}
               </div>
 
-              <div className={`workspace-search ${searchOpen ? 'is-open' : ''}`}>
-                {!searchOpen ? (
-                  <button
-                    type="button"
-                    className="workspace-search__trigger"
-                    onClick={() => setSearchOpen(true)}
-                    aria-label={definition.searchLabel}
-                  >
-                    <Search size={14} />
-                    <span>搜索</span>
-                  </button>
-                ) : (
-                  <div className="workspace-search__field">
-                    <Search size={14} aria-hidden="true" />
-                    <input
-                      autoFocus
-                      value={searchQuery}
-                      placeholder={`${definition.searchLabel}…`}
-                      aria-label={definition.searchLabel}
-                      onChange={(event) => updateSearch(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Escape') closeSearch();
-                      }}
-                    />
-                    <button type="button" onClick={closeSearch} aria-label="关闭搜索"><X size={12} /></button>
-                  </div>
-                )}
-              </div>
             </nav>
 
             <div
               className="workspace-content-stage"
               onWheel={(event) => runWheelPaging(event, contentPageCount, contentWheel, setContentPage)}
             >
-              <div className="workspace-content-grid" key={`${definition.id}-${primary}-${filter}-${searchQuery}-${safeContentPage}`}>
+              <div className="workspace-content-grid" key={`${definition.id}-${primary}-${filter}-${safeContentPage}`}>
                 {pageItems.map((item) => {
                   const buildingCompatibilityCardClass = definition.id === 'building' ? 'building-card' : '';
                   const inspectorOpenForItem = inspector.item?.id === item.id;
