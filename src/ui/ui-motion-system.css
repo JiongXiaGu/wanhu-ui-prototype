@@ -42,3 +42,33 @@
     transition-duration:1ms!important;translate:0 0!important;
   }
 }
+
+
+.app-screen-motion-layer{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  opacity:1;
+  translate:0 0;
+  pointer-events:auto;
+  transition:
+    opacity var(--wanhu-motion-space) var(--wanhu-motion-ease-out),
+    translate var(--wanhu-motion-space) var(--wanhu-motion-ease-out);
+}
+.app-screen-motion-layer.is-active{z-index:2}
+.app-screen-motion-layer.is-entering{
+  opacity:0;
+  translate:0 var(--wanhu-motion-distance-sm);
+  pointer-events:none;
+}
+.app-screen-motion-layer.is-exiting{
+  z-index:1;
+  opacity:0;
+  translate:0 var(--wanhu-motion-distance-sm);
+  pointer-events:none;
+  transition-duration:var(--wanhu-motion-fast);
+  transition-timing-function:var(--wanhu-motion-ease-in);
+}
+@media (prefers-reduced-motion:reduce){
+  .app-screen-motion-layer{transition-duration:1ms!important;translate:0 0!important}
+}

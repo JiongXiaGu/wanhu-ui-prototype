@@ -9,6 +9,7 @@ import { MainMenu, type MainMenuAction } from './menu/MainMenu';
 import { NewGameSpace } from './new-game/NewGameSpace';
 import { SettingsPanel } from './settings/SettingsPanel';
 import { DialogHost, NotificationHost, useDialogSystem } from './ui/dialog/DialogSystem';
+import { useKeyedTransition } from './ui/motion';
 
 const MAIN_BG = '/assets/wanhu-main-menu.png';
 const GAME_BG = '/assets/wanhu-gameplay-city.png';
@@ -19,6 +20,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(reviewBootstrap.screen);
   const [simScale, setSimScale] = useState(1);
   const dialogs = useDialogSystem();
+  const screenMotion = useKeyedTransition(screen);
 
   useEffect(() => {
     const updateScale = () => setSimScale(Math.min(window.innerWidth / 1920, window.innerHeight / 1080));
@@ -56,45 +58,34 @@ export default function App() {
     }
   }
 
+  function renderScreen(target: Screen) {
+    if (target === 'menu') return <MainMenu background={MAIN_BG} onAction={handleMenu} />;
+    if (target === 'newGame') {
+      return <FlowBackdrop background={MAIN_BG}><NewGameSpace onBack={() => setScreen('menu')} onStart={beginLoading} /></FlowBackdrop>;
+    }
+    if (target === 'load') {
+      return <FlowBackdrop background={MAIN_BG}><LoadGameSpace context="menu" onBack={() => setScreen('menu')} onLoad={beginLoading} /></FlowBackdrop>;
+    }
+    if (target === 'settings') {
+      return <FlowBackdrop background={MAIN_BG}><SettingsPanel context="menu" onClose={() => setScreen('menu')} onApply={() => setScreen('menu')} /></FlowBackdrop>;
+    }
+    if (target === 'loading') {
+      return <LoadingSpace background={GAME_BG} staticProgress={reviewBootstrap.loadingProgress} onComplete={enterGameDirectly} />;
+    }
+    return <GameplayScreen background={GAME_BG} nightBackground={GAME_BG_NIGHT} initialState={reviewBootstrap.gameplay} onMainMenu={() => setScreen('menu')} />;
+  }
+
   return (
     <div className="viewport-shell">
       <main className="game-canvas" style={canvasStyle}>
-        {screen === 'menu' && <MainMenu background={MAIN_BG} onAction={handleMenu} />}
-
-        {screen === 'newGame' && (
-          <FlowBackdrop background={MAIN_BG}>
-            <NewGameSpace onBack={() => setScreen('menu')} onStart={beginLoading} />
-          </FlowBackdrop>
+        {screenMotion.outgoing && (
+          <div key={screenMotion.outgoing} className="app-screen-motion-layer is-exiting" aria-hidden="true">
+            {renderScreen(screenMotion.outgoing)}
+          </div>
         )}
-
-        {screen === 'load' && (
-          <FlowBackdrop background={MAIN_BG}>
-            <LoadGameSpace context="menu" onBack={() => setScreen('menu')} onLoad={beginLoading} />
-          </FlowBackdrop>
-        )}
-
-        {screen === 'settings' && (
-          <FlowBackdrop background={MAIN_BG}>
-            <SettingsPanel context="menu" onClose={() => setScreen('menu')} onApply={() => setScreen('menu')} />
-          </FlowBackdrop>
-        )}
-
-        {screen === 'loading' && (
-          <LoadingSpace
-            background={GAME_BG}
-            staticProgress={reviewBootstrap.loadingProgress}
-            onComplete={enterGameDirectly}
-          />
-        )}
-
-        {screen === 'gameplay' && (
-          <GameplayScreen
-            background={GAME_BG}
-            nightBackground={GAME_BG_NIGHT}
-            initialState={reviewBootstrap.gameplay}
-            onMainMenu={() => setScreen('menu')}
-          />
-        )}
+        <div key={screenMotion.active} className={`app-screen-motion-layer is-active is-${screenMotion.activePhase}`}>
+          {renderScreen(screenMotion.active)}
+        </div>
 
         <NotificationHost />
         <DialogHost />

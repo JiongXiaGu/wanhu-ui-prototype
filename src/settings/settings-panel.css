@@ -25,7 +25,7 @@
   overflow:hidden;
   border:0;
   border-radius:0;
-  animation:settings-global-enter .15s ease-out both;
+  animation:settings-global-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,ease-out) both;
 }
 
 .settings-space__header{
@@ -104,7 +104,7 @@
   padding:2px 12px 38px 4px;
   scrollbar-width:thin;
   scrollbar-color:rgba(183,179,170,.20) transparent;
-  animation:settings-content-enter .16s cubic-bezier(.2,.7,.25,1) both;
+  animation:settings-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }
 .settings-list::-webkit-scrollbar{width:6px}
 .settings-list::-webkit-scrollbar-track{background:transparent}

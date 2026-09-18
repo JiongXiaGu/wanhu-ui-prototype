@@ -55,7 +55,7 @@ export function RoadPlacementOverlay({ drawMode, motionPhase = 'steady', onClose
       onClose={onClose}
       dataAttributes={{ 'data-road-mode': drawMode }}
     >
-      <div className="road-placement-context">
+      <div key={drawMode} className="road-placement-context road-placement-context--motion">
         <LeftContextSection title={modeCopy.title} className="road-placement-summary">
           <p>{modeCopy.detail}</p>
           <div className="road-placement-summary__metrics">

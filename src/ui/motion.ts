@@ -87,3 +87,47 @@ export function usePresence(
 
   return { mounted, phase } as const;
 }
+
+
+export function useKeyedTransition<T extends string>(requested: T, exitMs = MOTION_MS.fast) {
+  const [active, setActive] = useState(requested);
+  const [outgoing, setOutgoing] = useState<T | null>(null);
+  const [activePhase, setActivePhase] = useState<MotionPhase>('steady');
+  const activeRef = useRef(requested);
+  const timerRef = useRef<number | null>(null);
+  const frameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (requested === activeRef.current) return;
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
+
+    const previous = activeRef.current;
+    activeRef.current = requested;
+
+    if (reducedMotionEnabled()) {
+      setOutgoing(null);
+      setActive(requested);
+      setActivePhase('steady');
+      return;
+    }
+
+    setOutgoing(previous);
+    setActive(requested);
+    setActivePhase('entering');
+    frameRef.current = window.requestAnimationFrame(() => setActivePhase('steady'));
+    timerRef.current = window.setTimeout(() => setOutgoing(null), exitMs);
+  }, [requested, exitMs]);
+
+  useEffect(() => () => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
+  }, []);
+
+  return {
+    active,
+    outgoing,
+    activePhase,
+    outgoingPhase: outgoing ? 'exiting' as const : 'hidden' as const,
+  };
+}

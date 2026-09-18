@@ -288,3 +288,14 @@
   from{transform:translateY(12px);opacity:.72}
   to{transform:translateY(0);opacity:1}
 }
+
+.left-context-panel__swap-content{
+  animation:left-context-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
+}
+@keyframes left-context-content-enter{
+  from{opacity:.45;translate:-4px 0}
+  to{opacity:1;translate:0 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .left-context-panel__swap-content{animation:none}
+}

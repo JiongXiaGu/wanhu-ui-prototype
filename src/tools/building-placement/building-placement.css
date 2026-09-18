@@ -6,7 +6,7 @@
 
 .bp-terrain-summary,
 .bp-mode-content{
-  animation:bp-content-enter .17s cubic-bezier(.2,.7,.25,1) both;
+  animation:bp-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }
 
 .bp-terrain-summary{

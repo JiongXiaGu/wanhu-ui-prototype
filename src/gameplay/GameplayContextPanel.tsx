@@ -207,6 +207,7 @@ export function GameplayContextPanel({ panel, motionPhase = 'steady', dayTime, o
         'data-environment-modified': isCamera ? undefined : String(environmentModified),
       }}
     >
+      <div key={panel} className="left-context-panel__swap-content">
       {isCamera ? (
         <LeftContextSection title="镜头参数" className="camera-parameter-section">
           <RuntimeParameterRow label="视野角度" value={camera.fov} min={30} max={90} step={1} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => setCamera((current) => ({ ...current, fov: value }))} />
@@ -268,6 +269,7 @@ export function GameplayContextPanel({ panel, motionPhase = 'steady', dayTime, o
           </LeftContextSection>
         </>
       )}
+      </div>
     </LeftContextPanel>
   );
 }
