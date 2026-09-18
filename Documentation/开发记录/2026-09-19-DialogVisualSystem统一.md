@@ -27,6 +27,11 @@
 - Action 区从整卡 Select Hit Area 中物理剔除，使选择与操作拥有独立点击区域；
 - 不使用 Playwright force-click 绕过交互状态。
 
+## CI
+
+- Dialog Tone 审查扩展后，完整 Visual Review 已接近原 6 分钟上限；
+- Visual Review workflow 超时由 6 分钟调整为 10 分钟，保留完整截图链路，不删除审查项换取速度。
+
 ## Unity 落地
 
 正式 Unity 实现不依赖模糊背景 UI。Modal Layer 只负责 Dim；Dialog Panel 自身必须完成可读性与层级表达。
