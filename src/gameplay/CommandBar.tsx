@@ -77,22 +77,40 @@ type WorldUtilityState = {
 };
 
 const worldUtilityGroups = [
-  [
-    { id: 'unlock', label: '地图解锁', icon: DoorOpen },
-    { id: 'region', label: '编辑区域', icon: ScanLine },
-    { id: 'terrain', label: '地形编辑', icon: Mountain },
-    { id: 'palette', label: '配色工具', icon: Palette },
-  ],
-  [
-    { id: 'grid-snap', label: '网格吸附', icon: Magnet },
-    { id: 'grid-visible', label: '网格显示', icon: Grid3X3 },
-    { id: 'copy', label: '范围复制', icon: Copy },
-    { id: 'move', label: '范围移动', icon: Move },
-  ],
-  [
-    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2 },
-    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2 },
-  ],
+  {
+    id: 'world-edit',
+    label: '世界编辑',
+    items: [
+      { id: 'unlock', label: '地图解锁', icon: DoorOpen },
+      { id: 'region', label: '编辑区域', icon: ScanLine },
+      { id: 'terrain', label: '地形编辑', icon: Mountain },
+      { id: 'palette', label: '配色工具', icon: Palette },
+    ],
+  },
+  {
+    id: 'precision',
+    label: '精确辅助',
+    items: [
+      { id: 'grid-snap', label: '网格吸附', icon: Magnet },
+      { id: 'grid-visible', label: '网格显示', icon: Grid3X3 },
+    ],
+  },
+  {
+    id: 'range-edit',
+    label: '范围操作',
+    items: [
+      { id: 'copy', label: '范围复制', icon: Copy },
+      { id: 'move', label: '范围移动', icon: Move },
+    ],
+  },
+  {
+    id: 'history',
+    label: '历史',
+    items: [
+      { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2 },
+      { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2 },
+    ],
+  },
 ] as const;
 
 interface WorldUtilityToolbarProps {
@@ -134,9 +152,15 @@ export function WorldUtilityToolbar({
   return (
     <div className="world-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm" aria-label="世界工具">
       {worldUtilityGroups.map((group, groupIndex) => (
-        <span className="world-utility-toolbar__group" key={group[0].id}>
-          {groupIndex > 0 && <i className="world-utility-toolbar__separator" />}
-          {group.map(({ id, label, icon: Icon }) => {
+        <span
+          className="world-utility-toolbar__group"
+          key={group.id}
+          role="group"
+          aria-label={group.label}
+          data-utility-group={group.id}
+        >
+          {groupIndex > 0 && <i className="world-utility-toolbar__separator" aria-hidden="true" />}
+          {group.items.map(({ id, label, icon: Icon }) => {
             const state = getState(id);
             return (
               <button

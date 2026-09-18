@@ -1,14 +1,14 @@
 import type { AdjustmentMode, RoadDrawMode, Tool } from '../app/ui-state';
 
-type HintRow = { binding: string; description: string; primary?: boolean };
+type HintRow = { binding: string; description: string; primary?: boolean; secondary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
 
 const gameplayPreset: HintPreset = {
   task: '操作提示',
   rows: [
     { binding: '鼠标右键', description: '旋转', primary: true },
-    { binding: 'W / A / S / D', description: '移动' },
-    { binding: '鼠标滚轮', description: '缩放' },
+    { binding: 'W / A / S / D', description: '移动', secondary: true },
+    { binding: '鼠标滚轮', description: '缩放', secondary: true },
     { binding: 'Esc', description: '菜单' },
   ],
 };
@@ -18,9 +18,9 @@ const buildingPresets: Record<AdjustmentMode, HintPreset> = {
     task: '建筑放置',
     rows: [
       { binding: '鼠标左键', description: '确定位置', primary: true },
-      { binding: '鼠标右键', description: '旋转镜头' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
-      { binding: '鼠标滚轮', description: '缩放镜头' },
+      { binding: '鼠标右键', description: '旋转镜头', secondary: true },
+      { binding: 'W / A / S / D', description: '移动镜头', secondary: true },
+      { binding: '鼠标滚轮', description: '缩放镜头', secondary: true },
       { binding: 'R', description: '顺时针旋转' },
       { binding: 'Shift + R', description: '逆时针旋转' },
       { binding: 'Ctrl + Z', description: '撤销' },
@@ -31,8 +31,8 @@ const buildingPresets: Record<AdjustmentMode, HintPreset> = {
     task: '体量调整',
     rows: [
       { binding: '鼠标左键', description: '确认调整', primary: true },
-      { binding: '鼠标右键', description: '旋转镜头' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: '鼠标右键', description: '旋转镜头', secondary: true },
+      { binding: 'W / A / S / D', description: '移动镜头', secondary: true },
       { binding: 'R', description: '顺时针旋转' },
       { binding: 'Shift + R', description: '逆时针旋转' },
       { binding: 'Ctrl + Z', description: '撤销' },
@@ -43,8 +43,8 @@ const buildingPresets: Record<AdjustmentMode, HintPreset> = {
     task: '屋顶调整',
     rows: [
       { binding: '鼠标左键', description: '确认调整', primary: true },
-      { binding: '鼠标右键', description: '旋转镜头' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: '鼠标右键', description: '旋转镜头', secondary: true },
+      { binding: 'W / A / S / D', description: '移动镜头', secondary: true },
       { binding: 'R', description: '顺时针旋转' },
       { binding: 'Shift + R', description: '逆时针旋转' },
       { binding: 'Ctrl + Z', description: '撤销' },
@@ -55,8 +55,8 @@ const buildingPresets: Record<AdjustmentMode, HintPreset> = {
     task: '立面调整',
     rows: [
       { binding: '鼠标左键', description: '确认调整', primary: true },
-      { binding: '鼠标右键', description: '旋转镜头' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: '鼠标右键', description: '旋转镜头', secondary: true },
+      { binding: 'W / A / S / D', description: '移动镜头', secondary: true },
       { binding: 'Ctrl + Z', description: '撤销' },
       { binding: 'Esc', description: '取消调整' },
     ],
@@ -69,8 +69,8 @@ const roadPresets: Record<RoadDrawMode, HintPreset> = {
     rows: [
       { binding: '鼠标左键', description: '放置节点', primary: true },
       { binding: '鼠标右键', description: '结束当前段' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
-      { binding: '鼠标滚轮', description: '缩放镜头' },
+      { binding: 'W / A / S / D', description: '移动镜头', secondary: true },
+      { binding: '鼠标滚轮', description: '缩放镜头', secondary: true },
       { binding: 'Ctrl + Z', description: '撤销节点' },
       { binding: 'Esc', description: '取消铺设' },
     ],
@@ -80,7 +80,7 @@ const roadPresets: Record<RoadDrawMode, HintPreset> = {
     rows: [
       { binding: '鼠标左键', description: '放置控制点', primary: true },
       { binding: '鼠标右键', description: '结束当前段' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: 'W / A / S / D', description: '移动镜头', secondary: true },
       { binding: 'Ctrl + Z', description: '撤销控制点' },
       { binding: 'Esc', description: '取消铺设' },
     ],
@@ -90,7 +90,7 @@ const roadPresets: Record<RoadDrawMode, HintPreset> = {
     rows: [
       { binding: '鼠标左键', description: '确定端点', primary: true },
       { binding: '鼠标右键', description: '结束当前段' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: 'W / A / S / D', description: '移动镜头', secondary: true },
       { binding: 'Ctrl + Z', description: '撤销端点' },
       { binding: 'Esc', description: '取消铺设' },
     ],
@@ -107,7 +107,7 @@ function Keycap({ binding }: { binding: string }) {
 
 function HintRowView({ row }: { row: HintRow }) {
   return (
-    <div className={`operation-hints__row ${row.primary ? 'is-primary' : ''}`}>
+    <div className={`operation-hints__row ${row.primary ? 'is-primary' : ''} ${row.secondary ? 'is-secondary' : ''}`.trim()}>
       <Keycap binding={row.binding} />
       <span className="operation-hints__description">{row.description}</span>
     </div>

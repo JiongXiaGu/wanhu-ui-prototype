@@ -68,6 +68,21 @@ const utility = page.locator('.world-utility-toolbar');
 const dockMaterial = await material(dock, 'Main Dock L');
 const utilityMaterial = await material(utility, 'World Utility S');
 if (!(dockMaterial.alpha > utilityMaterial.alpha)) throw new Error('Main Dock must be denser than World Utility.');
+const utilityGroups = utility.locator('.world-utility-toolbar__group');
+if ((await utilityGroups.count()) !== 4) throw new Error('World Utility must expose four semantic groups.');
+const utilityGroupLabels = await utilityGroups.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')));
+if (JSON.stringify(utilityGroupLabels) !== JSON.stringify(['世界编辑','精确辅助','范围操作','历史'])) {
+  throw new Error(`World Utility group order must match player mental model. groups=${JSON.stringify(utilityGroupLabels)}`);
+}
+if ((await utility.locator('.world-utility-toolbar__separator').count()) !== 3) throw new Error('World Utility must separate four groups with three dividers.');
+if ((await utility.locator('.world-utility-toolbar__button').count()) !== 10) throw new Error('World Utility must retain all ten existing functions.');
+const utilityIcon = await utility.locator('.world-utility-toolbar__button svg').first().evaluate((node) => {
+  const style = getComputedStyle(node);
+  return { width: style.width, height: style.height, strokeWidth: style.strokeWidth };
+});
+if (parseFloat(utilityIcon.width) < 22 || parseFloat(utilityIcon.height) < 22 || parseFloat(utilityIcon.strokeWidth) < 1.65) {
+  throw new Error(`World Utility icons must be optically readable. visual=${JSON.stringify(utilityIcon)}`);
+}
 await dock.locator('.mode-rail button.is-active').first().waitFor();
 await page.screenshot({ path: `${outDir}/63-bottom-command-family-gameplay-day.png` });
 
@@ -86,6 +101,9 @@ if ((await buildingBar.locator('.placement-action-bar__button--quick.is-active')
 }
 await assertActiveLine(buildingBar.locator('.placement-action-bar__button--mode.is-active').first(), 'Building active mode');
 await assertActiveLine(buildingBar.locator('.placement-action-bar__button--confirm'), 'Building confirm');
+if ((await page.locator('.gameplay-operation-hints .operation-hints__row.is-secondary').count()) < 3) {
+  throw new Error('Building hints must demote generic camera controls beneath tool-specific actions.');
+}
 await page.screenshot({ path: `${outDir}/64-bottom-command-building-day.png` });
 
 // Road Tool: same M material, different business groups.

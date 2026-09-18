@@ -2,7 +2,7 @@
    Geometry is owned by gameplay-hud-layout.css. */
 .gameplay-operation-hints{
   box-sizing:border-box;
-  width:232px;
+  width:224px;
   height:auto;
   min-height:0;
   max-height:none;
@@ -15,7 +15,7 @@
 }
 
 .operation-hints__task{
-  min-height:22px;
+  min-height:20px;
   height:auto;
   margin:0 0 3px;
   padding:0 0 5px;
@@ -28,7 +28,7 @@
 }
 .operation-hints__task>strong{
   color:#a9aca3;
-  font-size:9.8px;
+  font-size:9.5px;
   font-weight:520;
   letter-spacing:.014em;
 }
@@ -42,7 +42,7 @@
   margin:0;
 }
 .operation-hints__row{
-  min-height:22px;
+  min-height:20px;
   height:auto;
   display:grid;
   grid-template-columns:96px 1fr;
@@ -85,6 +85,9 @@
 .operation-hints__row.is-primary .operation-hints__binding,
 .operation-hints__row.is-primary .operation-hints__binding kbd{color:#b79d62}
 .operation-hints__row.is-primary .operation-hints__description{color:#9e9d95}
+.operation-hints__row.is-secondary{
+  opacity:.62;
+}
 
 /* Only modal/pause states hide the rail. Scene parameter panels never alter it. */
 .gameplay-screen:has(.pause-layer)>.gameplay-operation-hints{

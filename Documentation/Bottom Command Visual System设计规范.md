@@ -50,9 +50,11 @@ S  World Utility          全局辅助 / Ambient
 
 - 高约 `56px`；
 - Button `42 × 42px`；
-- Icon 约 `20px`；
+- Icon 约 `22px`，Lucide Stroke 约 `1.65–1.70`；
+- 默认 Icon 比普通 Command Muted 提亮一档，但仍弱于 M；
 - 右下常驻；
-- 14px Surface Radius。
+- 14px Surface Radius；
+- 功能不因视觉降噪而删除。
 
 不要为了整齐把三者做成同宽同高。
 
@@ -129,7 +131,26 @@ One-shot Action：
 
 “取消”保持中性，不使用 Danger Red。
 
-## 6. Divider / Tooltip
+## 6. World Utility 信息架构
+
+World Utility 的 10 个现有能力全部保留，但必须按玩家心智分为四组：
+
+```text
+世界编辑 │ 精确辅助 │ 范围操作 │ 历史
+解锁       网格吸附    复制       撤销
+区域       网格显示    移动       重做
+地形
+配色
+```
+
+- 同组只用紧凑间距；
+- 组间使用统一 Divider + 更明显的空白；
+- 不显示常驻组标题，使用语义 Group / Tooltip 提供名称；
+- S Surface 可以轻，但 Icon 本身必须清楚；
+- Toggle（网格吸附 / 网格显示）保留熟铜持续状态；
+- One-shot Action 不残留 Selected。
+
+## 7. Divider / Tooltip
 
 Divider：
 
@@ -146,7 +167,7 @@ Tooltip：
 - 不可交互；
 - Placement / World Utility 使用同一材质。
 
-## 7. 昼夜
+## 8. 昼夜
 
 昼夜不换 Palette。
 
@@ -156,7 +177,7 @@ Tooltip：
 - Smoked Graphite Hue 不转蓝 / 绿；
 - Paper / Muted / Brass 语义不变化。
 
-## 8. Unity UI Toolkit 映射
+## 9. Unity UI Toolkit 映射
 
 建议共享 USS：
 
@@ -176,11 +197,13 @@ C# 只切换状态 Class；不从颜色反推业务状态。
 
 正式 Unity 使用共享 Scene Blur / Surface Asset，不给 L / M / S 创建三套独立 Blur 或材质。
 
-## 9. Review 门槛
+## 10. Review 门槛
 
 Bottom Command 修改至少检查：
 
 - 白天 Main Dock + World Utility；
+- World Utility 必须保留 10 个功能、4 个语义组、3 条 Divider；
+- S 档 Icon 在 1080p 下应直接可辨，不依赖 Hover 才看清；
 - 白天 Building Placement + World Utility；
 - 白天 Road Placement + World Utility；
 - 夜晚 Main Dock + World Utility；

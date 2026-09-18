@@ -52,7 +52,7 @@
 
   --hud-core-width:940px;
   --hud-command-height:var(--command-height-lg);
-  --hud-world-tools-width:458px;
+  --hud-world-tools-width:500px;
   --hud-world-tools-height:var(--command-height-sm);
   --hud-context-weather-width:400px;
   --hud-context-camera-width:360px;
