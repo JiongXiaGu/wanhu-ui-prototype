@@ -1,4 +1,4 @@
-/* Wanhu Theme Tokens v5
+/* Wanhu Theme Tokens v6
    Canonical game-wide palette + material recipe values.
    The game canvas owns the visual language; individual screens consume these tokens
    instead of inventing local palettes. Gameplay may only override role density for
@@ -88,14 +88,41 @@
   --wanhu-surface-control-highlight:rgba(255,255,255,.024);
   --wanhu-surface-control-shade:rgba(0,0,0,.025);
 
-  /* Persistent command base: Main Dock. */
-  --wanhu-surface-command-bg:rgba(22,27,29,.58);
-  --wanhu-surface-command-edge:rgba(238,233,223,.018);
-  --wanhu-surface-command-rule:rgba(238,233,223,.050);
-  --wanhu-surface-command-shadow:0 18px 44px rgba(2,4,5,.34),inset 0 1px 0 rgba(255,255,255,.038);
-  --wanhu-surface-command-filter:blur(20px) saturate(.92) brightness(.98);
-  --wanhu-surface-command-highlight:rgba(255,255,255,.030);
-  --wanhu-surface-command-shade:rgba(0,0,0,.038);
+  /* Bottom Command family: L / M / S share one neutral Smoked Graphite hue.
+     Density and shadow express role; hue never changes between Main Dock, Placement and Utility. */
+  --wanhu-bottom-command-lg-bg:rgba(46,48,45,.58);
+  --wanhu-bottom-command-lg-highlight:rgba(255,249,238,.024);
+  --wanhu-bottom-command-lg-shade:rgba(8,10,9,.045);
+  --wanhu-bottom-command-lg-edge:rgba(238,233,223,.018);
+  --wanhu-bottom-command-lg-shadow:0 16px 38px rgba(6,8,7,.25),inset 0 1px 0 rgba(255,255,255,.022);
+  --wanhu-bottom-command-lg-filter:blur(20px) saturate(.86) brightness(.99);
+
+  --wanhu-bottom-command-md-bg:rgba(43,45,42,.80);
+  --wanhu-bottom-command-md-highlight:rgba(255,249,238,.028);
+  --wanhu-bottom-command-md-shade:rgba(8,10,9,.060);
+  --wanhu-bottom-command-md-edge:rgba(238,233,223,.055);
+  --wanhu-bottom-command-md-shadow:0 16px 40px rgba(6,8,7,.30),inset 0 1px 0 rgba(255,255,255,.026);
+  --wanhu-bottom-command-md-filter:blur(18px) saturate(.84) brightness(.99);
+
+  --wanhu-bottom-command-sm-bg:rgba(48,50,46,.42);
+  --wanhu-bottom-command-sm-highlight:rgba(255,249,238,.018);
+  --wanhu-bottom-command-sm-shade:rgba(8,10,9,.035);
+  --wanhu-bottom-command-sm-edge:rgba(238,233,223,.016);
+  --wanhu-bottom-command-sm-shadow:0 12px 30px rgba(6,8,7,.20),inset 0 1px 0 rgba(255,255,255,.018);
+  --wanhu-bottom-command-sm-filter:blur(20px) saturate(.88) brightness(.995);
+
+  --wanhu-command-divider:rgba(238,233,223,.052);
+  --wanhu-command-hover:rgba(255,255,255,.038);
+  --wanhu-command-active-top:rgba(169,132,75,.070);
+  --wanhu-command-active-bottom:rgba(169,132,75,.018);
+  --wanhu-command-active-line:rgba(169,132,75,.84);
+  --wanhu-command-primary-top:rgba(169,132,75,.095);
+  --wanhu-command-primary-bottom:rgba(169,132,75,.030);
+  --wanhu-command-primary-hover-top:rgba(169,132,75,.125);
+  --wanhu-command-primary-hover-bottom:rgba(169,132,75,.042);
+  --wanhu-command-tooltip-bg:rgba(25,26,24,.985);
+  --wanhu-command-tooltip-edge:rgba(238,233,223,.080);
+  --wanhu-command-tooltip-shadow:0 8px 22px rgba(6,8,7,.26);
 
   /* Ambient surface: World Utility + tiny detached utility actions. */
   --wanhu-surface-ambient-bg:rgba(24,30,32,.41);
@@ -158,24 +185,32 @@
   --hud-surface-blocking-top:var(--wanhu-surface-blocking-top);
   --hud-surface-blocking-bottom:var(--wanhu-surface-blocking-bottom);
 
-  --command-surface-lg-top:rgba(28,34,36,.84);
-  --command-surface-lg-bottom:rgba(17,22,24,.82);
-  --command-surface-md-top:rgba(28,34,36,.88);
-  --command-surface-md-bottom:rgba(17,22,24,.86);
-  --command-surface-sm-top:rgba(29,35,37,.69);
-  --command-surface-sm-bottom:rgba(19,24,26,.65);
-  --command-border:rgba(238,233,223,.095);
-  --command-divider:rgba(238,233,223,.052);
-  --command-hover:rgba(255,255,255,.045);
-  --command-active-top:rgba(169,132,75,.115);
-  --command-active-bottom:rgba(169,132,75,.024);
+  --command-surface-lg-top:var(--wanhu-bottom-command-lg-bg);
+  --command-surface-lg-bottom:var(--wanhu-bottom-command-lg-bg);
+  --command-surface-md-top:var(--wanhu-bottom-command-md-bg);
+  --command-surface-md-bottom:var(--wanhu-bottom-command-md-bg);
+  --command-surface-sm-top:var(--wanhu-bottom-command-sm-bg);
+  --command-surface-sm-bottom:var(--wanhu-bottom-command-sm-bg);
+  --command-border:var(--wanhu-command-tooltip-edge);
+  --command-divider:var(--wanhu-command-divider);
+  --command-hover:var(--wanhu-command-hover);
+  --command-active-top:var(--wanhu-command-active-top);
+  --command-active-bottom:var(--wanhu-command-active-bottom);
+  --command-active-line:var(--wanhu-command-active-line);
+  --command-primary-top:var(--wanhu-command-primary-top);
+  --command-primary-bottom:var(--wanhu-command-primary-bottom);
+  --command-primary-hover-top:var(--wanhu-command-primary-hover-top);
+  --command-primary-hover-bottom:var(--wanhu-command-primary-hover-bottom);
   --command-icon:var(--wanhu-color-icon);
   --command-icon-hover:var(--wanhu-color-icon-hover);
   --command-icon-active:var(--wanhu-color-brass-high);
-  --command-blur:13px;
-  --command-blur-lg:14px;
-  --command-blur-md:13px;
-  --command-blur-sm:11px;
+  --command-tooltip-bg:var(--wanhu-command-tooltip-bg);
+  --command-tooltip-edge:var(--wanhu-command-tooltip-edge);
+  --command-tooltip-shadow:var(--wanhu-command-tooltip-shadow);
+  --command-blur:16px;
+  --command-blur-lg:20px;
+  --command-blur-md:18px;
+  --command-blur-sm:20px;
 
   --wanhu-hud-paper:var(--wanhu-color-paper-primary);
   --wanhu-hud-text:var(--wanhu-color-text-secondary);
@@ -217,6 +252,13 @@
   --wanhu-surface-work-body-overlay:rgba(15,21,23,.36);
   --wanhu-surface-work-rule:rgba(238,233,223,.064);
   --wanhu-surface-work-filter:blur(20px) saturate(.90) brightness(1.0);
+
+  --wanhu-bottom-command-lg-bg:rgba(50,52,49,.60);
+  --wanhu-bottom-command-md-bg:rgba(47,49,46,.82);
+  --wanhu-bottom-command-sm-bg:rgba(52,54,50,.44);
+  --wanhu-bottom-command-lg-filter:blur(20px) saturate(.84) brightness(1.0);
+  --wanhu-bottom-command-md-filter:blur(18px) saturate(.82) brightness(1.0);
+  --wanhu-bottom-command-sm-filter:blur(20px) saturate(.86) brightness(1.0);
 
   /* Persistent HUD keeps the reviewed role separation at night. Only the top
      information strip needs a small density lift; detached controls stay stable. */

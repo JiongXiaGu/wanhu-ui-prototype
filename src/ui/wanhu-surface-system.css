@@ -1,4 +1,4 @@
-/* Wanhu Surface System v5
+/* Wanhu Surface System v6
    Formal material owner for gameplay surfaces.
    Theme tokens own palette/material recipes; component CSS owns geometry and local content hierarchy. */
 
@@ -201,57 +201,63 @@
 .gameplay-screen .gameplay-top-navigation__separator{background:var(--wanhu-surface-control-rule)}
 
 /* ---------------------------------------------------------------------
-   Persistent Command Surface — Main Dock
+   Bottom Command Surface — L / M / S
+   Main Dock, Placement Action Bar and World Utility share one Smoked Graphite
+   material family. Size/density differ; hue and state language do not.
    --------------------------------------------------------------------- */
-.gameplay-screen .command-bar{
-  background-color:var(--wanhu-surface-command-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-surface-command-highlight),var(--wanhu-surface-command-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
-  border-color:var(--wanhu-surface-command-edge);
-  box-shadow:var(--wanhu-surface-command-shadow);
-  backdrop-filter:var(--wanhu-surface-command-filter);
-  -webkit-backdrop-filter:var(--wanhu-surface-command-filter);
+.gameplay-screen .bottom-command-surface{
+  --command-divider:var(--wanhu-command-divider);
+  --command-hover:var(--wanhu-command-hover);
+  --command-active-top:var(--wanhu-command-active-top);
+  --command-active-bottom:var(--wanhu-command-active-bottom);
+  --command-active-line:var(--wanhu-command-active-line);
+  --command-primary-top:var(--wanhu-command-primary-top);
+  --command-primary-bottom:var(--wanhu-command-primary-bottom);
+  --command-primary-hover-top:var(--wanhu-command-primary-hover-top);
+  --command-primary-hover-bottom:var(--wanhu-command-primary-hover-bottom);
   --command-icon:var(--wanhu-color-icon);
   --command-icon-hover:var(--wanhu-color-icon-hover);
   --command-icon-active:var(--wanhu-color-brass-high);
-  --command-divider:var(--wanhu-surface-command-rule);
-  --command-hover:rgba(255,255,255,.044);
-  --command-active-top:rgba(169,132,75,.115);
-  --command-active-bottom:rgba(169,132,75,.024);
+  --command-tooltip-bg:var(--wanhu-command-tooltip-bg);
+  --command-tooltip-edge:var(--wanhu-command-tooltip-edge);
+  --command-tooltip-shadow:var(--wanhu-command-tooltip-shadow);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
 }
-.gameplay-screen .command-bar .mode-rail button,
-.gameplay-screen .command-bar .category-row button{color:var(--wanhu-color-icon)}
-.gameplay-screen .command-bar .mode-rail button:hover,
-.gameplay-screen .command-bar .category-row button:hover{color:var(--wanhu-color-icon-hover)}
-.gameplay-screen .command-bar .mode-rail button.is-active,
-.gameplay-screen .command-bar .category-row button.is-active{
-  color:var(--wanhu-color-brass-high);
-  box-shadow:inset 0 0 0 1px rgba(189,153,89,.045),inset 0 1px 0 rgba(255,255,255,.020);
+.gameplay-screen .bottom-command-surface--lg{
+  background-color:var(--wanhu-bottom-command-lg-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-bottom-command-lg-highlight),var(--wanhu-bottom-command-lg-shade)),
+    var(--wanhu-material-noise);
+  border-color:var(--wanhu-bottom-command-lg-edge);
+  box-shadow:var(--wanhu-bottom-command-lg-shadow);
+  backdrop-filter:var(--wanhu-bottom-command-lg-filter);
+  -webkit-backdrop-filter:var(--wanhu-bottom-command-lg-filter);
+}
+.gameplay-screen .bottom-command-surface--md{
+  background-color:var(--wanhu-bottom-command-md-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-bottom-command-md-highlight),var(--wanhu-bottom-command-md-shade)),
+    var(--wanhu-material-noise);
+  border-color:var(--wanhu-bottom-command-md-edge);
+  box-shadow:var(--wanhu-bottom-command-md-shadow);
+  backdrop-filter:var(--wanhu-bottom-command-md-filter);
+  -webkit-backdrop-filter:var(--wanhu-bottom-command-md-filter);
+}
+.gameplay-screen .bottom-command-surface--sm{
+  background-color:var(--wanhu-bottom-command-sm-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-bottom-command-sm-highlight),var(--wanhu-bottom-command-sm-shade)),
+    var(--wanhu-material-noise);
+  border-color:var(--wanhu-bottom-command-sm-edge);
+  box-shadow:var(--wanhu-bottom-command-sm-shadow);
+  backdrop-filter:var(--wanhu-bottom-command-sm-filter);
+  -webkit-backdrop-filter:var(--wanhu-bottom-command-sm-filter);
 }
 
 /* ---------------------------------------------------------------------
-   Ambient Surface — World Utility + System Menu
+   Ambient Surface — System Menu
    --------------------------------------------------------------------- */
-.gameplay-screen > .world-utility-toolbar.command-utility{
-  background-color:var(--wanhu-surface-ambient-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-surface-ambient-highlight),var(--wanhu-surface-ambient-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
-  border-color:var(--wanhu-surface-ambient-edge);
-  box-shadow:var(--wanhu-surface-ambient-shadow);
-  backdrop-filter:var(--wanhu-surface-ambient-filter);
-  -webkit-backdrop-filter:var(--wanhu-surface-ambient-filter);
-  --command-divider:rgba(255,255,255,.060);
-  --command-icon:#7b817f;
-  --command-icon-hover:#cecac2;
-  --command-icon-active:var(--wanhu-color-brass-high);
-}
-
 .gameplay-screen .gameplay-system-menu-button{
   background-color:var(--wanhu-surface-ambient-soft-bg);
   background-image:var(--wanhu-material-noise);
