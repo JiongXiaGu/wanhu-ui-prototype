@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
 import {
   Check,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Gamepad2,
@@ -12,6 +11,7 @@ import {
   SlidersHorizontal,
   Speaker,
 } from 'lucide-react';
+import { NumericControl, SelectControl, ToggleSwitch } from '../ui/Controls';
 
 export type SettingsContext = 'menu' | 'pause';
 
@@ -589,116 +589,41 @@ function SettingsRowView({ row, value, disabled, onChange }: { row: SettingRow; 
     <div className={`settings-row settings-row--${row.kind} ${disabled ? 'is-disabled' : ''}`} title={row.detail} data-setting-id={row.id}>
       <span className="settings-row__label"><b>{row.title}</b></span>
       <div className={`settings-row__control settings-row__control--${row.kind}`}>
-        {row.kind === 'slider' && <SliderControl row={row} value={Number(value)} disabled={disabled} onChange={onChange} />}
-        {row.kind === 'select' && <SelectControl row={row} value={String(value)} disabled={disabled} onChange={onChange} />}
-        {row.kind === 'toggle' && <ToggleControl row={row} value={Boolean(value)} disabled={disabled} onChange={onChange} />}
+        {row.kind === 'slider' && (
+          <NumericControl
+            ariaLabel={row.title}
+            value={Number(value)}
+            min={row.min ?? 0}
+            max={row.max ?? 100}
+            step={row.step ?? 1}
+            format={(next) => formatSliderValue(row, next)}
+            disabled={disabled}
+            className="settings-numeric-control"
+            onChange={onChange}
+          />
+        )}
+        {row.kind === 'select' && (
+          <SelectControl
+            ariaLabel={row.title}
+            value={String(value)}
+            options={row.options ?? []}
+            disabled={disabled}
+            className="settings-select-control"
+            onChange={onChange}
+          />
+        )}
+        {row.kind === 'toggle' && (
+          <ToggleSwitch
+            label={row.title}
+            value={Boolean(value)}
+            disabled={disabled}
+            className="settings-toggle-control"
+            onChange={onChange}
+          />
+        )}
       </div>
     </div>
   );
-}
-
-function SliderControl({ row, value, disabled, onChange }: { row: SettingRow; value: number; disabled?: boolean; onChange: (value: number) => void }) {
-  const [dragging, setDragging] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const min = row.min ?? 0;
-  const max = row.max ?? 100;
-  const step = row.step ?? 1;
-  const pct = ((value - min) / (max - min)) * 100;
-
-  function quantize(raw: number) {
-    const stepped = min + Math.round((raw - min) / step) * step;
-    const decimals = `${step}`.includes('.') ? `${step}`.split('.')[1].length : 0;
-    return Number(Math.max(min, Math.min(max, stepped)).toFixed(decimals));
-  }
-
-  function updateFromClientX(clientX: number) {
-    const rect = trackRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    onChange(quantize(min + ratio * (max - min)));
-  }
-
-  function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
-    if (disabled) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDragging(true);
-    updateFromClientX(event.clientX);
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (disabled) return;
-    const scale = event.shiftKey ? 10 : 1;
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') { event.preventDefault(); onChange(quantize(value - step * scale)); }
-    else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') { event.preventDefault(); onChange(quantize(value + step * scale)); }
-    else if (event.key === 'Home') { event.preventDefault(); onChange(min); }
-    else if (event.key === 'End') { event.preventDefault(); onChange(max); }
-  }
-
-  return (
-    <>
-      <div ref={trackRef} className={`settings-slider ${dragging ? 'is-dragging' : ''}`} role="slider" tabIndex={disabled ? -1 : 0} aria-disabled={disabled || undefined} aria-valuemin={min} aria-valuemax={max} aria-valuenow={value} aria-valuetext={formatSliderValue(row, value)} onPointerDown={handlePointerDown} onPointerMove={(event) => { if (dragging) updateFromClientX(event.clientX); }} onPointerUp={() => setDragging(false)} onPointerCancel={() => setDragging(false)} onKeyDown={handleKeyDown}>
-        <i style={{ width: `${pct}%` }} /><em style={{ left: `${pct}%` }} />
-      </div>
-      <output>{formatSliderValue(row, value)}</output>
-    </>
-  );
-}
-
-function SelectControl({ row, value, disabled, onChange }: { row: SettingRow; value: string; disabled?: boolean; onChange: (value: string) => void }) {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
-  const [highlighted, setHighlighted] = useState(Math.max(0, row.options?.indexOf(value) ?? 0));
-  const [opensUp, setOpensUp] = useState(false);
-  const options = row.options ?? [];
-
-  useEffect(() => {
-    if (!open) return;
-    const handleOutside = (event: PointerEvent) => { if (!rootRef.current?.contains(event.target as Node)) setOpen(false); };
-    document.addEventListener('pointerdown', handleOutside);
-    return () => document.removeEventListener('pointerdown', handleOutside);
-  }, [open]);
-
-  function openMenu() {
-    if (disabled) return;
-    const rect = rootRef.current?.getBoundingClientRect();
-    const menuHeight = Math.min(options.length, 8) * 34 + 8;
-    setOpensUp(Boolean(rect && window.innerHeight - rect.bottom < menuHeight + 18));
-    setHighlighted(Math.max(0, options.indexOf(value)));
-    setOpen(true);
-  }
-
-  function choose(next: string) { onChange(next); setOpen(false); }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
-    if (disabled) return;
-    if (!open && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openMenu(); return; }
-    if (!open) return;
-    if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
-    else if (event.key === 'ArrowDown') { event.preventDefault(); setHighlighted((current) => (current + 1) % options.length); }
-    else if (event.key === 'ArrowUp') { event.preventDefault(); setHighlighted((current) => (current - 1 + options.length) % options.length); }
-    else if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); choose(options[highlighted]); }
-  }
-
-  return (
-    <div ref={rootRef} className={`settings-select-root ${open ? 'is-open' : ''} ${opensUp ? 'opens-up' : ''}`}>
-      <button type="button" className="settings-select-value" aria-haspopup="listbox" aria-expanded={open} disabled={disabled} onClick={() => open ? setOpen(false) : openMenu()} onKeyDown={handleKeyDown}>
-        <span>{value}</span><ChevronDown size={14} />
-      </button>
-      {open && (
-        <div className="settings-select-menu" role="listbox" aria-label={row.title}>
-          {options.map((option, index) => (
-            <button type="button" role="option" aria-selected={option === value} key={option} className={`${option === value ? 'is-selected' : ''} ${index === highlighted ? 'is-highlighted' : ''}`} onMouseEnter={() => setHighlighted(index)} onClick={() => choose(option)}>
-              <span>{option}</span>{option === value && <Check size={13} />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ToggleControl({ row, value, disabled, onChange }: { row: SettingRow; value: boolean; disabled?: boolean; onChange: (value: boolean) => void }) {
-  return <button type="button" className={`settings-toggle ${value ? 'is-on' : ''}`} aria-label={`${row.title}：${value ? '开启' : '关闭'}`} aria-pressed={value} disabled={disabled} onClick={() => onChange(!value)}><i /></button>;
 }
 
 function formatSliderValue(row: SettingRow, value: number) {
