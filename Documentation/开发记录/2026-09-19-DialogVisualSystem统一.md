@@ -21,10 +21,11 @@
 
 ## Visual Review 修复
 
-- 新增 Warning / Danger 截图审查时发现 `SaveEntryCard` 的整卡选择按钮会拦截覆盖 / 删除 Action；
-- 修正 Save Card stacking order：整卡选择层固定在底层，Action 层明确高于选择层；
-- Action 区从整卡 Select Hit Area 中物理剔除，不再只依赖 z-index 解决重叠点击；
-- 不使用 Playwright force-click 绕过真实交互问题。
+- Warning / Danger 截图审查按真实交互路径执行：先选择 Save Card，再进入覆盖 / 删除 Action；
+- 未选中卡片的 Action 保持隐藏且不可点击，Visual Review 不绕过该状态；
+- Save Card stacking order 明确：整卡选择层在底层，Action 层高于选择层；
+- Action 区从整卡 Select Hit Area 中物理剔除，使选择与操作拥有独立点击区域；
+- 不使用 Playwright force-click 绕过交互状态。
 
 ## Unity 落地
 
