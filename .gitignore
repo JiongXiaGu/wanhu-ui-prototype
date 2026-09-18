@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.vite/
+.vercel/
+review-screenshots/
+playwright-report/
+test-results/
+*.tsbuildinfo
+*.local
+.DS_Store
