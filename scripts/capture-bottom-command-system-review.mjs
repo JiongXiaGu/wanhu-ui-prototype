@@ -77,7 +77,7 @@ const buildingBar = page.getByLabel('建筑放置操作栏');
 const buildingUtility = page.locator('.world-utility-toolbar');
 const buildingMaterial = await material(buildingBar, 'Building Placement M');
 const buildingUtilityMaterial = await material(buildingUtility, 'Building World Utility S');
-if (!(buildingMaterial.alpha > buildingUtilityMaterial.alpha)) throw new Error('Placement M must be denser than World Utility S.');
+if (!(buildingMaterial.alpha > dockMaterial.alpha && dockMaterial.alpha > buildingUtilityMaterial.alpha)) throw new Error('Day density hierarchy must remain M > L > S.');
 if ((await buildingBar.locator('.placement-action-bar__button--mode.is-active').count()) !== 2) {
   throw new Error('Building Placement must expose one active mode in each mode group.');
 }
@@ -122,7 +122,8 @@ await categories.getByRole('button', { name: '建筑', exact: true }).click();
 await page.waitForSelector('.workspace--building');
 await page.locator('.building-card').first().click();
 const nightBuildingBar = page.getByLabel('建筑放置操作栏');
-await material(nightBuildingBar, 'Night Building Placement M');
+const nightBuildingMaterial = await material(nightBuildingBar, 'Night Building Placement M');
+if (!(nightBuildingMaterial.alpha > nightDockMaterial.alpha && nightDockMaterial.alpha > nightUtilityMaterial.alpha)) throw new Error('Night density hierarchy must remain M > L > S.');
 await page.screenshot({ path: `${outDir}/67-bottom-command-building-night.png` });
 
 await page.keyboard.press('Escape');
