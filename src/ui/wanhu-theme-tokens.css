@@ -1,4 +1,4 @@
-/* Wanhu Theme Tokens v6
+/* Wanhu Theme Tokens v7
    Canonical game-wide palette + material recipe values.
    The game canvas owns the visual language; individual screens consume these tokens
    instead of inventing local palettes. Gameplay may only override role density for
@@ -67,6 +67,20 @@
   --wanhu-surface-blocking-menu:rgba(25,31,33,.975);
   --wanhu-surface-blocking-menu-hover:rgba(255,255,255,.048);
   --wanhu-surface-blocking-shadow:0 24px 64px rgba(2,4,5,.40),inset 0 1px 0 rgba(255,255,255,.028);
+
+  /* Pause Blocking Space: same graphite family, tuned for a frozen-world overlay. */
+  --wanhu-pause-dim:rgba(12,14,13,.48);
+  --wanhu-pause-vignette:rgba(6,8,7,.16);
+  --wanhu-pause-scene-filter:blur(9px) brightness(.68) saturate(.76);
+  --wanhu-pause-surface-bg:rgba(34,36,34,.94);
+  --wanhu-pause-surface-highlight:rgba(255,249,238,.018);
+  --wanhu-pause-surface-shade:rgba(8,10,9,.060);
+  --wanhu-pause-surface-edge:rgba(238,233,223,.070);
+  --wanhu-pause-surface-shadow:0 26px 72px rgba(4,6,5,.34),inset 0 1px 0 rgba(255,255,255,.024);
+  --wanhu-pause-surface-filter:blur(16px) saturate(.82) brightness(.99);
+  --wanhu-pause-row-hover:rgba(255,255,255,.030);
+  --wanhu-pause-row-focus:rgba(169,132,75,.052);
+  --wanhu-pause-focus-line:rgba(169,132,75,.92);
 
   /* Persistent information surface: Top Status. */
   --wanhu-surface-info-bg:rgba(25,31,33,.50);
@@ -259,6 +273,11 @@
   --wanhu-bottom-command-lg-filter:blur(20px) saturate(.84) brightness(1.0);
   --wanhu-bottom-command-md-filter:blur(18px) saturate(.82) brightness(1.0);
   --wanhu-bottom-command-sm-filter:blur(20px) saturate(.86) brightness(1.0);
+
+  /* Night keeps the same Pause language; only density/scene attenuation shift slightly. */
+  --wanhu-pause-dim:rgba(10,12,11,.50);
+  --wanhu-pause-surface-bg:rgba(37,39,36,.95);
+  --wanhu-pause-scene-filter:blur(9px) brightness(.72) saturate(.72);
 
   /* Persistent HUD keeps the reviewed role separation at night. Only the top
      information strip needs a small density lift; detached controls stay stable. */

@@ -68,3 +68,8 @@
 - 视觉或架构决策发生变化时，应更新对应正式文档和 `工作交接.md`；
 - 阶段完成后在 `开发记录/` 留下简明记录；
 - 不把每次 1～2 px CSS 微调写成开发日志。
+
+
+### Pause Blocking Space设计规范.md
+
+记录 Pause Blocking Overlay、中央 Command Surface、3+1 命令层级、Focus / Keyboard 行为、Esc 规则，以及 Pause → Save / Settings / Confirm Dialog 的空间关系。

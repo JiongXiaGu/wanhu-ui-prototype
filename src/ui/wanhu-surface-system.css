@@ -1,4 +1,4 @@
-/* Wanhu Surface System v6
+/* Wanhu Surface System v7
    Formal material owner for gameplay surfaces.
    Theme tokens own palette/material recipes; component CSS owns geometry and local content hierarchy. */
 
@@ -118,6 +118,66 @@
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .design-item-card:focus-visible{
   background:var(--wanhu-surface-work-focus);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+}
+
+
+/* ---------------------------------------------------------------------
+   Pause Blocking Space — scene attenuation, material and command states
+   --------------------------------------------------------------------- */
+.gameplay-screen .pause-shade{
+  background:var(--wanhu-pause-dim);
+  backdrop-filter:var(--wanhu-pause-scene-filter);
+  -webkit-backdrop-filter:var(--wanhu-pause-scene-filter);
+}
+.gameplay-screen .pause-atmosphere{
+  background:radial-gradient(
+    ellipse at 50% 46%,
+    transparent 0 34%,
+    var(--wanhu-pause-vignette) 78%,
+    rgba(6,8,7,.22) 100%
+  );
+}
+.gameplay-screen .pause-command-surface{
+  background-color:var(--wanhu-pause-surface-bg);
+  background-image:
+    linear-gradient(180deg,var(--wanhu-pause-surface-highlight),var(--wanhu-pause-surface-shade)),
+    var(--wanhu-material-noise);
+  background-repeat:repeat,repeat;
+  background-size:auto,256px 256px;
+  border-color:var(--wanhu-pause-surface-edge);
+  box-shadow:var(--wanhu-pause-surface-shadow);
+  backdrop-filter:var(--wanhu-pause-surface-filter);
+  -webkit-backdrop-filter:var(--wanhu-pause-surface-filter);
+}
+.gameplay-screen .pause-heading h2{
+  color:var(--wanhu-color-paper-primary);
+}
+.gameplay-screen .pause-heading p{
+  color:var(--wanhu-color-text-muted);
+}
+.gameplay-screen .pause-command-list button{
+  background:transparent;
+  color:var(--wanhu-color-paper-secondary);
+  outline:none;
+}
+.gameplay-screen .pause-command-list button::before{
+  background:var(--wanhu-pause-focus-line);
+}
+.gameplay-screen .pause-command-list button:hover{
+  background:var(--wanhu-pause-row-hover);
+  color:var(--wanhu-color-text-secondary);
+}
+.gameplay-screen .pause-command-list button:focus,
+.gameplay-screen .pause-command-list button:focus-visible{
+  background:var(--wanhu-pause-row-focus);
+  color:var(--wanhu-color-paper-primary);
+}
+.gameplay-screen .pause-command-group--exit button{
+  color:var(--wanhu-color-text-muted);
+}
+.gameplay-screen .pause-command-divider{
+  background:var(--wanhu-surface-blocking-rule);
+  opacity:.75;
 }
 
 /* ---------------------------------------------------------------------

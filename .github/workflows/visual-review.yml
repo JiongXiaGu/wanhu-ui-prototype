@@ -57,6 +57,7 @@ jobs:
           exit 1
       - name: Capture review screenshots
         run: |
+          node scripts/capture-pause-review.mjs
           node scripts/capture-review-v2.mjs
           node scripts/capture-management-review.mjs
           node scripts/capture-design-workspace-review.mjs
@@ -74,8 +75,10 @@ jobs:
           node scripts/capture-left-context-system-review.mjs
           node scripts/capture-bottom-command-system-review.mjs
       - name: Compress review previews
+        if: always()
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: visual-review
