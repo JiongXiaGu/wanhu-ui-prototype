@@ -80,7 +80,7 @@
 }
 
 .asset-inspector-popover[data-ready='true']{
-  animation:asset-inspector-enter .13s cubic-bezier(.2,.72,.24,1) both;
+  animation:asset-inspector-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }
 
 .asset-inspector__header{

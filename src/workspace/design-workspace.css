@@ -65,7 +65,7 @@
   background:#858984;
   opacity:.52;
   transform:translateY(-50%);
-  animation:workspace-pager-marker-enter .16s ease-out both;
+  animation:workspace-pager-marker-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,ease-out) both;
 }
 
 .gameplay-screen .workspace--design .workspace-catalog{
@@ -113,7 +113,7 @@
   color:inherit;
   cursor:pointer;
   text-align:left;
-  transition:background .14s ease,box-shadow .14s ease;
+  transition:background var(--wanhu-motion-control,120ms) ease,box-shadow var(--wanhu-motion-control,120ms) ease;
 }
 
 .design-item-card:hover,
@@ -139,7 +139,7 @@
   opacity:0;
   border-radius:0 2px 2px 0;
   background:#c9aa68;
-  transition:opacity .14s ease;
+  transition:opacity var(--wanhu-motion-control,120ms) ease;
 }
 
 /* Hover is neutral; old gold is reserved for keyboard/gamepad focus. */
@@ -152,7 +152,7 @@
   border-radius:8px 0 0 8px;
   filter:brightness(.94) saturate(.88);
   transform:none;
-  transition:filter .15s ease;
+  transition:filter var(--wanhu-motion-control,120ms) ease;
 }
 
 .design-item-card:hover .card-thumb,
@@ -213,12 +213,12 @@
   border-radius:2px;
   background:#858984;
   opacity:.52;
-  animation:workspace-pager-marker-enter .16s ease-out both;
+  animation:workspace-pager-marker-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,ease-out) both;
 }
 
 .gameplay-screen .workspace--design .workspace-content-pager button span,
 .gameplay-screen .workspace--design .workspace-rail-pager button span{
-  animation:workspace-pager-marker-enter .16s ease-out both;
+  animation:workspace-pager-marker-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,ease-out) both;
 }
 
 @keyframes workspace-pager-marker-enter{

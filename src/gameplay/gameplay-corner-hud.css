@@ -7,7 +7,7 @@
   pointer-events:none;
   z-index:24;
   opacity:.88;
-  transition:opacity .16s ease,filter .16s ease;
+  transition:opacity var(--wanhu-motion-surface,160ms) ease,filter var(--wanhu-motion-surface,160ms) ease;
 }
 
 .gameplay-compass-hud.is-build-mode{
@@ -182,7 +182,7 @@
   color:#747d75;
   cursor:pointer;
   opacity:.82;
-  transition:opacity .14s ease,background .14s ease,border-color .14s ease,color .14s ease,transform .08s ease;
+  transition:opacity var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease;
 }
 .gameplay-system-menu-button svg{width:19px;height:19px;stroke-width:1.55}
 .gameplay-system-menu-button:hover{
@@ -209,12 +209,12 @@
   pointer-events:none;
   white-space:nowrap;
   font-size:9px;
-  transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
+  transition:opacity var(--wanhu-motion-fast,100ms) ease,transform var(--wanhu-motion-fast,100ms) ease,visibility var(--wanhu-motion-fast,100ms) ease;
   transform:translateY(-3px);
 }
 .gameplay-system-menu-button[data-tooltip]:hover::after{
   opacity:1;
   visibility:visible;
   transform:translateY(0);
-  transition-delay:.28s;
+  transition-delay:var(--wanhu-tooltip-delay,320ms);
 }

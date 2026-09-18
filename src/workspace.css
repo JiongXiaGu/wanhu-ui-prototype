@@ -75,7 +75,7 @@
   font-size:10.5px;
   letter-spacing:.022em;
   cursor:pointer;
-  transition:background .14s ease,color .14s ease,transform .14s ease;
+  transition:background var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-control,120ms) ease;
 }
 
 .workspace-primary-rail button svg{
@@ -84,7 +84,7 @@
   flex:0 0 16px;
   stroke-width:1.55;
   opacity:.82;
-  transition:opacity .14s ease,transform .14s ease;
+  transition:opacity var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-control,120ms) ease;
 }
 
 .workspace-primary-rail button:hover{background:linear-gradient(90deg,rgba(255,255,255,.030),transparent 82%);color:#c5c3bb;transform:translateX(1px)}
@@ -117,7 +117,7 @@
   display:flex;
   flex-direction:column;
   gap:3px;
-  animation:workspace-rail-page-enter .15s ease-out both;
+  animation:workspace-rail-page-enter var(--wanhu-motion-control,120ms) ease-out both;
 }
 
 .workspace-rail-pager{
@@ -163,7 +163,7 @@
   border-radius:50%;
   background:#656c66;
   box-shadow:0 0 0 1px rgba(0,0,0,.18);
-  transition:width .14s ease,height .14s ease,border-radius .14s ease,background .14s ease,box-shadow .14s ease;
+  transition:width var(--wanhu-motion-control,120ms) ease,height var(--wanhu-motion-control,120ms) ease,border-radius var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,box-shadow var(--wanhu-motion-control,120ms) ease;
 }
 .workspace-rail-pager button:hover span{background:#aaa897}
 .workspace-rail-pager button.is-active span{
@@ -218,7 +218,7 @@
   font-size:9.5px;
   letter-spacing:.014em;
   cursor:pointer;
-  transition:color .14s ease,transform .14s ease;
+  transition:color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-control,120ms) ease;
 }
 .workspace-context-filter__scroll>button:hover{color:#c6c4bc;transform:translateY(-1px)}
 .workspace-context-filter__scroll>button.is-active{color:#d8bb76}
@@ -241,7 +241,7 @@
   grid-template-rows:repeat(2,88px);
   gap:8px 9px;
   align-content:start;
-  animation:workspace-content-page-enter .17s cubic-bezier(.2,.7,.25,1) both;
+  animation:workspace-content-page-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }
 
 .workspace-content-pager{
@@ -266,7 +266,7 @@
   height:4px;
   border-radius:50%;
   background:#646b65;
-  transition:width .15s ease,height .15s ease,border-radius .15s ease,background .15s ease,box-shadow .15s ease;
+  transition:width var(--wanhu-motion-control,120ms) ease,height var(--wanhu-motion-control,120ms) ease,border-radius var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,box-shadow var(--wanhu-motion-control,120ms) ease;
 }
 .workspace-content-pager button:hover span{background:#9d9d8f}
 .workspace-content-pager button.is-active{width:22px}
@@ -304,7 +304,7 @@
   box-shadow:inset 0 1px 0 rgba(239,233,221,.018);
   cursor:pointer;
   text-align:left;
-  transition:background .16s ease,transform .16s cubic-bezier(.2,.7,.25,1),box-shadow .16s ease;
+  transition:background var(--wanhu-motion-surface,160ms) ease,transform var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)),box-shadow var(--wanhu-motion-surface,160ms) ease;
 }
 .building-card:hover{
   background:linear-gradient(90deg,rgba(201,165,95,.052),rgba(255,255,255,.010) 72%,rgba(255,255,255,.003));
@@ -321,7 +321,7 @@
   width:2px;
   opacity:0;
   background:linear-gradient(180deg,#c9a55f,rgba(201,165,95,.18));
-  transition:opacity .14s ease;
+  transition:opacity var(--wanhu-motion-control,120ms) ease;
 }
 .building-card:hover::before,.building-card:focus-visible::before{opacity:.78}
 
@@ -335,7 +335,7 @@
   background-color:#29342f;
   background-repeat:no-repeat;
   box-shadow:inset 0 1px 0 rgba(239,233,221,.035),inset 0 0 0 1px rgba(239,233,221,.025);
-  transition:transform .20s cubic-bezier(.2,.7,.25,1),filter .18s ease;
+  transition:transform var(--wanhu-motion-space,200ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)),filter var(--wanhu-motion-surface,160ms) ease;
 }
 .card-thumb::before{
   content:'';

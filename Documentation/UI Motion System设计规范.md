@@ -186,10 +186,11 @@ USS 负责：
 
 已接入：
 
+- Main Menu / New Game / Load / Settings / Loading / Gameplay 全局 Screen Crossfade；
 - Main Dock；
 - Design Workspace；
 - Top Control Tray；
-- Camera / Environment Context；
+- Camera / Environment Context Open / Close + 同壳内容 Crossfade；
 - Building / Road Placement Context；
 - Placement Action Bar；
 - Context Utility Swap；
@@ -198,4 +199,6 @@ USS 负责：
 - Dialog Open / Close；
 - Toast 时长开始消费共享 Motion Token。
 
-后续新增 UI 默认必须先选择 Motion Preset，而不是写新的局部 keyframe。
+高频组件的 Hover / Pager / Inspector / Operation Hint 时长也已开始消费共享 Motion Token。
+
+后续新增 UI 默认必须先选择 Motion Preset，而不是写新的局部 keyframe。页面级 Flow 统一使用轻 Crossfade + 4px Enter，不使用横向 App 式滑页。

@@ -25,7 +25,7 @@
   overflow:hidden;
   border:0;
   border-radius:0;
-  animation:settings-global-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,ease-out) both;
+  animation:none;
 }
 
 .settings-space__header{
@@ -68,7 +68,7 @@
   font-weight:500;
   letter-spacing:.015em;
   cursor:pointer;
-  transition:color .12s ease,background .12s ease,transform .10s ease;
+  transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease;
 }
 .settings-space__tabs button::after{
   content:'';
@@ -80,7 +80,7 @@
   border-radius:2px;
   opacity:0;
   transform:scaleX(.6);
-  transition:opacity .12s ease,transform .14s ease;
+  transition:opacity var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-control,120ms) ease;
 }
 .settings-space__tabs button:hover{transform:translateY(-1px)}
 .settings-space__tabs button:active{transform:translateY(0)}
@@ -134,7 +134,7 @@
   justify-content:space-between;
   gap:34px;
   border-radius:8px;
-  transition:background .12s ease,opacity .12s ease;
+  transition:background var(--wanhu-motion-control,120ms) ease,opacity var(--wanhu-motion-control,120ms) ease;
 }
 .settings-row.is-disabled{opacity:.34}
 .settings-row.is-disabled:hover{background:transparent}
@@ -176,7 +176,7 @@
   border-radius:10px;
   font:inherit;
   cursor:pointer;
-  transition:color .12s ease,background .12s ease,border-color .12s ease;
+  transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease;
 }
 .settings-footer-back svg{stroke-width:1.6}
 .settings-restore{
@@ -190,7 +190,7 @@
   font:inherit;
   font-size:9px;
   cursor:pointer;
-  transition:color .12s ease,background .12s ease;
+  transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease;
 }
 
 @keyframes settings-global-enter{from{opacity:.72}to{opacity:1}}

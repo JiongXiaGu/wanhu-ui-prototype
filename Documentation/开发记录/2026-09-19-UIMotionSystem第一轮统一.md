@@ -32,7 +32,11 @@
 - Pause Open / Close；
 - Pause Menu ↔ Save / Settings；
 - Dialog Open / Close；
-- Toast Duration Token。
+- Toast Duration Token；
+- Main Menu / New Game / Load / Settings / Loading / Gameplay Screen Crossfade；
+- Camera / Environment 同壳内容 Crossfade；
+- Building / Road 参数内容 Rebind Motion；
+- Workspace / Top Shell / New Game / Archive / Inspector / Operation Hint 高频 Transition 开始统一到 Motion Token。
 
 ## Tool Handoff
 
@@ -47,3 +51,16 @@ Workspace → Tool 时业务状态立即切换，但旧 Workspace / Dock / Tray 
 `Business State → UITransitionController → Presence Class → USS opacity / translate`。
 
 不建立大型 Timeline 动画系统。
+
+
+## Global Flow
+
+App 层新增 keyed Screen Transition Host：
+
+- 旧 Screen Fast Exit 100ms；
+- 新 Screen Space Crossfade 200ms + Y 4px；
+- Outgoing Screen 立即关闭 Pointer Input；
+- 不使用横向滑页；
+- 不动画布局尺寸。
+
+Settings 原有全屏 Enter 已移除，避免与共享 Screen Transition 叠加。
