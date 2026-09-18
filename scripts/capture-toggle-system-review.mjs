@@ -104,6 +104,7 @@ assertBaseGeometry('Load Off Toggle', loadOff);
 assertSameVisual('Settings vs Load Off Toggle', offVisual, loadOff, ['hitWidth','hitHeight','trackWidth','trackHeight','trackRadius','trackBackground','trackBorder','thumbWidth','thumbHeight','thumbLeft','thumbBackground']);
 await loadToggle.click();
 await page.waitForFunction(() => document.querySelector('.archive-hide-outdated .ui-toggle')?.getAttribute('aria-pressed') === 'true');
+await page.mouse.move(0, 0);
 await page.waitForTimeout(190);
 const loadOn = await toggleVisual(loadToggle);
 assertSameVisual('Settings vs Load On Toggle', onVisual, loadOn, ['trackWidth','trackHeight','trackRadius','trackBackground','trackBorder','thumbWidth','thumbHeight','thumbLeft','thumbBackground']);
