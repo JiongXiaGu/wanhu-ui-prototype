@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, Dices } from 'lucide-react';
+import { useDialogSystem } from '../ui/dialog/DialogSystem';
 import './new-game-space.css';
 
 type MapKind = 'preset' | 'random';
@@ -129,6 +130,7 @@ function randomProfileFor(seed: string) {
 }
 
 export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
+  const dialogs = useDialogSystem();
   const [filter, setFilter] = useState<MapFilter>('all');
   const [selectedMapId, setSelectedMapId] = useState(MAPS[0].id);
   const [size, setSize] = useState('大型');
@@ -156,6 +158,32 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
   function randomizeCityName() {
     const candidates = CITY_NAMES.filter((name) => name !== cityName.trim());
     setCityName(candidates[Math.floor(Math.random() * candidates.length)] ?? CITY_NAMES[0]);
+  }
+
+  function editCityName() {
+    dialogs.input({
+      title: '修改城市名称',
+      label: '城市名称',
+      initialValue: cityName,
+      maxLength: 18,
+      helperText: '最多 18 个字符',
+      confirmText: '确认',
+      onConfirm: setCityName,
+    });
+  }
+
+  function editSeed() {
+    dialogs.input({
+      title: '输入随机种子',
+      label: '随机种子',
+      initialValue: seed,
+      inputMode: 'numeric',
+      maxLength: 10,
+      helperText: '1–10 位数字',
+      validate: (value) => /^\d{1,10}$/.test(value) ? undefined : '随机种子只能包含 1–10 位数字。',
+      confirmText: '确认',
+      onConfirm: setSeed,
+    });
   }
 
   return (
@@ -227,22 +255,22 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
             <GeneratorGroup label="游戏模式" values={GAME_MODES} value={gameMode} onChange={setGameMode} />
             {isRandom && <GeneratorGroup label="地图尺寸" values={SIZES} value={size} onChange={setSize} />}
 
-            <label className="new-game-plan__field">
+            <div className="new-game-plan__field">
               <span>城市名称</span>
               <div className="new-game-input-row">
-                <input aria-label="城市名称" value={cityName} maxLength={18} placeholder="请输入城市名称" onChange={(event) => setCityName(event.target.value)} />
+                <button type="button" className="new-game-value-button" aria-label={`修改城市名称，当前 ${cityName}`} onClick={editCityName}><span>{cityName}</span></button>
                 <button type="button" className="new-game-randomize-button" aria-label="随机城市名称" title="随机城市名称" onClick={randomizeCityName}><Dices size={14} /></button>
               </div>
-            </label>
+            </div>
 
             {isRandom && (
-              <label className="new-game-plan__field">
+              <div className="new-game-plan__field">
                 <span>随机种子</span>
                 <div className="new-game-input-row">
-                  <input aria-label="随机种子" value={seed} inputMode="numeric" onChange={(event) => setSeed(event.target.value.replace(/\D/g, '').slice(0, 10))} />
+                  <button type="button" className="new-game-value-button" aria-label={`修改随机种子，当前 ${seed}`} onClick={editSeed}><span>{seed}</span></button>
                   <button type="button" className="new-game-randomize-button" aria-label="随机地图种子" title="随机地图种子" onClick={randomizeSeed}><Dices size={14} /></button>
                 </div>
-              </label>
+              </div>
             )}
           </section>
         </aside>

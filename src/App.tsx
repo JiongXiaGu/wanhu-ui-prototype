@@ -7,7 +7,6 @@ import { GameplayScreen } from './gameplay/GameplayScreen';
 import { LoadingSpace } from './loading/LoadingSpace';
 import { MainMenu, type MainMenuAction } from './menu/MainMenu';
 import { NewGameSpace } from './new-game/NewGameSpace';
-import { BindingDialogDemo } from './settings/BindingDialogDemo';
 import { SettingsPanel } from './settings/SettingsPanel';
 import { DialogHost, NotificationHost, useDialogSystem } from './ui/dialog/DialogSystem';
 
@@ -99,7 +98,6 @@ export default function App() {
 
         <NotificationHost />
         <DialogHost />
-        <BindingDialogDemo />
       </main>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Check,
   ChevronLeft,
@@ -59,8 +59,6 @@ type BindingGroup = {
   bindings: BindingItem[];
 };
 
-type ListeningBinding = { id: string; slot: BindingSlot } | null;
-type BindingConflict = { id: string; slot: BindingSlot; owner: string } | null;
 const SAFE_DISPLAY_SETTING_IDS = new Set(['display-mode', 'monitor', 'resolution', 'refresh-rate', 'hdr-output', 'ui-scale']);
 
 const categories: { key: Category; icon: typeof Monitor; detail: string }[] = [
@@ -277,18 +275,15 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
   const [values, setValues] = useState<Record<string, SettingValue>>(defaults);
   const [bindings, setBindings] = useState<Record<string, BindingValue>>(defaultBindings);
   const [openBindingGroups, setOpenBindingGroups] = useState<string[]>(['basic']);
-  const [listening, setListening] = useState<ListeningBinding>(null);
-  const [bindingConflict, setBindingConflict] = useState<BindingConflict>(null);
 
   useEffect(() => {
     const handleEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape') return;
-      if (listening) return;
       onClose();
     };
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [listening, onClose]);
+  }, [onClose]);
 
   function setSetting(row: SettingRow, value: SettingValue) {
     const previousValue = values[row.id];
@@ -322,8 +317,6 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
 
     if (active === '操作') {
       setBindings(defaultBindings);
-      setBindingConflict(null);
-      setListening(null);
     }
 
     const hasDangerousDisplayChange = active === '显示' && ids.some((id) => SAFE_DISPLAY_SETTING_IDS.has(id) && !Object.is(values[id], defaults[id]));
@@ -352,45 +345,30 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
     const source = getBindingItem(id);
     if (!source) return;
     setBindings((current) => ({ ...current, [id]: { primary: source.primary, secondary: source.secondary ?? '' } }));
-    setBindingConflict(null);
-    setListening(null);
   }
 
-  function startListening(id: string, slot: BindingSlot) {
-    setListening({ id, slot });
-    setBindingConflict(null);
-  }
-
-  function handleBindingKeyDown(event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) {
-    if (!listening || listening.id !== id || listening.slot !== slot) return;
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (event.key === 'Escape') {
-      setListening(null);
-      setBindingConflict(null);
-      return;
-    }
-
-    if (event.key === 'Backspace' || event.key === 'Delete') {
-      setBindings((current) => ({ ...current, [id]: { ...current[id], [slot]: '' } }));
-      setListening(null);
-      setBindingConflict(null);
-      return;
-    }
-
-    const nextBinding = formatBindingKey(event);
-    if (!nextBinding) return;
-
-    const conflictOwner = bindingGroups.flatMap((group) => group.bindings).find((binding) => binding.id !== id && (bindings[binding.id]?.primary === nextBinding || bindings[binding.id]?.secondary === nextBinding));
-    if (conflictOwner) {
-      setBindingConflict({ id, slot, owner: conflictOwner.label });
-      return;
-    }
-
-    setBindings((current) => ({ ...current, [id]: { ...current[id], [slot]: nextBinding } }));
-    setListening(null);
-    setBindingConflict(null);
+  function requestBindingEdit(id: string, slot: BindingSlot) {
+    const source = getBindingItem(id);
+    if (!source) return;
+    const currentValue = bindings[id]?.[slot] ?? '';
+    dialogs.binding({
+      title: '修改按键绑定',
+      actionLabel: source.label,
+      slotLabel: slot === 'primary' ? '主要按键' : '次要按键',
+      initialValue: currentValue,
+      confirmText: '保存',
+      validate: (next) => {
+        if (!next) return undefined;
+        const conflictOwner = bindingGroups
+          .flatMap((group) => group.bindings)
+          .find((binding) => binding.id !== id && (bindings[binding.id]?.primary === next || bindings[binding.id]?.secondary === next));
+        return conflictOwner ? `“${next}”已用于“${conflictOwner.label}”。请换一个按键。` : undefined;
+      },
+      onConfirm: (next) => {
+        setBindings((current) => ({ ...current, [id]: { ...current[id], [slot]: next } }));
+        dialogs.toast('按键绑定已更新。', 'success');
+      },
+    });
   }
 
   return (
@@ -416,12 +394,9 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
               values={values}
               bindings={bindings}
               openGroups={openBindingGroups}
-              listening={listening}
-              conflict={bindingConflict}
               onChange={(row, value) => setSetting(row, value)}
               onToggleGroup={toggleBindingGroup}
-              onStartListening={startListening}
-              onBindingKeyDown={handleBindingKeyDown}
+              onEditBinding={requestBindingEdit}
               onResetBinding={resetBinding}
             />
           ) : (
@@ -462,24 +437,18 @@ function ControlsSettingsView({
   values,
   bindings,
   openGroups,
-  listening,
-  conflict,
   onChange,
   onToggleGroup,
-  onStartListening,
-  onBindingKeyDown,
+  onEditBinding,
   onResetBinding,
 }: {
   rows: SettingRow[];
   values: Record<string, SettingValue>;
   bindings: Record<string, BindingValue>;
   openGroups: string[];
-  listening: ListeningBinding;
-  conflict: BindingConflict;
   onChange: (row: SettingRow, value: SettingValue) => void;
   onToggleGroup: (id: string) => void;
-  onStartListening: (id: string, slot: BindingSlot) => void;
-  onBindingKeyDown: (event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) => void;
+  onEditBinding: (id: string, slot: BindingSlot) => void;
   onResetBinding: (id: string) => void;
 }) {
   return (
@@ -505,7 +474,7 @@ function ControlsSettingsView({
                 {open && (
                   <div className="settings-binding-group__rows">
                     {group.bindings.map((binding) => (
-                      <BindingRow key={binding.id} binding={binding} value={bindings[binding.id]} listening={listening} conflict={conflict} onStartListening={onStartListening} onKeyDown={onBindingKeyDown} onReset={onResetBinding} />
+                      <BindingRow key={binding.id} binding={binding} value={bindings[binding.id]} onEdit={onEditBinding} onReset={onResetBinding} />
                     ))}
                   </div>
                 )}
@@ -566,51 +535,29 @@ function formatSliderValue(row: SettingRow, value: number) {
   return `${Math.round(value)}`;
 }
 
-function BindingRow({ binding, value, listening, conflict, onStartListening, onKeyDown, onReset }: {
+function BindingRow({ binding, value, onEdit, onReset }: {
   binding: BindingItem;
   value: BindingValue;
-  listening: ListeningBinding;
-  conflict: BindingConflict;
-  onStartListening: (id: string, slot: BindingSlot) => void;
-  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>, id: string, slot: BindingSlot) => void;
+  onEdit: (id: string, slot: BindingSlot) => void;
   onReset: (id: string) => void;
 }) {
   const renderBindingButton = (slot: BindingSlot) => {
-    const isListening = listening?.id === binding.id && listening.slot === slot;
-    const isConflict = conflict?.id === binding.id && conflict.slot === slot;
     const text = value?.[slot] ?? '';
     return (
       <InputBindingField
         ariaLabel={`${binding.label}${slot === 'primary' ? '主要按键' : '次要按键'}：${text || '未设置'}`}
         value={text}
-        listening={isListening}
-        conflict={isConflict}
         className="settings-binding-control"
-        onClick={() => onStartListening(binding.id, slot)}
-        onKeyDown={(event) => onKeyDown(event, binding.id, slot)}
+        onClick={() => onEdit(binding.id, slot)}
       />
     );
   };
-  const rowConflict = conflict?.id === binding.id ? `与“${conflict.owner}”冲突` : '';
   return (
-    <div className={`settings-binding-row ${rowConflict ? 'has-conflict' : ''}`} title={binding.detail}>
-      <span className="settings-binding-row__label"><b>{binding.label}</b>{rowConflict && <small>{rowConflict}</small>}</span>
+    <div className="settings-binding-row" title={binding.detail}>
+      <span className="settings-binding-row__label"><b>{binding.label}</b></span>
       {renderBindingButton('primary')}{renderBindingButton('secondary')}
       <button type="button" className="settings-binding-row__reset" aria-label={`恢复${binding.label}默认按键`} onClick={() => onReset(binding.id)}><RotateCcw size={13} /></button>
     </div>
   );
 }
 
-function formatBindingKey(event: KeyboardEvent<HTMLButtonElement>) {
-  const modifierOnly = ['Control', 'Shift', 'Alt', 'Meta'];
-  if (modifierOnly.includes(event.key)) return '';
-  const aliases: Record<string, string> = { ' ': 'Space', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→' };
-  const base = aliases[event.key] ?? (event.key.length === 1 ? event.key.toUpperCase() : event.key);
-  const parts: string[] = [];
-  if (event.ctrlKey) parts.push('Ctrl');
-  if (event.shiftKey) parts.push('Shift');
-  if (event.altKey) parts.push('Alt');
-  if (event.metaKey) parts.push('Meta');
-  parts.push(base);
-  return parts.join(' + ');
-}

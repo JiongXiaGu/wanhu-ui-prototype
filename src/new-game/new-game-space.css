@@ -285,21 +285,26 @@
   align-items:center;
   gap:7px;
 }
-.new-game-input-row input{
+.new-game-value-button{
   min-width:0;
   flex:1 1 auto;
   height:37px;
   padding:0 11px;
-  border:1px solid rgba(239,233,221,.095);
-  border-radius:2px;
-  outline:0;
-  background:rgba(255,255,255,.012);
-  color:#e0dbd0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--ui-field-border);
+  border-radius:8px;
+  background:var(--ui-field-surface);
+  color:var(--wanhu-color-text-secondary,#d4cfc6);
   font:inherit;
   font-size:10px;
+  cursor:pointer;
+  transition:color .12s ease,border-color .12s ease,background .12s ease,box-shadow .12s ease;
 }
-.new-game-input-row input:hover{border-color:rgba(239,233,221,.15)}
-.new-game-input-row input:focus{border-color:rgba(201,165,95,.42);background:rgba(201,165,95,.028)}
+.new-game-value-button span{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.new-game-value-button:hover{color:var(--wanhu-color-paper-primary,#eee9df);border-color:var(--ui-field-border-hover);background:var(--ui-field-surface-hover)}
+.new-game-value-button:focus-visible{outline:0;border-color:var(--ui-field-border-focus);background:var(--ui-field-surface-focus);box-shadow:0 0 0 3px rgba(201,165,95,.045)}
 .new-game-randomize-button{
   flex:0 0 37px;
   width:37px;
