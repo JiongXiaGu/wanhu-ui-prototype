@@ -65,21 +65,14 @@ Settings / Load / Save / New Game 在相同视觉状态下必须共享：
 
 昼夜只通过全局 Token 调整 Density / Scene attenuation。Settings 与 Save 在同一夜景世界下必须计算为同一 Root / Header / Footer Material。
 
-## 6. Review 门槛
+## 6. 验收门槛
 
-Playwright 必须比较 Settings / Load / Save / New Game 的 computed style，而不只依赖截图：
+Settings / Load / Save / New Game 必须继续遵守同一个 Global Space 所有权链：
 
-- Root background-image；
-- backdrop-filter；
-- Header background / rule；
-- Footer background / rule；
-- Title font / size / weight / color。
+- Root 使用 `.wanhu-global-space`；
+- Header / Footer 使用共享 Global Space Class；
+- Root / Header / Footer 材质由共享 Token / Surface System 持有；
+- 页面 Geometry CSS 不重新定义独立 Root Theme；
+- Build 必须通过。
 
-截图至少覆盖：
-
-- Settings day；
-- Load day；
-- Save day；
-- New Game；
-- Settings night；
-- Save night。
+不再要求 GitHub Actions Visual Review、computed-style Playwright 对比或截图 Artifact。

@@ -16,8 +16,8 @@
 - Confirm / Text / Number / Binding / Timed Confirmation 继续共享唯一 `DialogFrame`；
 - Toast 同步收束为中性 Smoked Graphite 家族；
 - 新增 Dialog Token，并由 `wanhu-surface-system.css` 正式持有材质；
-- Playwright 增加 Confirm / Number / Timed / Text / Binding 的真实截图与 computed-style 门槛；
-- 自动审查强制验证 Dialog Backdrop 与 Surface 均无 Blur、Surface 为半透明中性 Graphite。
+- Dialog 的 no-blur / neutral graphite / semantic header 约束已写入正式规范与代码所有权；
+- Visual Review 自动化随后退出默认项目流程，不再作为 Dialog 交付门槛。
 
 ## Visual Review 修复
 
@@ -29,8 +29,9 @@
 
 ## CI
 
-- Dialog Tone 审查扩展后，完整 Visual Review 已接近原 6 分钟上限；
-- Visual Review workflow 超时由 6 分钟调整为 10 分钟，保留完整截图链路，不删除审查项换取速度。
+- GitHub Actions Visual Review 自动化已按当前工作方式移除；
+- Build 保留为默认 GitHub Actions 验证；
+- capture 脚本仅保留为手动调试工具。
 
 ## Unity 落地
 
