@@ -9,9 +9,10 @@
 1. `Documentation/工作交接.md`
 2. `Documentation/项目概览.md`
 3. `Documentation/UI设计原则.md`
-4. `Documentation/UI空间与状态架构.md`
-5. `Documentation/UI原型复核流程.md`
-6. 当前任务相关的决策记录、组件规范与代码
+4. `Documentation/Wanhu 烟墨熟铜视觉材质规范.md`
+5. `Documentation/UI空间与状态架构.md`
+6. `Documentation/UI原型复核流程.md`
+7. 当前任务相关的决策记录、组件规范与代码
 
 不要只根据当前对话直接改代码；先确认现有空间职责、状态边界和已确定决策。
 

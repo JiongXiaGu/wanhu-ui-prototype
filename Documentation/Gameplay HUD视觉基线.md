@@ -1,205 +1,186 @@
 # Gameplay HUD 视觉基线
 
-Gameplay HUD 的目标是让世界画面始终成为主体，同时让不同操作模块看起来属于同一套系统。
+本规范记录 Gameplay HUD 的当前稳定构图与视觉层级。Palette / 材质母版以 `Documentation/Wanhu 烟墨熟铜视觉材质规范.md` 为权威来源。
 
-## 空间职责
+## 1. 目标
 
-- Gameplay Top Shell：城市持续状态、城市管理入口、信息视图入口、场景工具与时间控制；
-- Main Dock：回答“我要建造什么”，只承载建造 / 内容分类；
-- World Utility Toolbar：回答“我要如何编辑世界”，承载跨分类、跨 Tool 仍然成立的世界级工具；
-- Operation Hints：只显示当前输入提示，不承担可点击操作；
-- Tool Bottom Dock：只负责当前 Tool 的任务专用模式、参数、完成与取消。
+- 世界画面始终是视觉主体；
+- Top HUD、Context、Workspace、Dock、Utility 看起来属于同一套烟墨熟铜系统；
+- 不用不同 Hue 区分模块；
+- 角色身份通过 Surface Tier、Density、Elevation、信息密度和状态语法表达。
 
-World Utility Toolbar 与 Operation Hints 在空间上右对齐，但保持独立 Surface；进入 Building Placement 时不复制 Grid / Undo 等世界级工具。
+## 2. 1920×1080 稳定槽位
 
-## 1920×1080 外边距基线
+- 左上：Compass HUD；
+- 顶部中央：Top Shell；
+- 右上：System Menu / Notification Zone；
+- 左下：Context / Tool Parameter / 未来 Selection Inspector；
+- 中下：Main Dock / Workspace / Placement Action Bar；
+- 右下：Operation Hints + World Utility。
 
-Gameplay 外围 HUD 使用统一安全边距：
+外围 Safe Edge 默认 `16px`；同级独立 Surface 常用约 `12px` 间距。
 
-- 上 / 左 / 右 / 下：`16px`；
-- 相邻独立 HUD 模块常用间距：`12px`；
-- Main Dock 与 World Utility Toolbar 在 1920×1080 下保持约 `16px` 的水平间隔；
-- Camera / Weather Right Edge Flyout 也使用 `16px` 顶部与右侧安全边距，不贴屏幕边缘。
+## 3. Top Shell
 
-Main Dock、Top Shell、Management Space 等核心操作结构跟随视觉中心；World Utility Toolbar、Operation Hints、Right Edge Flyout 等外围工具跟随 Viewport 边缘。超宽屏中外围工具允许移动到更外侧，不强制贴近视觉中心。
+### Persistent Status Row
 
-代码中的外围几何与视觉 Token 集中由 `src/gameplay/gameplay-hud-layout.css` 提供；组件 CSS 只维护自己内部排版、Surface 和状态，不允许多个文件重复拥有同一组件的外部几何。
+左：
 
-## 视觉 Token
+- 当前天气；
+- 季节；
+- 游戏时间。
 
-Gameplay HUD 统一使用同一套现代东方深墨 Surface，不再让顶部、底部、Workspace、World Utility 分别使用不同的黑灰材质。
+中：固定四个 Icon + Number Quick Entry：
 
-### Radius
+- 人口 → 城市；
+- 金钱 → 经济；
+- 贸易值 → 库存；
+- 军事值 → 军事。
 
-- `R1 = 10px`：小按钮、局部输入、Tooltip；
-- `R2 = 14px`：Top Status、Main Dock、World Utility、Operation Hints、Tool Bottom Dock；
-- `R3 = 18px`：Workspace、Camera / Weather Flyout、Building Placement Context Panel 等大 Surface。
+顶部四项只负责摘要与快捷打开，不拥有 Selected / Active。
 
-同一级别 Surface 必须使用同一圆角家族；避免继续出现大量 `1px / 2px` 方角组件。
+右：模拟速度图标 `0 / 1 / 2 / 4`。模拟暂停不等于 Pause Menu。
 
-### Surface
+### Control Tray
 
-- Primary：Top Status Row、Main Dock、大 Context Surface；
-- Secondary：Top Control Tray、World Utility；
-- Tertiary：Operation Hints。
+正式顺序：
 
-当前 Tool 若处于玩家的强任务上下文，其任务主控条允许升级为 Primary Surface，而不是机械地套用 Secondary。Building Placement Bottom Dock 就属于这一类。
+`Camera / Weather │ 城市 / 经济 / 库存 / 政策 / 军事 │ Information Views`
 
-Primary 最实，Secondary 稍轻，Tertiary 最透明。边框统一使用低对比暖灰纸色；阴影用于悬浮关系，不制造厚重卡片感。
+- 只显示图标；
+- Tooltip 提供名称；
+- Control Tray 才拥有 Management Selected；
+- Tool 中隐藏 Control Tray，只保留 Persistent Status Row。
 
-### 色彩与状态
+Top Shell 使用偏轻的 Smoked Graphite；Persistent Status 比 Control Tray 更稳定，但两层不换 Hue。
 
-- 主 Surface：深墨青 / 深青黑；
-- 主文字：浅纸色；
-- 次级文字与默认 Icon：低饱和灰绿；
-- Selected / Toggle On / Focus：暖金；
-- Hover：只轻微提亮背景与 Icon；
-- Disabled：降低亮度与对比，不额外增加说明。
+## 4. Compass / System Zone
 
-暖金只用于状态，不作为普通装饰边框。
+Compass：
 
-## Gameplay Top Shell
+- 约 `76×76px`；
+- 中文东南西北；
+- 北向熟铜；
+- 不做复杂风水罗盘纹样。
 
-Top Shell 保持两层，但职责明确分开。
+System Menu：
 
-第一层 **Status Row**：
+- Ambient Surface；
+- 默认低存在感；
+- Hover 才提亮；
+- 与模拟暂停严格区分。
 
-- 左：天气状态 + 季节 / 时间；
-- 中：钱粮 / 人口 / 木材 / 石料，必须保持几何居中；
-- 右：模拟时间控制。
+## 5. 左下 Context Surface
 
-时间控制全部使用图标，不显示 `×1 / ×2 / ×4` 文本：
+Environment / Camera 共用左下槽位：
 
-- Pause：暂停模拟；
-- Play：正常速度；
-- Chevrons：加速；
-- Fast Forward：高速。
+- 左 / 下 `16px`；
+- Camera 约 `360px`；
+- Environment 约 `400px`；
+- 最大高度约 `720px`；
+- 内容超高只滚 Body；
+- Header 使用 Bare Icon + Title；
+- 与 Workspace 当前互斥。
 
-`speed` 仍使用 `0 / 1 / 2 / 4` 状态，其中 `0` 是模拟暂停，不等同于打开 Pause Menu。
+### 视觉身份
 
-第二层 **Control Tray** 按 `观察 / 管理 / 场景工具` 排列：
+Context 必须直接继承烟墨熟铜母版：
 
-- 左：信息视图 / 图层；
-- 中：城市 / 经济 / 政策 / 军事 / 宫殿；
-- 右：相机 / 天气控制 / 菜单。
+- 与 Workspace 同 Hue；
+- 视觉重量更轻，但不能透到被世界植被染绿；
+- Header 比 Body 轻微提亮；
+- Body 保证参数稳定阅读；
+- Section 只用间距和弱 Rule，不堆 Card；
+- Weather Preset 默认不形成一排持续 Box；
+- 大量 Slider 保持中性，熟铜集中在 Current / Focus / Dragging。
 
-一级管理导航和场景入口继续使用纯图标，名称进入 Hover Tooltip / ARIA Label。现有 Management Space 内容暂不因一级分类缩并而大改；当前“经济”继续进入 Finance，“宫殿”暂接现有 Governance 内容，后续再重构内部信息架构。
+左下 Context 的目标不是“小型绿色玻璃”，而是：
 
-### Top Shell 接缝
+> **Workspace 同材质家族中的轻量仪器面板。**
 
-两层 Top Shell 不能使用两条明亮边框直接相接。Control Tray 必须轻微向上覆盖 Status Row，当前约 `2px`，并取消自身顶边框；连接处不得出现浏览器缩放或 DPR 变化时可见的亮白 seam。
+## 6. Main Dock / Bottom Command
 
-当前 1920×1080 参考比例：
+三类 Toolbar：
 
-- Status Row：约 `940 × 56px`；
-- Control Tray：约 `480 × 38px`；
-- Control Tray 保持明显更窄、更紧凑，不作为第二条大导航栏。
+- Main Dock = L；
+- Placement Action Bar = M；
+- World Utility = S。
 
-### Weather Control
-
-左侧 `晴 / 秋 · 14:30` 只表示当前世界状态，不作为控制入口。
-
-Control Tray 右侧天气图标是玩家的天气控制入口，点击后打开 `Weather Right Edge Flyout`。天气控制继续属于场景级轻量工具，不进入 Management Space。
-
-## Bottom HUD
-
-Main Dock、World Utility Toolbar 与 Operation Hints 不合并成一个整屏底栏，但必须明显属于同一套设计系统。
+共享 Hue、Edge、Hover / Active、Divider、Tooltip；尺寸、Density、Shadow 建立层级。
 
 ### Main Dock
 
-Main Dock 是“模式选择器 + 当前模式分类带”，不是一排平级分类按钮。
+模式：
 
-1920×1080 基线：
+- 设计；
+- 蓝图。
 
-- 核心宽度约 `940px`；
-- 高度约 `76px`；
-- 使用 Primary Surface 与 `R2 = 14px`；
-- 左侧约 `96px` 为 `设计 / 蓝图` Exclusive Selector；
-- 右侧分类平均分配可用宽度，图标约 `21px`，标签约 `10px`；
-- 分类按钮默认不画独立卡片边框，只在 Hover / Selected 时出现局部 Tone；
-- Selected 使用暖金 Icon / 文本与短金线，不使用整块高饱和金底。
-
-#### 设计模式
-
-固定分类：
+设计分类：
 
 `道路 / 桥梁 / 建筑 / 台基 / 城墙 / 围墙 / 装饰 / 树木`
 
-其中“台基”指宫殿、大型建筑所使用的高台基 / 台地建造系统，不是普通地基概念。
+默认允许没有分类 Selected。只有玩家明确进入某分类 / Workspace 时才显示当前状态。
 
-当前原型已经实现“建筑 → Building Workspace”；其余设计分类后续分别接入对应 Workspace / Tool，不为了占位而伪造无意义面板。
+Main Dock 使用稳定 Work Surface；Active 使用弱熟铜 Tone + 状态线，不整块高饱和填金。
 
-#### 蓝图模式
+### World Utility
 
-固定分类：
-
-`全部 / 民居 / 商业 / 工坊 / 管理 / 科学 / 信仰 / 军事 / 宫殿`
-
-蓝图分类属于同一 Blueprint 内容域，后续应由同一个 Blueprint Workspace 根据分类筛选内容，而不是复制九套 Workspace。
-
-#### Main Dock 状态规则
-
-`设计 / 蓝图` 是 Exclusive Selector；右侧分类是玩家显式选择。
-
-必须允许 **没有任何分类被选中**：
-
-- 初始 Gameplay：`dockMode = design`，`dockCategory = null`；
-- 切换 `设计 ↔ 蓝图`：切换内容集合，同时将分类恢复为 `null`；
-- 不分别记住两个模式上一次选择的分类；
-- 返回某个模式后，只有玩家重新点击分类才出现 Selected；
-- Building Workspace 被关闭后，“建筑”也回到未选中；
-- 同一个 Surface Launcher 再次点击关闭 Surface 时，关联分类同时清空。
-
-因此 Selected 表示**玩家当前明确选择 / 正在使用的分类**，不是历史记忆，也不是默认推荐项。
-
-### World Utility Toolbar
-
-- 位于右下并跟随 Viewport 物理边缘；
-- 高度约 `56px`；
-- 使用 Secondary Surface 与 `R2 = 14px`；
-- 当前分为世界编辑 / 编辑辅助 / 历史三组；
-- 网格吸附 / 网格显示是 Toggle，启用时持续保留弱暖金状态；撤销 / 重做等 Action 不保留选中态。
+Ambient Surface，右下常驻；Toggle On 才持续显示熟铜状态，Undo / Redo 等 One-shot Action 不保留 Selected。
 
 ### Operation Hints
 
-Operation Hints 是 Tertiary Surface：
+Ambient / Tertiary 视觉重量；只显示输入提示，不承担可点击动作。
 
-- 使用同样 `R2 = 14px`；
-- 比 World Utility 更透明、更弱；
-- 不与 World Utility 合并；
-- 只显示当前输入提示，不承担教程长文或点击操作。
+## 7. Design Workspace
 
-## Workspace
+Workspace 是当前 Work Surface 视觉锚点：
 
-Building Workspace 是 Main Dock 上方展开的内容浏览 Surface，不是另一套独立美术系统。
+- 约 `1240×370px`；
+- Header 更轻；
+- Body 更稳；
+- Smoked Graphite / Paper / Brass；
+- Asset Card 默认轻量；
+- 不做黑色桌面窗口或绿色玻璃。
 
-- 使用 `R3 = 18px`；
-- Surface 与 Top Status / Main Dock 同色系；
-- Header、Primary Rail、Context Filter 只用弱分隔线建立层级；
-- Building Card 使用中等圆角与轻 Tone，不恢复层层 Card 边框；
-- 缩略图使用较小圆角，和外层 Card 有清楚层级；
-- Workspace 与 Main Dock 保持 `12px` 垂直间距。
+详细规则见 `Documentation/Workspace World-first Glass视觉规范.md`。
 
-## Right Edge Flyout
+## 8. Placement Tool
 
-Camera / Weather 是场景级轻量 Context Surface：
+稳定职责：
 
-- 距顶部与右侧均 `16px`；
-- 使用 `R3 = 18px`；
-- 不贴边、不做抽屉式硬切边；
-- Surface 与 Top Status 同一色系；
-- 内部 Segment、参数按钮、数值框使用 R1 小圆角；
-- Flyout 打开后仍允许保留 Workspace，并遵守统一 Surface Launcher Toggle 逻辑。
+- 左：Placement Context / 参数；
+- 中下：Placement Action Bar；
+- 右下：World Utility。
 
-## Building Placement
+Building / Road / 后续 Wall / Bridge 都进入同一 Placement Context 骨架。
 
-Building Placement Context Panel 与任务 Dock 使用同一视觉家族，但任务层级不同：
+Placement Context 与 Environment 属于同一 Context / Work 材质家族，不为不同工具复制面板皮肤。
 
-- Context Panel 使用 Primary Surface + `R3 = 18px`，承载当前对象参数；
-- 中央 Tool Bottom Dock 是当前放置任务的**主控**，使用 Primary Surface + `R2 = 14px`，视觉权重必须高于右下 World Utility；
-- 1920×1080 下 Tool Bottom Dock 高度约 `66px`；模式按钮约 `48 × 48px`；“完成”按钮宽度不小于约 `90px`；
-- 地形模式和调整对象使用明确单选语义，UI 层应暴露 `aria-pressed` / Unity 对应的 selected state；
-- 内部参数仍保持扁平 Section，不重新堆 Card；
-- 网格 / Undo 等全局能力继续由 World Utility Toolbar 持有。
+## 9. Surface 层级关系
 
-Building Placement 的视觉与交互样式只由 `src/tools/building-placement/building-placement.css` 维护；不再额外通过 Gameplay 级 Override 文件重复覆盖同一组件。
+- Top / Utility：Ambient；
+- Environment / Camera：Context；
+- Workspace / Main Dock / Placement 主控：Work；
+- Management / Pause：Blocking；
+- Inspector / Popover：Elevated。
+
+所有层级来自同一 Smoked Graphite Hue。
+
+## 10. 昼夜 Review
+
+重要 Gameplay 视觉修改至少检查：
+
+- 白天 Gameplay；
+- 白天 Context；
+- 白天 Workspace；
+- 夜晚 Gameplay；
+- 夜晚 Context；
+- 夜晚 Workspace。
+
+重点确认：
+
+- Surface 是否仍属同一家族；
+- Environment 是否被植被染绿；
+- Workspace 是否稳定但不过黑；
+- 熟铜是否只出现在状态与主操作；
+- Paper / Muted 是否保持稳定读取。

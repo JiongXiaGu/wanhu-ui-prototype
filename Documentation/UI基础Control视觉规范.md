@@ -42,8 +42,9 @@
 - Visual Track：约 4px；
 - Hit Area：约 24px 或更高；
 - Thumb：默认约 11px，Hover / Focus 可提升到约 13px；
-- Fill：低饱和暖金；
-- Empty Track：低亮纸灰 / 玉青；
+- Fill：低饱和暖金或中性浅灰，具体由语义变体决定；
+- Empty Track：低亮纸灰 / 中性烟灰；
+- Context 高密度参数面板允许使用中性 Progress + Paper Thumb，把熟铜集中到 Focus / Dragging，避免一屏大量金线；
 - Focus：弱暖金 Ring，不使用高亮粗描边；
 - Disabled：整体降低透明度，但仍保留当前数值关系。
 

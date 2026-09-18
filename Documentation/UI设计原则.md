@@ -130,14 +130,18 @@
 
 ## 9. 颜色与状态
 
-- 主 Surface：黛墨 / 深青灰；
-- 主文字：浅纸色；
-- Secondary：低饱和灰绿；
-- Selected / Focus：暖金；
-- Danger：暖红，但只用于真正危险或不可逆操作；
+Palette 与材质身份以 `Documentation/Wanhu 烟墨熟铜视觉材质规范.md` 为权威来源。
+
+稳定语义：
+
+- 结构 Surface：中性或略暖 Smoked Graphite；
+- 主文字：Paper White；
+- Secondary / Muted：中性暖灰；
+- Selected / Current / Focus / Toggle On / Primary：Aged Brass；
+- Danger：Cinnabar；
 - Disabled：降低亮度和对比，不依赖额外说明。
 
-暖金必须克制。不要让所有边界、图标、标题同时发金。
+不要使用明显青绿 / 墨绿 Surface 作为 Context 身份；也不要让所有边界、图标、标题同时发金。
 
 ## 10. 审查清单
 
@@ -160,10 +164,13 @@
 
 目标是“现代东方策略游戏 UI”：
 
-- 深墨 / 玉青半透明 Surface；
-- 暖金作为选择和焦点；
-- 浅纸色文字；
-- 低圆角、弱边界；
-- 世界画面是视觉主体；
+- Smoked Graphite / 烟墨石质 Surface；
+- Paper White / 暖纸前景；
+- Aged Brass / 熟铜只表达状态与主操作；
+- 世界画面承担主要色彩；
+- Surface 通过 Density / Elevation / Shadow 建立身份；
+- Context 与 Workspace 保持同一 Hue 家族；
 - 功能信息简洁；
 - 材质、Tone、真实游戏内容和轻动效负责丰富画面。
+
+视觉锚点：当前 Design Workspace。

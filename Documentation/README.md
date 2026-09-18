@@ -9,8 +9,9 @@
 1. `工作交接.md`
 2. `项目概览.md`
 3. `UI设计原则.md`
-4. `UI空间与状态架构.md`
-5. 当前任务相关的 `决策记录/`、组件 / Control 规范和代码
+4. `Wanhu 烟墨熟铜视觉材质规范.md`
+5. `UI空间与状态架构.md`
+6. 当前任务相关的 `决策记录/`、组件 / Control 规范和代码
 
 ## 文档职责
 
@@ -26,9 +27,13 @@
 
 记录 Gameplay / Workspace / Tool / Pause / Flyout / Global Space 的职责与状态边界。
 
+### Wanhu 烟墨熟铜视觉材质规范.md
+
+记录全游戏 UI 的权威 Palette、Smoked Graphite 材质身份、Ambient / Context / Work / Blocking / Elevated 关系、熟铜状态语义与昼夜规则。颜色或 Surface 美术方向调整优先修改此文档。
+
 ### UI Surface与Control视觉规范.md
 
-记录 Surface、Blur、Button、Segmented、Footer 等跨空间视觉语法。
+记录 Surface Tier、Blur、Button、Segmented、Footer 等跨空间交互与层级语法；Palette 与材质身份不在这里重复维护。
 
 ### UI基础Control视觉规范.md
 
