@@ -104,12 +104,12 @@
   --wanhu-bottom-command-md-shadow:0 16px 40px rgba(6,8,7,.30),inset 0 1px 0 rgba(255,255,255,.026);
   --wanhu-bottom-command-md-filter:blur(18px) saturate(.84) brightness(.99);
 
-  --wanhu-bottom-command-sm-bg:rgba(48,50,46,.42);
+  --wanhu-bottom-command-sm-bg:rgba(48,50,46,.49);
   --wanhu-bottom-command-sm-highlight:rgba(255,249,238,.018);
   --wanhu-bottom-command-sm-shade:rgba(8,10,9,.035);
-  --wanhu-bottom-command-sm-edge:rgba(238,233,223,.016);
-  --wanhu-bottom-command-sm-shadow:0 12px 30px rgba(6,8,7,.20),inset 0 1px 0 rgba(255,255,255,.018);
-  --wanhu-bottom-command-sm-filter:blur(20px) saturate(.88) brightness(.995);
+  --wanhu-bottom-command-sm-edge:rgba(238,233,223,.014);
+  --wanhu-bottom-command-sm-shadow:0 9px 22px rgba(6,8,7,.14),inset 0 1px 0 rgba(255,255,255,.014);
+  --wanhu-bottom-command-sm-filter:blur(18px) saturate(.82) brightness(.995);
 
   --wanhu-command-divider:rgba(238,233,223,.052);
   --wanhu-command-hover:rgba(255,255,255,.038);
@@ -210,7 +210,7 @@
   --command-blur:16px;
   --command-blur-lg:20px;
   --command-blur-md:18px;
-  --command-blur-sm:20px;
+  --command-blur-sm:18px;
 
   --wanhu-hud-paper:var(--wanhu-color-paper-primary);
   --wanhu-hud-text:var(--wanhu-color-text-secondary);
@@ -255,10 +255,10 @@
 
   --wanhu-bottom-command-lg-bg:rgba(50,52,49,.60);
   --wanhu-bottom-command-md-bg:rgba(47,49,46,.82);
-  --wanhu-bottom-command-sm-bg:rgba(52,54,50,.44);
+  --wanhu-bottom-command-sm-bg:rgba(52,54,50,.50);
   --wanhu-bottom-command-lg-filter:blur(20px) saturate(.84) brightness(1.0);
   --wanhu-bottom-command-md-filter:blur(18px) saturate(.82) brightness(1.0);
-  --wanhu-bottom-command-sm-filter:blur(20px) saturate(.86) brightness(1.0);
+  --wanhu-bottom-command-sm-filter:blur(18px) saturate(.82) brightness(1.0);
 
   /* Persistent HUD keeps the reviewed role separation at night. Only the top
      information strip needs a small density lift; detached controls stay stable. */

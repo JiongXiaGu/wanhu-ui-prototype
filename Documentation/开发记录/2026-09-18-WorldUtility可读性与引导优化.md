@@ -18,20 +18,21 @@
 撤销 / 重做
 ```
 
-## Visual Hierarchy v2
+## Visual Hierarchy v3
 
 上一版为提高辨识度将 S 档放大到 22px Icon / 56px 高，结果与 Placement Action Bar 过于接近。本版回调为：
 
-- Surface Density 不变；
+- Surface Density：`.42` → 约 `.49`，避免世界纹理直接穿透；夜晚约 `.50`；
 - Height：56 → 52px；
 - Button Hit Area：42 → 40px；
-- Icon：22 → 20.5px；
+- Icon：22 → 20px；
 - Stroke：1.68 → 1.62；
-- Width：500 → 475px；
-- Divider：22 → 18px，并降低 Alpha；
+- Width：500 → **458px**；
+- 1920×1080 下与 940px 居中的 Main Dock 保持 **16px 真实间距**；
+- Divider：22 → 18px，Margin 6px，并进一步降低 Alpha；
 - Default Icon 回到 Neutral Muted；
 - Hover 使用圆形局部 Tone；
-- Toggle On 使用 Brass Icon + 12–14px 短 Tick + 极弱底衬；
+- Toggle On 使用 Brass Icon + 约 12px 短 Tick + 几乎无底衬；
 - Placement 仍使用更完整的 Active Tone + 更长状态线，因此主辅角色不再可互换。
 
 ## Player Attention
@@ -58,7 +59,9 @@ Bottom Command Review 检查：
 - 4 个语义 Group；
 - 顺序固定为 世界编辑 / 范围操作 / 精确辅助 / 历史；
 - 3 条 Divider；
-- Utility Icon 20–21px、Stroke 1.60–1.66；
-- Utility Width <= 480px、Height <= 52px；
-- Utility Active Tick <= 14.5px；
+- Utility Icon = 20px、Stroke 1.60–1.64；
+- Utility Width ≈ 458px、Height <= 52px；
+- Main Dock ↔ Utility Gap ≈ 16px；
+- Utility Surface Alpha 约 .48–.50；
+- Utility Active Tick <= 12.5px；
 - 白天 / 夜晚继续保持 M > L > S。

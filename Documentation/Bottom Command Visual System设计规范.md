@@ -50,15 +50,17 @@ S  World Utility          全局辅助 / Ambient
 
 - 高约 `52px`；
 - Button Hit Area `40 × 40px`；
-- Icon 约 `20–20.5px`，Lucide Stroke 约 `1.60–1.65`；
+- Icon `20px`，Lucide Stroke 约 `1.60–1.63`；
 - 默认 Icon 使用 Neutral Muted，不与 Placement Default Icon 同权重；
 - Hover 使用局部圆形 Tone，而不是完整方形 Tile；
-- Active 只保留熟铜 Icon + 约 `12–14px` 顶部短 Tick + 极弱暖铜 Tone；
-- 右下常驻，宽度约 `475px`；
+- Active 只保留熟铜 Icon + 约 `12px` 顶部短 Tick + 几乎无暖铜底衬；
+- 右下常驻，宽度固定约 `458px`；
 - 14px Surface Radius；
 - 功能不因视觉降噪而删除。
 
 不要为了整齐把三者做成同宽同高。
+
+1920×1080 下，Main Dock 宽 940px 居中时，其右边界为 1430px；World Utility 右对齐 16px Safe Edge、宽 458px 时左边界为 1446px，因此两者必须保持 **16px 真实间距**。不得通过扩大 Utility 宽度侵占 Main Dock，也不得靠透明度掩盖几何重叠。
 
 ## 3. Material Recipe 与所有权
 
@@ -148,7 +150,8 @@ World Utility 的 10 个现有能力全部保留，但必须按玩家心智分�
 - 同组只用紧凑间距；
 - 组间使用统一 Divider + 更明显的空白；
 - 不显示常驻组标题，使用语义 Group / Tooltip 提供名称；
-- S Surface 可以轻，但 Icon 本身必须清楚；
+- S Surface 使用稳定约 `.48–.50` 的中性 Graphite Tint；辅助级不等于背景越透明越好；
+- Icon 本身必须清楚，但前景状态仍弱于 Placement；
 - Toggle（网格吸附 / 网格显示）保留熟铜持续状态；
 - One-shot Action 不残留 Selected。
 
@@ -207,7 +210,9 @@ Bottom Command 修改至少检查：
 - World Utility 必须保留 10 个功能、4 个语义组、3 条 Divider；
 - S 档 Icon 在 1080p 下应直接可辨，但不得达到 Placement 的视觉重量；
 - World Utility 顺序固定为“世界编辑 → 范围操作 → 精确辅助 → 历史”；
-- Active Tick 应明显短于 Placement Mode Active Line；
+- Active Tick 应明显短于 Placement Mode Active Line（约 12px）；
+- Main Dock 与 World Utility 在 1920×1080 下必须保持 16px 真实间距；
+- S Surface Alpha 约 `.48–.50`，不能因“Ambient”退到世界细节直接穿透的程度；
 - 白天 Building Placement + World Utility；
 - 白天 Road Placement + World Utility；
 - 夜晚 Main Dock + World Utility；

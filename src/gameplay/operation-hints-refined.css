@@ -7,7 +7,7 @@
   min-height:0;
   max-height:none;
   padding:8px 10px 9px;
-  border:1px solid rgba(239,233,221,.045);
+  border:1px solid rgba(239,233,221,.032);
   border-radius:var(--hud-radius-md,14px);
   background:linear-gradient(180deg,var(--hud-surface-tertiary-top,rgba(20,27,24,.62)),var(--hud-surface-tertiary-bottom,rgba(17,23,20,.54)));
   box-shadow:0 8px 22px rgba(5,8,7,.10);
@@ -22,7 +22,7 @@
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  border-bottom:1px solid rgba(239,233,221,.040);
+  border-bottom:1px solid rgba(239,233,221,.030);
   text-align:right;
   white-space:nowrap;
 }

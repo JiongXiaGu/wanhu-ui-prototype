@@ -68,6 +68,9 @@ const utility = page.locator('.world-utility-toolbar');
 const dockMaterial = await material(dock, 'Main Dock L');
 const utilityMaterial = await material(utility, 'World Utility S');
 if (!(dockMaterial.alpha > utilityMaterial.alpha)) throw new Error('Main Dock must be denser than World Utility.');
+if (utilityMaterial.alpha < 0.47 || utilityMaterial.alpha > 0.51) {
+  throw new Error(`World Utility Surface must stay readable without approaching Main Dock weight. alpha=${utilityMaterial.alpha}`);
+}
 const utilityGroups = utility.locator('.world-utility-toolbar__group');
 if ((await utilityGroups.count()) !== 4) throw new Error('World Utility must expose four semantic groups.');
 const utilityGroupLabels = await utilityGroups.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')));
@@ -80,15 +83,22 @@ const utilityIcon = await utility.locator('.world-utility-toolbar__button svg').
   const style = getComputedStyle(node);
   return { width: style.width, height: style.height, strokeWidth: style.strokeWidth };
 });
-if (parseFloat(utilityIcon.width) < 20 || parseFloat(utilityIcon.width) > 21 || parseFloat(utilityIcon.height) < 20 || parseFloat(utilityIcon.height) > 21 || parseFloat(utilityIcon.strokeWidth) < 1.60 || parseFloat(utilityIcon.strokeWidth) > 1.66) {
+if (parseFloat(utilityIcon.width) < 19.9 || parseFloat(utilityIcon.width) > 20.1 || parseFloat(utilityIcon.height) < 19.9 || parseFloat(utilityIcon.height) > 20.1 || parseFloat(utilityIcon.strokeWidth) < 1.60 || parseFloat(utilityIcon.strokeWidth) > 1.64) {
   throw new Error(`World Utility icons must stay readable without matching Placement visual weight. visual=${JSON.stringify(utilityIcon)}`);
 }
 const utilityGeometry = await utility.evaluate((node) => {
   const style = getComputedStyle(node);
   return { width: style.width, height: style.height };
 });
-if (parseFloat(utilityGeometry.width) > 480 || parseFloat(utilityGeometry.height) > 52) {
-  throw new Error(`World Utility must remain an ambient rail, not a second Placement bar. geometry=${JSON.stringify(utilityGeometry)}`);
+if (Math.abs(parseFloat(utilityGeometry.width) - 458) > 0.5 || parseFloat(utilityGeometry.height) > 52) {
+  throw new Error(`World Utility must use the reviewed 458px utility lane. geometry=${JSON.stringify(utilityGeometry)}`);
+}
+const dockBox = await dock.boundingBox();
+const utilityBox = await utility.boundingBox();
+if (!dockBox || !utilityBox) throw new Error('Bottom Command geometry could not be measured.');
+const dockUtilityGap = utilityBox.x - (dockBox.x + dockBox.width);
+if (Math.abs(dockUtilityGap - 16) > 0.75) {
+  throw new Error(`Main Dock and World Utility must keep a real 16px gap. gap=${dockUtilityGap}`);
 }
 const activeUtility = utility.locator('.world-utility-toolbar__button.is-active').first();
 await activeUtility.waitFor();
@@ -97,7 +107,7 @@ const utilityActiveVisual = await activeUtility.evaluate((node) => {
   const style = getComputedStyle(node);
   return { lineWidth: before.width, background: style.backgroundColor, radius: style.borderRadius };
 });
-if (parseFloat(utilityActiveVisual.lineWidth) > 14.5 || utilityActiveVisual.radius !== '50%') {
+if (parseFloat(utilityActiveVisual.lineWidth) > 12.5 || utilityActiveVisual.radius !== '50%') {
   throw new Error(`World Utility active state must stay visually lighter than Placement. visual=${JSON.stringify(utilityActiveVisual)}`);
 }
 await dock.locator('.mode-rail button.is-active').first().waitFor();

@@ -28,8 +28,8 @@
   width:1px;
   height:18px;
   flex:0 0 1px;
-  margin:0 7px;
-  background:rgba(238,233,223,.034);
+  margin:0 6px;
+  background:rgba(238,233,223,.028);
 }
 
 .world-utility-toolbar__button{
@@ -49,14 +49,14 @@
 }
 
 .world-utility-toolbar__button svg{
-  width:20.5px;
-  height:20.5px;
+  width:20px;
+  height:20px;
   stroke-width:1.62;
   pointer-events:none;
 }
 
 .world-utility-toolbar__button:hover{
-  background:var(--command-hover,rgba(255,255,255,.038));
+  background:rgba(255,255,255,.032);
   color:var(--command-icon-hover,#d8d3ca);
 }
 
@@ -69,18 +69,18 @@
 /* Bottom command surfaces point their persistent selected state upward toward the world/content they control. */
 .world-utility-toolbar__button.is-active{
   color:var(--command-icon-active,#bd9959);
-  background:rgba(169,132,75,.026);
+  background:rgba(169,132,75,.014);
 }
 
 .world-utility-toolbar__button.is-active::before{
   content:'';
   position:absolute;
-  left:13px;
-  right:13px;
+  left:14px;
+  right:14px;
   top:0;
   height:2px;
   border-radius:0 0 2px 2px;
-  background:rgba(169,132,75,.72);
+  background:rgba(169,132,75,.68);
 }
 
 .world-utility-toolbar__button:disabled{
