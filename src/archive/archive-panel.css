@@ -285,6 +285,8 @@
 .archive-save-card.is-incompatible .archive-save-card__image{filter:saturate(.54) brightness(.58)}
 
 .archive-save-card__select{
+  position:relative;
+  z-index:1;
   min-width:0;
   flex:1 1 auto;
   padding:12px 230px 12px 12px;
@@ -368,7 +370,7 @@
   position:absolute;
   right:14px;
   bottom:12px;
-  z-index:6;
+  z-index:8;
   display:flex;
   gap:6px;
   opacity:0;

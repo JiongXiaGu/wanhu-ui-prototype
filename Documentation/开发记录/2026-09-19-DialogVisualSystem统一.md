@@ -19,6 +19,12 @@
 - Playwright 增加 Confirm / Number / Timed / Text / Binding 的真实截图与 computed-style 门槛；
 - 自动审查强制验证 Dialog Backdrop 与 Surface 均无 Blur、Surface 为半透明中性 Graphite。
 
+## Visual Review 修复
+
+- 新增 Warning / Danger 截图审查时发现 `SaveEntryCard` 的整卡选择按钮会拦截覆盖 / 删除 Action；
+- 修正 Save Card stacking order：整卡选择层固定在底层，Action 层明确高于选择层；
+- 不使用 Playwright force-click 绕过真实交互问题。
+
 ## Unity 落地
 
 正式 Unity 实现不依赖模糊背景 UI。Modal Layer 只负责 Dim；Dialog Panel 自身必须完成可读性与层级表达。
