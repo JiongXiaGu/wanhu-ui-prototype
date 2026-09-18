@@ -52,6 +52,24 @@ export function SliderControl({ ariaLabel, value, min, max, step, disabled = fal
     onChange(Number(clamp(stepped, min, max).toFixed(decimals)));
   }
 
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (disabled) return;
+    const scale = event.shiftKey ? 10 : 1;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      commit(value - step * scale);
+    } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      commit(value + step * scale);
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      commit(min);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      commit(max);
+    }
+  }
+
   return (
     <div className={`ui-slider ${disabled ? 'is-disabled' : ''} ${className}`.trim()}>
       <div className="ui-slider__track" aria-hidden="true"><i style={{ width: `${progress}%` }} /></div>
@@ -64,6 +82,7 @@ export function SliderControl({ ariaLabel, value, min, max, step, disabled = fal
         value={value}
         disabled={disabled}
         aria-label={ariaLabel}
+        onKeyDown={handleKeyDown}
         onChange={(event) => commit(Number(event.currentTarget.value))}
       />
     </div>

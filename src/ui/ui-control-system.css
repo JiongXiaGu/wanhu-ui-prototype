@@ -17,14 +17,14 @@
 
   --ui-slider-track:rgba(235,228,211,.115);
   --ui-slider-track-hover:rgba(235,228,211,.17);
-  --ui-slider-fill-start:#9e8656;
-  --ui-slider-fill-end:#c6a765;
-  --ui-slider-thumb:#b99b60;
+  --ui-slider-fill-start:var(--wanhu-color-brass,#a9844b);
+  --ui-slider-fill-end:var(--wanhu-color-brass-high,#bd9959);
+  --ui-slider-thumb:var(--wanhu-color-brass-high,#bd9959);
   --ui-slider-thumb-border:rgba(244,239,226,.92);
   --ui-slider-focus:rgba(201,165,95,.075);
 
-  --ui-toggle-off:#737b74;
-  --ui-toggle-on:#c9a55f;
+  --ui-toggle-off:var(--wanhu-color-paper-tertiary,#818685);
+  --ui-toggle-on:var(--wanhu-color-brass-high,#bd9959);
 }
 
 /* Slider ------------------------------------------------------------ */
@@ -208,18 +208,121 @@
 }
 .ui-select__menu button:hover,.ui-select__menu button.is-highlighted{background:rgba(255,255,255,.035);color:#d8d4ca}
 .ui-select__menu button.is-selected{color:#d6b973;background:rgba(201,165,95,.07)}
-.ui-select__menu button svg{color:#c9a55f;stroke-width:1.8}
+.ui-select__menu button svg{color:var(--wanhu-color-brass,#a9844b);stroke-width:1.8}
 
-/* Toggle ------------------------------------------------------------ */
+/* Settings Select variant: same shared interaction logic, quieter full-screen
+   presentation with a value line instead of a boxed application field. */
+.ui-select--settings{width:230px}
+.ui-select--settings .ui-select__trigger{
+  height:34px;
+  padding:0 5px 0 14px;
+  justify-content:flex-end;
+  border:0;
+  border-bottom:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:var(--wanhu-color-paper-secondary,#b7b3aa);
+}
+.ui-select--settings .ui-select__trigger:hover:not(:disabled){
+  color:var(--wanhu-color-paper-primary,#eee9df);
+  border-color:rgba(189,153,89,.30);
+  background:linear-gradient(180deg,transparent,rgba(169,132,75,.016));
+}
+.ui-select--settings .ui-select__trigger:focus-visible{
+  border-color:rgba(189,153,89,.42);
+  background:rgba(169,132,75,.020);
+  box-shadow:0 2px 0 -1px rgba(189,153,89,.18);
+}
+.ui-select--settings.is-open .ui-select__trigger{
+  color:var(--wanhu-color-paper-primary,#eee9df);
+  border-color:rgba(189,153,89,.46);
+  background:rgba(169,132,75,.022);
+}
+.ui-select--settings .ui-select__menu{
+  top:38px;
+  border-color:var(--wanhu-surface-blocking-edge,rgba(238,233,223,.075));
+  background-color:var(--wanhu-surface-blocking-menu,rgba(25,31,33,.975));
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
+  box-shadow:var(--wanhu-surface-blocking-shadow,0 24px 64px rgba(2,4,5,.40));
+}
+.ui-select--settings.opens-up .ui-select__menu{top:auto;bottom:38px}
+.ui-select--settings .ui-select__menu button:hover,
+.ui-select--settings .ui-select__menu button.is-highlighted{
+  background:var(--wanhu-surface-blocking-menu-hover,rgba(255,255,255,.048));
+  color:var(--wanhu-color-text-secondary,#d4cfc6);
+}
+.ui-select--settings .ui-select__menu button.is-selected{
+  color:var(--wanhu-color-brass-high,#bd9959);
+  background:var(--wanhu-control-active-bg,rgba(169,132,75,.075));
+}
+
+/* Settings Slider variant: keeps the shared Slider contract but uses the same
+   compact instrument proportions as Gameplay Context controls. */
+.ui-slider--settings .ui-slider__track{height:3px;background:rgba(238,233,223,.12)}
+.ui-slider--settings .ui-slider__track>i{
+  background:linear-gradient(90deg,rgba(169,132,75,.72),var(--wanhu-color-brass-high,#bd9959));
+}
+.ui-slider--settings .ui-slider__thumb{
+  width:11px;
+  height:11px;
+  background:var(--wanhu-color-paper-primary,#eee9df);
+  border-color:rgba(244,239,229,.92);
+  box-shadow:0 2px 5px rgba(0,0,0,.28);
+}
+.ui-slider--settings:hover .ui-slider__thumb,
+.ui-slider--settings:focus-within .ui-slider__thumb{
+  width:12px;
+  height:12px;
+}
+
+/* Toggle ------------------------------------------------------------
+   Compact instrument switch. It keeps the formal 38×20 / 12px capsule
+   semantics while adding restrained material depth; On remains the only
+   persistent brass state. */
 .ui-toggle{width:52px;height:32px;padding:0;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;outline:none}
-.ui-toggle>i{position:relative;width:38px;height:20px;border:1px solid var(--ui-field-border);border-radius:10px;background:var(--ui-field-surface);transition:border-color .12s ease,background .12s ease,box-shadow .12s ease}
-.ui-toggle>i::after{content:'';position:absolute;left:3px;top:3px;width:12px;height:12px;border-radius:6px;background:var(--ui-toggle-off);transition:left .15s ease,background .15s ease,box-shadow .15s ease,transform .08s ease}
-.ui-toggle:hover>i{border-color:var(--ui-field-border-hover);background:var(--ui-field-surface-hover)}
-.ui-toggle:active>i::after{transform:scale(.88)}
-.ui-toggle:focus-visible>i{box-shadow:0 0 0 3px rgba(201,165,95,.07);border-color:var(--ui-field-border-focus)}
-.ui-toggle.is-on>i{border-color:rgba(201,165,95,.31);background:rgba(201,165,95,.065)}
-.ui-toggle.is-on>i::after{left:21px;background:var(--ui-toggle-on);box-shadow:0 0 8px rgba(201,165,95,.13)}
-.ui-toggle.is-on:hover>i{border-color:rgba(201,165,95,.46);background:rgba(201,165,95,.085)}
+.ui-toggle>i{
+  position:relative;
+  width:38px;
+  height:20px;
+  border:1px solid var(--ui-field-border);
+  border-radius:10px;
+  background:linear-gradient(180deg,rgba(255,255,255,.030),rgba(0,0,0,.045));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),inset 0 -1px 1px rgba(0,0,0,.18);
+  transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;
+}
+.ui-toggle>i::before{
+  content:'';
+  position:absolute;
+  left:7px;
+  right:7px;
+  bottom:3px;
+  height:1px;
+  background:rgba(238,233,223,.075);
+  transition:background .15s ease,box-shadow .15s ease;
+}
+.ui-toggle>i::after{
+  content:'';
+  position:absolute;
+  left:3px;
+  top:3px;
+  width:12px;
+  height:12px;
+  border:1px solid rgba(238,233,223,.13);
+  border-radius:6px;
+  background:linear-gradient(180deg,#949995,#737a76);
+  box-shadow:0 2px 4px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.08);
+  transition:left .15s ease,background .15s ease,border-color .15s ease,box-shadow .15s ease,transform .08s ease;
+}
+.ui-toggle:hover>i{border-color:var(--ui-field-border-hover);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.035))}
+.ui-toggle:active>i::after{transform:scale(.90)}
+.ui-toggle:focus-visible>i{box-shadow:0 0 0 3px rgba(169,132,75,.07),inset 0 1px 0 rgba(255,255,255,.025);border-color:var(--ui-field-border-focus)}
+.ui-toggle.is-on>i{border-color:rgba(189,153,89,.31);background:linear-gradient(180deg,rgba(169,132,75,.075),rgba(0,0,0,.035))}
+.ui-toggle.is-on>i::before{background:rgba(189,153,89,.42);box-shadow:0 0 5px rgba(169,132,75,.10)}
+.ui-toggle.is-on>i::after{left:21px;border-color:rgba(238,233,223,.20);background:linear-gradient(180deg,var(--wanhu-color-brass-high,#bd9959),var(--wanhu-color-brass,#a9844b));box-shadow:0 2px 4px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.10)}
+.ui-toggle.is-on:hover>i{border-color:rgba(189,153,89,.46);background:linear-gradient(180deg,rgba(169,132,75,.095),rgba(0,0,0,.030))}
 .ui-toggle:disabled{opacity:var(--ui-field-disabled);cursor:default}
 
 /* Text input -------------------------------------------------------- */
@@ -232,31 +335,40 @@
 @keyframes ui-select-open{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 
 /* Compatibility bridges -------------------------------------------------
-   Existing screens adopt the shared visual contract before their component logic is migrated. */
-.settings-slider::before{height:4px;border-radius:2px;background:var(--ui-slider-track)!important;box-shadow:inset 0 1px 0 rgba(0,0,0,.12)}
-.settings-slider>i{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--ui-slider-fill-start),var(--ui-slider-fill-end))!important}
-.settings-slider>em{width:11px!important;height:11px!important;border:2px solid var(--ui-slider-thumb-border)!important;border-radius:50%!important;background:var(--ui-slider-thumb)!important}
-.settings-slider:hover::before{background:var(--ui-slider-track-hover)!important}
-.settings-slider:hover>em{width:13px!important;height:13px!important;box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(201,165,95,.055)!important}
-.settings-slider:focus-visible::before{box-shadow:0 0 0 1px rgba(201,165,95,.24)!important}
-.settings-slider:focus-visible>em{box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 5px var(--ui-slider-focus)!important}
-.settings-slider.is-dragging>i{background:linear-gradient(90deg,#a88d58,#d0ad66)!important}
-.settings-slider.is-dragging>em{background:#c9a55f!important;box-shadow:0 2px 7px rgba(0,0,0,.32),0 0 0 6px rgba(201,165,95,.10)!important}
-
-.settings-select-value{border:1px solid var(--ui-field-border)!important;border-radius:var(--ui-field-radius)!important;background:var(--ui-field-surface)!important}
-.settings-select-value:hover:not(:disabled){border-color:var(--ui-field-border-hover)!important;background:var(--ui-field-surface-hover)!important}
-.settings-select-value:focus-visible{outline:0!important;border-color:var(--ui-field-border-focus)!important;background:var(--ui-field-surface-focus)!important;box-shadow:0 0 0 3px rgba(201,165,95,.045)!important}
-.settings-select-root.is-open .settings-select-value{border-color:rgba(201,165,95,.38)!important;background:var(--ui-field-surface-focus)!important}
-.settings-select-menu{border-color:var(--ui-field-border)!important;border-radius:var(--ui-field-radius)!important;background:rgba(24,33,28,.965)!important;box-shadow:0 16px 36px rgba(4,7,6,.36),inset 0 1px 0 rgba(255,255,255,.020)!important;backdrop-filter:blur(12px) saturate(.86) brightness(1.04);-webkit-backdrop-filter:blur(12px) saturate(.86) brightness(1.04)}
-.settings-select-menu button{border-radius:var(--ui-field-radius-inner)!important}
-.settings-select-menu button:hover,.settings-select-menu button.is-highlighted{background:rgba(255,255,255,.035)!important}
-.settings-select-menu button.is-selected{background:rgba(201,165,95,.07)!important;color:#d6b973!important}
-
-.settings-toggle>i,.archive-hide-outdated>i{width:38px!important;height:20px!important;border:1px solid var(--ui-field-border)!important;border-radius:10px!important;background:var(--ui-field-surface)!important}
-.settings-toggle>i::after,.archive-hide-outdated>i>em{left:3px!important;top:3px!important;width:12px!important;height:12px!important;border-radius:6px!important;background:var(--ui-toggle-off)!important}
-.settings-toggle:hover>i,.archive-hide-outdated:hover>i{border-color:var(--ui-field-border-hover)!important;background:var(--ui-field-surface-hover)!important}
-.settings-toggle.is-on>i,.archive-hide-outdated.is-on>i{border-color:rgba(201,165,95,.31)!important;background:rgba(201,165,95,.065)!important}
-.settings-toggle.is-on>i::after,.archive-hide-outdated.is-on>i>em{left:21px!important;background:var(--ui-toggle-on)!important;box-shadow:0 0 8px rgba(201,165,95,.13)!important}
+   Only screens whose component logic has not migrated yet remain here.
+   Settings now consumes Controls.tsx directly. */
+.archive-hide-outdated>i{
+  position:relative;
+  width:38px!important;
+  height:20px!important;
+  border:1px solid var(--ui-field-border)!important;
+  border-radius:10px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.030),rgba(0,0,0,.045))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),inset 0 -1px 1px rgba(0,0,0,.18);
+}
+.archive-hide-outdated>i::before{
+  content:'';
+  position:absolute;
+  left:7px;
+  right:7px;
+  bottom:3px;
+  height:1px;
+  background:rgba(238,233,223,.075);
+}
+.archive-hide-outdated>i>em{
+  left:3px!important;
+  top:3px!important;
+  width:12px!important;
+  height:12px!important;
+  border:1px solid rgba(238,233,223,.13)!important;
+  border-radius:6px!important;
+  background:linear-gradient(180deg,#949995,#737a76)!important;
+  box-shadow:0 2px 4px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+.archive-hide-outdated:hover>i{border-color:var(--ui-field-border-hover)!important}
+.archive-hide-outdated.is-on>i{border-color:rgba(189,153,89,.31)!important;background:linear-gradient(180deg,rgba(169,132,75,.075),rgba(0,0,0,.035))!important}
+.archive-hide-outdated.is-on>i::before{background:rgba(189,153,89,.42)}
+.archive-hide-outdated.is-on>i>em{left:21px!important;border-color:rgba(238,233,223,.20)!important;background:linear-gradient(180deg,var(--wanhu-color-brass-high,#bd9959),var(--wanhu-color-brass,#a9844b))!important}
 
 .ui-dialog-input input,.archive-group-card input,.archive-save-card input{border:1px solid var(--ui-field-border)!important;border-radius:var(--ui-field-radius)!important;background:var(--ui-field-surface)!important;color:#eee8dc!important;caret-color:#d3b66e;transition:border-color .12s ease,background .12s ease,box-shadow .12s ease!important}
 .ui-dialog-input input:hover,.archive-group-card input:hover,.archive-save-card input:hover{border-color:var(--ui-field-border-hover)!important;background:var(--ui-field-surface-hover)!important}

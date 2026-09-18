@@ -58,29 +58,16 @@
 .settings-row__label{min-width:0;flex:1;display:flex;align-items:center}.settings-row__label b{color:var(--wanhu-color-text-secondary);font-size:11.5px;font-weight:500;letter-spacing:.012em}.settings-row:hover .settings-row__label b{color:var(--wanhu-color-paper-primary)}.settings-row.is-disabled .settings-row__label b{color:var(--wanhu-color-paper-tertiary)}
 .settings-row__control{flex:0 0 360px;min-width:0;display:flex;align-items:center;justify-content:flex-end}
 
-/* Select */
-.settings-select-root{position:relative;width:230px;display:flex;justify-content:flex-end;z-index:2}.settings-select-root.is-open{z-index:30}
-.settings-select-value{width:230px;height:34px;padding:0 5px 0 14px;display:flex;align-items:center;justify-content:flex-end;gap:12px;border:0;border-bottom:1px solid var(--wanhu-control-border-soft);border-radius:0;background:transparent;color:var(--wanhu-color-paper-secondary);font-size:10.5px;cursor:pointer;transition:color .12s ease,border-color .12s ease,background .12s ease}
-.settings-select-value:hover{color:var(--wanhu-color-paper-primary);border-color:rgba(189,153,89,.30);background:linear-gradient(180deg,transparent,rgba(169,132,75,.016))}.settings-select-value:active{background:rgba(169,132,75,.030)}.settings-select-value:focus-visible{outline:1px solid rgba(189,153,89,.26);outline-offset:1px;border-color:rgba(189,153,89,.42)}
-.settings-select-value svg{color:var(--wanhu-color-icon);stroke-width:1.6;transition:transform .14s ease,color .12s ease}.settings-select-root.is-open .settings-select-value{color:var(--wanhu-color-paper-primary);border-color:rgba(189,153,89,.46);background:rgba(169,132,75,.022)}.settings-select-root.is-open .settings-select-value svg{color:var(--wanhu-color-brass-high);transform:rotate(180deg)}.settings-select-value:disabled{cursor:default}
-.settings-select-menu{position:absolute;right:0;top:38px;width:230px;max-height:278px;overflow-y:auto;padding:4px;border:1px solid var(--wanhu-surface-blocking-edge);border-radius:2px;background-color:var(--wanhu-surface-blocking-menu);background-image:var(--wanhu-material-noise);background-repeat:repeat;background-size:256px 256px;box-shadow:var(--wanhu-surface-blocking-shadow);animation:settings-select-open .12s ease-out both}
-.settings-select-root.opens-up .settings-select-menu{top:auto;bottom:38px;transform-origin:bottom right}
-.settings-select-menu button{width:100%;height:34px;padding:0 10px 0 12px;display:flex;align-items:center;justify-content:space-between;border:0;border-radius:1px;background:transparent;color:var(--wanhu-color-text-muted);font-size:10.5px;text-align:left;cursor:pointer}
-.settings-select-menu button:hover,.settings-select-menu button.is-highlighted{background:var(--wanhu-surface-blocking-menu-hover);color:var(--wanhu-color-text-secondary)}.settings-select-menu button.is-selected{color:var(--wanhu-color-brass-high);background:var(--wanhu-control-active-bg)}.settings-select-menu button svg{color:var(--wanhu-color-brass);stroke-width:1.8}
-
-/* Slider: neutral track + restrained brass value state. */
-.settings-row__control--slider{gap:15px}.settings-slider{position:relative;height:22px;flex:1;min-width:0;cursor:pointer;touch-action:none;outline:none}
-.settings-slider::before{content:'';position:absolute;left:0;right:0;top:9px;height:4px;background:rgba(238,233,223,.095);transition:background .12s ease,box-shadow .12s ease}.settings-slider>i{position:absolute;left:0;top:9px;height:4px;background:var(--wanhu-color-brass);pointer-events:none;transition:background .12s ease}
-.settings-slider>em{position:absolute;top:11px;width:11px;height:11px;border:2px solid rgba(238,233,223,.86);border-radius:50%;background:var(--wanhu-color-brass);transform:translate(-50%,-50%);box-shadow:0 2px 5px rgba(0,0,0,.28);pointer-events:none;transition:width .10s ease,height .10s ease,background .12s ease,box-shadow .12s ease}
-.settings-slider:hover::before{background:rgba(238,233,223,.14)}.settings-slider:hover>em{width:13px;height:13px;box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(169,132,75,.050)}.settings-slider:focus-visible::before{box-shadow:0 0 0 1px rgba(189,153,89,.22)}.settings-slider:focus-visible>em{box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 5px rgba(169,132,75,.070)}
-.settings-slider.is-dragging>i{background:var(--wanhu-color-brass-high)}.settings-slider.is-dragging>em{width:14px;height:14px;background:var(--wanhu-color-brass-high);box-shadow:0 2px 7px rgba(0,0,0,.32),0 0 0 6px rgba(169,132,75,.09)}
-.settings-row__control--slider output{flex:0 0 64px;text-align:right;color:var(--wanhu-color-paper-secondary);font-size:10px;font-variant-numeric:tabular-nums}.settings-row.is-disabled .settings-slider{cursor:default}
-
-/* Toggle */
-.settings-row__control--toggle{justify-content:flex-end}.settings-toggle{width:52px;height:32px;padding:0;display:grid;place-items:center;border:0;background:transparent;cursor:pointer;outline:none}
-.settings-toggle>i{position:relative;width:36px;height:18px;border:1px solid rgba(238,233,223,.12);border-radius:2px;background:rgba(255,255,255,.016);transition:border-color .12s ease,background .12s ease,box-shadow .12s ease}.settings-toggle>i::after{content:'';position:absolute;left:3px;top:3px;width:10px;height:10px;background:var(--wanhu-color-paper-tertiary);transition:left .15s ease,background .15s ease,box-shadow .15s ease,transform .08s ease}
-.settings-toggle:hover>i{border-color:var(--wanhu-control-border-hover);background:var(--wanhu-control-hover)}.settings-toggle:active>i::after{transform:scale(.88)}.settings-toggle:focus-visible>i{box-shadow:0 0 0 3px rgba(169,132,75,.060);border-color:rgba(189,153,89,.30)}
-.settings-toggle.is-on>i{border-color:rgba(189,153,89,.28);background:var(--wanhu-control-active-bg)}.settings-toggle.is-on>i::after{left:21px;background:var(--wanhu-color-brass-high);box-shadow:none}.settings-toggle.is-on:hover>i{border-color:rgba(189,153,89,.42);background:rgba(169,132,75,.090)}.settings-toggle:disabled{cursor:default}
+/* Shared Settings controls -------------------------------------------------
+   Settings owns only context geometry. Material and interaction states are
+   centralized in ui-control-system.css. */
+.settings-row__control--slider{gap:15px}
+.settings-slider-control{flex:1;min-width:0}
+.settings-slider-value{flex:0 0 64px;text-align:right;color:var(--wanhu-color-paper-secondary);font-size:10px;font-variant-numeric:tabular-nums}
+.settings-row__control--select{justify-content:flex-end}
+.settings-select-control{width:230px}
+.settings-row__control--toggle{justify-content:flex-end}
+.settings-toggle-control{flex:0 0 52px}
 
 /* Full-screen page action bar. Settings uses only the left navigation/tool group. */
 .settings-space__footer{flex:0 0 72px;border-top-color:var(--wanhu-surface-blocking-rule);background:rgba(255,255,255,.006)}
@@ -94,5 +81,5 @@
 .settings-restore{height:36px;padding:0 11px;display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--wanhu-color-paper-tertiary);font-size:9px;cursor:pointer;transition:color .12s ease,background .12s ease}
 .settings-restore:hover{color:var(--wanhu-color-paper-secondary);background:var(--wanhu-control-hover)}.settings-restore:active{color:var(--wanhu-color-paper-primary)}.settings-restore:focus-visible{outline:1px solid rgba(189,153,89,.24)}
 
-@keyframes settings-content-enter{from{opacity:.42;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@keyframes settings-select-open{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
-@media (max-width:1500px){.settings-space__content{width:min(840px,calc(100% - 120px))}.settings-row__control{flex-basis:330px}.settings-select-root,.settings-select-value,.settings-select-menu{width:214px}}
+@keyframes settings-content-enter{from{opacity:.42;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:1500px){.settings-space__content{width:min(840px,calc(100% - 120px))}.settings-row__control{flex-basis:330px}.settings-select-control{width:214px}}
