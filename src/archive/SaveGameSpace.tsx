@@ -183,6 +183,7 @@ export function SaveGameSpace({ context, onBack }: SaveGameSpaceProps) {
       title: '覆盖存档？',
       message: `当前游戏状态将替换“${save.name}”。`,
       confirmText: '覆盖存档',
+      visualTone: 'warning',
       onConfirm: () => {
         setSaves((current) => {
           const nextOrder = Math.max(...current.map((item) => item.order), 0) + 1;

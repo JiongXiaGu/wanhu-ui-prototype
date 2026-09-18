@@ -315,11 +315,16 @@
    real-time background blur so the Web prototype maps cleanly to Unity UI Toolkit. */
 .game-canvas{
   --wanhu-dialog-backdrop:rgba(8,10,9,.64);
-  --wanhu-dialog-surface-bg:rgba(43,45,42,.93);
-  --wanhu-dialog-surface-highlight:rgba(255,249,238,.022);
-  --wanhu-dialog-surface-shade:rgba(8,10,9,.070);
+  --wanhu-dialog-surface-bg:rgba(43,45,42,.94);
+  --wanhu-dialog-surface-highlight:rgba(255,249,238,.018);
+  --wanhu-dialog-surface-shade:rgba(8,10,9,.052);
   --wanhu-dialog-surface-edge:rgba(238,233,223,.085);
-  --wanhu-dialog-surface-rule:rgba(238,233,223,.055);
+  --wanhu-dialog-surface-rule:rgba(238,233,223,.060);
   --wanhu-dialog-surface-shadow:0 30px 80px rgba(4,6,5,.44),inset 0 1px 0 rgba(255,255,255,.024);
+  --wanhu-dialog-header-neutral:rgba(255,255,255,.014);
+  --wanhu-dialog-header-warning:rgba(169,132,75,.070);
+  --wanhu-dialog-header-danger:rgba(152,84,71,.075);
+  --wanhu-dialog-accent-warning:rgba(189,153,89,.78);
+  --wanhu-dialog-accent-danger:rgba(152,84,71,.86);
 }
 

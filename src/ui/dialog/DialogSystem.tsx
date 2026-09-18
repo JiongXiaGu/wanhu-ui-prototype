@@ -3,13 +3,14 @@ import { Check, CircleX, Info, Trash2, TriangleAlert } from 'lucide-react';
 import { TextInput } from '../Controls';
 
 type DialogTone = 'primary' | 'danger';
+type DialogVisualTone = 'neutral' | 'warning' | 'danger';
 type NotificationTone = 'neutral' | 'success' | 'warning' | 'error';
 type ToastTone = NotificationTone | 'danger';
 type InputMode = 'text' | 'numeric' | 'decimal';
 
 type ConfirmDialogRequest = {
   kind: 'confirm'; id: number; title: string; message?: string;
-  confirmText: string; cancelText: string; tone: DialogTone;
+  confirmText: string; cancelText: string; tone: DialogTone; visualTone: DialogVisualTone;
   onConfirm: () => void; onCancel?: () => void;
 };
 type InputDialogRequest = {
@@ -40,7 +41,7 @@ type TimedDialogRequest = {
 type DialogRequest = ConfirmDialogRequest | InputDialogRequest | NumberDialogRequest | BindingDialogRequest | TimedDialogRequest;
 
 type ToastItem = { id: number; text: string; tone: NotificationTone; exiting: boolean };
-type ConfirmOptions = Omit<ConfirmDialogRequest,'kind'|'id'|'cancelText'|'tone'> & { cancelText?: string; tone?: DialogTone };
+type ConfirmOptions = Omit<ConfirmDialogRequest,'kind'|'id'|'cancelText'|'tone'|'visualTone'> & { cancelText?: string; tone?: DialogTone; visualTone?: DialogVisualTone };
 type InputOptions = Omit<InputDialogRequest,'kind'|'id'|'cancelText'> & { cancelText?: string };
 type NumberOptions = Omit<NumberDialogRequest,'kind'|'id'|'cancelText'|'decimals'> & { cancelText?: string; decimals?: number };
 type BindingOptions = Omit<BindingDialogRequest,'kind'|'id'|'cancelText'|'clearText'> & { cancelText?: string; clearText?: string };
@@ -69,7 +70,10 @@ export function DialogProvider({children}:{children:ReactNode}){
   useEffect(()=>()=>{toastTimers.current.forEach(timers=>timers.forEach(timer=>window.clearTimeout(timer)));toastTimers.current.clear()},[]);
 
   const dismissDialog=useCallback((invokeCancel=false)=>{setDialog(current=>{if(invokeCancel)current?.onCancel?.();return null})},[]);
-  const confirm=useCallback((options:ConfirmOptions)=>setDialog({...options,id:nextId++,kind:'confirm',cancelText:options.cancelText??'取消',tone:options.tone??'primary'}),[]);
+  const confirm=useCallback((options:ConfirmOptions)=>{
+    const tone=options.tone??'primary';
+    setDialog({...options,id:nextId++,kind:'confirm',cancelText:options.cancelText??'取消',tone,visualTone:options.visualTone??(tone==='danger'?'danger':'neutral')});
+  },[]);
   const input=useCallback((options:InputOptions)=>setDialog({...options,id:nextId++,kind:'input',cancelText:options.cancelText??'取消'}),[]);
   const number=useCallback((options:NumberOptions)=>setDialog({...options,id:nextId++,kind:'number',cancelText:options.cancelText??'取消',decimals:options.decimals??0}),[]);
   const binding=useCallback((options:BindingOptions)=>setDialog({...options,id:nextId++,kind:'binding',cancelText:options.cancelText??'取消',clearText:options.clearText??'清除绑定'}),[]);
@@ -114,15 +118,16 @@ export function NotificationHost(){
   })}</div>;
 }
 
-function DialogFrame({title,message,tone='primary',children,actions}:{title:string;message?:string;tone?:DialogTone;children?:ReactNode;actions:ReactNode}){
-  return <div className="ui-modal-layer" role="presentation"><div className="ui-modal-backdrop"/><section className={`ui-dialog is-${tone}`} role="dialog" aria-modal="true" aria-labelledby="ui-dialog-title"><header className="ui-dialog__header"><h2 id="ui-dialog-title">{title}</h2>{message&&<p>{message}</p>}</header>{children&&<div className="ui-dialog__body">{children}</div>}<footer className="ui-dialog__actions">{actions}</footer></section></div>;
+function DialogFrame({title,message,visualTone='neutral',children,actions}:{title:string;message?:string;visualTone?:DialogVisualTone;children?:ReactNode;actions:ReactNode}){
+  const ToneIcon=visualTone==='warning'?TriangleAlert:visualTone==='danger'?CircleX:null;
+  return <div className="ui-modal-layer" role="presentation"><div className="ui-modal-backdrop"/><section className={`ui-dialog is-tone-${visualTone}`} role="dialog" aria-modal="true" aria-labelledby="ui-dialog-title"><header className="ui-dialog__header"><div className="ui-dialog__heading">{ToneIcon&&<ToneIcon className="ui-dialog__tone-icon" size={16}/>}<h2 id="ui-dialog-title">{title}</h2></div>{message&&<p>{message}</p>}</header>{children&&<div className="ui-dialog__body">{children}</div>}<footer className="ui-dialog__actions">{actions}</footer></section></div>;
 }
 
 function ConfirmDialogView({request,onDismiss}:{request:ConfirmDialogRequest;onDismiss:()=>void}){
   const cancelRef=useRef<HTMLButtonElement>(null),confirmRef=useRef<HTMLButtonElement>(null);
   useEffect(()=>{(request.tone==='danger'?cancelRef.current:confirmRef.current)?.focus();const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'){event.preventDefault();event.stopPropagation();request.onConfirm();onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss]);
   const cancelAction=()=>{request.onCancel?.();onDismiss()};
-  return <DialogFrame title={request.title} message={request.message} tone={request.tone} actions={<><button ref={cancelRef} type="button" className="ui-dialog-button is-secondary" onClick={cancelAction}>{request.cancelText}</button><button ref={confirmRef} type="button" className={`ui-dialog-button ${request.tone==='danger'?'is-danger':'is-primary'}`} onClick={()=>{request.onConfirm();onDismiss()}}>{request.tone==='danger'&&<Trash2 size={14}/>} {request.confirmText}</button></>}/>;
+  return <DialogFrame title={request.title} message={request.message} visualTone={request.visualTone} actions={<><button ref={cancelRef} type="button" className="ui-dialog-button is-secondary" onClick={cancelAction}>{request.cancelText}</button><button ref={confirmRef} type="button" className={`ui-dialog-button ${request.tone==='danger'?'is-danger':'is-primary'}`} onClick={()=>{request.onConfirm();onDismiss()}}>{request.tone==='danger'&&<Trash2 size={14}/>} {request.confirmText}</button></>}/>;
 }
 
 function InputDialogView({request,onDismiss}:{request:InputDialogRequest;onDismiss:()=>void}){
@@ -175,5 +180,5 @@ function TimedDialogView({request,onDismiss}:{request:TimedDialogRequest;onDismi
   const [seconds,setSeconds]=useState(request.seconds);
   useEffect(()=>{const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel();onDismiss()}else if(event.key==='Enter'){event.preventDefault();event.stopPropagation();request.onConfirm();onDismiss()}};window.addEventListener('keydown',handleKey,true);const timer=window.setInterval(()=>setSeconds(current=>current-1),1000);return()=>{window.removeEventListener('keydown',handleKey,true);window.clearInterval(timer)}},[request,onDismiss]);
   useEffect(()=>{if(seconds>0)return;request.onCancel();onDismiss()},[seconds,request,onDismiss]);
-  return <DialogFrame title={request.title} message={request.message} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" onClick={()=>{request.onConfirm();onDismiss()}}><Check size={14}/>{request.confirmText}</button></>}>{(request.summaryLabel||request.summaryValue)&&<div className="ui-dialog-change"><span>{request.summaryLabel}</span><b>{request.summaryValue}</b></div>}<div className="ui-dialog-countdown" aria-live="polite"><strong>{Math.max(0,seconds)}</strong><span>秒后自动恢复</span></div></DialogFrame>;
+  return <DialogFrame title={request.title} message={request.message} visualTone="warning" actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" onClick={()=>{request.onConfirm();onDismiss()}}><Check size={14}/>{request.confirmText}</button></>}>{(request.summaryLabel||request.summaryValue)&&<div className="ui-dialog-change"><span>{request.summaryLabel}</span><b>{request.summaryValue}</b></div>}<div className="ui-dialog-countdown" aria-live="polite"><strong>{Math.max(0,seconds)}</strong><span>秒后自动恢复</span></div></DialogFrame>;
 }

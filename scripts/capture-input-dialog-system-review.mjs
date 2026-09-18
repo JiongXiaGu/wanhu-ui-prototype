@@ -15,6 +15,19 @@ async function open(review,waitFor){
   await page.waitForTimeout(180);
 }
 
+async function expectDialogTone(dialog,tone){
+  const expected=`is-tone-${tone}`;
+  if(!(await dialog.evaluate((node,className)=>node.classList.contains(className),expected)))throw new Error(`Dialog must use ${tone} visual tone.`);
+  const iconCount=await dialog.locator('.ui-dialog__tone-icon').count();
+  if(tone==='neutral'&&iconCount!==0)throw new Error('Neutral Dialog must not show a semantic status icon.');
+  if(tone!=='neutral'&&iconCount!==1)throw new Error(`${tone} Dialog must show one semantic status icon.`);
+  const header=dialog.locator('.ui-dialog__header');
+  const headerStyle=await header.evaluate(node=>({backgroundImage:getComputedStyle(node).backgroundImage,backgroundColor:getComputedStyle(node).backgroundColor}));
+  if(tone!=='neutral'&&headerStyle.backgroundImage==='none')throw new Error(`${tone} Dialog header must use a semantic tint.`);
+  const accent=await dialog.evaluate(node=>getComputedStyle(node,'::before').backgroundColor);
+  if(tone!=='neutral'&&(accent==='transparent'||accent==='rgba(0, 0, 0, 0)'))throw new Error(`${tone} Dialog must expose a top semantic accent line.`);
+}
+
 async function expectDialogMaterial(dialog,label){
   const backdrop=page.locator('.ui-modal-backdrop');
   await backdrop.waitFor();
@@ -48,6 +61,7 @@ await page.getByRole('button',{name:'退出游戏',exact:true}).click();
 let dialog=page.getByRole('dialog',{name:'退出游戏？'});
 await dialog.waitFor();
 await expectDialogMaterial(dialog,'Confirm Dialog');
+await expectDialogTone(dialog,'neutral');
 await page.screenshot({path:`${outDir}/dialog-confirm.png`});
 await page.keyboard.press('Escape');
 
@@ -85,6 +99,7 @@ await page.getByRole('option',{name:'窗口',exact:true}).click();
 dialog=page.getByRole('dialog',{name:'保留这些显示设置？'});
 await dialog.waitFor();
 await expectDialogMaterial(dialog,'Timed Confirmation');
+await expectDialogTone(dialog,'warning');
 await page.screenshot({path:`${outDir}/dialog-timed-confirmation.png`});
 await page.keyboard.press('Escape');
 
@@ -136,6 +151,22 @@ await page.screenshot({path:`${outDir}/dialog-binding-capture.png`});
 await page.keyboard.press('Control+K');
 await dialog.getByRole('button',{name:'保存'}).click();
 if(!(await firstBinding.textContent())?.includes('Ctrl + K'))throw new Error('Binding must commit through Binding Capture Dialog.');
+
+await open('pause-save','.save-game-space');
+await page.getByRole('button',{name:/覆盖 /}).first().click();
+dialog=page.getByRole('dialog',{name:'覆盖存档？'});
+await dialog.waitFor();
+await expectDialogMaterial(dialog,'Overwrite Warning Dialog');
+await expectDialogTone(dialog,'warning');
+await page.screenshot({path:`${outDir}/dialog-warning-overwrite.png`});
+await page.keyboard.press('Escape');
+await page.getByRole('button',{name:/删除 /}).first().click();
+dialog=page.getByRole('dialog',{name:'删除存档？'});
+await dialog.waitFor();
+await expectDialogMaterial(dialog,'Delete Danger Dialog');
+await expectDialogTone(dialog,'danger');
+await page.screenshot({path:`${outDir}/dialog-danger-delete.png`});
+await page.keyboard.press('Escape');
 
 await open('workspace-building','.workspace--design');
 if((await page.locator('.workspace-search,.workspace-search__trigger,.workspace-search__field').count())!==0)throw new Error('Design Workspace search must be removed.');

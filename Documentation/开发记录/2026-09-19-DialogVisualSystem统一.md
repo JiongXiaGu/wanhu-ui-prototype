@@ -5,8 +5,11 @@
 ## 修改
 
 - Dialog Backdrop 改为中性半透明 Dim，移除 `backdrop-filter: blur(...)`；
-- Dialog Surface 改为半透明 Smoked Graphite，自身通过 Tint / Noise / Edge / Shadow 保证可读性；
-- 删除旧绿黑 Gradient 与顶部装饰金线；
+- Dialog Surface 改为半透明 Smoked Graphite，自身通过 Tint / Edge / Shadow 保证可读性；
+- 删除旧绿黑 Gradient 与可见颗粒磨砂 Noise，改成更干净的烟墨板材质；
+- 新增 Header 语义 Tone：Neutral / Warning / Danger；
+- Warning 使用弱熟铜 Header Tint + 2px 状态线；Danger 使用弱朱砂 Header Tint + 2px 状态线；
+- Timed Display Confirmation 与覆盖存档进入 Warning；永久删除进入 Danger；普通输入 / 普通确认保持 Neutral；
 - Dialog Radius 统一为 12px，Button / Input 使用当前 10px Control 语言；
 - Input Default 中性，Focus 才出现弱熟铜；
 - Text / Number Input 已直接迁入共享 `TextInput`，删除 Dialog Input 的兼容桥接皮肤；

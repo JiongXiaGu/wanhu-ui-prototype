@@ -69,6 +69,9 @@
 - 同一 Hue；
 - 使用 Local Occlusion / Edge / Shadow 建立高度；
 - Dialog 属于 Elevated Blocking Surface：使用半透明 Smoked Graphite 自身保证可读性；
+- Dialog 本体避免可见颗粒 Noise，不做“磨砂脏玻璃”；
+- Dialog Header 只允许 Neutral / Warning / Danger 三种轻语义 Tone；
+- Warning = 弱熟铜 Header Tint + 顶部细线；Danger = 弱朱砂 Header Tint + 顶部细线；Body 始终中性；
 - UI-over-UI 不再次 Blur 已绘制 UI；Dialog Backdrop 只负责 Dim；
 - Popover / Inspector 如果覆盖其它 UI，也优先使用自身 Tint，而不是申请第二次实时 Blur。
 

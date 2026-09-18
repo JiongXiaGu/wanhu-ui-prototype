@@ -462,14 +462,35 @@
 }
 .game-canvas .ui-dialog{
   background-color:var(--wanhu-dialog-surface-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-dialog-surface-highlight),var(--wanhu-dialog-surface-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-image:linear-gradient(180deg,var(--wanhu-dialog-surface-highlight),var(--wanhu-dialog-surface-shade));
   border-color:var(--wanhu-dialog-surface-edge);
   box-shadow:var(--wanhu-dialog-surface-shadow);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
 }
+
+.game-canvas .ui-dialog::before{
+  content:'';
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:0;
+  top:0;
+  height:2px;
+  background:transparent;
+}
+.game-canvas .ui-dialog__header{
+  background:var(--wanhu-dialog-header-neutral);
+  border-bottom-color:var(--wanhu-dialog-surface-rule);
+}
+.game-canvas .ui-dialog.is-tone-warning::before{background:var(--wanhu-dialog-accent-warning)}
+.game-canvas .ui-dialog.is-tone-warning .ui-dialog__header{
+  background:linear-gradient(90deg,var(--wanhu-dialog-header-warning),rgba(169,132,75,.018) 72%,transparent);
+}
+.game-canvas .ui-dialog.is-tone-warning .ui-dialog__tone-icon{color:var(--wanhu-color-brass-high)}
+.game-canvas .ui-dialog.is-tone-danger::before{background:var(--wanhu-dialog-accent-danger)}
+.game-canvas .ui-dialog.is-tone-danger .ui-dialog__header{
+  background:linear-gradient(90deg,var(--wanhu-dialog-header-danger),rgba(152,84,71,.018) 72%,transparent);
+}
+.game-canvas .ui-dialog.is-tone-danger .ui-dialog__tone-icon{color:#c87f73}
 
