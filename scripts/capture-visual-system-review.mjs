@@ -84,8 +84,8 @@ await expectSharedSlider(cameraPanel, 'Camera context panel');
 
 // Settings keeps its richer interaction implementation but its skin is bridged to the shared field tokens.
 await open('settings', '.settings-panel--menu');
-const settingsBackdrop = page.locator('.settings-blocking-backdrop');
-await expectBlur(settingsBackdrop, 'Settings blocking backdrop');
+const settingsGlobalRoot = page.locator('.settings-space.wanhu-global-space');
+await expectBlur(settingsGlobalRoot, 'Settings Global Space root');
 await expectRounded(page.getByRole('button', { name: '返回', exact: true }), 'Settings back button');
 const settingsNumeric = page.locator('.settings-row .ui-numeric-slider-field').first();
 if ((await settingsNumeric.count()) === 1) {
@@ -111,13 +111,13 @@ await page.screenshot({ path: `${outDir}/32-visual-system-new-game-footer.png` }
 
 // Load / Save footer actions share the same rounded action grammar; Archive toggle uses the shared switch skin.
 await open('load', '.archive-space--load');
-await expectBlur(page.locator('.archive-space__footer'), 'Load footer');
+await expectBlur(page.locator('.archive-space--load.wanhu-global-space'), 'Load Global Space root');
 await expectRounded(page.getByRole('button', { name: '返回', exact: true }), 'Load back button');
-await expectRounded(page.locator('.archive-hide-outdated > i'), 'Archive toggle track', 9);
+await expectRounded(page.locator('.archive-hide-outdated .ui-toggle > i'), 'Archive toggle track', 9);
 await page.screenshot({ path: `${outDir}/33-visual-system-load-footer.png` });
 
 await open('pause-save', '.save-game-space');
-await expectBlur(page.locator('.save-game-space__footer'), 'Save footer');
+await expectBlur(page.locator('.save-game-space.wanhu-global-space'), 'Save Global Space root');
 for (const label of ['更改存档组名称', '快速保存', '保存存档', '返回']) {
   await expectRounded(page.getByRole('button', { name: label, exact: true }), `Save action ${label}`, label === '更改存档组名称' ? 7 : 8);
 }

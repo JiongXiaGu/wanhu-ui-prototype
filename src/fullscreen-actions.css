@@ -77,7 +77,7 @@
   border:0!important;
   background:transparent!important;
   box-shadow:none!important;
-  color:#7e867f!important;
+  color:var(--wanhu-color-paper-tertiary)!important;
   font-size:9px!important;
   font-weight:500!important;
   letter-spacing:.012em!important;
@@ -86,12 +86,12 @@
 }
 .archive-footer-action:hover:not(:disabled),
 .save-group-rename:hover:not(:disabled){
-  color:#c9c6bd!important;
-  background:rgba(255,255,255,.018)!important;
+  color:var(--wanhu-color-text-secondary)!important;
+  background:var(--wanhu-control-hover)!important;
 }
 .archive-footer-action--danger:hover:not(:disabled){
-  color:#c9877d!important;
-  background:rgba(151,65,52,.050)!important;
+  color:#c98b81!important;
+  background:rgba(152,84,71,.060)!important;
 }
 .archive-footer-action:focus-visible,
 .save-group-rename:focus-visible{outline:1px solid rgba(201,165,95,.28);outline-offset:1px}

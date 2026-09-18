@@ -75,6 +75,13 @@
   --wanhu-global-space-shade:rgba(7,9,8,.055);
   --wanhu-global-space-backdrop:rgba(9,11,10,.10);
   --wanhu-global-space-filter:blur(7px) saturate(.78) brightness(.88);
+  --wanhu-global-space-header-bg:rgba(255,255,255,.010);
+  --wanhu-global-space-tabs-bg:rgba(255,255,255,.005);
+  --wanhu-global-space-footer-bg:rgba(8,10,9,.070);
+  --wanhu-global-space-rule:rgba(238,233,223,.055);
+  --wanhu-global-space-row-hover:rgba(255,255,255,.028);
+  --wanhu-global-space-item-bg:rgba(255,255,255,.004);
+  --wanhu-global-space-item-selected:rgba(169,132,75,.075);
 
   /* Pause Blocking Space: same graphite family, tuned for a frozen-world overlay. */
   --wanhu-pause-dim:rgba(12,14,13,.48);

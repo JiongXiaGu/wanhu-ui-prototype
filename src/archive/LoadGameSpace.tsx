@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, FolderOpen, Pencil, Trash2 } from 'lucide-react';
+import { ToggleSwitch } from '../ui/Controls';
 import { useDialogSystem } from '../ui/dialog/DialogSystem';
 import { SaveEntryCard, type SaveCompatibility, type SaveEntryCardData, type SaveKind } from './SaveEntryCard';
 
@@ -176,15 +177,15 @@ export function LoadGameSpace({ context, onBack, onLoad }: LoadGameSpaceProps) {
   }
 
   return (
-    <section className={`archive-space archive-space--load archive-space--${context}`} aria-label="读取游戏">
+    <section className={`archive-space archive-space--load archive-space--${context} wanhu-global-space`} aria-label="读取游戏">
       <header className="global-space-header archive-space__header"><div className="global-space-heading"><h1>读取游戏</h1></div></header>
 
       <div className="archive-space__layout archive-space__layout--browser">
         <aside className="archive-groups">
-          <div className="archive-column-heading"><b>游戏组</b><span>{groups.length} 组</span></div>
+          <div className="archive-column-heading"><b>游戏组</b></div>
           <div className="archive-group-list">
             {groups.map((item) => (
-              <button key={item.id} type="button" className={`archive-group-card ${item.id === group.id ? 'is-selected' : ''}`} onClick={() => selectGroup(item.id)} title={`游玩时间 ${item.playTime} · 最后保存 ${item.lastSavedAt} · 最新版本 v${item.latestVersion}`}>
+              <button key={item.id} type="button" className={`archive-group-card ${item.id === group.id ? 'is-selected' : ''}`} onClick={() => selectGroup(item.id)}>
                 <span className="archive-group-card__image" style={{ backgroundImage: `url(${item.image})` }} />
                 <span className="archive-group-card__body"><span className="archive-group-card__title"><b>{item.city}</b></span><span className="archive-group-card__meta"><small>{item.playTime}</small><i /><small>最后保存 {item.lastSavedAt}</small></span><span className="archive-group-card__latest-version">最新版本 v{item.latestVersion}</span></span>
               </button>
@@ -195,7 +196,7 @@ export function LoadGameSpace({ context, onBack, onLoad }: LoadGameSpaceProps) {
         <main className="archive-saves">
           <header className="archive-saves-toolbar">
             <nav className="archive-save-type-tabs" aria-label="存档类型筛选">{filterItems.map((item) => <button key={item.key} type="button" className={filter === item.key ? 'is-active' : ''} aria-pressed={filter === item.key} onClick={() => setFilter(item.key)}>{item.label}</button>)}</nav>
-            <button type="button" className={`archive-hide-outdated ${hideOutdated ? 'is-on' : ''}`} role="switch" aria-checked={hideOutdated} onClick={() => setHideOutdated((current) => !current)}><span>隐藏过时存档</span><i><em /></i></button>
+            <div className="archive-hide-outdated"><span>隐藏过时存档</span><ToggleSwitch label="隐藏过时存档" value={hideOutdated} className="archive-hide-outdated__toggle" onChange={setHideOutdated} /></div>
           </header>
 
           <div className="archive-save-list">

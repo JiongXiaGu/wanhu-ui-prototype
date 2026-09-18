@@ -13,7 +13,6 @@ import './workspace/design-workspace.css';
 import './ui/asset-inspector/asset-inspector.css';
 import './operation-hints.css';
 import './archive/archive-panel.css';
-import './archive/archive-info-refine.css';
 import './archive/save-game-space.css';
 import './gameplay/gameplay-context-panel.css';
 import './gameplay/gameplay-corner-hud.css';
