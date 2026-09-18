@@ -76,7 +76,14 @@ assertBaseGeometry('Settings Off Toggle', offVisual);
 assertBaseGeometry('Settings On Toggle', onVisual);
 if (offVisual.thumbLeft !== '3px' || onVisual.thumbLeft !== '21px') throw new Error(`Toggle thumb positions invalid. off=${offVisual.thumbLeft} on=${onVisual.thumbLeft}`);
 if (offVisual.trackBackground === onVisual.trackBackground || offVisual.thumbBackground === onVisual.thumbBackground) throw new Error('On state must be visually distinct from neutral Off state.');
-await onToggle.focus();
+await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : undefined));
+let reachedToggle = false;
+for (let index = 0; index < 40; index += 1) {
+  await page.keyboard.press('Tab');
+  reachedToggle = await onToggle.evaluate((node) => document.activeElement === node);
+  if (reachedToggle) break;
+}
+if (!reachedToggle) throw new Error('Keyboard Tab navigation must be able to reach the shared Toggle.');
 const focusVisual = await toggleVisual(onToggle);
 if (focusVisual.trackShadow === 'none') throw new Error('Keyboard Focus must add a restrained focus ring.');
 await page.screenshot({ path: `${outDir}/toggle-settings-on-off.png` });
