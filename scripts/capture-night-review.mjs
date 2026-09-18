@@ -150,6 +150,12 @@ if (nightSettingsBackground.includes('wanhu-gameplay-city.png') || nightSettings
 if ((await screen.getAttribute('data-time-of-day')) !== 'night') {
   throw new Error('Opening Settings from Pause must preserve the current night gameplay state.');
 }
+if ((await nightSettings.locator('.settings-slider, .settings-toggle, .settings-select-root').count()) !== 0) {
+  throw new Error('Night Settings must not fall back to legacy local controls.');
+}
+if ((await nightSettings.locator('.ui-select--settings').count()) === 0 || (await nightSettings.locator('.ui-toggle--settings').count()) === 0) {
+  throw new Error('Night Settings must retain shared Select and Toggle controls.');
+}
 await page.waitForTimeout(160);
 await page.screenshot({ path: `${outDir}/40-settings-night.png` });
 await nightSettings.getByRole('button', { name: '返回', exact: true }).click();

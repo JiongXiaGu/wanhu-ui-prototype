@@ -52,41 +52,24 @@
 .settings-section__title{height:34px;display:flex;align-items:center;gap:13px;color:var(--wanhu-color-paper-secondary);font-size:11.5px;font-weight:550;letter-spacing:.04em}
 .settings-section__title b{white-space:nowrap}.settings-section__title i{height:1px;flex:1;background:linear-gradient(90deg,var(--wanhu-surface-blocking-rule),rgba(238,233,223,.018) 72%,transparent)}
 .settings-section__rows{display:flex;flex-direction:column}
-.settings-row{min-height:62px;padding:0 10px;display:flex;align-items:center;justify-content:space-between;gap:42px;border-radius:2px;background:transparent;box-shadow:inset 0 -1px 0 rgba(238,233,223,.022);transition:background .12s ease,opacity .12s ease}
+.settings-row{min-height:54px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;gap:34px;border-radius:2px;background:transparent;box-shadow:inset 0 -1px 0 rgba(238,233,223,.022);transition:background .12s ease,opacity .12s ease}
 .settings-row:hover{background:linear-gradient(90deg,var(--wanhu-surface-blocking-row-hover),rgba(255,255,255,.010) 68%,transparent)}
 .settings-row.is-disabled{opacity:.34}.settings-row.is-disabled:hover{background:transparent}
-.settings-row__label{min-width:0;flex:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px}.settings-row__label b{color:var(--wanhu-color-text-secondary);font-size:11.5px;font-weight:540;letter-spacing:.012em}.settings-row__label small{max-width:520px;color:rgba(183,179,170,.54);font-size:9px;font-weight:430;line-height:1.35;letter-spacing:.01em}.settings-row:hover .settings-row__label b{color:var(--wanhu-color-paper-primary)}.settings-row:hover .settings-row__label small{color:rgba(212,207,198,.62)}.settings-row.is-disabled .settings-row__label b{color:var(--wanhu-color-paper-tertiary)}
-.settings-row__control{position:relative;flex:0 0 430px;min-width:0;min-height:38px;padding-left:20px;display:flex;align-items:center;justify-content:flex-end}
-.settings-row__control::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:1px;background:linear-gradient(180deg,transparent,var(--wanhu-surface-blocking-rule),transparent)}
+.settings-row__label{min-width:0;flex:1;display:flex;align-items:center}.settings-row__label b{color:var(--wanhu-color-text-secondary);font-size:11.5px;font-weight:500;letter-spacing:.012em}.settings-row:hover .settings-row__label b{color:var(--wanhu-color-paper-primary)}.settings-row.is-disabled .settings-row__label b{color:var(--wanhu-color-paper-tertiary)}
+.settings-row__control{flex:0 0 360px;min-width:0;display:flex;align-items:center;justify-content:flex-end}
 
 /* Shared Settings controls -------------------------------------------------
-   Settings owns only page geometry. Slider / Select / Toggle materials and
-   interaction states come from ui-control-system.css. */
-.settings-row__control--slider{justify-content:stretch}
-.settings-numeric-control{
-  --ui-numeric-step-size:30px;
-  --ui-numeric-value-width:68px;
-  width:100%;
-}
-.settings-numeric-control .ui-slider__track{height:3px;background:rgba(238,233,223,.13);box-shadow:inset 0 1px 0 rgba(0,0,0,.15)}
-.settings-numeric-control .ui-slider__track>i{background:#aaa9a3;box-shadow:none}
-.settings-numeric-control .ui-slider__thumb{width:11px;height:11px;background:var(--wanhu-color-paper-primary);border-color:rgba(244,239,229,.92);box-shadow:0 2px 5px rgba(0,0,0,.28)}
-.settings-numeric-control .ui-slider:hover .ui-slider__thumb{width:12px;height:12px;box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 3px rgba(169,132,75,.07)}
-.settings-numeric-control .ui-slider:focus-within .ui-slider__thumb{width:12px;height:12px;background:#f0e7d6;box-shadow:0 2px 6px rgba(0,0,0,.30),0 0 0 4px rgba(169,132,75,.11)}
-.settings-numeric-control>.ui-stepper-button{height:30px}
-.settings-numeric-control>.ui-value-field{height:30px;color:var(--wanhu-color-paper-primary);font-size:10px;font-weight:570}
-
+   Settings owns only context geometry. Material and interaction states are
+   centralized in ui-control-system.css. */
+.settings-row__control--slider{gap:15px}
+.settings-slider-control{flex:1;min-width:0}
+.settings-slider-value{flex:0 0 64px;text-align:right;color:var(--wanhu-color-paper-secondary);font-size:10px;font-variant-numeric:tabular-nums}
 .settings-row__control--select{justify-content:flex-end}
-.settings-select-control{width:246px}
-.settings-select-control .ui-select__trigger{height:32px;padding-inline:11px 8px}
-.settings-select-control .ui-select__menu{top:36px}
-.settings-select-control.opens-up .ui-select__menu{top:auto;bottom:36px}
-
+.settings-select-control{width:230px}
 .settings-row__control--toggle{justify-content:flex-end}
-.settings-toggle-control{margin-right:0}
+.settings-toggle-control{flex:0 0 52px}
 
 /* Full-screen page action bar. Settings uses only the left navigation/tool group. */
-
 .settings-space__footer{flex:0 0 72px;border-top-color:var(--wanhu-surface-blocking-rule);background:rgba(255,255,255,.006)}
 .settings-space__footer-left{display:flex;align-items:center;gap:10px}
 .settings-space__footer-right{min-width:1px;min-height:1px}
@@ -98,5 +81,5 @@
 .settings-restore{height:36px;padding:0 11px;display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--wanhu-color-paper-tertiary);font-size:9px;cursor:pointer;transition:color .12s ease,background .12s ease}
 .settings-restore:hover{color:var(--wanhu-color-paper-secondary);background:var(--wanhu-control-hover)}.settings-restore:active{color:var(--wanhu-color-paper-primary)}.settings-restore:focus-visible{outline:1px solid rgba(189,153,89,.24)}
 
-@keyframes settings-content-enter{from{opacity:.42;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@keyframes settings-select-open{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
-@media (max-width:1500px){.settings-space__content{width:min(900px,calc(100% - 120px))}.settings-row__control{flex-basis:390px}.settings-select-control{width:226px}}
+@keyframes settings-content-enter{from{opacity:.42;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:1500px){.settings-space__content{width:min(840px,calc(100% - 120px))}.settings-row__control{flex-basis:330px}.settings-select-control{width:214px}}

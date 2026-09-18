@@ -159,30 +159,39 @@ const countdown = Number((await page.locator('.settings-safe-dialog__countdown')
 if (!(countdown > 0 && countdown <= 15)) throw new Error('Timed display confirmation must show a countdown.');
 await page.keyboard.press('Escape');
 
-// Settings must consume the shared control primitives instead of compatibility skins.
+// Settings control migration: logic must come from shared primitives, while the
+// page keeps its own full-screen row geometry.
 await open('settings', '.settings-panel--menu');
 if ((await page.locator('.settings-slider, .settings-toggle, .settings-select-root').count()) !== 0) {
-  throw new Error('Settings must not render legacy local Slider / Toggle / Select controls.');
+  throw new Error('Settings must not render legacy local Slider / Toggle / Select implementations.');
 }
-if ((await page.locator('.settings-row .ui-select').count()) === 0 || (await page.locator('.settings-row .ui-toggle').count()) === 0) {
-  throw new Error('Display settings must render shared Select and Toggle primitives.');
+if ((await page.locator('.settings-row .ui-select--settings').count()) === 0 || (await page.locator('.settings-row .ui-toggle--settings').count()) === 0) {
+  throw new Error('Display Settings must consume shared Select and Toggle primitives.');
 }
-
 await page.getByRole('button', { name: '图形', exact: true }).click();
-const renderScale = page.locator('[data-setting-id="render-scale"]');
-await renderScale.locator('.ui-numeric-control').waitFor();
-if ((await renderScale.locator('.ui-stepper-button').count()) !== 2 || (await renderScale.locator('.ui-slider').count()) !== 1 || (await renderScale.locator('.ui-value-field').count()) !== 1) {
-  throw new Error('Settings numeric rows must use the shared stepper / slider / value instrument structure.');
+const renderScale = page.getByRole('slider', { name: '渲染比例', exact: true });
+await renderScale.waitFor();
+if (!(await renderScale.locator('xpath=..').getAttribute('class'))?.includes('ui-slider--settings')) {
+  throw new Error('Settings slider must use the shared SliderControl settings variant.');
+}
+const scaleBeforeKeyboard = Number(await renderScale.inputValue());
+await renderScale.focus();
+await page.keyboard.press('Shift+ArrowLeft');
+const scaleAfterKeyboard = Number(await renderScale.inputValue());
+if (scaleAfterKeyboard !== scaleBeforeKeyboard - 10) {
+  throw new Error(`Shared Settings slider must preserve Shift+Arrow large-step behavior. before=${scaleBeforeKeyboard} after=${scaleAfterKeyboard}`);
+}
+if ((await page.locator('[data-setting-id="frame-generation"] .ui-toggle').getAttribute('aria-pressed')) !== 'false') {
+  throw new Error('Graphics Settings should expose the shared Toggle off state.');
+}
+if ((await page.locator('[data-setting-id="low-latency"] .ui-toggle').getAttribute('aria-pressed')) !== 'true') {
+  throw new Error('Graphics Settings should expose the shared Toggle on state.');
 }
 await page.screenshot({ path: `${outDir}/59-settings-graphics-controls.png` });
 
 await page.getByRole('button', { name: '音频', exact: true }).click();
-await page.locator('[data-setting-id="master-volume"] .ui-numeric-control').waitFor();
-await page.screenshot({ path: `${outDir}/59-settings-audio-controls.png` });
-
-await page.getByRole('button', { name: '游戏', exact: true }).click();
-await page.locator('[data-setting-id="construction-tutorial"] .ui-toggle').waitFor();
-await page.screenshot({ path: `${outDir}/59-settings-game-controls.png` });
+await page.getByRole('slider', { name: '主音量', exact: true }).waitFor();
+await page.screenshot({ path: `${outDir}/60-settings-audio-controls.png` });
 
 // Save/Load must retain the same shared card structure.
 await open('pause-save', '.save-game-space');

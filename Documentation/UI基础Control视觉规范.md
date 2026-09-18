@@ -33,7 +33,7 @@
 - Weather 云量 / 风力 / 日内时间 / 季节进度；
 - Building Placement 旋转 / 吸附 / 层高 / 屋顶参数；
 - Road Placement 宽度 / 标高 / 曲线平滑；
-- Settings 音量 / 灵敏度 / UI 缩放等。
+- Settings 音量 / 灵敏度 / 安全区域等。
 
 离散且选项极少的值不要为了“统一”强制用 Slider，优先 Segmented / Select。
 
@@ -94,6 +94,8 @@ onChange
 ```
 
 不要再为每个 Tool 创建自己的 Track / Thumb。
+
+Settings 的普通连续参数仍采用 `Label │ Slider │ Value`，不因为底层 Slider 已共享就强行加入 `- / +` Stepper。Stepper 属于运行时 Numeric Slider Field 的高频精调语义，不是所有 Slider 的统一外形。
 
 ## 5. Stepper Button
 
@@ -282,12 +284,11 @@ UIControls.uss
 - Building Placement Segment 共用 `SegmentedControl`；
 - Road Placement Numeric Control 共用共享 Slider；
 - Camera / Weather 的 Runtime Parameter 继续使用同一共享 Slider；
-- Settings Slider / Select / Toggle 暂时保留成熟的页面交互逻辑，但视觉已经通过共享 Token / Compatibility Bridge 对齐；
+- Settings Slider / Select / Toggle 已直接迁入共享 `SliderControl / SelectControl / ToggleSwitch`；Settings 页面 CSS 只保留行布局、控件宽度与密度，不再拥有独立 Track / Thumb / Toggle / Popup 交互逻辑；
 - Archive Toggle、Dialog Input、Archive Inline Input、Workspace Search 已开始消费共享 Field Token。
 
 下一阶段：
 
-- 将 Settings 的本地 Slider / Select / Toggle React 逻辑逐步迁入共享 Component；
 - Dialog Text Input 改为直接使用 `TextInput`；
 - 清理 `tool-overlay.css` 中不再运行的旧 `.parameter-row / .segment / .track`；
 - 清理 Settings / Archive 中被共享 Control 完全替代的旧视觉声明。
