@@ -11,6 +11,7 @@ import {
   Store,
   Trees,} from 'lucide-react';
 import type { DockCategory, DockMode } from '../app/ui-state';
+import type { MotionPhase } from '../ui/motion';
 
 interface MainDockItem {
   id: DockCategory;
@@ -44,16 +45,17 @@ const MAIN_DOCK_ITEMS: Record<DockMode, readonly MainDockItem[]> = {
 
 interface CommandBarProps {
   mode: DockMode;
+  motionPhase?: MotionPhase;
   activeCategory: DockCategory | null;
   onModeChange: (mode: DockMode) => void;
   onCategoryChange: (category: DockCategory) => void;
 }
 
-export function CommandBar({ mode, activeCategory, onModeChange, onCategoryChange }: CommandBarProps) {
+export function CommandBar({ mode, motionPhase = 'steady', activeCategory, onModeChange, onCategoryChange }: CommandBarProps) {
   const items = MAIN_DOCK_ITEMS[mode];
 
   return (
-    <div className="command-bar bottom-command-surface bottom-command-surface--lg" data-dock-mode={mode}>
+    <div className={`command-bar bottom-command-surface bottom-command-surface--lg motion-bottom-surface is-${motionPhase}`} data-dock-mode={mode} aria-busy={motionPhase !== 'steady'}>
       <div className="mode-rail" aria-label="建造模式">
         <button
           type="button"

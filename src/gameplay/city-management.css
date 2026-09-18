@@ -34,7 +34,12 @@
   border:1px solid rgba(239,233,221,.14);
   border-radius:2px;
   box-shadow:0 32px 90px rgba(3,6,5,.44),inset 0 1px 0 rgba(255,255,255,.014);
-  animation:management-space-enter .18s cubic-bezier(.2,.75,.25,1) both;
+  animation:none;
+  opacity:1;
+  translate:0 0;
+  transition:
+    opacity var(--wanhu-motion-space,200ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)),
+    translate var(--wanhu-motion-space,200ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
   overflow:hidden;
 }
 .management-space__header{
@@ -149,4 +154,22 @@
 @keyframes management-space-enter{
   from{opacity:.72;transform:translate(-50%,8px) scale(.995)}
   to{opacity:1;transform:translate(-50%,0) scale(1)}
+}
+
+
+.management-space__scrim{
+  opacity:1;
+  transition:opacity var(--wanhu-motion-control,120ms) ease;
+}
+.management-space.is-entering .management-space__scrim,
+.management-space.is-exiting .management-space__scrim{opacity:0}
+.management-space.is-entering .management-space__panel,
+.management-space.is-exiting .management-space__panel{
+  opacity:0;
+  translate:0 8px;
+  pointer-events:none;
+}
+.management-space.is-exiting .management-space__panel{
+  transition-duration:var(--wanhu-motion-fast,100ms);
+  transition-timing-function:var(--wanhu-motion-ease-in,ease-in);
 }

@@ -1,0 +1,44 @@
+/* Wanhu Motion System
+   Business state changes immediately. Presentation can remain briefly for exit motion. */
+.game-canvas{
+  --wanhu-motion-fast:100ms;
+  --wanhu-motion-control:120ms;
+  --wanhu-motion-surface:160ms;
+  --wanhu-motion-space:200ms;
+  --wanhu-motion-distance-sm:4px;
+  --wanhu-motion-distance-md:8px;
+  --wanhu-motion-distance-lg:12px;
+  --wanhu-motion-ease-out:cubic-bezier(.2,.72,.25,1);
+  --wanhu-motion-ease-standard:cubic-bezier(.2,.6,.25,1);
+  --wanhu-motion-ease-in:cubic-bezier(.4,0,1,1);
+}
+.motion-bottom-surface,.motion-left-surface,.motion-top-surface,.motion-center-surface,.motion-fade-surface{
+  opacity:1;
+  translate:0 0;
+  transition-property:opacity,translate;
+  transition-duration:var(--wanhu-motion-surface);
+  transition-timing-function:var(--wanhu-motion-ease-out);
+}
+.motion-bottom-surface.is-entering,.motion-bottom-surface.is-exiting{
+  opacity:0;translate:0 var(--wanhu-motion-distance-md);pointer-events:none!important;
+}
+.motion-left-surface.is-entering,.motion-left-surface.is-exiting{
+  opacity:0;translate:calc(var(--wanhu-motion-distance-md) * -1) 0;pointer-events:none!important;
+}
+.motion-top-surface.is-entering,.motion-top-surface.is-exiting{
+  opacity:0;translate:0 calc(var(--wanhu-motion-distance-sm) * -1);pointer-events:none!important;
+}
+.motion-center-surface.is-entering,.motion-center-surface.is-exiting{
+  opacity:0;translate:0 6px;pointer-events:none!important;
+}
+.motion-fade-surface.is-entering,.motion-fade-surface.is-exiting{opacity:0;pointer-events:none!important}
+.motion-bottom-surface.is-exiting,.motion-left-surface.is-exiting,.motion-top-surface.is-exiting,.motion-center-surface.is-exiting,.motion-fade-surface.is-exiting{
+  transition-duration:var(--wanhu-motion-fast);
+  transition-timing-function:var(--wanhu-motion-ease-in);
+}
+.motion-left-surface{animation:none!important}
+@media (prefers-reduced-motion:reduce){
+  .motion-bottom-surface,.motion-left-surface,.motion-top-surface,.motion-center-surface,.motion-fade-surface{
+    transition-duration:1ms!important;translate:0 0!important;
+  }
+}

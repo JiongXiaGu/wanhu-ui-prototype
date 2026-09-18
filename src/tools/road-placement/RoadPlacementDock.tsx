@@ -2,15 +2,17 @@ import type { Dispatch } from 'react';
 import { ArrowLeftRight, Minus, Route, Sparkles } from 'lucide-react';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import { PlacementActionBar, type PlacementModeGroup, type PlacementQuickAction } from '../placement/PlacementActionBar';
+import type { MotionPhase } from '../../ui/motion';
 
 interface Props {
   state: GameplayUiState;
+  motionPhase?: MotionPhase;
   dispatch: Dispatch<GameplayUiAction>;
   onComplete: () => void;
   onCancel: () => void;
 }
 
-export function RoadPlacementDock({ state, dispatch, onComplete, onCancel }: Props) {
+export function RoadPlacementDock({ state, motionPhase = 'steady', dispatch, onComplete, onCancel }: Props) {
   const modeGroups: PlacementModeGroup[] = [
     {
       id: 'road-draw-mode',
@@ -51,7 +53,7 @@ export function RoadPlacementDock({ state, dispatch, onComplete, onCancel }: Pro
   ];
 
   return (
-    <div className="tool-bottom-cluster road-placement-toolbar-cluster" aria-label="道路铺设主控栏">
+    <div className={`tool-bottom-cluster road-placement-toolbar-cluster motion-bottom-surface is-${motionPhase}`} aria-label="道路铺设主控栏" aria-busy={motionPhase !== 'steady'}>
       <PlacementActionBar
         ariaLabel="道路铺设操作栏"
         modeGroups={modeGroups}

@@ -3,9 +3,12 @@ import type { PauseView } from '../app/ui-state';
 import { SaveGameSpace } from '../archive/SaveGameSpace';
 import { SettingsPanel } from '../settings/SettingsPanel';
 import { useDialogSystem } from '../ui/dialog/DialogSystem';
+import type { MotionPhase } from '../ui/motion';
 
 interface PauseLayerProps {
   view: PauseView;
+  motionPhase?: MotionPhase;
+  interactive?: boolean;
   onViewChange: (view: PauseView) => void;
   onResume: () => void;
   onMainMenu: () => void;
@@ -20,27 +23,27 @@ const items = [
 
 type PauseAction = (typeof items)[number]['action'];
 
-export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLayerProps) {
+export function PauseLayer({ view, motionPhase = 'steady', interactive = true, onViewChange, onResume, onMainMenu }: PauseLayerProps) {
   const dialogs = useDialogSystem();
   const menuButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || event.defaultPrevented) return;
+      if (!interactive || event.key !== 'Escape' || event.defaultPrevented) return;
       if (view === 'menu') onResume();
       else onViewChange('menu');
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [view, onResume, onViewChange]);
+  }, [view, interactive, onResume, onViewChange]);
 
   useEffect(() => {
-    if (view !== 'menu') return;
+    if (!interactive || view !== 'menu') return;
     const frame = window.requestAnimationFrame(() => {
       menuButtonRefs.current[0]?.focus({ preventScroll: true });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [view]);
+  }, [view, interactive]);
 
   function confirmReturnToMainMenu() {
     dialogs.confirm({
@@ -92,7 +95,7 @@ export function PauseLayer({ view, onViewChange, onResume, onMainMenu }: PauseLa
   }
 
   return (
-    <div className="pause-layer" role="dialog" aria-modal="true" aria-label="暂停菜单">
+    <div className={`pause-layer is-${motionPhase}`} role="dialog" aria-modal="true" aria-label="暂停菜单" aria-busy={motionPhase !== 'steady'}>
       <div className="pause-shade" />
       <div className="pause-atmosphere" />
 

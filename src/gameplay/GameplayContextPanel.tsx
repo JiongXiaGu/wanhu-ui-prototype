@@ -4,9 +4,11 @@ import type { ContextPanel } from '../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../ui/Controls';
 import { LeftContextModeFooter, LeftContextPanel, LeftContextSection } from '../ui/LeftContextPanel';
 import { SeasonTrack, TimeOfDayTrack } from './weather-visual-controls';
+import type { MotionPhase } from '../ui/motion';
 
 interface Props {
   panel: Exclude<ContextPanel, 'none'>;
+  motionPhase?: MotionPhase;
   dayTime: number;
   onDayTimeChange: (value: number) => void;
   onClose: () => void;
@@ -109,7 +111,7 @@ function cameraSettingsEqual(left: CameraSettings, right: CameraSettings) {
     && Math.abs(left.pitch - right.pitch) < 0.0001;
 }
 
-export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose }: Props) {
+export function GameplayContextPanel({ panel, motionPhase = 'steady', dayTime, onDayTimeChange, onClose }: Props) {
   const [cameraMode, setCameraMode] = useState<CameraMode>('经营');
   const [weatherMode, setWeatherMode] = useState('场景模拟');
   const [camera, setCamera] = useState<CameraSettings>(CAMERA_DEFAULTS);
@@ -193,7 +195,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
       icon={HeadingIcon}
       title={isCamera ? '相机' : '环境'}
       subtitle={isCamera ? '视图与镜头参数' : '天气、风场与时节'}
-      className={`gameplay-context-panel--${panel}`}
+      className={`gameplay-context-panel--${panel} motion-left-surface is-${motionPhase}`}
       bodyClassName={!isCamera ? `gameplay-context-panel__body--weather ${weatherLocked ? 'is-world-follow' : 'is-scene-simulation'}` : ''}
       footerClassName={`gameplay-context-panel__footer--mode ${isCamera ? 'gameplay-context-panel__footer--camera-mode' : 'gameplay-context-panel__footer--weather-mode'}`}
       footer={footer}

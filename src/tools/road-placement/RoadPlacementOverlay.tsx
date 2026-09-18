@@ -4,9 +4,11 @@ import type { RoadDrawMode } from '../../app/ui-state';
 import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
+import type { MotionPhase } from '../../ui/motion';
 
 interface RoadPlacementOverlayProps {
   drawMode: RoadDrawMode;
+  motionPhase?: MotionPhase;
   onClose: () => void;
   onDirty: () => void;
 }
@@ -38,7 +40,7 @@ const MODE_COPY: Record<RoadDrawMode, { title: string; detail: string }> = {
   straight: { title: '直线', detail: '保持道路轴线笔直，适合城市中轴、坊巷与规则路网。' },
 };
 
-export function RoadPlacementOverlay({ drawMode, onClose, onDirty }: RoadPlacementOverlayProps) {
+export function RoadPlacementOverlay({ drawMode, motionPhase = 'steady', onClose, onDirty }: RoadPlacementOverlayProps) {
   const modeCopy = MODE_COPY[drawMode];
 
   return (
@@ -48,7 +50,7 @@ export function RoadPlacementOverlay({ drawMode, onClose, onDirty }: RoadPlaceme
       title="道路铺设"
       subtitle="土路"
       closeLabel="退出道路铺设"
-      className="road-placement-prototype"
+      className={`road-placement-prototype motion-left-surface is-${motionPhase}`}
       bodyClassName="road-placement-prototype__body"
       onClose={onClose}
       dataAttributes={{ 'data-road-mode': drawMode }}

@@ -36,6 +36,7 @@ import './gameplay/gameplay-hud-layout.css';
 import './ui/wanhu-theme-tokens.css';
 import './ui/ui-visual-system.css';
 import './ui/ui-control-system.css';
+import './ui/ui-motion-system.css';
 import './workspace/workspace-world-first-glass.css';
 import './gameplay/weather-mist-glass.css';
 import './gameplay/management-panel-skin.css';

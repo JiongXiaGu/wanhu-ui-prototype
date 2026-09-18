@@ -9,7 +9,7 @@
   overflow:hidden;
   border:1px solid transparent;
   border-radius:var(--hud-radius-lg,18px);
-  animation:gameplay-context-enter .18s cubic-bezier(.2,.75,.25,1) both;
+  animation:gameplay-context-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
   z-index:28;
 }
 

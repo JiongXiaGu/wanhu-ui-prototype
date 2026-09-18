@@ -16,6 +16,7 @@ import {
   Users,
 } from 'lucide-react';
 import type { ContextPanel, ManagementView, MapView, Speed } from '../app/ui-state';
+import { usePresence } from '../ui/motion';
 import { MANAGEMENT_PRIMARY_NAV, MANAGEMENT_STATUS_QUICK_ENTRIES } from './management/management-navigation';
 
 interface MapViewItem {
@@ -38,6 +39,7 @@ interface GameplayHUDProps {
   mapPanelOpen: boolean;
   speed: Speed;
   showControlTray: boolean;
+  controlTrayEnterDelayMs?: number;
   onContextPanelChange: (panel: ContextPanel) => void;
   onManagementChange: (management: ManagementView) => void;
   onToggleMapPanel: () => void;
@@ -77,14 +79,16 @@ export function GameplayHUD({
   mapPanelOpen,
   speed,
   showControlTray,
+  controlTrayEnterDelayMs = 0,
   onContextPanelChange,
   onManagementChange,
   onToggleMapPanel,
   onMapViewChange,
   onSpeedChange,
 }: GameplayHUDProps) {
+  const trayPresence = usePresence(showControlTray, { enterDelayMs: controlTrayEnterDelayMs });
   return (
-    <div className={`gameplay-top-shell ${showControlTray ? 'has-navigation' : ''}`}>
+    <div className={`gameplay-top-shell ${trayPresence.mounted ? 'has-navigation' : ''}`}>
       <div className="gameplay-top-status">
         <div className="gameplay-top-status__world-state" aria-label="天气与时间">
           <span className="gameplay-top-status__weather-state">
@@ -131,8 +135,8 @@ export function GameplayHUD({
         </div>
       </div>
 
-      {showControlTray && (
-        <nav className="gameplay-top-navigation" aria-label="城市控制">
+      {trayPresence.mounted && (
+        <nav className={`gameplay-top-navigation motion-top-surface is-${trayPresence.phase}`} aria-label="城市控制" aria-busy={trayPresence.phase !== 'steady'}>
           <div className="gameplay-top-navigation__scene" aria-label="场景工具">
             <button
               type="button"
@@ -191,7 +195,7 @@ export function GameplayHUD({
         </nav>
       )}
 
-      {showControlTray && mapPanelOpen && (
+      {trayPresence.mounted && mapPanelOpen && (
         <aside className="gameplay-top-map-panel">
           <header><b>信息视图</b></header>
           <div className="gameplay-top-map-grid">

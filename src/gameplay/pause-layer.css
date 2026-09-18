@@ -29,7 +29,12 @@
   border-style:solid;
   border-radius:18px;
   transform:translate(-50%,-50%);
-  animation:pause-command-enter .16s cubic-bezier(.2,.72,.28,1) both;
+  animation:none;
+  opacity:1;
+  translate:0 0;
+  transition:
+    opacity var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)),
+    translate var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
 }
 
 .pause-heading{
@@ -116,7 +121,12 @@
   display:grid;
   place-items:center;
   padding:54px 72px;
-  animation:pause-secondary-enter .16s ease-out both;
+  animation:none;
+  opacity:1;
+  translate:0 0;
+  transition:
+    opacity var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)),
+    translate var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
 }
 
 @keyframes pause-command-enter{
@@ -126,4 +136,27 @@
 @keyframes pause-secondary-enter{
   from{opacity:0;transform:translateY(5px)}
   to{opacity:1;transform:translateY(0)}
+}
+
+
+.pause-shade,.pause-atmosphere{
+  opacity:1;
+  transition:opacity var(--wanhu-motion-control,120ms) ease;
+}
+.pause-layer.is-entering .pause-shade,
+.pause-layer.is-entering .pause-atmosphere,
+.pause-layer.is-exiting .pause-shade,
+.pause-layer.is-exiting .pause-atmosphere{opacity:0}
+.pause-layer.is-entering .pause-command-surface,
+.pause-layer.is-exiting .pause-command-surface,
+.pause-layer.is-entering .pause-secondary-surface,
+.pause-layer.is-exiting .pause-secondary-surface{
+  opacity:0;
+  translate:0 6px;
+  pointer-events:none;
+}
+.pause-layer.is-exiting .pause-command-surface,
+.pause-layer.is-exiting .pause-secondary-surface{
+  transition-duration:var(--wanhu-motion-fast,100ms);
+  transition-timing-function:var(--wanhu-motion-ease-in,ease-in);
 }

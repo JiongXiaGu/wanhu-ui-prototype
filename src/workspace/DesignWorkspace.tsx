@@ -5,6 +5,7 @@ import {
   useAssetInspector,
 } from '../ui/asset-inspector/AssetInspector';
 import type { DesignWorkspaceDefinition, DesignWorkspaceItem } from './design-workspace-model';
+import type { MotionPhase } from '../ui/motion';
 
 const CATEGORY_PAGE_SIZE = 7;
 const CONTENT_PAGE_SIZE = 8;
@@ -15,6 +16,7 @@ const ALL_PRIMARY_LABEL = '所有';
 
 interface DesignWorkspaceProps {
   definition: DesignWorkspaceDefinition;
+  motionPhase?: MotionPhase;
   onClose: () => void;
   onSelectItem?: (item: DesignWorkspaceItem) => void;
 }
@@ -186,7 +188,7 @@ function getInspectorDescription(definition: DesignWorkspaceDefinition, item: De
   }
 }
 
-export function DesignWorkspace({ definition, onClose, onSelectItem }: DesignWorkspaceProps) {
+export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, onSelectItem }: DesignWorkspaceProps) {
   const defaultPrimary = definition.primaryCategories[0]?.key ?? 'all';
   const defaultFilter = definition.contextFilters[0]?.key ?? 'all';
   const [primary, setPrimary] = useState(defaultPrimary);
@@ -267,7 +269,7 @@ export function DesignWorkspace({ definition, onClose, onSelectItem }: DesignWor
 
   return (
     <>
-      <section className={`workspace workspace--design ${buildingCompatibilityClass}`} data-design-category={definition.id}>
+      <section className={`workspace workspace--design ${buildingCompatibilityClass} motion-bottom-surface is-${motionPhase}`} data-design-category={definition.id} aria-busy={motionPhase !== 'steady'}>
         <header className="workspace-header">
           <div className="workspace-title">
             <HeaderIcon size={18} aria-hidden="true" />

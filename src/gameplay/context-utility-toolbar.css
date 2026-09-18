@@ -18,15 +18,16 @@
   pointer-events:auto;
   transform:translateY(0);
   transition-property:opacity,transform;
-  transition-duration:140ms;
-  transition-timing-function:ease;
+  transition-duration:var(--wanhu-motion-surface,160ms);
+  transition-timing-function:var(--wanhu-motion-ease-out,ease);
 }
 
 .gameplay-screen > .context-utility-toolbar.is-exiting{
   opacity:0;
   pointer-events:none;
   transform:translateY(6px);
-  transition-duration:100ms;
+  transition-duration:var(--wanhu-motion-fast,100ms);
+  transition-timing-function:var(--wanhu-motion-ease-in,ease-in);
 }
 
 .gameplay-screen > .context-utility-toolbar.is-entering{

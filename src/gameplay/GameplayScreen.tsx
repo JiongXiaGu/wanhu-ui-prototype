@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import type { GameplayUiState } from '../app/ui-state';
 import { gameplayUiReducer, isDesignDockCategory, selectGameplaySpace } from '../app/ui-state';
 import { DesignWorkspace } from '../workspace/DesignWorkspace';
@@ -15,6 +15,7 @@ import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
 import { ManagementSpace } from './management/ManagementSpace';
 import { PauseLayer } from './PauseLayer';
+import { MOTION_MS, usePresence } from '../ui/motion';
 
 interface GameplayScreenProps {
   background: string;
@@ -27,8 +28,6 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const [state, dispatch] = useReducer(gameplayUiReducer, initialState);
   const [dayTime, setDayTime] = useState(14.5);
   const space = selectGameplaySpace(state);
-  const buildingToolOpen = state.tool === 'building-placement';
-  const roadToolOpen = state.tool === 'road-placement';
   const toolOpen = state.tool !== 'none';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
   const showContextUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
@@ -39,6 +38,41 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
     ? DESIGN_WORKSPACES[state.dockCategory]
     : null;
+
+  const previousSpaceRef = useRef(space);
+  const transitionFromRef = useRef(space);
+  if (previousSpaceRef.current !== space) {
+    transitionFromRef.current = previousSpaceRef.current;
+    previousSpaceRef.current = space;
+  }
+  const transitionFrom = transitionFromRef.current;
+  const enteringFromTool = transitionFrom === 'tool' && space !== 'tool';
+  const enteringToolFromWorkspace = transitionFrom === 'workspace' && space === 'tool';
+
+  const mainDockVisible = space === 'gameplay' || space === 'workspace';
+  const mainDockPresence = usePresence(mainDockVisible, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
+  const workspacePresence = usePresence(designWorkspace !== null, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
+  const toolPresence = usePresence(toolOpen && !state.paused, { enterDelayMs: enteringToolFromWorkspace ? MOTION_MS.fast : 0 });
+  const contextPresence = usePresence(showContextPanel);
+  const managementPresence = usePresence(space === 'management' && state.management !== 'none', { exitMs: MOTION_MS.fast });
+  const pausePresence = usePresence(state.paused, { exitMs: MOTION_MS.fast });
+
+  const lastWorkspaceRef = useRef(designWorkspace);
+  if (designWorkspace) lastWorkspaceRef.current = designWorkspace;
+  const lastToolRef = useRef(state.tool);
+  if (state.tool !== 'none') lastToolRef.current = state.tool;
+  const lastContextPanelRef = useRef(state.contextPanel);
+  if (state.contextPanel !== 'none') lastContextPanelRef.current = state.contextPanel;
+  const lastManagementRef = useRef(state.management);
+  if (state.management !== 'none') lastManagementRef.current = state.management;
+  const lastPauseViewRef = useRef(state.pauseView);
+  if (state.paused) lastPauseViewRef.current = state.pauseView;
+
+  const renderedWorkspace = designWorkspace ?? lastWorkspaceRef.current;
+  const renderedTool = state.tool !== 'none' ? state.tool : lastToolRef.current;
+  const renderedContextPanel = state.contextPanel !== 'none' ? state.contextPanel : lastContextPanelRef.current;
+  const renderedManagement = state.management !== 'none' ? state.management : lastManagementRef.current;
+  const renderedPauseView = state.paused ? state.pauseView : lastPauseViewRef.current;
 
   useEffect(() => {
     function handleGameplayEscape(event: KeyboardEvent) {
@@ -104,6 +138,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         mapPanelOpen={state.mapPanelOpen}
         speed={state.speed}
         showControlTray={showControlTray}
+        controlTrayEnterDelayMs={enteringFromTool ? MOTION_MS.fast : 0}
         onContextPanelChange={(panel) => dispatch({ type: 'SET_CONTEXT_PANEL', panel })}
         onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
         onToggleMapPanel={() => dispatch({ type: 'TOGGLE_MAP_PANEL' })}
@@ -126,56 +161,61 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         />
       )}
 
-      {(space === 'gameplay' || space === 'workspace') && (
+      {mainDockPresence.mounted && (
         <CommandBar
           mode={state.dockMode}
+          motionPhase={mainDockPresence.phase}
           activeCategory={state.dockCategory}
           onModeChange={(mode) => dispatch({ type: 'SET_DOCK_MODE', mode })}
           onCategoryChange={(category) => dispatch({ type: 'SET_DOCK_CATEGORY', category })}
         />
       )}
 
-      {designWorkspace && (
+      {workspacePresence.mounted && renderedWorkspace && (
         <DesignWorkspace
-          key={designWorkspace.id}
-          definition={designWorkspace}
+          key={renderedWorkspace.id}
+          definition={renderedWorkspace}
+          motionPhase={workspacePresence.phase}
           onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
           onSelectItem={() => {
-            if (designWorkspace.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
-            if (designWorkspace.id === 'road') dispatch({ type: 'ENTER_ROAD_PLACEMENT' });
+            if (renderedWorkspace.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
+            if (renderedWorkspace.id === 'road') dispatch({ type: 'ENTER_ROAD_PLACEMENT' });
           }}
         />
       )}
 
-      {showContextPanel && state.contextPanel !== 'none' && (
+      {contextPresence.mounted && renderedContextPanel !== 'none' && (
         <GameplayContextPanel
-          panel={state.contextPanel}
+          panel={renderedContextPanel}
+          motionPhase={contextPresence.phase}
           dayTime={dayTime}
           onDayTimeChange={setDayTime}
           onClose={() => dispatch({ type: 'SET_CONTEXT_PANEL', panel: 'none' })}
         />
       )}
 
-      {buildingToolOpen && !state.paused && (
+      {toolPresence.mounted && renderedTool === 'building-placement' && (
         <>
           <BuildingPlacementOverlay
             terrainMode={state.terrainMode}
+            motionPhase={toolPresence.phase}
             adjustmentMode={state.adjustmentMode}
             onClose={exitTool}
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
-          <BuildingPlacementDock state={state} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+          <BuildingPlacementDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 
-      {roadToolOpen && !state.paused && (
+      {toolPresence.mounted && renderedTool === 'road-placement' && (
         <>
           <RoadPlacementOverlay
             drawMode={state.roadDrawMode}
+            motionPhase={toolPresence.phase}
             onClose={exitTool}
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
-          <RoadPlacementDock state={state} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+          <RoadPlacementDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 
@@ -183,16 +223,19 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <GameplayOperationHints tool={state.tool} adjustmentMode={state.adjustmentMode} roadDrawMode={state.roadDrawMode} />
       )}
 
-      {space === 'management' && state.management !== 'none' && (
+      {managementPresence.mounted && renderedManagement !== 'none' && (
         <ManagementSpace
-          view={state.management}
+          view={renderedManagement}
+          motionPhase={managementPresence.phase}
           onClose={() => dispatch({ type: 'SET_MANAGEMENT', management: 'none' })}
         />
       )}
 
-      {state.paused && (
+      {pausePresence.mounted && (
         <PauseLayer
-          view={state.pauseView}
+          view={renderedPauseView}
+          motionPhase={pausePresence.phase}
+          interactive={state.paused && pausePresence.phase !== 'exiting'}
           onViewChange={(view) => dispatch({ type: 'SET_PAUSE_VIEW', view })}
           onResume={() => dispatch({ type: 'SET_PAUSED', paused: false })}
           onMainMenu={onMainMenu}

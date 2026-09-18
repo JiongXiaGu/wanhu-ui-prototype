@@ -13,15 +13,17 @@ import {
 } from 'lucide-react';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import { PlacementActionBar, type PlacementModeGroup, type PlacementQuickAction } from '../placement/PlacementActionBar';
+import type { MotionPhase } from '../../ui/motion';
 
 interface DockProps {
   state: GameplayUiState;
+  motionPhase?: MotionPhase;
   dispatch: Dispatch<GameplayUiAction>;
   onComplete: () => void;
   onCancel: () => void;
 }
 
-export function BuildingPlacementDock({ state, dispatch, onComplete, onCancel }: DockProps) {
+export function BuildingPlacementDock({ state, motionPhase = 'steady', dispatch, onComplete, onCancel }: DockProps) {
   const modeGroups: PlacementModeGroup[] = [
     {
       id: 'terrain',
@@ -109,7 +111,7 @@ export function BuildingPlacementDock({ state, dispatch, onComplete, onCancel }:
   ];
 
   return (
-    <div className="tool-bottom-cluster building-placement-toolbar-cluster" aria-label="建筑放置主控栏">
+    <div className={`tool-bottom-cluster building-placement-toolbar-cluster motion-bottom-surface is-${motionPhase}`} aria-label="建筑放置主控栏" aria-busy={motionPhase !== 'steady'}>
       <PlacementActionBar
         ariaLabel="建筑放置操作栏"
         modeGroups={modeGroups}

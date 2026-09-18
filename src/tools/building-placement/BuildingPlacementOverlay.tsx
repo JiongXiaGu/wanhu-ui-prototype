@@ -4,9 +4,11 @@ import type { AdjustmentMode, TerrainMode } from '../../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
+import type { MotionPhase } from '../../ui/motion';
 
 interface BuildingPlacementOverlayProps {
   terrainMode: TerrainMode;
+  motionPhase?: MotionPhase;
   adjustmentMode: AdjustmentMode;
   onClose: () => void;
   onDirty: () => void;
@@ -106,7 +108,7 @@ function ModeParameters({ mode, onDirty }: { mode: AdjustmentMode; onDirty: () =
   );
 }
 
-export function BuildingPlacementOverlay({ terrainMode, adjustmentMode, onClose, onDirty }: BuildingPlacementOverlayProps) {
+export function BuildingPlacementOverlay({ terrainMode, motionPhase = 'steady', adjustmentMode, onClose, onDirty }: BuildingPlacementOverlayProps) {
   return (
     <PlacementContextPanel
       ariaLabel="建筑放置参数"
@@ -114,7 +116,7 @@ export function BuildingPlacementOverlay({ terrainMode, adjustmentMode, onClose,
       title="建筑放置"
       subtitle="八角楼阁式木塔"
       closeLabel="退出建筑放置"
-      className="building-placement-prototype"
+      className={`building-placement-prototype motion-left-surface is-${motionPhase}`}
       bodyClassName="building-placement-prototype__body"
       onClose={onClose}
       dataAttributes={{ 'data-terrain': terrainMode, 'data-adjustment': adjustmentMode }}
