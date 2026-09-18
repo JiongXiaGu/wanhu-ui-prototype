@@ -71,7 +71,7 @@ if (!(dockMaterial.alpha > utilityMaterial.alpha)) throw new Error('Main Dock mu
 const utilityGroups = utility.locator('.world-utility-toolbar__group');
 if ((await utilityGroups.count()) !== 4) throw new Error('World Utility must expose four semantic groups.');
 const utilityGroupLabels = await utilityGroups.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label')));
-if (JSON.stringify(utilityGroupLabels) !== JSON.stringify(['世界编辑','精确辅助','范围操作','历史'])) {
+if (JSON.stringify(utilityGroupLabels) !== JSON.stringify(['世界编辑','范围操作','精确辅助','历史'])) {
   throw new Error(`World Utility group order must match player mental model. groups=${JSON.stringify(utilityGroupLabels)}`);
 }
 if ((await utility.locator('.world-utility-toolbar__separator').count()) !== 3) throw new Error('World Utility must separate four groups with three dividers.');
@@ -80,8 +80,25 @@ const utilityIcon = await utility.locator('.world-utility-toolbar__button svg').
   const style = getComputedStyle(node);
   return { width: style.width, height: style.height, strokeWidth: style.strokeWidth };
 });
-if (parseFloat(utilityIcon.width) < 22 || parseFloat(utilityIcon.height) < 22 || parseFloat(utilityIcon.strokeWidth) < 1.65) {
-  throw new Error(`World Utility icons must be optically readable. visual=${JSON.stringify(utilityIcon)}`);
+if (parseFloat(utilityIcon.width) < 20 || parseFloat(utilityIcon.width) > 21 || parseFloat(utilityIcon.height) < 20 || parseFloat(utilityIcon.height) > 21 || parseFloat(utilityIcon.strokeWidth) < 1.60 || parseFloat(utilityIcon.strokeWidth) > 1.66) {
+  throw new Error(`World Utility icons must stay readable without matching Placement visual weight. visual=${JSON.stringify(utilityIcon)}`);
+}
+const utilityGeometry = await utility.evaluate((node) => {
+  const style = getComputedStyle(node);
+  return { width: style.width, height: style.height };
+});
+if (parseFloat(utilityGeometry.width) > 480 || parseFloat(utilityGeometry.height) > 52) {
+  throw new Error(`World Utility must remain an ambient rail, not a second Placement bar. geometry=${JSON.stringify(utilityGeometry)}`);
+}
+const activeUtility = utility.locator('.world-utility-toolbar__button.is-active').first();
+await activeUtility.waitFor();
+const utilityActiveVisual = await activeUtility.evaluate((node) => {
+  const before = getComputedStyle(node, '::before');
+  const style = getComputedStyle(node);
+  return { lineWidth: before.width, background: style.backgroundColor, radius: style.borderRadius };
+});
+if (parseFloat(utilityActiveVisual.lineWidth) > 14.5 || utilityActiveVisual.radius !== '50%') {
+  throw new Error(`World Utility active state must stay visually lighter than Placement. visual=${JSON.stringify(utilityActiveVisual)}`);
 }
 await dock.locator('.mode-rail button.is-active').first().waitFor();
 await page.screenshot({ path: `${outDir}/63-bottom-command-family-gameplay-day.png` });

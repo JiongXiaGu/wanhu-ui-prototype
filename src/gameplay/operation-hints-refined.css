@@ -86,7 +86,7 @@
 .operation-hints__row.is-primary .operation-hints__binding kbd{color:#b79d62}
 .operation-hints__row.is-primary .operation-hints__description{color:#9e9d95}
 .operation-hints__row.is-secondary{
-  opacity:.62;
+  opacity:.58;
 }
 
 /* Only modal/pause states hide the rail. Scene parameter panels never alter it. */

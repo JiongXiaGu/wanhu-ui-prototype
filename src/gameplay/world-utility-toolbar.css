@@ -21,43 +21,43 @@
   height:100%;
   display:flex;
   align-items:center;
-  gap:2px;
+  gap:1px;
 }
 
 .world-utility-toolbar__separator{
   width:1px;
-  height:22px;
+  height:18px;
   flex:0 0 1px;
-  margin:0 8px;
-  background:var(--command-divider,rgba(238,233,223,.052));
+  margin:0 7px;
+  background:rgba(238,233,223,.034);
 }
 
 .world-utility-toolbar__button{
   position:relative;
-  width:var(--command-control-sm,42px);
-  height:var(--command-control-sm,42px);
-  flex:0 0 var(--command-control-sm,42px);
+  width:var(--command-control-sm,40px);
+  height:var(--command-control-sm,40px);
+  flex:0 0 var(--command-control-sm,40px);
   padding:0;
   display:grid;
   place-items:center;
   border:0;
-  border-radius:var(--command-control-radius,10px);
+  border-radius:50%;
   background:transparent;
-  color:var(--wanhu-color-text-muted,#999b96);
+  color:var(--command-icon,#8a8d87);
   cursor:pointer;
   transition:background .13s ease,color .13s ease,transform .09s ease;
 }
 
 .world-utility-toolbar__button svg{
-  width:22px;
-  height:22px;
-  stroke-width:1.68;
+  width:20.5px;
+  height:20.5px;
+  stroke-width:1.62;
   pointer-events:none;
 }
 
 .world-utility-toolbar__button:hover{
-  background:var(--wanhu-control-hover-strong,rgba(255,255,255,.052));
-  color:var(--wanhu-color-text-secondary,#d4cfc6);
+  background:var(--command-hover,rgba(255,255,255,.038));
+  color:var(--command-icon-hover,#d8d3ca);
 }
 
 .world-utility-toolbar__button:active{transform:translateY(1px)}
@@ -69,18 +69,18 @@
 /* Bottom command surfaces point their persistent selected state upward toward the world/content they control. */
 .world-utility-toolbar__button.is-active{
   color:var(--command-icon-active,#bd9959);
-  background:linear-gradient(180deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
+  background:rgba(169,132,75,.026);
 }
 
 .world-utility-toolbar__button.is-active::before{
   content:'';
   position:absolute;
-  left:11px;
-  right:11px;
+  left:13px;
+  right:13px;
   top:0;
   height:2px;
   border-radius:0 0 2px 2px;
-  background:var(--command-active-line,rgba(169,132,75,.84));
+  background:rgba(169,132,75,.72);
 }
 
 .world-utility-toolbar__button:disabled{
@@ -94,7 +94,7 @@
   content:attr(data-tooltip);
   position:absolute;
   left:50%;
-  bottom:50px;
+  bottom:46px;
   transform:translate(-50%,4px);
   min-width:max-content;
   padding:6px 8px;
@@ -107,8 +107,8 @@
   border:1px solid var(--command-tooltip-edge,rgba(238,233,223,.080));
   border-radius:var(--hud-radius-sm,10px);
   box-shadow:var(--command-tooltip-shadow,0 8px 22px rgba(6,8,7,.26));
-  font-size:9.5px;
-  font-weight:500;
+  font-size:9px;
+  font-weight:470;
   letter-spacing:.018em;
   z-index:60;
   transition:opacity .11s ease,transform .11s ease,visibility .11s ease;

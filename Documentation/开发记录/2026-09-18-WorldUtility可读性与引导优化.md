@@ -1,39 +1,64 @@
 # 2026-09-18 World Utility 可读性与引导优化
 
-本轮不删除 World Utility 的任何功能，只解决“连续十个灰色图标难以辨认”的玩家认知问题。
+本轮保留全部 10 个 World Utility 功能，但将上一版“过强的小号 Command Bar”收束为真正的 Ambient Utility Rail。
 
-## 信息架构
+## 最终顺序
 
 ```text
-世界编辑 │ 精确辅助 │ 范围操作 │ 历史
-4 项        2 项        2 项       2 项
+世界编辑        范围操作       精确辅助       历史
+⌂  ⛶  △  ◌  ·  ⧉  ✥  ·  🧲  ▦  ·  ↶  ↷
 ```
 
-通过四个语义 Group、三条 Divider 和组间留白建立节奏，不增加常驻文字标签。
+功能顺序对应：
 
-## 视觉
+```text
+地图解锁 / 编辑区域 / 地形编辑 / 配色工具
+范围复制 / 范围移动
+网格吸附 / 网格显示
+撤销 / 重做
+```
 
-- S Surface Density 保持不变，不通过加深背景解决可读性；
-- Icon 从 20px 提到 22px；
-- Stroke 从 1.55 提到约 1.68；
-- Default Icon 提亮到 Text Muted；
-- Hover 使用更清楚的中性 Smoke Tone；
-- Toggle On 继续使用熟铜 + 2px 状态线；
-- One-shot Action 不留下 Selected；
-- World Utility 宽度从 458px 增加到 500px，避免为了塞入功能继续压缩图标和组间距。
+## Visual Hierarchy v2
 
-## Placement / Hints
+上一版为提高辨识度将 S 档放大到 22px Icon / 56px 高，结果与 Placement Action Bar 过于接近。本版回调为：
 
-- Placement Action Bar 仅增加 Divider 周围间距，强化 Mode / Quick / Commit 节奏；
-- Operation Hints 保留全部键位，但镜头移动 / 缩放等通用操作降为 Secondary Tone，优先让玩家看到当前 Tool 特有动作。
+- Surface Density 不变；
+- Height：56 → 52px；
+- Button Hit Area：42 → 40px；
+- Icon：22 → 20.5px；
+- Stroke：1.68 → 1.62；
+- Width：500 → 475px；
+- Divider：22 → 18px，并降低 Alpha；
+- Default Icon 回到 Neutral Muted；
+- Hover 使用圆形局部 Tone；
+- Toggle On 使用 Brass Icon + 12–14px 短 Tick + 极弱底衬；
+- Placement 仍使用更完整的 Active Tone + 更长状态线，因此主辅角色不再可互换。
+
+## Player Attention
+
+普通 Gameplay：
+
+```text
+World > Main Dock > Top HUD > World Utility > Operation Hints
+```
+
+Placement：
+
+```text
+World Ghost > Placement Action Bar > Left Context > World Utility > Operation Hints
+```
+
+Operation Hints 的通用镜头控制继续降为 Secondary（约 58%），不与 World Utility 共同形成右侧第二视觉中心。
 
 ## Review
 
-Bottom Command Review 额外检查：
+Bottom Command Review 检查：
 
 - 10 个功能完整；
-- 4 个语义 Group 顺序正确；
+- 4 个语义 Group；
+- 顺序固定为 世界编辑 / 范围操作 / 精确辅助 / 历史；
 - 3 条 Divider；
-- Icon >= 22px、Stroke >= 1.65；
-- Building 操作提示包含 Secondary 层；
-- 白天 / 夜晚 L/M/S 层级继续保持稳定。
+- Utility Icon 20–21px、Stroke 1.60–1.66；
+- Utility Width <= 480px、Height <= 52px；
+- Utility Active Tick <= 14.5px；
+- 白天 / 夜晚继续保持 M > L > S。

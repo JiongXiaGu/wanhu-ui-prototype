@@ -88,19 +88,19 @@ const worldUtilityGroups = [
     ],
   },
   {
-    id: 'precision',
-    label: '精确辅助',
-    items: [
-      { id: 'grid-snap', label: '网格吸附', icon: Magnet },
-      { id: 'grid-visible', label: '网格显示', icon: Grid3X3 },
-    ],
-  },
-  {
     id: 'range-edit',
     label: '范围操作',
     items: [
       { id: 'copy', label: '范围复制', icon: Copy },
       { id: 'move', label: '范围移动', icon: Move },
+    ],
+  },
+  {
+    id: 'precision',
+    label: '精确辅助',
+    items: [
+      { id: 'grid-snap', label: '网格吸附', icon: Magnet },
+      { id: 'grid-visible', label: '网格显示', icon: Grid3X3 },
     ],
   },
   {

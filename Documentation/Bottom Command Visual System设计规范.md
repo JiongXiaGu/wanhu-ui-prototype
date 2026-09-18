@@ -48,11 +48,13 @@ S  World Utility          全局辅助 / Ambient
 
 ### S — World Utility
 
-- 高约 `56px`；
-- Button `42 × 42px`；
-- Icon 约 `22px`，Lucide Stroke 约 `1.65–1.70`；
-- 默认 Icon 比普通 Command Muted 提亮一档，但仍弱于 M；
-- 右下常驻；
+- 高约 `52px`；
+- Button Hit Area `40 × 40px`；
+- Icon 约 `20–20.5px`，Lucide Stroke 约 `1.60–1.65`；
+- 默认 Icon 使用 Neutral Muted，不与 Placement Default Icon 同权重；
+- Hover 使用局部圆形 Tone，而不是完整方形 Tile；
+- Active 只保留熟铜 Icon + 约 `12–14px` 顶部短 Tick + 极弱暖铜 Tone；
+- 右下常驻，宽度约 `475px`；
 - 14px Surface Radius；
 - 功能不因视觉降噪而删除。
 
@@ -136,9 +138,9 @@ One-shot Action：
 World Utility 的 10 个现有能力全部保留，但必须按玩家心智分为四组：
 
 ```text
-世界编辑 │ 精确辅助 │ 范围操作 │ 历史
-解锁       网格吸附    复制       撤销
-区域       网格显示    移动       重做
+世界编辑 │ 范围操作 │ 精确辅助 │ 历史
+解锁       复制         网格吸附    撤销
+区域       移动         网格显示    重做
 地形
 配色
 ```
@@ -154,9 +156,9 @@ World Utility 的 10 个现有能力全部保留，但必须按玩家心智分�
 
 Divider：
 
-- 约 `24px` 高；
-- 暖纸灰低 Alpha；
-- L / M / S 共用同一颜色和节奏。
+- Placement / Main Dock 可使用约 `24px` 的结构 Divider；
+- World Utility 使用约 `18px` 的更短、更淡 Divider；
+- Utility 更依赖组间留白，不把自己画成第二条 Command Bar。
 
 Tooltip：
 
@@ -203,7 +205,9 @@ Bottom Command 修改至少检查：
 
 - 白天 Main Dock + World Utility；
 - World Utility 必须保留 10 个功能、4 个语义组、3 条 Divider；
-- S 档 Icon 在 1080p 下应直接可辨，不依赖 Hover 才看清；
+- S 档 Icon 在 1080p 下应直接可辨，但不得达到 Placement 的视觉重量；
+- World Utility 顺序固定为“世界编辑 → 范围操作 → 精确辅助 → 历史”；
+- Active Tick 应明显短于 Placement Mode Active Line；
 - 白天 Building Placement + World Utility；
 - 白天 Road Placement + World Utility；
 - 夜晚 Main Dock + World Utility；
