@@ -5,7 +5,7 @@
 /* ---------------------------------------------------------------------
    Context Surface — shared context panels (Camera etc.)
    --------------------------------------------------------------------- */
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface{
   background-color:var(--wanhu-surface-context-bg);
   background-image:
     linear-gradient(180deg,var(--wanhu-surface-context-highlight),var(--wanhu-surface-context-shade)),
@@ -21,15 +21,15 @@
 /* ---------------------------------------------------------------------
    Context Surface — shared Root / Header / Body / Footer
    --------------------------------------------------------------------- */
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel>header{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface>.left-context-panel__header{
   background:var(--wanhu-surface-context-header);
   border-bottom-color:var(--wanhu-surface-context-rule);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
 }
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel>.left-context-panel__body{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface>.left-context-panel__body{
   background:linear-gradient(180deg,rgba(255,255,255,.003),var(--wanhu-surface-context-body));
 }
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel>.left-context-panel__footer{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface>.left-context-panel__footer{
   background:var(--wanhu-surface-context-footer);
   border-top-color:var(--wanhu-surface-context-rule);
 }

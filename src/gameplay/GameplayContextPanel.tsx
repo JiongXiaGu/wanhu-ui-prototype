@@ -193,7 +193,7 @@ export function GameplayContextPanel({ panel, dayTime, onDayTimeChange, onClose 
       icon={HeadingIcon}
       title={isCamera ? '相机' : '环境'}
       subtitle={isCamera ? '视图与镜头参数' : '天气、风场与时节'}
-      className={`gameplay-left-context-surface gameplay-context-panel--${panel}`}
+      className={`gameplay-context-panel--${panel}`}
       bodyClassName={!isCamera ? `gameplay-context-panel__body--weather ${weatherLocked ? 'is-world-follow' : 'is-scene-simulation'}` : ''}
       footerClassName={`gameplay-context-panel__footer--mode ${isCamera ? 'gameplay-context-panel__footer--camera-mode' : 'gameplay-context-panel__footer--weather-mode'}`}
       footer={footer}

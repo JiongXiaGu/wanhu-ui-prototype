@@ -42,8 +42,7 @@ export function PlacementContextPanel({
       title={title}
       subtitle={subtitle}
       closeLabel={closeLabel}
-      legacyGameplayClass={false}
-      className={`gameplay-left-context-surface tool-overlay placement-context-panel ${className}`.trim()}
+      className={`tool-overlay placement-context-panel ${className}`.trim()}
       bodyClassName={`tool-body placement-context-panel__body ${bodyClassName}`.trim()}
       onClose={onClose}
       dataAttributes={dataAttributes}

@@ -13,7 +13,6 @@ interface LeftContextPanelProps {
   footerClassName?: string;
   footer?: ReactNode;
   closeLabel?: string;
-  legacyGameplayClass?: boolean;
   onClose: () => void;
   dataAttributes?: Record<string, string | undefined>;
   children: ReactNode;
@@ -30,12 +29,11 @@ export function LeftContextPanel({
   footerClassName = '',
   footer,
   closeLabel = '关闭面板',
-  legacyGameplayClass = true,
   onClose,
   dataAttributes = {},
   children,
 }: LeftContextPanelProps) {
-  const rootClassName = `${legacyGameplayClass ? 'gameplay-context-panel ' : ''}left-context-panel ${footer ? 'has-footer' : ''} ${className}`.trim();
+  const rootClassName = `gameplay-left-context-surface left-context-panel ${footer ? 'has-footer' : ''} ${className}`.trim();
   const content = (
     <>
       <header className="left-context-panel__header">

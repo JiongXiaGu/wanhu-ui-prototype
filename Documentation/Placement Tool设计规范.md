@@ -135,10 +135,10 @@ Placement Tool 的左侧参数区不是一套独立 Tool Panel 系统，而是 `
 共享所有权固定为：
 
 - `src/ui/LeftContextPanel.tsx`：全局 Left Context Shell、Header、Section、可选 Footer；
-- `src/gameplay/gameplay-context-panel.css`：Left Context Shell、Header、Section、共享参数控件与 Segmented Control 的视觉和几何；
+- `src/gameplay/gameplay-context-panel.css`：Left Context Shell、Header、Section、共享参数控件与 Segmented Control 的结构 / 几何；
 - `src/tools/placement/PlacementContextPanel.tsx`：Placement 家族进入 Left Context System 的统一适配入口；
 - `src/tools/placement/placement-context-panel.css`：Placement Context 的统一屏幕定位、宽度、最大高度与 Body 滚动几何；
-- `src/ui/wanhu-surface-system.css`：Context Surface 的正式材质 Token 与日夜表现。
+- `src/ui/wanhu-surface-system.css`：所有 Left Context Root / Header / Body / Footer 的唯一材质 Owner 与日夜表现。
 
 Building / Road / Wall / Bridge 等具体工具只拥有自己的业务内容和业务节奏。具体工具 CSS **不得重新定义** 以下内容：
 
@@ -170,7 +170,7 @@ PlacementActionBar
 
 - `left:16px / bottom:16px`；
 - 宽度由 `placement-context-panel.css` 统一管理；
-- 深墨青 Context Surface；
+- Smoked Graphite Context Surface；
 - 18px 大面板圆角；
 - Header + Body；
 - 参数内容可以滚动，Header 保持稳定；
