@@ -587,7 +587,7 @@ function ControlsSettingsView({
 function SettingsRowView({ row, value, disabled, onChange }: { row: SettingRow; value: SettingValue; disabled?: boolean; onChange: (value: SettingValue) => void }) {
   return (
     <div className={`settings-row settings-row--${row.kind} ${disabled ? 'is-disabled' : ''}`} title={row.detail} data-setting-id={row.id}>
-      <span className="settings-row__label"><b>{row.title}</b></span>
+      <span className="settings-row__label"><b>{row.title}</b><small>{row.detail}</small></span>
       <div className={`settings-row__control settings-row__control--${row.kind}`}>
         {row.kind === 'slider' && (
           <NumericControl
