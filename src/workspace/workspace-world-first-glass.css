@@ -135,8 +135,8 @@
   background:var(--workspace-gold);
   box-shadow:none;
 }
-.gameplay-screen .workspace--design .workspace-catalog:not(:has(.workspace-content-pager))::after,
-.gameplay-screen .workspace--design .workspace-primary-rail__content:not(:has(.workspace-rail-pager))::before{
+.gameplay-screen .workspace--design .workspace-content-pager-marker,
+.gameplay-screen .workspace--design .workspace-rail-pager-marker{
   background:#a1a29d;
   opacity:.64;
 }

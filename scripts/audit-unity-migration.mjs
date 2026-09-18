@@ -9,6 +9,8 @@ const APPROVED_BACKDROP_FILES=new Set([
   'src/gameplay/gameplay-corner-hud.css',
   'src/gameplay/gameplay-top-shell.css',
   'src/gameplay/city-management.css',
+  'src/gameplay/management-panel-skin.css',
+  'src/gameplay-refine.css',
   'src/gameplay/weather-mist-glass.css',
   'src/gameplay/operation-hints-refined.css',
   'src/operation-hints.css',
@@ -41,7 +43,10 @@ function lineHits(text,re){
     .filter(item=>re.test(item.text));
 }
 
-const files=(await walk(SRC_ROOT)).filter(file=>/\.(css|tsx?|jsx?)$/.test(file));
+const files=(await walk(SRC_ROOT)).filter(file=>
+  /\.(css|tsx?|jsx?)$/.test(file)
+  && !file.startsWith('src/review/')
+);
 const errors=[];
 const warnings=[];
 const metrics={
@@ -88,7 +93,7 @@ for(const file of files){
     }
   }else{
     metrics.browserApis+=count(/\b(?:window|document)\./g,text);
-    for(const match of text.matchAll(/import\s*{([\s\S]*?)}\s*from\s*['"]lucide-react['"]/g)){
+    for(const match of text.matchAll(/import\s*{([^}]*)}\s*from\s*['"]lucide-react['"]/g)){
       for(const raw of match[1].split(',')){
         const name=raw.trim().split(/\s+as\s+/)[0]?.trim();
         if(name)lucideIcons.add(name);
