@@ -13,7 +13,6 @@
 .gameplay-screen .tool-overlay.building-placement-prototype .ui-parameter-row:hover{background:rgba(255,255,255,.010)}
 .gameplay-screen .tool-overlay.building-placement-prototype .ui-parameter-row>span{font-size:9.5px}
 .gameplay-screen .tool-overlay.building-placement-prototype .ui-slider{height:28px}
-.gameplay-screen .tool-overlay.building-placement-prototype .ui-value-field{justify-content:flex-end;border-color:transparent;background:transparent}
 
 .bp-segment-row.ui-labeled-control-row{
   min-height:44px;

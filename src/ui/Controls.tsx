@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { Check, ChevronDown, Plus } from 'lucide-react';
+import { useDialogSystem } from './dialog/DialogSystem';
 
 export function SegmentedControl({ items, active, onChange }: { items: string[]; active: string; onChange?: (value: string) => void }) {
   return (
@@ -112,6 +113,7 @@ export function NumericSliderField({
   className = '',
   onChange,
 }: NumericSliderFieldProps) {
+  const dialogs = useDialogSystem();
   const decimals = Math.min(4, decimalsForStep(step));
 
   function commit(next: number) {
@@ -125,7 +127,7 @@ export function NumericSliderField({
       <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value - step)} aria-label={`${ariaLabel}减小`}>−</button>
       <SliderControl ariaLabel={ariaLabel} value={value} min={min} max={max} step={step} disabled={disabled} onChange={commit} />
       <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value + step)} aria-label={`${ariaLabel}增大`}>＋</button>
-      <output className="ui-value-field">{format ? format(value) : value}</output>
+      <button className="ui-value-button" type="button" disabled={disabled} aria-label={`精确输入${ariaLabel}，当前 ${format ? format(value) : value}`} onClick={() => dialogs.number({ title: `输入${ariaLabel}`, label: ariaLabel, initialValue: value, min, max, step, decimals, formatValue: format, confirmText: '确认', onConfirm: commit })}>{format ? format(value) : value}</button>
     </div>
   );
 }
@@ -267,37 +269,8 @@ export function ToggleSwitch({ label, value, disabled = false, className = '', o
   );
 }
 
-export function InputBindingField({
-  ariaLabel,
-  value,
-  listening = false,
-  conflict = false,
-  disabled = false,
-  className = '',
-  onClick,
-  onKeyDown,
-}: {
-  ariaLabel: string;
-  value: string;
-  listening?: boolean;
-  conflict?: boolean;
-  disabled?: boolean;
-  className?: string;
-  onClick: () => void;
-  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
-}) {
-  return (
-    <button
-      type="button"
-      className={`ui-binding-field ${listening ? 'is-listening' : ''} ${conflict ? 'is-conflict' : ''} ${!value ? 'is-empty' : ''} ${className}`.trim()}
-      aria-label={ariaLabel}
-      disabled={disabled}
-      onClick={onClick}
-      onKeyDown={onKeyDown}
-    >
-      {listening ? <span>按下新的按键…</span> : value ? <kbd>{value}</kbd> : <span className="ui-binding-field__empty"><Plus size={12} />添加</span>}
-    </button>
-  );
+export function InputBindingField({ ariaLabel, value, disabled = false, className = '', onClick }: { ariaLabel: string; value: string; disabled?: boolean; className?: string; onClick: () => void }) {
+  return <button type="button" className={`ui-binding-field ${!value ? 'is-empty' : ''} ${className}`.trim()} aria-label={ariaLabel} disabled={disabled} onClick={onClick}>{value ? <kbd>{value}</kbd> : <span className="ui-binding-field__empty"><Plus size={12} />添加</span>}</button>;
 }
 
 export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function TextInput({ className = '', ...props }, ref) {
