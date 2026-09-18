@@ -72,6 +72,7 @@ jobs:
           node scripts/capture-surface-system-review.mjs
           node scripts/capture-management-skin-review.mjs
           node scripts/capture-left-context-system-review.mjs
+          node scripts/capture-bottom-command-system-review.mjs
       - name: Compress review previews
         run: node scripts/compress-review-screenshots.mjs
       - name: Upload screenshots

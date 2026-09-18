@@ -26,18 +26,18 @@
   border:0;
   border-radius:8px;
   background:transparent;
-  color:var(--command-icon,#858d85);
+  color:var(--command-icon,#8a8d87);
   cursor:pointer;
   font-size:10px;
   font-weight:520;
   letter-spacing:.06em;
   transition:background .13s ease,color .13s ease;
 }
-.gameplay-screen .mode-rail button+button{border-top:1px solid var(--command-divider,rgba(239,233,221,.060))}
-.gameplay-screen .mode-rail button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d1cec5)}
+.gameplay-screen .mode-rail button+button{border-top:1px solid var(--command-divider,rgba(238,233,223,.052))}
+.gameplay-screen .mode-rail button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d8d3ca)}
 .gameplay-screen .mode-rail button.is-active{
-  color:var(--command-icon-active,#dec17a);
-  background:linear-gradient(90deg,var(--command-active-top,rgba(201,165,95,.082)),var(--command-active-bottom,rgba(201,165,95,.016)));
+  color:var(--command-icon-active,#bd9959);
+  background:linear-gradient(90deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
 }
 .gameplay-screen .mode-rail button.is-active::before{
   content:'';
@@ -47,7 +47,7 @@
   bottom:8px;
   width:2px;
   border-radius:0 2px 2px 0;
-  background:var(--hud-accent,#c9a55f);
+  background:var(--command-active-line,rgba(169,132,75,.84));
 }
 .gameplay-screen .command-bar>i{
   width:1px;
@@ -55,7 +55,7 @@
   align-self:center;
   flex:0 0 1px;
   margin:0 8px;
-  background:var(--command-divider,rgba(239,233,221,.060));
+  background:var(--command-divider,rgba(238,233,223,.052));
 }
 .gameplay-screen .category-row{
   min-width:0;
@@ -74,7 +74,7 @@
   border:0;
   border-radius:var(--command-control-radius,10px);
   background:transparent;
-  color:var(--command-icon,#858d85);
+  color:var(--command-icon,#8a8d87);
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -87,11 +87,11 @@
   transition:background .13s ease,color .13s ease,transform .09s ease;
 }
 .gameplay-screen .category-row button svg{width:21px;height:21px;stroke-width:1.55}
-.gameplay-screen .category-row button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d1cec5)}
+.gameplay-screen .category-row button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d8d3ca)}
 .gameplay-screen .category-row button:active{transform:translateY(1px)}
 .gameplay-screen .category-row button.is-active{
-  color:var(--command-icon-active,#dec17a);
-  background:linear-gradient(180deg,var(--command-active-top,rgba(201,165,95,.082)),var(--command-active-bottom,rgba(201,165,95,.016)));
+  color:var(--command-icon-active,#bd9959);
+  background:linear-gradient(180deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
 }
 .gameplay-screen .category-row button.is-active::before{
   content:'';
@@ -101,7 +101,7 @@
   top:0;
   height:2px;
   border-radius:0 0 2px 2px;
-  background:var(--hud-accent,#c9a55f);
+  background:var(--command-active-line,rgba(169,132,75,.84));
 }
 
 @keyframes main-dock-categories-in{

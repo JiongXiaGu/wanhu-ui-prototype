@@ -42,7 +42,7 @@
   width:1px;
   height:var(--command-divider-height,24px);
   margin:0 7px;
-  background:var(--command-divider,rgba(239,233,221,.060));
+  background:var(--command-divider,rgba(238,233,223,.052));
 }
 
 .placement-action-bar__button{
@@ -56,7 +56,7 @@
   border:0;
   border-radius:var(--command-control-radius,10px);
   background:transparent;
-  color:var(--command-icon,#858d85);
+  color:var(--command-icon,#8a8d87);
   cursor:pointer;
   transition:background .13s ease,color .13s ease,transform .09s ease;
 }
@@ -67,11 +67,11 @@
 }
 .placement-action-bar__button:hover{
   background:var(--command-hover,rgba(255,255,255,.030));
-  color:var(--command-icon-hover,#d1cec5);
+  color:var(--command-icon-hover,#d8d3ca);
 }
 .placement-action-bar__button:active{transform:translateY(1px)}
 .placement-action-bar__button:focus-visible{
-  outline:1px solid rgba(222,193,122,.66);
+  outline:1px solid rgba(189,153,89,.58);
   outline-offset:2px;
 }
 .placement-action-bar__button:disabled{
@@ -82,8 +82,8 @@
 }
 
 .placement-action-bar__button--mode.is-active{
-  background:linear-gradient(180deg,var(--command-active-top,rgba(201,165,95,.082)),var(--command-active-bottom,rgba(201,165,95,.016)));
-  color:var(--command-icon-active,#dec17a);
+  background:linear-gradient(180deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
+  color:var(--command-icon-active,#bd9959);
 }
 .placement-action-bar__button--mode.is-active::before{
   content:'';
@@ -93,24 +93,36 @@
   top:0;
   height:2px;
   border-radius:0 0 2px 2px;
-  background:var(--hud-accent,#c9a55f);
+  background:var(--command-active-line,rgba(169,132,75,.84));
 }
 
 /* Quick actions deliberately use the exact same neutral button language as World Utility one-shot actions. */
-.placement-action-bar__button--quick{color:var(--command-icon,#858d85)}
+.placement-action-bar__button--quick{color:var(--command-icon,#8a8d87)}
 
 /* Confirm remains the only persistent primary action, but stays inside the toolbar language instead of becoming a separate framed button. */
 .placement-action-bar__button--confirm{
-  color:var(--command-icon-active,#dec17a);
-  background:linear-gradient(180deg,rgba(201,165,95,.115),rgba(201,165,95,.026));
+  color:var(--command-icon-active,#bd9959);
+  background:linear-gradient(180deg,var(--command-primary-top,rgba(169,132,75,.095)),var(--command-primary-bottom,rgba(169,132,75,.030)));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.020);
+}
+.placement-action-bar__button--confirm::before{
+  content:'';
+  position:absolute;
+  left:12px;
+  right:12px;
+  top:0;
+  height:2px;
+  border-radius:0 0 2px 2px;
+  background:var(--command-active-line,rgba(169,132,75,.84));
+  opacity:.9;
 }
 .placement-action-bar__button--confirm:hover{
-  color:#ead08b;
-  background:linear-gradient(180deg,rgba(201,165,95,.15),rgba(201,165,95,.042));
+  color:var(--wanhu-color-brass-high,#bd9959);
+  background:linear-gradient(180deg,var(--command-primary-hover-top,rgba(169,132,75,.125)),var(--command-primary-hover-bottom,rgba(169,132,75,.042)));
 }
 .placement-action-bar__button--cancel{color:#969c95}
 .placement-action-bar__button--cancel:hover{
-  color:var(--command-icon-hover,#d1cec5);
+  color:var(--command-icon-hover,#d8d3ca);
   background:var(--command-hover,rgba(255,255,255,.030));
 }
 
@@ -121,11 +133,11 @@
   bottom:54px;
   min-width:max-content;
   padding:6px 8px;
-  border:1px solid var(--command-border,rgba(239,233,221,.10));
+  border:1px solid var(--command-tooltip-edge,rgba(238,233,223,.080));
   border-radius:var(--hud-radius-sm,10px);
-  background:rgba(18,24,21,.985);
-  box-shadow:0 8px 22px rgba(5,8,7,.22);
-  color:#d5d1c7;
+  background:var(--command-tooltip-bg,rgba(25,26,24,.985));
+  box-shadow:var(--command-tooltip-shadow,0 8px 22px rgba(6,8,7,.26));
+  color:#b9b5ab;
   font-size:9px;
   font-weight:400;
   letter-spacing:.02em;
