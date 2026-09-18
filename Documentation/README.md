@@ -43,6 +43,10 @@
 
 记录 Main Dock、Placement Action Bar、World Utility Toolbar 的 L / M / S 底部命令栏视觉系统。
 
+### Pause Blocking Space设计规范.md
+
+记录 Pause Blocking Overlay、Pause Command Surface、命令层级、Focus / Keyboard 行为以及 Pause → Save / Settings 的空间切换规则。
+
 ### 决策记录/
 
 记录已经确定、后续不应反复从零讨论的重要设计决策，以及为什么这样决定。

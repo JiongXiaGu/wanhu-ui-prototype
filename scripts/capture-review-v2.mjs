@@ -40,6 +40,41 @@ for (const [file, review, waitFor] of staticScenarios) {
   await page.screenshot({ path: `${outDir}/${file}` });
 }
 
+// Pause Blocking Space: no legacy footer hint, stable material, 3+1 command hierarchy
+// and keyboard focus/navigation.
+await open('pause', '.pause-command-surface');
+const pauseSurface = page.locator('.pause-command-surface');
+if ((await page.locator('.pause-footer').count()) !== 0) throw new Error('Pause must not render a footer / Esc hint.');
+if ((await pauseSurface.locator('.pause-command-list button').count()) !== 4) throw new Error('Pause must expose exactly four commands.');
+if ((await pauseSurface.locator('.pause-command-group').count()) !== 2 || (await pauseSurface.locator('.pause-command-divider').count()) !== 1) {
+  throw new Error('Pause commands must use a 3+1 hierarchy with one structural divider.');
+}
+const pauseActions = await pauseSurface.locator('.pause-command-list button').evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-pause-action')));
+if (JSON.stringify(pauseActions) !== JSON.stringify(['resume','save','settings','main-menu'])) {
+  throw new Error(`Pause command order is invalid: ${JSON.stringify(pauseActions)}`);
+}
+await page.waitForFunction(() => document.activeElement?.getAttribute('data-pause-action') === 'resume');
+await page.keyboard.press('ArrowDown');
+if ((await page.evaluate(() => document.activeElement?.getAttribute('data-pause-action'))) !== 'save') {
+  throw new Error('ArrowDown must move Pause focus to Save Game.');
+}
+await page.keyboard.press('ArrowUp');
+if ((await page.evaluate(() => document.activeElement?.getAttribute('data-pause-action'))) !== 'resume') {
+  throw new Error('ArrowUp must return Pause focus to Continue Game.');
+}
+const pauseVisual = await pauseSurface.evaluate((node) => {
+  const style = getComputedStyle(node);
+  return { width: style.width, radius: style.borderRadius, background: style.backgroundColor, image: style.backgroundImage };
+});
+if (Math.abs(parseFloat(pauseVisual.width) - 432) > 0.5 || pauseVisual.radius !== '18px') {
+  throw new Error(`Pause Command Surface geometry must be 432px / 18px. visual=${JSON.stringify(pauseVisual)}`);
+}
+if (!pauseVisual.image.includes('glass-noise-soft.png')) {
+  throw new Error(`Pause Command Surface must consume shared material noise. image=${pauseVisual.image}`);
+}
+if (pauseVisual.image.includes('90deg')) throw new Error('Pause must not restore the legacy horizontal fade strip.');
+
+
 // Context / Work art-direction pair: review the same daytime world with each
 // mutually-exclusive surface separately, then compare them side by side.
 await open('weather', '.gameplay-context-panel--weather');

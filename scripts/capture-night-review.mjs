@@ -144,7 +144,13 @@ await page.screenshot({ path: `${outDir}/36-gameplay-night.png` });
 // Settings is a Global / Blocking Surface. It must preserve the current night world
 // underneath instead of swapping in a Settings-owned daytime scene image.
 await page.keyboard.press('Escape');
-await page.waitForSelector('.pause-command-surface');
+const nightPause = page.locator('.pause-command-surface');
+await nightPause.waitFor();
+if ((await page.locator('.pause-footer').count()) !== 0) throw new Error('Night Pause must not render the removed Esc footer hint.');
+const nightPauseImage = await nightPause.evaluate((node) => getComputedStyle(node).backgroundImage);
+if (!nightPauseImage.includes('glass-noise-soft.png')) throw new Error(`Night Pause must retain the shared blocking material. image=${nightPauseImage}`);
+if ((await screen.getAttribute('data-time-of-day')) !== 'night') throw new Error('Opening Pause must preserve the current night gameplay state.');
+await page.screenshot({ path: `${outDir}/41-pause-night.png` });
 await page.getByRole('button', { name: '游戏设置', exact: true }).click();
 const nightSettings = page.locator('.settings-panel--pause');
 await nightSettings.waitFor();
