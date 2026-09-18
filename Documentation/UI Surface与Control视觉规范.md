@@ -68,7 +68,9 @@
 
 - 同一 Hue；
 - 使用 Local Occlusion / Edge / Shadow 建立高度；
-- 不要求再次 Blur 已绘制 UI。
+- Dialog 属于 Elevated Blocking Surface：使用半透明 Smoked Graphite 自身保证可读性；
+- UI-over-UI 不再次 Blur 已绘制 UI；Dialog Backdrop 只负责 Dim；
+- Popover / Inspector 如果覆盖其它 UI，也优先使用自身 Tint，而不是申请第二次实时 Blur。
 
 ## 4. Blur
 
@@ -85,6 +87,7 @@ Pause / Settings / Archive / Management 更适合共享 Scene Blur / Dim，让�
 - 每个 Button 自己 Blur；
 - 每个 Panel 建独立 RenderTexture；
 - UI-over-UI 申请第二次实时 Blur；
+- Dialog / Modal 依赖 `backdrop-filter` 才能成立；
 - 用 Blur 代替 Surface Tint。
 
 ## 5. Segmented Control

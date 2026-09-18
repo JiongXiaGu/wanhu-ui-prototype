@@ -310,3 +310,16 @@
   --wanhu-hud-filter:blur(16px) saturate(.90) brightness(1.0);
   --wanhu-hud-filter-soft:blur(13px) saturate(.92) brightness(1.0);
 }
+
+/* Elevated Dialog Surface: UI-over-UI must remain readable without relying on
+   real-time background blur so the Web prototype maps cleanly to Unity UI Toolkit. */
+.game-canvas{
+  --wanhu-dialog-backdrop:rgba(8,10,9,.64);
+  --wanhu-dialog-surface-bg:rgba(43,45,42,.93);
+  --wanhu-dialog-surface-highlight:rgba(255,249,238,.022);
+  --wanhu-dialog-surface-shade:rgba(8,10,9,.070);
+  --wanhu-dialog-surface-edge:rgba(238,233,223,.085);
+  --wanhu-dialog-surface-rule:rgba(238,233,223,.055);
+  --wanhu-dialog-surface-shadow:0 30px 80px rgba(4,6,5,.44),inset 0 1px 0 rgba(255,255,255,.024);
+}
+
