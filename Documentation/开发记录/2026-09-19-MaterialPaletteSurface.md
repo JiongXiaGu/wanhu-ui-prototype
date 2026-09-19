@@ -106,3 +106,22 @@ Surface Color Row 不再使用浏览器原生 Color Input 直接编辑。
 - RGB 使用 0–255；HSV 使用 H 0–360° / S,V 0–100%；
 - 不同时显示 RGB+HSV 六条 Slider，避免 400px 面板过长；
 - Clipboard 为 Tool Session 状态，不依赖 Web Clipboard API，方便迁 Unity Controller。
+
+
+## 方案驱动 Surface / 2×2 Color Cards
+
+Surface 首页进一步从参数表单收束成材质方案编辑器：
+
+- 顶部新增当前方案卡：类型 / 名称 / 四色缩略；
+- 新增 Preset Library 二级页；
+- 内置木头·深胡桃 / 瓦片·青灰瓦 / 墙面·素灰墙；
+- 方案库支持筛选、应用、保存当前为自定义、删除自定义；
+- 自定义方案当前只存 Tool Session；
+- 任意手动编辑参数 / 颜色 / Workflow / Paste 后，当前方案切到“自定义 · 未保存”；
+- 颜色入口改成固定 2×2 卡片：
+  - 第一行：主色 / 高光颜色；
+  - 第二行：发光颜色 / 夜间发光；
+- Surface Color Card 不再显示 HEX；
+- 高光颜色在 Metallic 下保留 Card 位置但禁用，Specular 下启用；
+- 删除 Surface 的高光反射 / Alpha 裁剪 / AlphaClipThreshold UI；
+- Metallic 在 Specular Workflow 下直接隐藏，隐藏值仍保留。

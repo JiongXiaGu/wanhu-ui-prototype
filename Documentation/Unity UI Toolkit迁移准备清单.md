@@ -449,64 +449,68 @@ Transition Stair Preview DOM
 
 `material-palette` 从 Gameplay World Utility 进入独立 Tool Space。
 
-第一阶段：
+Controller 数据：
 
 ```text
 MaterialPaletteController
 ├ Mode = Surface
-└ MaterialSlotValue Draft
-
-SurfacePanel
-├ BaseColor
-├ EmissionColor
-├ NightEmissionColor
-├ SpecularColor
-├ Flags.SpecularSetup
-├ Metallic
-├ Smoothness
-├ Occlusion
-├ Flags.SpecularHighlightsOff
-├ Flags.AlphaClip
-├ AlphaClipThreshold
-├ TextureTiling
-└ TextureBlendSharpness
+├ CurrentScheme
+├ MaterialSlotValue Draft
+├ SurfaceClipboard
+├ ColorClipboard
+└ MaterialPresetLibrary
 ```
 
-UI Toolkit 映射：
+Surface UI：
 
 ```text
-MaterialPaletteOverlay
-  → MaterialPaletteSurface.uxml / Shared Left Context USS
+Scheme Selector
+Color Cards 2×2
+├ BaseColor
+├ SpecularColor
+├ EmissionColor HDR
+└ NightEmissionColor HDR
 
-MaterialPaletteDock
-  → Shared ToolActionBar.uxml
-  → Surface / Lighting / Palette
+Surface Parameters
+├ Metallic (Metallic workflow only)
+├ Smoothness
+├ Occlusion
+├ TextureTiling
+└ TextureBlendSharpness
 
-Material Palette Utility
-  → UtilityToolbarHost.Rebind(MaterialPalette)
-  → Undo / Redo
+Workflow
+└ Metallic / Specular
+```
+
+不再暴露：
+
+- SpecularHighlightsOff；
+- AlphaClip；
+- AlphaClipThreshold；
+- TextureSetDefinition / MappingSpace / Offset / Rotation。
+
+Material Left Host Page：
+
+```text
+SurfacePage
+PresetLibraryPage
+ColorEditorPage
 ```
 
 约束：
 
-- Unity Controller 直接绑定 Runtime MaterialSlotValue，不复制另一套持久数据模型；
-- Web Local Draft 只是 Prototype Adapter；
-- EmissionColor 正式 Unity 必须使用 HDR Color Editor；
-- SpecularHighlightsOff 在 UI 以“高光反射”正语义反向映射；
-- AlphaClipThreshold 只在 AlphaClip Flag 开启时显示；
-- Lighting / Palette 未实现前保持 disabled；
-- TextureSetDefinition / MappingSpace / Offset / Rotation 当前不进入正式 Surface UI；
-- 第一阶段不显示额外 Gameplay Operation Hints；
-- Material Left Host 内部有 SurfacePage / ColorEditorPage 两个可 Rebind Page，不建立第二个 Window；
-- Header Back 只在 ColorEditorPage 存在；
-- Page Motion 只使用 Opacity + Translate；
-- Standard Color Editor 绑定 BaseColor / SpecularColor；
+- 三页共用同一个 Left Context Shell，不建立第二个 Window；
+- Scheme Selector 绑定 CurrentScheme；
+- 手动 Edit / Paste 统一把 CurrentScheme 标记为 Custom / Unsaved；
+- Apply Preset 恢复对应 SchemeId / Type / Name；
+- Preset Library 的用户自定义项正式 Unity 应持久化到玩家数据；
+- Color Cards 使用显式两行 × 两列 VisualElement，不用动态列宽推断；
+- Metallic 下 Specular Color Card 保留 Grid Slot 但不可编辑，Specular 下启用；
+- Specular Workflow 下 Metallic Field 直接隐藏但 Controller 值不销毁；
+- Color Editor Numeric Area 使用 RGB / HSV Rebind，同一时刻只挂一组通道；
 - HDR Color Editor 绑定 EmissionColor / NightEmissionColor；
-- HDR Intensity 在 Controller 中作为编辑 Adapter，提交时重新合成为 HDR Color，不新增持久字段；
-- NightEmissionColor 的 Runtime Inspector 元数据应与 EmissionColor 一致支持 HDR；
-- Surface Workflow 固定在 Body 底部；不同 Workflow 直接切换字段 Visibility，不销毁隐藏数据；
-- PlacementContextPanel / LeftContextPanel Footer 作为 Material Reset / Copy / Paste 的共享宿主；
-- Color Editor Numeric Area 使用 RGB / HSV Rebind，同一时刻只挂载一组通道；
-- Material Clipboard 由 Controller 持有：Surface Clipboard=完整 Draft，Color Clipboard=Hex/Alpha/HDR/Intensity；
-- Clipboard 不依赖 System Clipboard，未来可额外增加文本 HEX Adapter；
-- 连续颜色拖动正式 Unity 应由 BeginEdit / Preview / Commit 合并为一次 Undo Transaction。
+- HDR Intensity 是编辑 Adapter，最终重新合成为 HDR Color，不增加 Runtime 持久字段；
+- Surface / Color Clipboard 由 Controller 持有，不依赖系统剪贴板；
+- Surface / Color / Preset 页面切换只使用 Opacity + Translate；
+- 连续颜色拖动正式 Unity 用 BeginEdit / Preview / Commit 合并成一次 Undo Transaction。
+

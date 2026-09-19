@@ -689,29 +689,68 @@ if (materialPanelBox.height > 720) {
 if ((await materialPanel.getAttribute('data-material-page')) !== 'surface') {
   throw new Error('Material palette should enter on Surface page.');
 }
+if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '墙面'
+  || (await materialPanel.getAttribute('data-material-scheme-name')) !== '素灰墙') {
+  throw new Error('Material palette prototype should enter with the seeded wall preset.');
+}
+
+const schemeSelector = materialPanel.getByRole('button', { name: '打开材质方案库', exact: true });
+if ((await schemeSelector.count()) !== 1) {
+  throw new Error('Surface should expose one current material-scheme selector.');
+}
+for (const text of ['当前方案', '墙面', '素灰墙']) {
+  if ((await schemeSelector.getByText(text, { exact: true }).count()) !== 1) {
+    throw new Error('Scheme selector missing: ' + text);
+  }
+}
+
+const colorCards = materialPanel.locator('.material-color-card');
+if ((await colorCards.count()) !== 4) {
+  throw new Error('Surface should show exactly four color cards.');
+}
+const expectedCardLabels = ['主色', '高光颜色', '发光颜色', '夜间发光'];
+for (let index = 0; index < expectedCardLabels.length; index += 1) {
+  const label = expectedCardLabels[index];
+  if ((await colorCards.nth(index).getByText(label, { exact: true }).count()) !== 1) {
+    throw new Error('Color card order mismatch at ' + index + ': expected ' + label);
+  }
+}
+if (!(await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).isDisabled())) {
+  throw new Error('Specular color card should remain visible but inactive in Metallic workflow.');
+}
+if ((await materialPanel.locator('.material-color-card__badge').filter({ hasText: 'HDR' }).count()) !== 2) {
+  throw new Error('Emission and Night Emission cards should expose two HDR badges.');
+}
+if (await materialPanel.locator('.material-color-card').filter({ hasText: /#[0-9A-Fa-f]{6}/ }).count()) {
+  throw new Error('Surface color cards should not display HEX values.');
+}
+
+for (const retired of ['高光反射', 'Alpha 裁剪', '裁剪阈值']) {
+  if (await materialPanel.getByText(retired, { exact: true }).count()) {
+    throw new Error('Retired Surface control should not be visible: ' + retired);
+  }
+}
+for (const retiredField of ['Flags.SpecularHighlightsOff', 'Flags.AlphaClip', 'AlphaClipThreshold']) {
+  if (await materialPanel.locator('[data-material-field="' + retiredField + '"]').count()) {
+    throw new Error('Retired Surface field mapping should be removed: ' + retiredField);
+  }
+}
 
 for (const field of [
   'BaseColor',
+  'SpecularColor',
   'EmissionColor',
   'NightEmissionColor',
   'Flags.SpecularSetup',
   'Metallic',
   'Smoothness',
   'Occlusion',
-  'Flags.SpecularHighlightsOff',
-  'Flags.AlphaClip',
   'TextureTiling',
   'TextureBlendSharpness',
 ]) {
   if ((await materialPanel.locator('[data-material-field="' + field + '"]').count()) !== 1) {
     throw new Error('Material palette field mapping missing: ' + field);
   }
-}
-if (await materialPanel.locator('[data-material-field="SpecularColor"]').count()) {
-  throw new Error('SpecularColor must be hidden in Metallic workflow instead of disabled.');
-}
-if ((await materialPanel.locator('.material-color-field__control em').filter({ hasText: 'HDR' }).count()) !== 2) {
-  throw new Error('EmissionColor and NightEmissionColor should both expose HDR badges.');
 }
 
 const workflowField = materialPanel.locator('[data-material-field="Flags.SpecularSetup"]');
@@ -734,27 +773,80 @@ for (const action of ['恢复默认', '复制参数', '粘贴参数']) {
     throw new Error('Surface footer action missing: ' + action);
   }
 }
-if (!(await surfaceFooter.getByRole('button', { name: '恢复默认', exact: true }).isDisabled())) {
-  throw new Error('Surface reset should be disabled at defaults.');
-}
-if (!(await surfaceFooter.getByRole('button', { name: '粘贴参数', exact: true }).isDisabled())) {
-  throw new Error('Surface paste should be disabled before copy.');
-}
 await surfaceFooter.getByRole('button', { name: '复制参数', exact: true }).click();
 if ((await materialPanel.getAttribute('data-material-surface-clipboard')) !== 'ready') {
   throw new Error('Surface copy should populate structured tool clipboard.');
 }
-if (await surfaceFooter.getByRole('button', { name: '粘贴参数', exact: true }).isDisabled()) {
-  throw new Error('Surface paste should enable after copy.');
+await page.screenshot({ path: outDir + '/material-palette-28-surface-scheme-cards.png' });
+
+await schemeSelector.click();
+await page.waitForTimeout(220);
+if ((await materialPanel.getAttribute('data-material-page')) !== 'preset-library') {
+  throw new Error('Scheme selector should open the material preset library page.');
 }
-await page.screenshot({ path: outDir + '/material-palette-28-surface-metallic.png' });
+for (const filter of ['全部', '木头', '瓦片', '墙面', '自定义']) {
+  if ((await materialPanel.getByRole('button', { name: filter, exact: true }).count()) !== 1) {
+    throw new Error('Material preset filter missing: ' + filter);
+  }
+}
+for (const preset of ['应用方案 木头 · 深胡桃', '应用方案 瓦片 · 青灰瓦', '应用方案 墙面 · 素灰墙']) {
+  if ((await materialPanel.getByRole('button', { name: preset, exact: true }).count()) !== 1) {
+    throw new Error('Builtin material preset missing: ' + preset);
+  }
+}
+await page.screenshot({ path: outDir + '/material-palette-29-preset-library.png' });
+
+await materialPanel.getByRole('button', { name: '应用方案 木头 · 深胡桃', exact: true }).click();
+await page.waitForTimeout(220);
+if ((await materialPanel.getAttribute('data-material-page')) !== 'surface'
+  || (await materialPanel.getAttribute('data-material-scheme-type')) !== '木头'
+  || (await materialPanel.getAttribute('data-material-scheme-name')) !== '深胡桃') {
+  throw new Error('Applying a builtin preset should return to Surface and update current scheme.');
+}
+
+await materialPanel.getByRole('button', { name: '光滑度增大', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '自定义'
+  || (await materialPanel.getAttribute('data-material-scheme-name')) !== '未保存') {
+  throw new Error('Manual numeric edits must change the current scheme to Custom.');
+}
+await page.screenshot({ path: outDir + '/material-palette-30-custom-after-edit.png' });
+
+await materialPanel.getByRole('button', { name: '打开材质方案库', exact: true }).click();
+await page.waitForTimeout(220);
+await materialPanel.getByRole('button', { name: '保存当前为自定义方案', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '自定义'
+  || (await materialPanel.getAttribute('data-material-scheme-name')) !== '我的配色 01') {
+  throw new Error('Saving current parameters should create and select a named custom preset.');
+}
+if ((await materialPanel.getByRole('button', { name: '应用方案 自定义 · 我的配色 01', exact: true }).count()) !== 1
+  || (await materialPanel.getByRole('button', { name: '删除自定义方案 我的配色 01', exact: true }).count()) !== 1) {
+  throw new Error('Saved custom preset should be visible and deletable in the library.');
+}
+await materialPanel.getByRole('button', { name: '删除自定义方案 我的配色 01', exact: true }).click();
+await page.waitForTimeout(80);
+if (await materialPanel.getByRole('button', { name: '应用方案 自定义 · 我的配色 01', exact: true }).count()) {
+  throw new Error('Deleted custom preset should leave the library.');
+}
+await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
+await page.waitForTimeout(220);
+
+await materialPanel.getByRole('button', { name: '高光', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular') {
+  throw new Error('Specular workflow should map to Flags.SpecularSetup.');
+}
+if (await materialPanel.locator('[data-material-field="Metallic"]').count()) {
+  throw new Error('Metallic should hide in Specular workflow.');
+}
+if (await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).isDisabled()) {
+  throw new Error('Specular color card should enable in Specular workflow.');
+}
 
 await materialPanel.getByRole('button', { name: '调整主色', exact: true }).click();
 await page.waitForTimeout(220);
 const baseEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="BaseColor"]');
-if ((await baseEditor.count()) !== 1 || (await baseEditor.getAttribute('data-color-editor-hdr')) !== 'false') {
-  throw new Error('BaseColor should use Standard Color Editor.');
-}
 if ((await baseEditor.getAttribute('data-color-numeric-mode')) !== 'rgb') {
   throw new Error('Color Editor should default to RGB numeric mode.');
 }
@@ -763,33 +855,9 @@ for (const channel of ['R', 'G', 'B']) {
     throw new Error('RGB mode missing channel ' + channel);
   }
 }
-if ((await baseEditor.locator('[data-color-adapter="BaseColor.Alpha"]').count()) !== 1) {
-  throw new Error('BaseColor editor should expose alpha.');
-}
 const baseHex = baseEditor.getByRole('textbox', { name: '十六进制颜色', exact: true });
 await baseHex.fill('#C7AA78');
 await baseHex.press('Enter');
-await page.waitForTimeout(80);
-
-const colorFooter = materialPanel.locator('.material-palette-footer');
-if (!(await colorFooter.getByRole('button', { name: '粘贴颜色', exact: true }).isDisabled())) {
-  throw new Error('Color paste should be disabled before the first color copy.');
-}
-await colorFooter.getByRole('button', { name: '复制颜色', exact: true }).click();
-if ((await materialPanel.getAttribute('data-material-color-clipboard')) !== 'ready') {
-  throw new Error('Color copy should populate structured color clipboard.');
-}
-await colorFooter.getByRole('button', { name: '恢复默认', exact: true }).click();
-await page.waitForTimeout(80);
-if ((await baseHex.inputValue()).toLowerCase() !== '#ffffff') {
-  throw new Error('BaseColor reset should restore default white.');
-}
-await colorFooter.getByRole('button', { name: '粘贴颜色', exact: true }).click();
-await page.waitForTimeout(80);
-if ((await baseHex.inputValue()).toLowerCase() !== '#c7aa78') {
-  throw new Error('Color paste should restore copied BaseColor.');
-}
-
 await baseEditor.getByRole('button', { name: 'HSV', exact: true }).click();
 await page.waitForTimeout(80);
 if ((await baseEditor.getAttribute('data-color-numeric-mode')) !== 'hsv') {
@@ -800,10 +868,12 @@ for (const channel of ['H', 'S', 'V']) {
     throw new Error('HSV mode missing channel ' + channel);
   }
 }
-if (await baseEditor.locator('[data-color-channel="R"]').count()) {
-  throw new Error('RGB channels should hide in HSV mode.');
+const colorFooter = materialPanel.locator('.material-palette-footer');
+await colorFooter.getByRole('button', { name: '复制颜色', exact: true }).click();
+if ((await materialPanel.getAttribute('data-material-color-clipboard')) !== 'ready') {
+  throw new Error('Color copy should populate structured color clipboard.');
 }
-await page.screenshot({ path: outDir + '/material-palette-29-base-color-hsv.png' });
+await page.screenshot({ path: outDir + '/material-palette-31-base-color-hsv.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -814,69 +884,26 @@ if ((await emissionEditor.getAttribute('data-color-editor-hdr')) !== 'true'
   || (await emissionEditor.locator('[data-color-adapter="EmissionColor.Intensity"]').count()) !== 1) {
   throw new Error('EmissionColor must use HDR editor with intensity.');
 }
-await page.screenshot({ path: outDir + '/material-palette-30-emission-hdr-rgb.png' });
+await page.screenshot({ path: outDir + '/material-palette-32-emission-hdr-rgb.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
-await materialPanel.getByRole('button', { name: '调整夜间发光颜色', exact: true }).click();
+await materialPanel.getByRole('button', { name: '调整夜间发光', exact: true }).click();
 await page.waitForTimeout(220);
 const nightEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="NightEmissionColor"]');
 if ((await nightEditor.getAttribute('data-color-editor-hdr')) !== 'true'
   || (await nightEditor.locator('[data-color-adapter="NightEmissionColor.Intensity"]').count()) !== 1) {
   throw new Error('NightEmissionColor must use HDR editor with intensity.');
 }
-await page.screenshot({ path: outDir + '/material-palette-31-night-emission-hdr.png' });
+await page.screenshot({ path: outDir + '/material-palette-33-night-emission-hdr.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
-await materialPanel.getByRole('button', { name: '高光', exact: true }).click();
-await page.waitForTimeout(100);
-if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular') {
-  throw new Error('Specular workflow should map to Flags.SpecularSetup.');
-}
-if (await materialPanel.locator('[data-material-field="Metallic"]').count()) {
-  throw new Error('Metallic must hide in Specular workflow.');
-}
-if ((await materialPanel.locator('[data-material-field="SpecularColor"]').count()) !== 1) {
-  throw new Error('SpecularColor must appear in Specular workflow.');
-}
-
-const specularFooter = materialPanel.locator('.material-palette-footer');
-await specularFooter.getByRole('button', { name: '复制参数', exact: true }).click();
-await specularFooter.getByRole('button', { name: '恢复默认', exact: true }).click();
-await page.waitForTimeout(100);
-if ((await materialPanel.getAttribute('data-material-workflow')) !== 'metallic') {
-  throw new Error('Surface reset should restore Metallic workflow.');
-}
-await specularFooter.getByRole('button', { name: '粘贴参数', exact: true }).click();
-await page.waitForTimeout(100);
-if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular') {
-  throw new Error('Surface paste should restore copied workflow and hidden parameters.');
-}
-
-await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).click();
-await page.waitForTimeout(220);
-const specularEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="SpecularColor"]');
-if ((await specularEditor.getAttribute('data-color-editor-hdr')) !== 'false'
-  || (await specularEditor.locator('[data-color-adapter$=".Intensity"]').count()) !== 0) {
-  throw new Error('SpecularColor should use Standard non-HDR editor.');
-}
-await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
-await page.waitForTimeout(220);
-
-await materialPanel.getByRole('button', { name: /^高光反射：/ }).click();
-await materialPanel.getByRole('button', { name: /^Alpha 裁剪：/ }).click();
-await page.waitForTimeout(80);
-if ((await materialPanel.locator('[data-material-field="AlphaClipThreshold"]').count()) !== 1) {
-  throw new Error('AlphaClipThreshold should appear only when AlphaClip is enabled.');
-}
-await page.screenshot({ path: outDir + '/material-palette-32-surface-specular-alpha.png' });
-
 const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
 await materialBar.getByRole('button', { name: '完成配色', exact: true }).click();
 await page.waitForSelector('.material-palette-prototype', { state: 'detached' });
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
 await page.waitForTimeout(180);
-await page.screenshot({ path: outDir + '/material-palette-33-return-gameplay.png' });
+await page.screenshot({ path: outDir + '/material-palette-34-return-gameplay.png' });
 
 await browser.close();

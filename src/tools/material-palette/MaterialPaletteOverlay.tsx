@@ -5,16 +5,26 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import { ClipboardPaste, Copy, Palette, RotateCcw } from 'lucide-react';
-import { RuntimeParameterRow, TextInput, ToggleSwitch } from '../../ui/Controls';
+import {
+  ChevronRight,
+  ClipboardPaste,
+  Copy,
+  Palette,
+  RotateCcw,
+  Save,
+  Trash2,
+} from 'lucide-react';
+import { RuntimeParameterRow, TextInput } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { MOTION_MS, useKeyedTransition, type MotionPhase } from '../../ui/motion';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 
 type MaterialWorkflow = '金属' | '高光';
 type MaterialColorTarget = 'BaseColor' | 'EmissionColor' | 'NightEmissionColor' | 'SpecularColor';
-type MaterialPageKey = 'surface' | `color:${MaterialColorTarget}`;
+type MaterialPageKey = 'surface' | 'preset-library' | `color:${MaterialColorTarget}`;
 type ColorNumericMode = 'RGB' | 'HSV';
+type MaterialSchemeType = '木头' | '瓦片' | '墙面' | '自定义';
+type MaterialPresetFilter = '全部' | MaterialSchemeType;
 
 interface MaterialSurfaceDraft {
   baseColor: string;
@@ -28,9 +38,6 @@ interface MaterialSurfaceDraft {
   metallic: number;
   smoothness: number;
   occlusion: number;
-  specularHighlights: boolean;
-  alphaClip: boolean;
-  alphaClipThreshold: number;
   textureTiling: number;
   textureBlendSharpness: number;
 }
@@ -52,6 +59,21 @@ interface ColorClipboardPayload {
   intensity?: number;
 }
 
+interface MaterialPreset {
+  id: string;
+  type: MaterialSchemeType;
+  name: string;
+  source: 'builtin' | 'custom';
+  draft: MaterialSurfaceDraft;
+}
+
+interface MaterialSchemeState {
+  id?: string;
+  type: MaterialSchemeType;
+  name: string;
+  source: 'builtin' | 'saved' | 'custom';
+}
+
 interface Props {
   motionPhase?: MotionPhase;
   onClose: () => void;
@@ -65,18 +87,63 @@ const DEFAULT_SURFACE_DRAFT: MaterialSurfaceDraft = {
   emissionIntensity: 1,
   nightEmissionColor: '#000000',
   nightEmissionIntensity: 1,
-  // Web visual placeholder only. Unity keeps using MaterialSlotGpuDefaults.DielectricSpecularColor.
   specularColor: '#0a0a0a',
   workflow: '金属',
   metallic: 0,
   smoothness: 0.5,
   occlusion: 1,
-  specularHighlights: true,
-  alphaClip: false,
-  alphaClipThreshold: 0,
   textureTiling: 1,
   textureBlendSharpness: 1,
 };
+
+const BUILTIN_PRESETS: MaterialPreset[] = [
+  {
+    id: 'wood-walnut',
+    type: '木头',
+    name: '深胡桃',
+    source: 'builtin',
+    draft: {
+      ...DEFAULT_SURFACE_DRAFT,
+      baseColor: '#6f5139',
+      specularColor: '#3a3029',
+      smoothness: 0.34,
+      textureTiling: 1.4,
+      textureBlendSharpness: 1.8,
+    },
+  },
+  {
+    id: 'tile-gray',
+    type: '瓦片',
+    name: '青灰瓦',
+    source: 'builtin',
+    draft: {
+      ...DEFAULT_SURFACE_DRAFT,
+      baseColor: '#566267',
+      specularColor: '#202628',
+      smoothness: 0.48,
+      occlusion: 0.92,
+      textureTiling: 1.8,
+      textureBlendSharpness: 2.2,
+    },
+  },
+  {
+    id: 'wall-plaster',
+    type: '墙面',
+    name: '素灰墙',
+    source: 'builtin',
+    draft: {
+      ...DEFAULT_SURFACE_DRAFT,
+      baseColor: '#d5d0c5',
+      specularColor: '#10100f',
+      smoothness: 0.22,
+      occlusion: 0.96,
+      textureTiling: 0.8,
+      textureBlendSharpness: 1.2,
+    },
+  },
+];
+
+const INITIAL_PRESET = BUILTIN_PRESETS[2];
 
 const COLOR_TARGETS: Record<MaterialColorTarget, ColorTargetDefinition> = {
   BaseColor: {
@@ -97,7 +164,7 @@ const COLOR_TARGETS: Record<MaterialColorTarget, ColorTargetDefinition> = {
   },
   NightEmissionColor: {
     target: 'NightEmissionColor',
-    label: '夜间发光颜色',
+    label: '夜间发光',
     hdr: true,
     alpha: false,
     defaultHex: '#000000',
@@ -233,52 +300,59 @@ function ColorNumericModeControl({
   );
 }
 
-function ColorFieldRow({
+function ColorCard({
   label,
   value,
   hdr = false,
   field,
+  disabled = false,
   onOpen,
 }: {
   label: string;
   value: string;
   hdr?: boolean;
   field: MaterialColorTarget;
+  disabled?: boolean;
   onOpen: (field: MaterialColorTarget) => void;
 }) {
   return (
-    <div className="material-color-field ui-parameter-row" data-material-field={field}>
-      <span className="material-color-field__label">{label}</span>
-      <button
-        className="material-color-field__control"
-        type="button"
-        aria-label={`调整${label}`}
-        onClick={() => onOpen(field)}
-      >
-        <i className="material-color-field__swatch" style={{ background: value }} />
-        <b>{value.toUpperCase()}</b>
-        {hdr && <em>HDR</em>}
-      </button>
-    </div>
+    <button
+      type="button"
+      className={'material-color-card ' + (disabled ? 'is-disabled' : '')}
+      data-material-field={field}
+      disabled={disabled}
+      aria-label={`调整${label}`}
+      onClick={() => onOpen(field)}
+    >
+      <span className="material-color-card__title">{label}</span>
+      {hdr && <em className="material-color-card__badge">HDR</em>}
+      <i className="material-color-card__swatch" style={{ background: value }} aria-hidden="true" />
+    </button>
   );
 }
 
-function ToggleFieldRow({
-  label,
-  value,
-  field,
-  onChange,
+function SchemeSelector({
+  scheme,
+  draft,
+  onOpen,
 }: {
-  label: string;
-  value: boolean;
-  field: string;
-  onChange: (value: boolean) => void;
+  scheme: MaterialSchemeState;
+  draft: MaterialSurfaceDraft;
+  onOpen: () => void;
 }) {
+  const swatches = [draft.baseColor, draft.specularColor, draft.emissionColor, draft.nightEmissionColor];
   return (
-    <div className="material-toggle-field ui-parameter-row" data-material-field={field}>
-      <span>{label}</span>
-      <ToggleSwitch label={label} value={value} onChange={onChange} />
-    </div>
+    <button className="material-scheme-selector" type="button" onClick={onOpen} aria-label="打开材质方案库">
+      <div className="material-scheme-selector__copy">
+        <span>当前方案</span>
+        <b>{scheme.type}</b>
+        <em>{scheme.name}</em>
+      </div>
+      <div className="material-scheme-selector__swatches" aria-hidden="true">
+        {swatches.map((color, index) => <i key={index} style={{ background: color }} />)}
+      </div>
+      <ChevronRight className="material-scheme-selector__chevron" aria-hidden="true" />
+    </button>
   );
 }
 
@@ -334,24 +408,36 @@ function MaterialClipboardFooter({
 
 function SurfacePage({
   draft,
+  scheme,
   onUpdate,
   onOpenColor,
+  onOpenPresetLibrary,
 }: {
   draft: MaterialSurfaceDraft;
+  scheme: MaterialSchemeState;
   onUpdate: <K extends keyof MaterialSurfaceDraft>(key: K, value: MaterialSurfaceDraft[K]) => void;
   onOpenColor: (target: MaterialColorTarget) => void;
+  onOpenPresetLibrary: () => void;
 }) {
   const specularWorkflow = draft.workflow === '高光';
 
   return (
     <div className="material-palette-surface">
+      <SchemeSelector scheme={scheme} draft={draft} onOpen={onOpenPresetLibrary} />
+
       <LeftContextSection title="颜色" className="material-palette-section material-palette-colors">
-        <ColorFieldRow label="主色" value={draft.baseColor} field="BaseColor" onOpen={onOpenColor} />
-        <ColorFieldRow label="发光颜色" value={draft.emissionColor} hdr field="EmissionColor" onOpen={onOpenColor} />
-        <ColorFieldRow label="夜间发光颜色" value={draft.nightEmissionColor} hdr field="NightEmissionColor" onOpen={onOpenColor} />
-        {specularWorkflow && (
-          <ColorFieldRow label="高光颜色" value={draft.specularColor} field="SpecularColor" onOpen={onOpenColor} />
-        )}
+        <div className="material-color-card-grid">
+          <ColorCard label="主色" value={draft.baseColor} field="BaseColor" onOpen={onOpenColor} />
+          <ColorCard
+            label="高光颜色"
+            value={draft.specularColor}
+            field="SpecularColor"
+            disabled={!specularWorkflow}
+            onOpen={onOpenColor}
+          />
+          <ColorCard label="发光颜色" value={draft.emissionColor} hdr field="EmissionColor" onOpen={onOpenColor} />
+          <ColorCard label="夜间发光" value={draft.nightEmissionColor} hdr field="NightEmissionColor" onOpen={onOpenColor} />
+        </div>
       </LeftContextSection>
 
       <LeftContextSection title="表面" className="material-palette-section material-palette-properties">
@@ -390,31 +476,6 @@ function SurfacePage({
             onChange={(value) => onUpdate('occlusion', value)}
           />
         </div>
-        <ToggleFieldRow
-          label="高光反射"
-          value={draft.specularHighlights}
-          field="Flags.SpecularHighlightsOff"
-          onChange={(value) => onUpdate('specularHighlights', value)}
-        />
-        <ToggleFieldRow
-          label="Alpha 裁剪"
-          value={draft.alphaClip}
-          field="Flags.AlphaClip"
-          onChange={(value) => onUpdate('alphaClip', value)}
-        />
-        {draft.alphaClip && (
-          <div data-material-field="AlphaClipThreshold">
-            <RuntimeParameterRow
-              label="裁剪阈值"
-              value={draft.alphaClipThreshold}
-              min={0}
-              max={1}
-              step={0.01}
-              format={(value) => value.toFixed(2)}
-              onChange={(value) => onUpdate('alphaClipThreshold', value)}
-            />
-          </div>
-        )}
       </LeftContextSection>
 
       <LeftContextSection title="贴图" className="material-palette-section material-palette-texture">
@@ -449,6 +510,94 @@ function SurfacePage({
         </div>
       </div>
     </div>
+  );
+}
+
+function PresetLibraryPage({
+  currentScheme,
+  category,
+  presets,
+  onCategoryChange,
+  onApply,
+  onDelete,
+}: {
+  currentScheme: MaterialSchemeState;
+  category: MaterialPresetFilter;
+  presets: MaterialPreset[];
+  onCategoryChange: (category: MaterialPresetFilter) => void;
+  onApply: (preset: MaterialPreset) => void;
+  onDelete: (preset: MaterialPreset) => void;
+}) {
+  const filters: MaterialPresetFilter[] = ['全部', '木头', '瓦片', '墙面', '自定义'];
+  const visible = category === '全部' ? presets : presets.filter((preset) => preset.type === category);
+
+  return (
+    <div className="material-preset-library">
+      <div className="material-preset-filter" role="group" aria-label="材质方案分类">
+        {filters.map((item) => (
+          <button
+            key={item}
+            type="button"
+            className={item === category ? 'is-active' : ''}
+            aria-pressed={item === category}
+            onClick={() => onCategoryChange(item)}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+
+      <div className="material-preset-grid">
+        {visible.map((preset) => {
+          const selected = currentScheme.id === preset.id;
+          return (
+            <article key={preset.id} className={'material-preset-card ' + (selected ? 'is-selected' : '')}>
+              <button
+                type="button"
+                className="material-preset-card__apply"
+                aria-label={`应用方案 ${preset.type} · ${preset.name}`}
+                onClick={() => onApply(preset)}
+              >
+                <span className="material-preset-card__type">{preset.type}</span>
+                <b>{preset.name}</b>
+                <span className="material-preset-card__swatches" aria-hidden="true">
+                  {[preset.draft.baseColor, preset.draft.specularColor, preset.draft.emissionColor, preset.draft.nightEmissionColor]
+                    .map((color, index) => <i key={index} style={{ background: color }} />)}
+                </span>
+              </button>
+              {preset.source === 'custom' && (
+                <button
+                  type="button"
+                  className="material-preset-card__delete"
+                  aria-label={`删除自定义方案 ${preset.name}`}
+                  onClick={() => onDelete(preset)}
+                >
+                  <Trash2 aria-hidden="true" />
+                </button>
+              )}
+            </article>
+          );
+        })}
+      </div>
+
+      {visible.length === 0 && <p className="material-preset-library__empty">还没有保存的自定义方案。</p>}
+    </div>
+  );
+}
+
+function PresetLibraryFooter({
+  onSave,
+}: {
+  onSave: () => void;
+}) {
+  return (
+    <>
+      <span />
+      <button className="material-footer-action is-primary" type="button" onClick={onSave} aria-label="保存当前为自定义方案">
+        <Save aria-hidden="true" />
+        <span>保存当前为自定义</span>
+      </button>
+    </>
   );
 }
 
@@ -586,56 +735,28 @@ function ColorEditorPage({
         <div className="material-color-channel-group">
           {numericMode === 'RGB' ? (
             <>
-              <div data-color-channel="R">
-                <RuntimeParameterRow label="R" value={Math.round(rgb.r * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('r', value)} />
-              </div>
-              <div data-color-channel="G">
-                <RuntimeParameterRow label="G" value={Math.round(rgb.g * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('g', value)} />
-              </div>
-              <div data-color-channel="B">
-                <RuntimeParameterRow label="B" value={Math.round(rgb.b * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('b', value)} />
-              </div>
+              <div data-color-channel="R"><RuntimeParameterRow label="R" value={Math.round(rgb.r * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('r', value)} /></div>
+              <div data-color-channel="G"><RuntimeParameterRow label="G" value={Math.round(rgb.g * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('g', value)} /></div>
+              <div data-color-channel="B"><RuntimeParameterRow label="B" value={Math.round(rgb.b * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('b', value)} /></div>
             </>
           ) : (
             <>
-              <div data-color-channel="H">
-                <RuntimeParameterRow label="H" value={Math.round(hsv.h)} min={0} max={360} step={1} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => updateHsv('h', value)} />
-              </div>
-              <div data-color-channel="S">
-                <RuntimeParameterRow label="S" value={Math.round(hsv.s * 100)} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateHsv('s', value)} />
-              </div>
-              <div data-color-channel="V">
-                <RuntimeParameterRow label="V" value={Math.round(hsv.v * 100)} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateHsv('v', value)} />
-              </div>
+              <div data-color-channel="H"><RuntimeParameterRow label="H" value={Math.round(hsv.h)} min={0} max={360} step={1} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => updateHsv('h', value)} /></div>
+              <div data-color-channel="S"><RuntimeParameterRow label="S" value={Math.round(hsv.s * 100)} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateHsv('s', value)} /></div>
+              <div data-color-channel="V"><RuntimeParameterRow label="V" value={Math.round(hsv.v * 100)} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateHsv('v', value)} /></div>
             </>
           )}
         </div>
 
         {definition.alpha && alpha !== undefined && onAlphaChange && (
           <div data-color-adapter="BaseColor.Alpha">
-            <RuntimeParameterRow
-              label="透明度"
-              value={alpha}
-              min={0}
-              max={1}
-              step={0.01}
-              format={(value) => value.toFixed(2)}
-              onChange={onAlphaChange}
-            />
+            <RuntimeParameterRow label="透明度" value={alpha} min={0} max={1} step={0.01} format={(value) => value.toFixed(2)} onChange={onAlphaChange} />
           </div>
         )}
 
         {definition.hdr && intensity !== undefined && onIntensityChange && (
           <div data-color-adapter={`${definition.target}.Intensity`}>
-            <RuntimeParameterRow
-              label="发光强度"
-              value={intensity}
-              min={0}
-              max={8}
-              step={0.1}
-              format={(value) => value.toFixed(1)}
-              onChange={onIntensityChange}
-            />
+            <RuntimeParameterRow label="发光强度" value={intensity} min={0} max={8} step={0.1} format={(value) => value.toFixed(1)} onChange={onIntensityChange} />
           </div>
         )}
       </LeftContextSection>
@@ -652,26 +773,44 @@ export function MaterialPaletteOverlay({
   onClose,
   onDirty,
 }: Props) {
-  const [draft, setDraft] = useState<MaterialSurfaceDraft>(() => cloneDraft(DEFAULT_SURFACE_DRAFT));
-  const [activeColorTarget, setActiveColorTarget] = useState<MaterialColorTarget | null>(null);
+  const [draft, setDraft] = useState<MaterialSurfaceDraft>(() => cloneDraft(INITIAL_PRESET.draft));
+  const [requestedPage, setRequestedPage] = useState<MaterialPageKey>('surface');
   const [surfaceClipboard, setSurfaceClipboard] = useState<MaterialSurfaceDraft | null>(null);
   const [colorClipboard, setColorClipboard] = useState<ColorClipboardPayload | null>(null);
+  const [customPresets, setCustomPresets] = useState<MaterialPreset[]>([]);
+  const [presetFilter, setPresetFilter] = useState<MaterialPresetFilter>('全部');
+  const [currentScheme, setCurrentScheme] = useState<MaterialSchemeState>({
+    id: INITIAL_PRESET.id,
+    type: INITIAL_PRESET.type,
+    name: INITIAL_PRESET.name,
+    source: 'builtin',
+  });
 
-  const requestedPage: MaterialPageKey = activeColorTarget ? `color:${activeColorTarget}` : 'surface';
   const pageTransition = useKeyedTransition<MaterialPageKey>(requestedPage, MOTION_MS.surface);
-  const pageDirection = activeColorTarget ? 'forward' : 'back';
+  const pageDirection = requestedPage === 'surface' ? 'back' : 'forward';
+  const activeColorTarget = pageTarget(requestedPage);
   const currentDefinition = activeColorTarget ? COLOR_TARGETS[activeColorTarget] : null;
-  const specularWorkflow = draft.workflow === '高光';
   const surfaceModified = !draftsEqual(draft, DEFAULT_SURFACE_DRAFT);
+  const allPresets = [...BUILTIN_PRESETS, ...customPresets];
+
+  function markCustom() {
+    setCurrentScheme((current) => (
+      current.type === '自定义' && current.source === 'custom'
+        ? current
+        : { type: '自定义', name: '未保存', source: 'custom' }
+    ));
+  }
 
   function update<K extends keyof MaterialSurfaceDraft>(key: K, value: MaterialSurfaceDraft[K]) {
     if (Object.is(draft[key], value)) return;
     setDraft((current) => ({ ...current, [key]: value }));
+    markCustom();
     onDirty();
   }
 
-  function replaceDraft(next: MaterialSurfaceDraft) {
+  function replaceDraft(next: MaterialSurfaceDraft, scheme?: MaterialSchemeState) {
     setDraft(cloneDraft(next));
+    setCurrentScheme(scheme ?? { type: '自定义', name: '未保存', source: 'custom' });
     onDirty();
   }
 
@@ -702,15 +841,6 @@ export function MaterialPaletteOverlay({
 
   function resetColor(target: MaterialColorTarget) {
     const definition = COLOR_TARGETS[target];
-    const currentColor = colorForTarget(target);
-    const currentIntensity = intensityForTarget(target);
-    const currentAlpha = target === 'BaseColor' ? draft.baseAlpha : undefined;
-    const nextAlpha = definition.defaultAlpha;
-    const nextIntensity = definition.defaultIntensity;
-    const alreadyDefault = currentColor === definition.defaultHex
-      && (nextAlpha === undefined || Object.is(currentAlpha, nextAlpha))
-      && (nextIntensity === undefined || Object.is(currentIntensity, nextIntensity));
-    if (alreadyDefault) return;
     updateColor(target, definition.defaultHex);
     if (target === 'BaseColor') update('baseAlpha', definition.defaultAlpha ?? 1);
     if (target === 'EmissionColor') update('emissionIntensity', definition.defaultIntensity ?? 1);
@@ -748,24 +878,78 @@ export function MaterialPaletteOverlay({
     }
   }
 
+  function applyPreset(preset: MaterialPreset) {
+    replaceDraft(preset.draft, {
+      id: preset.id,
+      type: preset.type,
+      name: preset.name,
+      source: preset.source === 'custom' ? 'saved' : 'builtin',
+    });
+    setRequestedPage('surface');
+  }
+
+  function saveCurrentAsCustom() {
+    const index = customPresets.length + 1;
+    const name = `我的配色 ${String(index).padStart(2, '0')}`;
+    const preset: MaterialPreset = {
+      id: `custom-${index}`,
+      type: '自定义',
+      name,
+      source: 'custom',
+      draft: cloneDraft(draft),
+    };
+    setCustomPresets((current) => [...current, preset]);
+    setCurrentScheme({ id: preset.id, type: '自定义', name, source: 'saved' });
+    setPresetFilter('自定义');
+  }
+
+  function deleteCustomPreset(preset: MaterialPreset) {
+    setCustomPresets((current) => current.filter((entry) => entry.id !== preset.id));
+    if (currentScheme.id === preset.id) {
+      setCurrentScheme({ type: '自定义', name: '未保存', source: 'custom' });
+    }
+  }
+
   function renderPage(page: MaterialPageKey, phase: MotionPhase, outgoing = false) {
     const target = pageTarget(page);
     const pageClass = [
       'material-palette-page',
-      page === 'surface' ? 'is-surface-page' : 'is-color-page',
+      page === 'surface' ? 'is-surface-page' : page === 'preset-library' ? 'is-preset-page' : 'is-color-page',
       `is-${phase}`,
       `is-${pageDirection}`,
       outgoing ? 'is-outgoing' : 'is-active-page',
     ].join(' ');
 
-    if (!target) {
+    if (page === 'surface') {
       return (
         <div className={pageClass} key={page}>
-          <SurfacePage draft={draft} onUpdate={update} onOpenColor={setActiveColorTarget} />
+          <SurfacePage
+            draft={draft}
+            scheme={currentScheme}
+            onUpdate={update}
+            onOpenColor={(target) => setRequestedPage(`color:${target}`)}
+            onOpenPresetLibrary={() => setRequestedPage('preset-library')}
+          />
         </div>
       );
     }
 
+    if (page === 'preset-library') {
+      return (
+        <div className={pageClass} key={page}>
+          <PresetLibraryPage
+            currentScheme={currentScheme}
+            category={presetFilter}
+            presets={allPresets}
+            onCategoryChange={setPresetFilter}
+            onApply={applyPreset}
+            onDelete={deleteCustomPreset}
+          />
+        </div>
+      );
+    }
+
+    if (!target) return null;
     const definition = COLOR_TARGETS[target];
     return (
       <div className={pageClass} key={page}>
@@ -782,7 +966,9 @@ export function MaterialPaletteOverlay({
     );
   }
 
-  const footer = activeColorTarget ? (
+  const footer = requestedPage === 'preset-library' ? (
+    <PresetLibraryFooter onSave={saveCurrentAsCustom} />
+  ) : activeColorTarget ? (
     <MaterialClipboardFooter
       resetLabel="恢复默认"
       resetDisabled={isColorDefault(activeColorTarget)}
@@ -806,15 +992,24 @@ export function MaterialPaletteOverlay({
     />
   );
 
+  const headerTitle = requestedPage === 'preset-library'
+    ? '材质方案'
+    : currentDefinition?.label ?? '表面';
+  const headerSubtitle = requestedPage === 'preset-library'
+    ? '系统预设与我的收藏'
+    : currentDefinition
+      ? (currentDefinition.hdr ? 'HDR 颜色' : '颜色')
+      : '当前材质槽';
+
   return (
     <PlacementContextPanel
-      ariaLabel={activeColorTarget ? `调整${currentDefinition?.label ?? '颜色'}` : '配色工具表面模式参数'}
+      ariaLabel={requestedPage === 'preset-library' ? '材质方案库' : activeColorTarget ? `调整${currentDefinition?.label ?? '颜色'}` : '配色工具表面模式参数'}
       icon={Palette}
-      title={currentDefinition?.label ?? '表面'}
-      subtitle={currentDefinition ? (currentDefinition.hdr ? 'HDR 颜色' : '颜色') : '当前材质槽'}
+      title={headerTitle}
+      subtitle={headerSubtitle}
       closeLabel="退出配色工具"
       backLabel="返回表面参数"
-      onBack={activeColorTarget ? () => setActiveColorTarget(null) : undefined}
+      onBack={requestedPage !== 'surface' ? () => setRequestedPage('surface') : undefined}
       footerClassName="material-palette-footer"
       footer={footer}
       className={'material-palette-prototype motion-left-surface is-' + motionPhase}
@@ -822,11 +1017,11 @@ export function MaterialPaletteOverlay({
       onClose={onClose}
       dataAttributes={{
         'data-material-mode': 'surface',
-        'data-material-page': activeColorTarget ? 'color-editor' : 'surface',
+        'data-material-page': requestedPage === 'surface' ? 'surface' : requestedPage === 'preset-library' ? 'preset-library' : 'color-editor',
         'data-material-color-target': activeColorTarget ?? undefined,
-        'data-material-workflow': specularWorkflow ? 'specular' : 'metallic',
-        'data-material-alpha-clip': draft.alphaClip ? 'true' : 'false',
-        'data-material-specular-highlights': draft.specularHighlights ? 'on' : 'off',
+        'data-material-workflow': draft.workflow === '高光' ? 'specular' : 'metallic',
+        'data-material-scheme-type': currentScheme.type,
+        'data-material-scheme-name': currentScheme.name,
         'data-material-surface-clipboard': surfaceClipboard ? 'ready' : 'empty',
         'data-material-color-clipboard': colorClipboard ? 'ready' : 'empty',
       }}
