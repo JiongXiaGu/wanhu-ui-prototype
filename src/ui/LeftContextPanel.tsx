@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { RotateCcw, X } from 'lucide-react';
+import { ArrowLeft, RotateCcw, X } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 interface LeftContextPanelProps {
@@ -13,6 +13,8 @@ interface LeftContextPanelProps {
   footerClassName?: string;
   footer?: ReactNode;
   closeLabel?: string;
+  backLabel?: string;
+  onBack?: () => void;
   onClose: () => void;
   dataAttributes?: Record<string, string | undefined>;
   children: ReactNode;
@@ -29,6 +31,8 @@ export function LeftContextPanel({
   footerClassName = '',
   footer,
   closeLabel = '关闭面板',
+  backLabel = '返回',
+  onBack,
   onClose,
   dataAttributes = {},
   children,
@@ -38,7 +42,11 @@ export function LeftContextPanel({
     <>
       <header className="left-context-panel__header">
         <div className="gameplay-context-panel__heading left-context-panel__heading">
-          <span className="gameplay-context-panel__heading-icon left-context-panel__heading-icon"><HeadingIcon /></span>
+          {onBack ? (
+            <button className="left-context-panel__back-button" type="button" onClick={onBack} aria-label={backLabel}><ArrowLeft /></button>
+          ) : (
+            <span className="gameplay-context-panel__heading-icon left-context-panel__heading-icon"><HeadingIcon /></span>
+          )}
           <div className="gameplay-context-panel__heading-copy left-context-panel__heading-copy">
             <b className="gameplay-context-panel__title left-context-panel__title">{title}</b>
             {subtitle && <span>{subtitle}</span>}

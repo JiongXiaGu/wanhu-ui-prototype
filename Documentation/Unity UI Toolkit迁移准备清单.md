@@ -496,4 +496,11 @@ Material Palette Utility
 - AlphaClipThreshold 只在 AlphaClip Flag 开启时显示；
 - Lighting / Palette 未实现前保持 disabled；
 - TextureSetDefinition / MappingSpace / Offset / Rotation 当前不进入正式 Surface UI；
-- 第一阶段不显示额外 Gameplay Operation Hints。
+- 第一阶段不显示额外 Gameplay Operation Hints；
+- Material Left Host 内部有 SurfacePage / ColorEditorPage 两个可 Rebind Page，不建立第二个 Window；
+- Header Back 只在 ColorEditorPage 存在；
+- Page Motion 只使用 Opacity + Translate；
+- Standard Color Editor 绑定 BaseColor / SpecularColor；
+- HDR Color Editor 绑定 EmissionColor / NightEmissionColor；
+- HDR Intensity 在 Controller 中作为编辑 Adapter，提交时重新合成为 HDR Color，不新增持久字段；
+- NightEmissionColor 的 Runtime Inspector 元数据应与 EmissionColor 一致支持 HDR。

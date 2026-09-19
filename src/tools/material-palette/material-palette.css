@@ -30,9 +30,14 @@
   border-radius:8px;
   background:rgba(255,255,255,.018);
   color:#aaa79f;
+  font:inherit;
+  text-align:left;
   cursor:pointer;
+  transition-property:border-color,background,color;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
-.material-color-field__control:hover{border-color:rgba(238,233,223,.13);background:rgba(255,255,255,.028)}
+.material-color-field__control:hover:not(:disabled){border-color:rgba(238,233,223,.13);background:rgba(255,255,255,.028);color:#d0cbc2}
+.material-color-field__control:focus-visible{outline:1px solid rgba(189,153,89,.38);outline-offset:1px}
 .material-color-field__swatch{
   width:18px;
   height:18px;
@@ -57,17 +62,8 @@
   font-style:normal;
   letter-spacing:.06em;
 }
-.material-color-field__control input{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  opacity:0;
-  cursor:pointer;
-}
 .material-color-field.is-disabled{opacity:.42}
 .material-color-field.is-disabled .material-color-field__control{cursor:default}
-.material-color-field.is-disabled input{cursor:default}
 
 .material-workflow-field{
   min-height:42px;
@@ -145,3 +141,176 @@
 .material-palette-texture .runtime-parameter-row{padding-left:0;padding-right:0}
 
 .material-palette-prototype__body{overflow:auto}
+
+
+/* Material Palette page stack ------------------------------------------------
+   Surface and Color Editor share one Left Context host. Content rebind uses
+   opacity + small translate only; no width/height animation. */
+.material-palette-page-host{
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+}
+.material-palette-page{
+  width:100%;
+  min-width:0;
+  opacity:1;
+  transform:translateX(0);
+  transition-property:opacity,transform;
+  transition-duration:var(--wanhu-motion-surface,160ms),var(--wanhu-motion-surface,160ms);
+  transition-timing-function:var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
+}
+.material-palette-page.is-outgoing{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.material-palette-page.is-entering.is-forward{opacity:0;transform:translateX(12px)}
+.material-palette-page.is-exiting.is-forward{opacity:0;transform:translateX(-12px)}
+.material-palette-page.is-entering.is-back{opacity:0;transform:translateX(-12px)}
+.material-palette-page.is-exiting.is-back{opacity:0;transform:translateX(12px)}
+.material-palette-page.is-steady{opacity:1;transform:translateX(0)}
+
+/* Color editor --------------------------------------------------------------- */
+.material-color-editor{
+  min-width:0;
+  padding:2px 1px 4px;
+}
+.material-color-editor__sv{
+  position:relative;
+  width:100%;
+  height:164px;
+  overflow:hidden;
+  border:1px solid rgba(238,233,223,.095);
+  border-radius:10px;
+  cursor:crosshair;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.028),inset 0 0 18px rgba(0,0,0,.10);
+  touch-action:none;
+}
+.material-color-editor__sv:focus-visible{
+  outline:1px solid rgba(189,153,89,.48);
+  outline-offset:2px;
+}
+.material-color-editor__sv-cursor{
+  position:absolute;
+  width:13px;
+  height:13px;
+  translate:-50% -50%;
+  border:2px solid rgba(255,255,255,.92);
+  border-radius:50%;
+  background:transparent;
+  box-shadow:0 1px 5px rgba(0,0,0,.52),inset 0 0 0 1px rgba(0,0,0,.28);
+  pointer-events:none;
+}
+.material-color-editor__hue-row{
+  min-height:44px;
+  display:grid;
+  grid-template-columns:86px minmax(0,1fr);
+  align-items:center;
+  gap:5px;
+  padding:4px 0 1px;
+}
+.material-color-editor__hue-row>span{
+  color:#969a97;
+  font-size:11px;
+  font-weight:520;
+}
+.material-color-editor__hue-range{
+  width:100%;
+  height:14px;
+  margin:0;
+  appearance:none;
+  -webkit-appearance:none;
+  border:0;
+  border-radius:999px;
+  background:linear-gradient(90deg,#f33 0%,#ff3 16.66%,#3f3 33.33%,#3ff 50%,#33f 66.66%,#f3f 83.33%,#f33 100%);
+  cursor:pointer;
+}
+.material-color-editor__hue-range::-webkit-slider-thumb{
+  width:13px;
+  height:18px;
+  appearance:none;
+  -webkit-appearance:none;
+  border:2px solid rgba(238,233,223,.95);
+  border-radius:6px;
+  background:rgba(38,43,41,.92);
+  box-shadow:0 2px 5px rgba(0,0,0,.34);
+}
+.material-color-editor__hue-range::-moz-range-thumb{
+  width:10px;
+  height:15px;
+  border:2px solid rgba(238,233,223,.95);
+  border-radius:6px;
+  background:rgba(38,43,41,.92);
+  box-shadow:0 2px 5px rgba(0,0,0,.34);
+}
+.material-color-editor__values{
+  padding-top:9px;
+}
+.material-color-editor__hdr-badge{
+  margin-left:auto;
+  padding:2px 6px;
+  border:1px solid rgba(189,153,89,.24);
+  border-radius:5px;
+  color:rgba(189,153,89,.82);
+  font-size:7px;
+  font-weight:600;
+  letter-spacing:.08em;
+}
+.material-color-editor__hex-row{
+  min-height:38px;
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  margin-bottom:3px;
+}
+.material-color-editor__preview-swatch{
+  width:30px;
+  height:30px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:8px;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);
+}
+.material-color-editor__hex-row .ui-text-input{
+  width:100%;
+  height:30px;
+  text-transform:uppercase;
+  font-size:10px;
+  letter-spacing:.04em;
+  font-variant-numeric:tabular-nums;
+}
+.material-color-editor__values .runtime-parameter-row{
+  padding-left:0;
+  padding-right:0;
+}
+.material-color-editor__reset{
+  min-height:30px;
+  margin-top:8px;
+  padding:0 8px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#858a85;
+  font:inherit;
+  font-size:9px;
+  cursor:pointer;
+  transition-property:background,color;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.material-color-editor__reset:hover{
+  background:rgba(255,255,255,.025);
+  color:#c9c4ba;
+}
+.material-color-editor__reset:focus-visible{
+  outline:1px solid rgba(189,153,89,.38);
+  outline-offset:1px;
+}
+.material-color-editor__reset svg{
+  width:14px;
+  height:14px;
+  stroke-width:1.7;
+}

@@ -71,3 +71,20 @@ Compact 160px 方案仍然产生 Field Column 断裂：Workflow 使用自定义 
 - Workflow 总宽度与 NumericSliderField 一致；
 - 2 个按钮各 50%，以后 N 个按钮只等分内部空间，不改变控件总宽度；
 - 保留 Neutral Track + 小熟铜状态点视觉。
+
+
+## 共享 Color Editor 二级页
+
+Surface Color Row 不再使用浏览器原生 Color Input 直接编辑。
+
+新增同一 Left Context Host 内的二级页：
+
+- BaseColor → Standard + Alpha；
+- EmissionColor → HDR + Intensity；
+- NightEmissionColor → HDR + Intensity；
+- SpecularColor → Standard；
+- Surface ↔ Color Editor 使用 12px Translate + Opacity；
+- Header Back 返回 Surface，Close 仍退出整个 Material Tool；
+- Color Editor 提供 SV / Hue / Hex / Reset；
+- HDR Intensity 是 UI Adapter，不新增 Runtime 持久字段；
+- NightEmissionColor 在产品定义中升级为 HDR，Unity Inspector 元数据后续需同步。

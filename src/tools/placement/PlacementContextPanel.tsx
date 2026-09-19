@@ -8,6 +8,8 @@ export interface PlacementContextPanelProps {
   title: string;
   subtitle?: string;
   closeLabel: string;
+  backLabel?: string;
+  onBack?: () => void;
   className?: string;
   bodyClassName?: string;
   onClose: () => void;
@@ -28,6 +30,8 @@ export function PlacementContextPanel({
   title,
   subtitle,
   closeLabel,
+  backLabel,
+  onBack,
   className = '',
   bodyClassName = '',
   onClose,
@@ -42,6 +46,8 @@ export function PlacementContextPanel({
       title={title}
       subtitle={subtitle}
       closeLabel={closeLabel}
+      backLabel={backLabel}
+      onBack={onBack}
       className={`placement-context-panel ${className}`.trim()}
       bodyClassName={`placement-context-panel__body ${bodyClassName}`.trim()}
       onClose={onClose}
