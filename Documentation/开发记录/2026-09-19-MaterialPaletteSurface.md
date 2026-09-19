@@ -157,3 +157,19 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - PBR 与 Texture 只靠间距分组，不再使用两个强 Section 标题；
 - Material Surface 内部的 Stepper / Value 默认边框进一步弱化，Hover / Focus 才回升；
 - Workflow 去掉完整 Track，改成 Active 实点 / Inactive 空心点的 Inline Choice。
+
+## 材质方案迁出 Left Context
+
+方案浏览已从左侧二级页迁出，改成 Material Tool 内部的中央 Workspace：
+
+- 左侧 Surface 参数始终保持；
+- 点击“方案”后，在中下 ToolActionBar 上方打开 MaterialSchemeWorkspace；
+- Workspace 使用与 Design Workspace 相同的 Work Surface 家族；
+- 系统方案 / 我的方案两页；
+- 系统方案使用分类 Rail + 2×3 Card Pool + Pager；
+- Web Demo 暂放 9 个演示预设验证两页分页；
+- Apply 后 Workspace 保持打开，左侧参数实时刷新；
+- 我的方案支持保存当前 / 应用 / 删除；
+- 自定义方案仍只在 Web Tool Session 内保存；
+- 默认 Metallic 下 SpecularColor 完全隐藏；
+- Specular 工作流颜色顺序固定为 Base / Emission / NightEmission / Specular。

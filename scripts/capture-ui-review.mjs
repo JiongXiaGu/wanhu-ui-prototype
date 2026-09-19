@@ -698,74 +698,42 @@ const schemeSelector = materialPanel.getByRole('button', { name: '打开材质�
 if ((await schemeSelector.count()) !== 1) {
   throw new Error('Surface should expose one current material-scheme selector.');
 }
-for (const text of ['墙面', '素灰墙']) {
+for (const text of ['方案', '墙面', '素灰墙']) {
   if ((await schemeSelector.getByText(text, { exact: true }).count()) !== 1) {
-    throw new Error('Scheme selector missing single-line content: ' + text);
+    throw new Error('Scheme navigation row missing: ' + text);
   }
-}
-if (await schemeSelector.getByText('当前方案', { exact: true }).count()) {
-  throw new Error('Scheme selector must not restore the old three-line stack.');
-}
-if (await schemeSelector.locator('.material-scheme-selector__swatches').count()) {
-  throw new Error('Scheme selector must not duplicate the four-color swatch strip.');
 }
 const schemeSelectorBox = await schemeSelector.boundingBox();
 if (!schemeSelectorBox || schemeSelectorBox.height > 40) {
-  throw new Error('Scheme selector should stay compact and single-line. height=' + schemeSelectorBox?.height);
+  throw new Error('Scheme navigation row should stay compact. height=' + schemeSelectorBox?.height);
 }
 const schemeStyle = await schemeSelector.evaluate((node) => getComputedStyle(node));
 if (schemeStyle.borderTopWidth !== '0px') {
-  throw new Error('Scheme selector should be a lightweight navigation row, not another bordered card.');
+  throw new Error('Scheme navigation must remain borderless by default.');
 }
 
-const colorCards = materialPanel.locator('.material-color-strip__item');
-if ((await colorCards.count()) !== 4) {
-  throw new Error('Surface Color Strip should expose exactly four items.');
-}
 const colorStrip = materialPanel.locator('.material-color-strip');
-if ((await colorStrip.count()) !== 1) {
-  throw new Error('Surface colors should share one Color Strip container.');
+const metallicColorItems = materialPanel.locator('.material-color-strip__item');
+if ((await colorStrip.count()) !== 1 || (await metallicColorItems.count()) !== 3) {
+  throw new Error('Metallic workflow should expose one shared Color Strip with exactly three colors.');
 }
-const colorStripStyle = await colorStrip.evaluate((node) => getComputedStyle(node));
-if (colorStripStyle.borderTopWidth === '0px') {
-  throw new Error('Color Strip should own the single shared boundary.');
-}
-for (const item of await colorCards.all()) {
-  const style = await item.evaluate((node) => getComputedStyle(node));
-  if (style.borderTopWidth !== '0px' || style.borderRightWidth !== '0px' || style.borderBottomWidth !== '0px') {
-    throw new Error('Color Strip items must not behave like four independent bordered cards.');
+const metallicLabels = ['主色', '发光', '夜间发光'];
+for (let index = 0; index < metallicLabels.length; index += 1) {
+  if ((await metallicColorItems.nth(index).getByText(metallicLabels[index], { exact: true }).count()) !== 1) {
+    throw new Error('Metallic Color Strip order mismatch at ' + index + ': expected ' + metallicLabels[index]);
   }
 }
-const expectedCardLabels = ['主色', '高光', '发光', '夜间发光'];
-const colorCardBoxes = [];
-for (let index = 0; index < expectedCardLabels.length; index += 1) {
-  const label = expectedCardLabels[index];
-  const card = colorCards.nth(index);
-  if ((await card.getByText(label, { exact: true }).count()) !== 1) {
-    throw new Error('Color Strip item order mismatch at ' + index + ': expected ' + label);
-  }
-  const box = await card.boundingBox();
-  if (!box) throw new Error('Color Strip item geometry missing at ' + index);
-  colorCardBoxes.push(box);
-}
-const firstCardY = colorCardBoxes[0].y;
-const firstCardWidth = colorCardBoxes[0].width;
-for (const [index, box] of colorCardBoxes.entries()) {
-  if (Math.abs(box.y - firstCardY) > 2) {
-    throw new Error('All four Color Strip items must stay on one row. index=' + index + ', y=' + box.y);
-  }
-  if (Math.abs(box.width - firstCardWidth) > 2) {
-    throw new Error('Color Strip items should share equal width. index=' + index + ', width=' + box.width);
-  }
-}
-if (!(await materialPanel.getByRole('button', { name: '调整高光', exact: true }).isDisabled())) {
-  throw new Error('Specular Color Strip item should remain visible but inactive in Metallic workflow.');
+if (await materialPanel.locator('[data-material-field="SpecularColor"]').count()) {
+  throw new Error('SpecularColor must be hidden entirely in default Metallic workflow.');
 }
 if ((await materialPanel.locator('.material-color-strip__item-meta').filter({ hasText: 'HDR' }).count()) !== 2) {
-  throw new Error('Emission and Night Emission cards should expose two HDR badges.');
+  throw new Error('Emission and Night Emission should expose two HDR markers.');
 }
-if (await materialPanel.locator('.material-color-strip__item').filter({ hasText: /#[0-9A-Fa-f]{6}/ }).count()) {
-  throw new Error('Surface Color Strip should not display HEX values.');
+for (const item of await metallicColorItems.all()) {
+  const style = await item.evaluate((node) => getComputedStyle(node));
+  if (style.borderTopWidth !== '0px' || style.borderRightWidth !== '0px' || style.borderBottomWidth !== '0px') {
+    throw new Error('Color Strip items must not behave like independent bordered cards.');
+  }
 }
 
 const materialSectionTitles = materialPanel.locator('.left-context-panel__section-title');
@@ -774,26 +742,17 @@ for (const requiredSection of ['颜色', '材质属性']) {
     throw new Error('Material Surface section missing: ' + requiredSection);
   }
 }
-for (const retiredSection of ['贴图']) {
-  if (await materialSectionTitles.filter({ hasText: retiredSection }).count()) {
-    throw new Error('Surface and Texture should be merged into one Material Properties section.');
-  }
+if (await materialSectionTitles.filter({ hasText: '贴图' }).count()) {
+  throw new Error('PBR and Texture should remain merged into Material Properties.');
 }
-
 for (const retired of ['高光反射', 'Alpha 裁剪', '裁剪阈值']) {
   if (await materialPanel.getByText(retired, { exact: true }).count()) {
     throw new Error('Retired Surface control should not be visible: ' + retired);
   }
 }
-for (const retiredField of ['Flags.SpecularHighlightsOff', 'Flags.AlphaClip', 'AlphaClipThreshold']) {
-  if (await materialPanel.locator('[data-material-field="' + retiredField + '"]').count()) {
-    throw new Error('Retired Surface field mapping should be removed: ' + retiredField);
-  }
-}
 
 for (const field of [
   'BaseColor',
-  'SpecularColor',
   'EmissionColor',
   'NightEmissionColor',
   'Flags.SpecularSetup',
@@ -816,18 +775,12 @@ if (!workflowBox || !metallicFieldBox) throw new Error('Material workflow and sl
 if (Math.abs(workflowBox.x - metallicFieldBox.x) > 2 || Math.abs(workflowBox.width - metallicFieldBox.width) > 2) {
   throw new Error('Material workflow must share the same field column as sliders.');
 }
-const propertiesSectionBox = await materialPanel.locator('.material-palette-properties').boundingBox();
-const workflowBottomBox = await materialPanel.locator('.material-palette-workflow-bottom').boundingBox();
-if (!propertiesSectionBox || !workflowBottomBox || workflowBottomBox.y <= propertiesSectionBox.y) {
-  throw new Error('Workflow selector should live below the merged Material Properties section.');
-}
 const workflowStyle = await workflowControl.evaluate((node) => getComputedStyle(node));
 if (workflowStyle.borderTopWidth !== '0px' || workflowStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') {
-  throw new Error('Workflow should read like an inline parameter, not another framed track. style=' + JSON.stringify({ border: workflowStyle.borderTopWidth, background: workflowStyle.backgroundColor }));
+  throw new Error('Workflow should stay an inline radio-like parameter without a track.');
 }
-const workflowIndicators = workflowControl.locator('.material-workflow-control__indicator');
-if ((await workflowIndicators.count()) !== 2) {
-  throw new Error('Workflow inline choice should expose two radio-like indicators.');
+if ((await workflowControl.locator('.material-workflow-control__indicator').count()) !== 2) {
+  throw new Error('Workflow should expose two explicit state dots.');
 }
 
 const surfaceFooter = materialPanel.locator('.material-palette-footer');
@@ -840,60 +793,111 @@ await surfaceFooter.getByRole('button', { name: '复制参数', exact: true }).c
 if ((await materialPanel.getAttribute('data-material-surface-clipboard')) !== 'ready') {
   throw new Error('Surface copy should populate structured tool clipboard.');
 }
-await page.screenshot({ path: outDir + '/material-palette-28-surface-streamlined.png' });
+await page.screenshot({ path: outDir + '/material-palette-28-surface-parameters.png' });
 
 await schemeSelector.click();
-await page.waitForTimeout(220);
-if ((await materialPanel.getAttribute('data-material-page')) !== 'preset-library') {
-  throw new Error('Scheme selector should open the material preset library page.');
-}
-for (const filter of ['全部', '木头', '瓦片', '墙面', '自定义']) {
-  if ((await materialPanel.getByRole('button', { name: filter, exact: true }).count()) !== 1) {
-    throw new Error('Material preset filter missing: ' + filter);
-  }
-}
-for (const preset of ['应用方案 木头 · 深胡桃', '应用方案 瓦片 · 青灰瓦', '应用方案 墙面 · 素灰墙']) {
-  if ((await materialPanel.getByRole('button', { name: preset, exact: true }).count()) !== 1) {
-    throw new Error('Builtin material preset missing: ' + preset);
-  }
-}
-await page.screenshot({ path: outDir + '/material-palette-29-preset-library.png' });
-
-await materialPanel.getByRole('button', { name: '应用方案 木头 · 深胡桃', exact: true }).click();
+await page.waitForSelector('.material-scheme-workspace');
 await page.waitForTimeout(220);
 if ((await materialPanel.getAttribute('data-material-page')) !== 'surface'
-  || (await materialPanel.getAttribute('data-material-scheme-type')) !== '木头'
-  || (await materialPanel.getAttribute('data-material-scheme-name')) !== '深胡桃') {
-  throw new Error('Applying a builtin preset should return to Surface and update current scheme.');
+  || (await materialPanel.getAttribute('data-material-scheme-workspace')) !== 'open') {
+  throw new Error('Opening the Scheme Workspace must keep the left Surface parameter page mounted.');
 }
+
+const schemeWorkspace = page.locator('.material-scheme-workspace');
+const schemeWorkspaceBox = await schemeWorkspace.boundingBox();
+const materialToolbar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
+const materialToolbarBox = await materialToolbar.boundingBox();
+if (!schemeWorkspaceBox || !materialToolbarBox) {
+  throw new Error('Scheme Workspace and Material toolbar geometry must be measurable.');
+}
+const workspaceCenter = schemeWorkspaceBox.x + schemeWorkspaceBox.width / 2;
+if (Math.abs(workspaceCenter - 960) > 4) {
+  throw new Error('Scheme Workspace should stay centered above the Material toolbar. center=' + workspaceCenter);
+}
+if (schemeWorkspaceBox.y + schemeWorkspaceBox.height > materialToolbarBox.y - 6) {
+  throw new Error('Scheme Workspace must sit above the bottom Material toolbar without overlap.');
+}
+
+if ((await schemeWorkspace.getAttribute('data-material-scheme-workspace-page')) !== 'system') {
+  throw new Error('Scheme Workspace should enter on System Schemes.');
+}
+for (const tab of ['系统方案', '我的方案']) {
+  if ((await schemeWorkspace.getByRole('button', { name: tab, exact: true }).count()) !== 1) {
+    throw new Error('Scheme Workspace page tab missing: ' + tab);
+  }
+}
+for (const category of ['全部', '木头', '瓦片', '墙面']) {
+  if ((await schemeWorkspace.getByRole('button', { name: category, exact: true }).count()) !== 1) {
+    throw new Error('System Scheme category missing: ' + category);
+  }
+}
+if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 6) {
+  throw new Error('System Scheme first page should use the 2x3 Workspace card pool.');
+}
+if ((await schemeWorkspace.locator('.material-scheme-workspace__pager button').count()) !== 2) {
+  throw new Error('Nine system presets should produce a two-page Workspace pager.');
+}
+await page.screenshot({ path: outDir + '/material-palette-29-scheme-workspace-system.png' });
+
+await schemeWorkspace.getByRole('button', { name: '材质方案第 2 页', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 3) {
+  throw new Error('System Scheme second page should expose the remaining three presets.');
+}
+await schemeWorkspace.getByRole('button', { name: '木头', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 3) {
+  throw new Error('Wood category should expose three system schemes.');
+}
+
+await schemeWorkspace.getByRole('button', { name: '应用材质方案 木头 · 深胡桃', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '木头'
+  || (await materialPanel.getAttribute('data-material-scheme-name')) !== '深胡桃') {
+  throw new Error('Applying a central Workspace scheme should live-update the left Surface panel.');
+}
+if ((await schemeWorkspace.count()) !== 1) {
+  throw new Error('Applying a scheme should keep the central Workspace open for comparison.');
+}
+await page.screenshot({ path: outDir + '/material-palette-30-scheme-live-apply.png' });
 
 await materialPanel.getByRole('button', { name: '光滑度增大', exact: true }).click();
 await page.waitForTimeout(80);
 if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '自定义'
   || (await materialPanel.getAttribute('data-material-scheme-name')) !== '未保存') {
-  throw new Error('Manual numeric edits must change the current scheme to Custom.');
+  throw new Error('Manual edits should mark the applied preset as Custom / Unsaved.');
 }
-await page.screenshot({ path: outDir + '/material-palette-30-custom-after-edit.png' });
 
-await materialPanel.getByRole('button', { name: '打开材质方案库', exact: true }).click();
-await page.waitForTimeout(220);
-await materialPanel.getByRole('button', { name: '保存当前为自定义方案', exact: true }).click();
+await schemeWorkspace.getByRole('button', { name: '我的方案', exact: true }).click();
 await page.waitForTimeout(100);
-if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '自定义'
-  || (await materialPanel.getAttribute('data-material-scheme-name')) !== '我的配色 01') {
-  throw new Error('Saving current parameters should create and select a named custom preset.');
+if ((await schemeWorkspace.getAttribute('data-material-scheme-workspace-page')) !== 'mine') {
+  throw new Error('Scheme Workspace should switch to My Schemes.');
 }
-if ((await materialPanel.getByRole('button', { name: '应用方案 自定义 · 我的配色 01', exact: true }).count()) !== 1
-  || (await materialPanel.getByRole('button', { name: '删除自定义方案 我的配色 01', exact: true }).count()) !== 1) {
-  throw new Error('Saved custom preset should be visible and deletable in the library.');
+if ((await schemeWorkspace.getByText('还没有保存的自定义方案', { exact: true }).count()) !== 1) {
+  throw new Error('My Schemes should show an empty state before the first save.');
 }
-await materialPanel.getByRole('button', { name: '删除自定义方案 我的配色 01', exact: true }).click();
+await schemeWorkspace.getByRole('button', { name: /保存当前/ }).click();
+await page.waitForTimeout(100);
+if ((await materialPanel.getAttribute('data-material-scheme-name')) !== '我的配色 01') {
+  throw new Error('Saving current parameters should name and select the custom scheme.');
+}
+if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 自定义 · 我的配色 01', exact: true }).count()) !== 1) {
+  throw new Error('Saved custom scheme should appear in My Schemes immediately.');
+}
+await page.screenshot({ path: outDir + '/material-palette-31-scheme-workspace-mine.png' });
+
+await schemeWorkspace.getByRole('button', { name: '删除自定义方案 我的配色 01', exact: true }).click();
 await page.waitForTimeout(80);
-if (await materialPanel.getByRole('button', { name: '应用方案 自定义 · 我的配色 01', exact: true }).count()) {
-  throw new Error('Deleted custom preset should leave the library.');
+if (await schemeWorkspace.getByRole('button', { name: '应用材质方案 自定义 · 我的配色 01', exact: true }).count()) {
+  throw new Error('Deleted custom scheme should disappear from My Schemes.');
 }
-await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
-await page.waitForTimeout(220);
+
+await schemeWorkspace.getByRole('button', { name: '关闭材质方案工作区', exact: true }).click();
+await page.waitForSelector('.material-scheme-workspace', { state: 'detached' });
+await page.waitForTimeout(80);
+if ((await materialPanel.getAttribute('data-material-page')) !== 'surface') {
+  throw new Error('Closing the central Scheme Workspace should leave Surface parameters open.');
+}
 
 await materialPanel.getByRole('button', { name: '高光', exact: true }).click();
 await page.waitForTimeout(100);
@@ -903,10 +907,19 @@ if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular')
 if (await materialPanel.locator('[data-material-field="Metallic"]').count()) {
   throw new Error('Metallic should hide in Specular workflow.');
 }
-if (await materialPanel.getByRole('button', { name: '调整高光', exact: true }).isDisabled()) {
-  throw new Error('Specular Color Strip item should enable in Specular workflow.');
+const specularItems = materialPanel.locator('.material-color-strip__item');
+if ((await specularItems.count()) !== 4) {
+  throw new Error('Specular workflow should expand the Color Strip to four colors.');
 }
-
+const specularLabels = ['主色', '发光', '夜间发光', '高光'];
+for (let index = 0; index < specularLabels.length; index += 1) {
+  if ((await specularItems.nth(index).getByText(specularLabels[index], { exact: true }).count()) !== 1) {
+    throw new Error('Specular Color Strip order mismatch at ' + index + ': expected ' + specularLabels[index]);
+  }
+}
+if ((await materialPanel.locator('[data-material-field="SpecularColor"]').count()) !== 1) {
+  throw new Error('SpecularColor should appear only in Specular workflow and stay last.');
+}
 await materialPanel.getByRole('button', { name: '调整主色', exact: true }).click();
 await page.waitForTimeout(220);
 const baseEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="BaseColor"]');
@@ -936,7 +949,7 @@ await colorFooter.getByRole('button', { name: '复制颜色', exact: true }).cli
 if ((await materialPanel.getAttribute('data-material-color-clipboard')) !== 'ready') {
   throw new Error('Color copy should populate structured color clipboard.');
 }
-await page.screenshot({ path: outDir + '/material-palette-31-base-color-hsv.png' });
+await page.screenshot({ path: outDir + '/material-palette-32-base-color-hsv.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -947,7 +960,7 @@ if ((await emissionEditor.getAttribute('data-color-editor-hdr')) !== 'true'
   || (await emissionEditor.locator('[data-color-adapter="EmissionColor.Intensity"]').count()) !== 1) {
   throw new Error('EmissionColor must use HDR editor with intensity.');
 }
-await page.screenshot({ path: outDir + '/material-palette-32-emission-hdr-rgb.png' });
+await page.screenshot({ path: outDir + '/material-palette-33-emission-hdr-rgb.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -958,7 +971,7 @@ if ((await nightEditor.getAttribute('data-color-editor-hdr')) !== 'true'
   || (await nightEditor.locator('[data-color-adapter="NightEmissionColor.Intensity"]').count()) !== 1) {
   throw new Error('NightEmissionColor must use HDR editor with intensity.');
 }
-await page.screenshot({ path: outDir + '/material-palette-33-night-emission-hdr.png' });
+await page.screenshot({ path: outDir + '/material-palette-34-night-emission-hdr.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -967,6 +980,6 @@ await materialBar.getByRole('button', { name: '完成配色', exact: true }).cli
 await page.waitForSelector('.material-palette-prototype', { state: 'detached' });
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
 await page.waitForTimeout(180);
-await page.screenshot({ path: outDir + '/material-palette-34-return-gameplay.png' });
+await page.screenshot({ path: outDir + '/material-palette-35-return-gameplay.png' });
 
 await browser.close();

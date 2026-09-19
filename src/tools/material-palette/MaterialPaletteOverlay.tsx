@@ -11,20 +11,18 @@ import {
   Copy,
   Palette,
   RotateCcw,
-  Save,
-  Trash2,
 } from 'lucide-react';
 import { RuntimeParameterRow, TextInput } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
-import { MOTION_MS, useKeyedTransition, type MotionPhase } from '../../ui/motion';
+import { MOTION_MS, useKeyedTransition, usePresence, type MotionPhase } from '../../ui/motion';
+import { MaterialSchemeWorkspace, type MaterialSchemeWorkspacePreset } from './MaterialSchemeWorkspace';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 
 type MaterialWorkflow = '金属' | '高光';
 type MaterialColorTarget = 'BaseColor' | 'EmissionColor' | 'NightEmissionColor' | 'SpecularColor';
-type MaterialPageKey = 'surface' | 'preset-library' | `color:${MaterialColorTarget}`;
+type MaterialPageKey = 'surface' | `color:${MaterialColorTarget}`;
 type ColorNumericMode = 'RGB' | 'HSV';
 type MaterialSchemeType = '木头' | '瓦片' | '墙面' | '自定义';
-type MaterialPresetFilter = '全部' | MaterialSchemeType;
 
 interface MaterialSurfaceDraft {
   baseColor: string;
@@ -102,44 +100,63 @@ const BUILTIN_PRESETS: MaterialPreset[] = [
     type: '木头',
     name: '深胡桃',
     source: 'builtin',
-    draft: {
-      ...DEFAULT_SURFACE_DRAFT,
-      baseColor: '#6f5139',
-      specularColor: '#3a3029',
-      smoothness: 0.34,
-      textureTiling: 1.4,
-      textureBlendSharpness: 1.8,
-    },
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#6f5139', specularColor: '#3a3029', smoothness: 0.34, textureTiling: 1.4, textureBlendSharpness: 1.8 },
+  },
+  {
+    id: 'wood-fir',
+    type: '木头',
+    name: '旧杉木',
+    source: 'builtin',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#8b6a4f', specularColor: '#392e26', smoothness: 0.26, occlusion: 0.94, textureTiling: 1.1, textureBlendSharpness: 1.5 },
+  },
+  {
+    id: 'wood-lacquer',
+    type: '木头',
+    name: '深漆木',
+    source: 'builtin',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#4c332c', specularColor: '#2d2320', smoothness: 0.58, textureTiling: 1.0, textureBlendSharpness: 1.4 },
   },
   {
     id: 'tile-gray',
     type: '瓦片',
     name: '青灰瓦',
     source: 'builtin',
-    draft: {
-      ...DEFAULT_SURFACE_DRAFT,
-      baseColor: '#566267',
-      specularColor: '#202628',
-      smoothness: 0.48,
-      occlusion: 0.92,
-      textureTiling: 1.8,
-      textureBlendSharpness: 2.2,
-    },
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#566267', specularColor: '#202628', smoothness: 0.48, occlusion: 0.92, textureTiling: 1.8, textureBlendSharpness: 2.2 },
+  },
+  {
+    id: 'tile-black',
+    type: '瓦片',
+    name: '乌瓦',
+    source: 'builtin',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#343a3b', specularColor: '#181b1c', smoothness: 0.43, occlusion: 0.90, textureTiling: 2.0, textureBlendSharpness: 2.4 },
+  },
+  {
+    id: 'tile-glazed',
+    type: '瓦片',
+    name: '黄绿琉璃',
+    source: 'builtin',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#787443', specularColor: '#2a2a1d', smoothness: 0.66, textureTiling: 1.7, textureBlendSharpness: 2.0 },
   },
   {
     id: 'wall-plaster',
     type: '墙面',
     name: '素灰墙',
     source: 'builtin',
-    draft: {
-      ...DEFAULT_SURFACE_DRAFT,
-      baseColor: '#d5d0c5',
-      specularColor: '#10100f',
-      smoothness: 0.22,
-      occlusion: 0.96,
-      textureTiling: 0.8,
-      textureBlendSharpness: 1.2,
-    },
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#d5d0c5', specularColor: '#10100f', smoothness: 0.22, occlusion: 0.96, textureTiling: 0.8, textureBlendSharpness: 1.2 },
+  },
+  {
+    id: 'wall-white',
+    type: '墙面',
+    name: '白粉墙',
+    source: 'builtin',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#e8e4da', specularColor: '#11110f', smoothness: 0.18, occlusion: 0.98, textureTiling: 0.7, textureBlendSharpness: 1.1 },
+  },
+  {
+    id: 'wall-earth',
+    type: '墙面',
+    name: '夯土墙',
+    source: 'builtin',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#aa8464', specularColor: '#2a211c', smoothness: 0.12, occlusion: 0.93, textureTiling: 0.9, textureBlendSharpness: 1.3 },
   },
 ];
 
@@ -419,17 +436,13 @@ function SurfacePage({
       <SchemeSelector scheme={scheme} onOpen={onOpenPresetLibrary} />
 
       <LeftContextSection title="颜色" className="material-palette-section material-palette-colors">
-        <div className="material-color-strip">
+        <div className={'material-color-strip ' + (specularWorkflow ? 'has-specular' : 'is-metallic')}>
           <ColorCard label="主色" value={draft.baseColor} field="BaseColor" onOpen={onOpenColor} />
-          <ColorCard
-            label="高光"
-            value={draft.specularColor}
-            field="SpecularColor"
-            disabled={!specularWorkflow}
-            onOpen={onOpenColor}
-          />
           <ColorCard label="发光" value={draft.emissionColor} hdr field="EmissionColor" onOpen={onOpenColor} />
           <ColorCard label="夜间发光" value={draft.nightEmissionColor} hdr field="NightEmissionColor" onOpen={onOpenColor} />
+          {specularWorkflow && (
+            <ColorCard label="高光" value={draft.specularColor} field="SpecularColor" onOpen={onOpenColor} />
+          )}
         </div>
       </LeftContextSection>
 
@@ -505,94 +518,6 @@ function SurfacePage({
         </div>
       </div>
     </div>
-  );
-}
-
-function PresetLibraryPage({
-  currentScheme,
-  category,
-  presets,
-  onCategoryChange,
-  onApply,
-  onDelete,
-}: {
-  currentScheme: MaterialSchemeState;
-  category: MaterialPresetFilter;
-  presets: MaterialPreset[];
-  onCategoryChange: (category: MaterialPresetFilter) => void;
-  onApply: (preset: MaterialPreset) => void;
-  onDelete: (preset: MaterialPreset) => void;
-}) {
-  const filters: MaterialPresetFilter[] = ['全部', '木头', '瓦片', '墙面', '自定义'];
-  const visible = category === '全部' ? presets : presets.filter((preset) => preset.type === category);
-
-  return (
-    <div className="material-preset-library">
-      <div className="material-preset-filter" role="group" aria-label="材质方案分类">
-        {filters.map((item) => (
-          <button
-            key={item}
-            type="button"
-            className={item === category ? 'is-active' : ''}
-            aria-pressed={item === category}
-            onClick={() => onCategoryChange(item)}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-
-      <div className="material-preset-grid">
-        {visible.map((preset) => {
-          const selected = currentScheme.id === preset.id;
-          return (
-            <article key={preset.id} className={'material-preset-card ' + (selected ? 'is-selected' : '')}>
-              <button
-                type="button"
-                className="material-preset-card__apply"
-                aria-label={`应用方案 ${preset.type} · ${preset.name}`}
-                onClick={() => onApply(preset)}
-              >
-                <span className="material-preset-card__type">{preset.type}</span>
-                <b>{preset.name}</b>
-                <span className="material-preset-card__swatches" aria-hidden="true">
-                  {[preset.draft.baseColor, preset.draft.specularColor, preset.draft.emissionColor, preset.draft.nightEmissionColor]
-                    .map((color, index) => <i key={index} style={{ background: color }} />)}
-                </span>
-              </button>
-              {preset.source === 'custom' && (
-                <button
-                  type="button"
-                  className="material-preset-card__delete"
-                  aria-label={`删除自定义方案 ${preset.name}`}
-                  onClick={() => onDelete(preset)}
-                >
-                  <Trash2 aria-hidden="true" />
-                </button>
-              )}
-            </article>
-          );
-        })}
-      </div>
-
-      {visible.length === 0 && <p className="material-preset-library__empty">还没有保存的自定义方案。</p>}
-    </div>
-  );
-}
-
-function PresetLibraryFooter({
-  onSave,
-}: {
-  onSave: () => void;
-}) {
-  return (
-    <>
-      <span />
-      <button className="material-footer-action is-primary" type="button" onClick={onSave} aria-label="保存当前为自定义方案">
-        <Save aria-hidden="true" />
-        <span>保存当前为自定义</span>
-      </button>
-    </>
   );
 }
 
@@ -773,7 +698,7 @@ export function MaterialPaletteOverlay({
   const [surfaceClipboard, setSurfaceClipboard] = useState<MaterialSurfaceDraft | null>(null);
   const [colorClipboard, setColorClipboard] = useState<ColorClipboardPayload | null>(null);
   const [customPresets, setCustomPresets] = useState<MaterialPreset[]>([]);
-  const [presetFilter, setPresetFilter] = useState<MaterialPresetFilter>('全部');
+  const [schemeWorkspaceOpen, setSchemeWorkspaceOpen] = useState(false);
   const [currentScheme, setCurrentScheme] = useState<MaterialSchemeState>({
     id: INITIAL_PRESET.id,
     type: INITIAL_PRESET.type,
@@ -782,11 +707,11 @@ export function MaterialPaletteOverlay({
   });
 
   const pageTransition = useKeyedTransition<MaterialPageKey>(requestedPage, MOTION_MS.surface);
+  const schemeWorkspacePresence = usePresence(schemeWorkspaceOpen);
   const pageDirection = requestedPage === 'surface' ? 'back' : 'forward';
   const activeColorTarget = pageTarget(requestedPage);
   const currentDefinition = activeColorTarget ? COLOR_TARGETS[activeColorTarget] : null;
   const surfaceModified = !draftsEqual(draft, DEFAULT_SURFACE_DRAFT);
-  const allPresets = [...BUILTIN_PRESETS, ...customPresets];
 
   function markCustom() {
     setCurrentScheme((current) => (
@@ -880,11 +805,13 @@ export function MaterialPaletteOverlay({
       name: preset.name,
       source: preset.source === 'custom' ? 'saved' : 'builtin',
     });
-    setRequestedPage('surface');
   }
 
   function saveCurrentAsCustom() {
-    const index = customPresets.length + 1;
+    const index = customPresets.reduce((highest, preset) => {
+      const parsed = Number(preset.id.replace('custom-', ''));
+      return Number.isFinite(parsed) ? Math.max(highest, parsed) : highest;
+    }, 0) + 1;
     const name = `我的配色 ${String(index).padStart(2, '0')}`;
     const preset: MaterialPreset = {
       id: `custom-${index}`,
@@ -895,7 +822,6 @@ export function MaterialPaletteOverlay({
     };
     setCustomPresets((current) => [...current, preset]);
     setCurrentScheme({ id: preset.id, type: '自定义', name, source: 'saved' });
-    setPresetFilter('自定义');
   }
 
   function deleteCustomPreset(preset: MaterialPreset) {
@@ -904,6 +830,23 @@ export function MaterialPaletteOverlay({
       setCurrentScheme({ type: '自定义', name: '未保存', source: 'custom' });
     }
   }
+
+  function toWorkspacePreset(preset: MaterialPreset): MaterialSchemeWorkspacePreset {
+    return {
+      id: preset.id,
+      type: preset.type,
+      name: preset.name,
+      source: preset.source,
+      selected: currentScheme.id === preset.id,
+      colors: [preset.draft.baseColor, preset.draft.emissionColor, preset.draft.nightEmissionColor, preset.draft.specularColor],
+      workflow: preset.draft.workflow,
+      smoothness: preset.draft.smoothness,
+      textureTiling: preset.draft.textureTiling,
+    };
+  }
+
+  const systemWorkspacePresets = BUILTIN_PRESETS.map(toWorkspacePreset);
+  const customWorkspacePresets = customPresets.map(toWorkspacePreset);
 
   function renderPage(page: MaterialPageKey, phase: MotionPhase, outgoing = false) {
     const target = pageTarget(page);
@@ -922,23 +865,11 @@ export function MaterialPaletteOverlay({
             draft={draft}
             scheme={currentScheme}
             onUpdate={update}
-            onOpenColor={(target) => setRequestedPage(`color:${target}`)}
-            onOpenPresetLibrary={() => setRequestedPage('preset-library')}
-          />
-        </div>
-      );
-    }
-
-    if (page === 'preset-library') {
-      return (
-        <div className={pageClass} key={page}>
-          <PresetLibraryPage
-            currentScheme={currentScheme}
-            category={presetFilter}
-            presets={allPresets}
-            onCategoryChange={setPresetFilter}
-            onApply={applyPreset}
-            onDelete={deleteCustomPreset}
+            onOpenColor={(target) => {
+              setSchemeWorkspaceOpen(false);
+              setRequestedPage(`color:${target}`);
+            }}
+            onOpenPresetLibrary={() => setSchemeWorkspaceOpen((open) => !open)}
           />
         </div>
       );
@@ -961,9 +892,7 @@ export function MaterialPaletteOverlay({
     );
   }
 
-  const footer = requestedPage === 'preset-library' ? (
-    <PresetLibraryFooter onSave={saveCurrentAsCustom} />
-  ) : activeColorTarget ? (
+  const footer = activeColorTarget ? (
     <MaterialClipboardFooter
       resetLabel="恢复默认"
       resetDisabled={isColorDefault(activeColorTarget)}
@@ -987,24 +916,19 @@ export function MaterialPaletteOverlay({
     />
   );
 
-  const headerTitle = requestedPage === 'preset-library'
-    ? '材质方案'
-    : currentDefinition?.label ?? '表面';
-  const headerSubtitle = requestedPage === 'preset-library'
-    ? '系统预设与我的收藏'
-    : currentDefinition
-      ? (currentDefinition.hdr ? 'HDR 颜色' : '颜色')
-      : '当前材质槽';
+  const headerTitle = currentDefinition?.label ?? '表面';
+  const headerSubtitle = currentDefinition ? (currentDefinition.hdr ? 'HDR 颜色' : '颜色') : '当前材质槽';
 
   return (
+    <>
     <PlacementContextPanel
-      ariaLabel={requestedPage === 'preset-library' ? '材质方案库' : activeColorTarget ? `调整${currentDefinition?.label ?? '颜色'}` : '配色工具表面模式参数'}
+      ariaLabel={activeColorTarget ? `调整${currentDefinition?.label ?? '颜色'}` : '配色工具表面模式参数'}
       icon={Palette}
       title={headerTitle}
       subtitle={headerSubtitle}
       closeLabel="退出配色工具"
       backLabel="返回表面参数"
-      onBack={requestedPage !== 'surface' ? () => setRequestedPage('surface') : undefined}
+      onBack={activeColorTarget ? () => setRequestedPage('surface') : undefined}
       footerClassName="material-palette-footer"
       footer={footer}
       className={'material-palette-prototype motion-left-surface is-' + motionPhase}
@@ -1012,13 +936,14 @@ export function MaterialPaletteOverlay({
       onClose={onClose}
       dataAttributes={{
         'data-material-mode': 'surface',
-        'data-material-page': requestedPage === 'surface' ? 'surface' : requestedPage === 'preset-library' ? 'preset-library' : 'color-editor',
+        'data-material-page': requestedPage === 'surface' ? 'surface' : 'color-editor',
         'data-material-color-target': activeColorTarget ?? undefined,
         'data-material-workflow': draft.workflow === '高光' ? 'specular' : 'metallic',
         'data-material-scheme-type': currentScheme.type,
         'data-material-scheme-name': currentScheme.name,
         'data-material-surface-clipboard': surfaceClipboard ? 'ready' : 'empty',
         'data-material-color-clipboard': colorClipboard ? 'ready' : 'empty',
+        'data-material-scheme-workspace': schemeWorkspaceOpen ? 'open' : 'closed',
       }}
     >
       <div className="material-palette-page-host">
@@ -1026,5 +951,24 @@ export function MaterialPaletteOverlay({
         {renderPage(pageTransition.active, pageTransition.activePhase)}
       </div>
     </PlacementContextPanel>
+
+    {schemeWorkspacePresence.mounted && (
+      <MaterialSchemeWorkspace
+        motionPhase={schemeWorkspacePresence.phase}
+        systemPresets={systemWorkspacePresets}
+        customPresets={customWorkspacePresets}
+        onClose={() => setSchemeWorkspaceOpen(false)}
+        onApply={(id) => {
+          const preset = [...BUILTIN_PRESETS, ...customPresets].find((entry) => entry.id === id);
+          if (preset) applyPreset(preset);
+        }}
+        onSaveCurrent={saveCurrentAsCustom}
+        onDelete={(id) => {
+          const preset = customPresets.find((entry) => entry.id === id);
+          if (preset) deleteCustomPreset(preset);
+        }}
+      />
+    )}
+    </>
   );
 }

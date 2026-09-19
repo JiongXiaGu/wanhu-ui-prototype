@@ -491,24 +491,31 @@ Workflow Inline Choice
 - AlphaClipThreshold；
 - TextureSetDefinition / MappingSpace / Offset / Rotation。
 
-Material Left Host Page：
+Material UI：
 
 ```text
-SurfacePage
-PresetLibraryPage
-ColorEditorPage
+Left Host
+├ SurfacePage
+└ ColorEditorPage
+
+Center Work Surface
+└ MaterialSchemeWorkspace
+
+Bottom
+└ MaterialToolActionBar
 ```
 
 约束：
 
-- 三页共用同一个 Left Context Shell，不建立第二个 Window；
+- Surface / ColorEditor 共用 Left Context Shell；方案浏览使用 Material Tool 内部的中央 Work Surface，不建立第二个业务状态；
 - Scheme Selector 绑定 CurrentScheme；
 - 手动 Edit / Paste 统一把 CurrentScheme 标记为 Custom / Unsaved；
 - Apply Preset 恢复对应 SchemeId / Type / Name；
 - Preset Library 的用户自定义项正式 Unity 应持久化到玩家数据；
-- Scheme Navigation 是单行行式控件：Label + Type/Name + Chevron；不使用 Card / Tag Pill / 四色缩略；
+- Scheme Navigation 是左侧参数页的轻量入口；点击后打开中央 MaterialSchemeWorkspace；
+- MaterialSchemeWorkspace 使用显式 2×3 Flex Rows + Pager，位于 Bottom ToolActionBar 上方；
 - Color Strip 使用一个父 VisualElement + 四个等宽 Item；父节点拥有共享边界，Item 不拥有独立完整边框；
-- Metallic 下 Specular Color Card 保留 Grid Slot 但不可编辑，Specular 下启用；
+- Metallic 下不挂载 SpecularColor；Specular 下挂载在 Color Strip 最后一位；
 - Specular Workflow 下 Metallic Field 直接隐藏但 Controller 值不销毁；
 - PBR / Texture 统一挂载在一个 MaterialProperties Section 内，只使用 Spacing Group；
 - Workflow 不使用 Segmented Track，使用两个无容器 Choice + 显式状态点；
