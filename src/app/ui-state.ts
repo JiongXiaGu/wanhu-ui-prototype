@@ -3,7 +3,7 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair';
+export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'material-palette';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
 export type TreePlacementMode = 'brush' | 'single';
@@ -12,6 +12,7 @@ export type RoadDrawMode = 'smart-curve' | 'curve' | 'straight';
 export type CityWallConstructionMode = 'range' | 'fixed-width';
 export type CityWallFacingSide = 'left' | 'right';
 export type CityWallGatePlacementMode = 'free' | 'wall-connected';
+export type MaterialPaletteMode = 'surface' | 'lighting' | 'palette';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
 export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 0 | 1 | 2 | 4;
@@ -100,6 +101,7 @@ export interface GameplayUiState {
   cityWallTransitionStairRotation: number;
   cityWallTransitionStairReversed: boolean;
   cityWallTransitionStairClearance: boolean;
+  materialPaletteMode: MaterialPaletteMode;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
@@ -151,6 +153,7 @@ export const initialGameplayUiState: GameplayUiState = {
   cityWallTransitionStairRotation: 0,
   cityWallTransitionStairReversed: false,
   cityWallTransitionStairClearance: true,
+  materialPaletteMode: 'surface',
   adjustmentMode: 'position',
   roadDrawMode: 'smart-curve',
   gridSnap: true,
@@ -171,6 +174,8 @@ export type GameplayUiAction =
   | { type: 'ENTER_CITY_WALL_ACCESS_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_CITY_WALL_TRANSITION_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_TERRAIN_EDIT' }
+  | { type: 'ENTER_MATERIAL_PALETTE' }
+  | { type: 'SET_MATERIAL_PALETTE_MODE'; mode: MaterialPaletteMode }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
   | { type: 'SET_MANAGEMENT'; management: ManagementView }
@@ -388,6 +393,24 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canUndo: false,
         canRedo: false,
       };
+    case 'ENTER_MATERIAL_PALETTE':
+      return {
+        ...state,
+        toolOrigin: captureToolOrigin(state),
+        workspace: 'none',
+        tool: 'material-palette',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        materialPaletteMode: 'surface',
+        canUndo: false,
+        canRedo: false,
+      };
+    case 'SET_MATERIAL_PALETTE_MODE':
+      return action.mode === 'surface'
+        ? { ...state, materialPaletteMode: action.mode }
+        : state;
     case 'ENTER_TERRAIN_EDIT':
       return {
         ...state,

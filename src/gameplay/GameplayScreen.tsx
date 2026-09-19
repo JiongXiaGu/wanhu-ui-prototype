@@ -17,6 +17,8 @@ import { CityWallAccessStairOverlay } from '../tools/city-wall-access-stair/City
 import { CityWallAccessStairDock } from '../tools/city-wall-access-stair/CityWallAccessStairDock';
 import { CityWallTransitionStairOverlay } from '../tools/city-wall-transition-stair/CityWallTransitionStairOverlay';
 import { CityWallTransitionStairDock } from '../tools/city-wall-transition-stair/CityWallTransitionStairDock';
+import { MaterialPaletteOverlay } from '../tools/material-palette/MaterialPaletteOverlay';
+import { MaterialPaletteDock } from '../tools/material-palette/MaterialPaletteDock';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -192,6 +194,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleCityWallTransitionStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
+            else if (id === 'palette') dispatch({ type: 'ENTER_MATERIAL_PALETTE' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
           }}
         />
@@ -339,6 +342,17 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         </>
       )}
 
+      {toolPresence.mounted && renderedTool === 'material-palette' && (
+        <>
+          <MaterialPaletteOverlay
+            motionPhase={toolPresence.phase}
+            onClose={exitTool}
+            onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+          />
+          <MaterialPaletteDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+        </>
+      )}
+
       {toolPresence.mounted && renderedTool === 'terrain-edit' && (
         <TerrainEditTool
           state={state}
@@ -352,7 +366,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <TreePlacementTool state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onExit={exitTool} />
       )}
 
-      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && (
+      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'material-palette' && (
         <GameplayOperationHints
           tool={state.tool}
           adjustmentMode={state.adjustmentMode}

@@ -9,7 +9,8 @@
 .gameplay-screen .city-wall-construction-toolbar-cluster,
 .gameplay-screen .city-wall-gate-toolbar-cluster,
 .gameplay-screen .city-wall-access-stair-toolbar-cluster,
-.gameplay-screen .city-wall-transition-stair-toolbar-cluster{
+.gameplay-screen .city-wall-transition-stair-toolbar-cluster,
+.gameplay-screen .material-palette-toolbar-cluster{
   left:50%;
   transform:translateX(-50%);
   z-index:24;

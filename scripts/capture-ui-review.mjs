@@ -669,4 +669,126 @@ await page.waitForSelector('.workspace[data-design-category="city-wall"]');
 await page.waitForTimeout(180);
 await page.screenshot({ path: outDir + '/city-wall-transition-stair-27-return-workspace.png' });
 
+
+
+await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
+const worldUtilityForMaterial = page.locator('.context-utility-toolbar[data-utility-context="world"]');
+await worldUtilityForMaterial.getByRole('button', { name: '配色工具', exact: true }).click();
+await page.waitForSelector('.material-palette-prototype');
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="material-palette"]');
+await page.waitForTimeout(260);
+
+const materialPanel = page.locator('.material-palette-prototype');
+const materialPanelBox = await materialPanel.boundingBox();
+if (!materialPanelBox || materialPanelBox.width < 392 || materialPanelBox.width > 408) {
+  throw new Error('Material palette panel should stay near 400px wide. width=' + materialPanelBox?.width);
+}
+if (materialPanelBox.height > 700) {
+  throw new Error('Material palette surface panel should fit the 1080p left context safe region. height=' + materialPanelBox.height);
+}
+for (const section of ['颜色', '表面', '贴图']) {
+  if ((await materialPanel.getByText(section, { exact: true }).count()) !== 1) {
+    throw new Error('Material palette surface section missing: ' + section);
+  }
+}
+for (const field of [
+  'BaseColor',
+  'EmissionColor',
+  'NightEmissionColor',
+  'SpecularColor',
+  'Flags.SpecularSetup',
+  'Metallic',
+  'Smoothness',
+  'Occlusion',
+  'Flags.SpecularHighlightsOff',
+  'Flags.AlphaClip',
+  'TextureTiling',
+  'TextureBlendSharpness',
+]) {
+  if ((await materialPanel.locator('[data-material-field="' + field + '"]').count()) !== 1) {
+    throw new Error('Material palette field mapping missing: ' + field);
+  }
+}
+for (const retired of ['贴图组', '映射空间', '映射偏移', '贴图旋转']) {
+  if (await materialPanel.getByText(retired, { exact: true }).count()) {
+    throw new Error('Material palette should not expose retired complex texture field: ' + retired);
+  }
+}
+if ((await materialPanel.locator('input[type="color"]').count()) !== 4) {
+  throw new Error('Material palette surface mode should expose four color controls.');
+}
+if (!(await materialPanel.locator('[data-material-field="SpecularColor"] input[type="color"]').isDisabled())) {
+  throw new Error('Specular color should remain visible but inactive in Metallic workflow.');
+}
+if ((await materialPanel.locator('[data-material-field="AlphaClipThreshold"]').count()) !== 0) {
+  throw new Error('Alpha clip threshold should be hidden while AlphaClip flag is off.');
+}
+
+const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
+for (const mode of ['表面模式', '灯光模式', '色板模式']) {
+  if ((await materialBar.getByRole('button', { name: mode, exact: true }).count()) !== 1) {
+    throw new Error('Material palette mode missing: ' + mode);
+  }
+}
+if (!(await materialBar.getByRole('button', { name: '灯光模式', exact: true }).isDisabled())) {
+  throw new Error('Lighting mode should stay disabled until its panel is implemented.');
+}
+if (!(await materialBar.getByRole('button', { name: '色板模式', exact: true }).isDisabled())) {
+  throw new Error('Palette mode should stay disabled until its panel is implemented.');
+}
+for (const action of ['完成配色', '取消配色']) {
+  if ((await materialBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('Material palette commit action missing: ' + action);
+  }
+}
+const materialUtility = page.locator('.context-utility-toolbar[data-utility-context="material-palette"]');
+if ((await materialUtility.getByRole('button').count()) !== 2) {
+  throw new Error('Material palette first slice should keep utility minimal: Undo / Redo only.');
+}
+for (const action of ['撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
+  if ((await materialUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('Material palette utility missing: ' + action);
+  }
+}
+if (await page.locator('.gameplay-operation-hints').count()) {
+  throw new Error('Material palette should not show unrelated gameplay operation hints.');
+}
+await page.screenshot({ path: outDir + '/material-palette-28-surface-metallic.png' });
+
+await materialPanel.locator('[data-material-field="BaseColor"] input[type="color"]').fill('#c7aa78');
+if ((await materialPanel.locator('[data-material-field="BaseColor"] input[type="color"]').inputValue()).toLowerCase() !== '#c7aa78') {
+  throw new Error('BaseColor UI should update the surface draft.');
+}
+await materialPanel.getByRole('button', { name: '高光', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular') {
+  throw new Error('Specular workflow should map to Flags.SpecularSetup.');
+}
+if (await materialPanel.locator('[data-material-field="SpecularColor"] input[type="color"]').isDisabled()) {
+  throw new Error('SpecularColor should enable in Specular workflow.');
+}
+if (!(await materialPanel.locator('[data-material-field="Metallic"] input[type="range"]').isDisabled())) {
+  throw new Error('Metallic should be inactive in Specular workflow without losing its stored value.');
+}
+
+await materialPanel.getByRole('button', { name: /^高光反射：/ }).click();
+if ((await materialPanel.getAttribute('data-material-specular-highlights')) !== 'off') {
+  throw new Error('High-level specular highlight toggle should invert Flags.SpecularHighlightsOff.');
+}
+await materialPanel.getByRole('button', { name: /^Alpha 裁剪：/ }).click();
+await page.waitForTimeout(80);
+if ((await materialPanel.getAttribute('data-material-alpha-clip')) !== 'true') {
+  throw new Error('Alpha clip toggle should map to Flags.AlphaClip.');
+}
+if ((await materialPanel.locator('[data-material-field="AlphaClipThreshold"]').count()) !== 1) {
+  throw new Error('AlphaClipThreshold should appear only when AlphaClip is enabled.');
+}
+await page.screenshot({ path: outDir + '/material-palette-29-surface-specular-alpha.png' });
+
+await materialBar.getByRole('button', { name: '完成配色', exact: true }).click();
+await page.waitForSelector('.material-palette-prototype', { state: 'detached' });
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
+await page.waitForTimeout(180);
+await page.screenshot({ path: outDir + '/material-palette-30-return-gameplay.png' });
+
 await browser.close();

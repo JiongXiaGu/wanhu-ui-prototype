@@ -29,6 +29,7 @@ import './tools/city-wall-construction/city-wall-construction.css';
 import './tools/city-wall-gate/city-wall-gate.css';
 import './tools/city-wall-access-stair/city-wall-access-stair.css';
 import './tools/city-wall-transition-stair/city-wall-transition-stair.css';
+import './tools/material-palette/material-palette.css';
 import './gameplay/city-management.css';
 import './gameplay/inventory-management.css';
 import './gameplay/gameplay-top-shell.css';

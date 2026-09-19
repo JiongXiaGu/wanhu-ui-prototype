@@ -443,3 +443,57 @@ Transition Stair Preview DOM
 - Low / High Platform 仅是 World Preview 语义，不代表已经建立自动连接；
 - Slope / Step Count 可以作为 World System 派生数据，但不常驻 UI；
 - High / Low Reverse 是明确玩家操作。
+
+
+## 18. Material Palette / Surface Mode
+
+`material-palette` 从 Gameplay World Utility 进入独立 Tool Space。
+
+第一阶段：
+
+```text
+MaterialPaletteController
+├ Mode = Surface
+└ MaterialSlotValue Draft
+
+SurfacePanel
+├ BaseColor
+├ EmissionColor
+├ NightEmissionColor
+├ SpecularColor
+├ Flags.SpecularSetup
+├ Metallic
+├ Smoothness
+├ Occlusion
+├ Flags.SpecularHighlightsOff
+├ Flags.AlphaClip
+├ AlphaClipThreshold
+├ TextureTiling
+└ TextureBlendSharpness
+```
+
+UI Toolkit 映射：
+
+```text
+MaterialPaletteOverlay
+  → MaterialPaletteSurface.uxml / Shared Left Context USS
+
+MaterialPaletteDock
+  → Shared ToolActionBar.uxml
+  → Surface / Lighting / Palette
+
+Material Palette Utility
+  → UtilityToolbarHost.Rebind(MaterialPalette)
+  → Undo / Redo
+```
+
+约束：
+
+- Unity Controller 直接绑定 Runtime MaterialSlotValue，不复制另一套持久数据模型；
+- Web Local Draft 只是 Prototype Adapter；
+- EmissionColor 正式 Unity 必须使用 HDR Color Editor；
+- SpecularHighlightsOff 在 UI 以“高光反射”正语义反向映射；
+- AlphaClipThreshold 只在 AlphaClip Flag 开启时显示；
+- Lighting / Palette 未实现前保持 disabled；
+- TextureSetDefinition / MappingSpace / Offset / Rotation 当前不进入正式 Surface UI；
+- 第一阶段不显示额外 Gameplay Operation Hints。
