@@ -408,10 +408,21 @@ const gatePanelBox = await gatePanel.boundingBox();
 if (!gatePanelBox || gatePanelBox.width < 392 || gatePanelBox.width > 408) {
   throw new Error('City wall gate panel should stay near 400px wide. width=' + gatePanelBox?.width);
 }
-for (const text of ['门洞尺寸', '洞口净宽', '洞口净高', '建筑纵深', '放置状态']) {
+for (const text of ['门洞尺寸', '洞口净宽', '洞口净高', '建筑纵深']) {
   if ((await gatePanel.getByText(text, { exact: true }).count()) !== 1) {
     throw new Error('City wall gate free panel missing: ' + text);
   }
+}
+for (const redundant of ['放置状态', '当前连接', '城墙体系', '墙体厚度', '墙高', '城门纵深']) {
+  if (await gatePanel.getByText(redundant, { exact: true }).count()) {
+    throw new Error('City wall gate left panel should not repeat scene state: ' + redundant);
+  }
+}
+if (await gatePanel.locator('.city-wall-gate-facts').count()) {
+  throw new Error('City wall gate informational facts block should be removed.');
+}
+if (gatePanelBox.height > 250) {
+  throw new Error('City wall gate panel should stay compact after removing scene-state details. height=' + gatePanelBox.height);
 }
 await assertParameterFieldFillsRow('.city-wall-gate-prototype', 'city wall gate');
 
@@ -454,9 +465,9 @@ await page.waitForTimeout(180);
 if ((await gatePanel.getAttribute('data-gate-placement-mode')) !== 'wall-connected') {
   throw new Error('Gate panel should expose wall-connected mode.');
 }
-for (const text of ['当前连接', '城墙体系', '墙体厚度', '墙高', '城门纵深', '正面']) {
-  if ((await gatePanel.getByText(text, { exact: true }).count()) !== 1) {
-    throw new Error('Connected gate panel missing: ' + text);
+for (const redundant of ['放置状态', '当前连接', '城墙体系', '墙体厚度', '墙高', '城门纵深', '正面', '背面']) {
+  if (await gatePanel.getByText(redundant, { exact: true }).count()) {
+    throw new Error('Connected gate left panel should keep only editable parameters: ' + redundant);
   }
 }
 for (const retiredAction of ['城门左转', '城门右转']) {

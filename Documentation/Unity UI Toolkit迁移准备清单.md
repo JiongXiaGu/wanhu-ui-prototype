@@ -353,6 +353,7 @@ Gate Preview DOM
 - Wall Connected 不允许 UI 自由 Rotate，Transform Direction 由 World Query / Wall Anchor 决定；
 - Facing Flip 是语义状态，不等于 Rotate 180°；
 - Gate Building Depth 不受 Wall Thickness 强制约束；
+- Gate Left Context 只绑定可编辑尺寸参数；模式、Facing、连接状态和墙体元数据由 Tool State / World Visualization 表达，不复制为常驻只读 UI；
 - Wall Snap 是 Connected Mode 的工具规则，不做 Toggle；
 - Opening Clearance / Wall Connection Anchor 属于 World Visualization；
 - 不依赖 Mesh Boolean 作为核心数据关系。

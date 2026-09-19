@@ -19,10 +19,6 @@ interface Props {
   onDirty: () => void;
 }
 
-function FactRow({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
-  return <span><em>{label}</em><b className={accent ? 'is-accent' : ''}>{value}</b></span>;
-}
-
 export function CityWallGateOverlay({
   moduleName,
   systemName,
@@ -51,9 +47,6 @@ export function CityWallGateOverlay({
     setter(next);
     onDirty();
   }
-
-  const frontLabel = facingFlipped ? 'Back 朝外' : 'Front 朝外';
-  const backLabel = facingFlipped ? 'Front 朝内' : 'Back 朝内';
 
   return (
     <>
@@ -103,28 +96,6 @@ export function CityWallGateOverlay({
             />
           </LeftContextSection>
 
-          {connected ? (
-            <LeftContextSection title="当前连接" className="city-wall-gate-facts">
-              <div>
-                <FactRow label="城墙体系" value={systemName} />
-                <FactRow label="墙体厚度" value="6.0 m" />
-                <FactRow label="墙高" value="12.0 m" />
-                <FactRow label="城门纵深" value={buildingDepth.toFixed(1) + ' m'} accent />
-                <FactRow label="正面" value={facingFlipped ? '反向城外侧' : '继承城外侧'} />
-              </div>
-              <p>城门纵深保持玩家设置，不会被当前墙体厚度覆盖；系统只负责吸附、对齐与左右墙段连接。</p>
-            </LeftContextSection>
-          ) : (
-            <LeftContextSection title="放置状态" className="city-wall-gate-facts">
-              <div>
-                <FactRow label="模式" value="自由放置" />
-                <FactRow label="旋转" value={rotation + '°'} />
-                <FactRow label="正面" value={frontLabel} />
-                <FactRow label="背面" value={backLabel} />
-              </div>
-              <p>城门是独立建筑构件，可在没有任何城墙时直接放置；之后再让城墙连接到它的两侧。</p>
-            </LeftContextSection>
-          )}
         </div>
       </PlacementContextPanel>
 

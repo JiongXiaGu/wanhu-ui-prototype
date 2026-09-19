@@ -21,3 +21,16 @@
 ## 稳定结论
 
 城门是独立世界构件，不以“已有城墙 Boolean 挖洞”为存在前提。Wall Connection 是可选关系。
+
+
+## UI 减法：左侧只保留可编辑参数
+
+复核后删除门洞左侧的所有场景状态复述：
+
+- 删除“放置状态”；
+- 删除“当前连接”；
+- 删除模式 / Rotation / Front / Back 文本；
+- 删除城墙体系 / Wall Thickness / Wall Height / Facing / 连接说明；
+- Free / Connected 都只保留 Opening Width / Opening Height / Building Depth。
+
+状态继续由 World Preview、Bottom Action Bar 与 Utility 表达。只有 Invalid Placement / 参数冲突才允许临时进入左侧提示。

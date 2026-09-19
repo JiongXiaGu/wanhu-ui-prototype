@@ -2,14 +2,7 @@
    The gate is an independent placeable building module; wall connection is optional. */
 
 .city-wall-gate-context{display:flex;flex-direction:column;gap:0}
-.city-wall-gate-parameters .left-context-panel__section-title,
-.city-wall-gate-facts .left-context-panel__section-title{margin-bottom:5px}
-.city-wall-gate-facts>div{display:flex;flex-wrap:wrap;align-items:center;gap:7px 14px;min-height:28px;color:#858c84;font-size:8.5px;font-variant-numeric:tabular-nums}
-.city-wall-gate-facts span{display:flex;gap:5px;white-space:nowrap}
-.city-wall-gate-facts em{font-style:normal;color:#747b75}
-.city-wall-gate-facts b{color:#bbb8ae;font-weight:500}
-.city-wall-gate-facts b.is-accent{color:var(--wanhu-color-brass-high,#bd9959)}
-.city-wall-gate-facts p{margin:6px 0 0;color:#727872;font-size:8.5px;line-height:1.65}
+.city-wall-gate-parameters .left-context-panel__section-title{margin-bottom:5px}
 
 .city-wall-gate-free-preview,
 .city-wall-gate-connected-preview{
