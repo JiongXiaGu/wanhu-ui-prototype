@@ -902,7 +902,7 @@ await page.screenshot({ path: outDir + '/material-palette-31-base-color-hsv.png'
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
-await materialPanel.getByRole('button', { name: '调整发光颜色', exact: true }).click();
+await materialPanel.getByRole('button', { name: '调整发光', exact: true }).click();
 await page.waitForTimeout(220);
 const emissionEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="EmissionColor"]');
 if ((await emissionEditor.getAttribute('data-color-editor-hdr')) !== 'true'
