@@ -740,8 +740,16 @@ const workflowBox = await workflowControl.boundingBox();
 if (!workflowBox || workflowBox.height < 26 || workflowBox.height > 30) {
   throw new Error('Material workflow control should align with compact parameter controls. height=' + workflowBox?.height);
 }
-if (workflowBox.width < 150 || workflowBox.width > 170) {
-  throw new Error('Material workflow should be a compact selector instead of filling the whole parameter column. width=' + workflowBox.width);
+const metallicNumericField = materialPanel.locator('[data-material-field="Metallic"] .ui-numeric-slider-field');
+const metallicFieldBox = await metallicNumericField.boundingBox();
+if (!metallicFieldBox) {
+  throw new Error('Material workflow review needs the Metallic NumericSliderField geometry.');
+}
+if (Math.abs(workflowBox.x - metallicFieldBox.x) > 2) {
+  throw new Error('Material workflow must start on the same field-column edge as sliders. workflowX=' + workflowBox.x + ', sliderX=' + metallicFieldBox.x);
+}
+if (Math.abs(workflowBox.width - metallicFieldBox.width) > 2) {
+  throw new Error('Material workflow must fill the same field width as sliders. workflowWidth=' + workflowBox.width + ', sliderWidth=' + metallicFieldBox.width);
 }
 if ((await workflowControl.locator('.material-workflow-control__indicator').count()) !== 2) {
   throw new Error('Material workflow must use real status-indicator elements for both options.');

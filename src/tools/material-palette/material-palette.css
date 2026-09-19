@@ -5,16 +5,14 @@
 .material-palette-section .left-context-panel__section-title{margin-bottom:5px}
 
 .material-color-field,
-.material-toggle-field,
-.material-workflow-field{
+.material-toggle-field{
   min-height:32px;
   display:flex;
   align-items:center;
   gap:10px;
 }
 .material-color-field__label,
-.material-toggle-field>span,
-.material-workflow-field>span{
+.material-toggle-field>span{
   flex:0 0 92px;
   color:#898f88;
   font-size:9px;
@@ -72,12 +70,11 @@
 .material-color-field.is-disabled input{cursor:default}
 
 .material-workflow-field{
-  align-items:center;
+  min-height:42px;
 }
 .material-workflow-control{
-  flex:0 0 160px;
-  width:160px;
-  min-width:160px;
+  width:100%;
+  min-width:0;
   height:28px;
   padding:2px;
   display:flex;

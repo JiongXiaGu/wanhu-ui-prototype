@@ -57,3 +57,17 @@
 - Active 只有极弱熟铜 Tint；
 - 删除下划线 Selection Line；
 - 与下方 Metallic 行保持普通参数间距。
+
+
+## Workflow 第三次几何修正
+
+Compact 160px 方案仍然产生 Field Column 断裂：Workflow 使用自定义 92px Label + 10px Gap，而 NumericSliderField 使用共享 78px Label + 6px Gap，导致左边界不一致；同时 Selector 总宽度由内容逻辑决定。
+
+已修正：
+
+- Workflow Row 直接使用共享 `ui-parameter-row` 两列结构；
+- Workflow Control `width:100%`，吃满 Field Column；
+- 左边界与 Metallic / Smoothness / Occlusion 的 NumericSliderField 对齐；
+- Workflow 总宽度与 NumericSliderField 一致；
+- 2 个按钮各 50%，以后 N 个按钮只等分内部空间，不改变控件总宽度；
+- 保留 Neutral Track + 小熟铜状态点视觉。

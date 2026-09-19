@@ -172,7 +172,7 @@ export function MaterialPaletteOverlay({
         </LeftContextSection>
 
         <LeftContextSection title="表面" className="material-palette-section material-palette-properties">
-          <div className="material-workflow-field left-context-panel__labeled-control" data-material-field="Flags.SpecularSetup">
+          <div className="material-workflow-field ui-parameter-row" data-material-field="Flags.SpecularSetup">
             <span>工作流</span>
             <MaterialWorkflowControl
               value={draft.workflow}
