@@ -23,6 +23,8 @@ export type ReviewScenario =
   | 'road-curve'
   | 'road-straight'
   | 'terrain-edit'
+  | 'terrain-flatten'
+  | 'terrain-slope'
   | 'camera'
   | 'weather'
   | 'pause'
@@ -87,6 +89,10 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'road-placement', toolOrigin: { kind: 'design-workspace', category: 'road' }, dockMode: 'design', dockCategory: 'road', roadDrawMode: 'straight' } };
     case 'terrain-edit':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'terrain-edit', toolOrigin: { kind: 'gameplay' }, terrainEditMode: 'raise' } };
+    case 'terrain-flatten':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'terrain-edit', toolOrigin: { kind: 'gameplay' }, terrainEditMode: 'flatten' } };
+    case 'terrain-slope':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'terrain-edit', toolOrigin: { kind: 'gameplay' }, terrainEditMode: 'slope' } };
     case 'camera':
       return { screen: 'gameplay', gameplay: { ...gameplay, contextPanel: 'camera' } };
     case 'weather':

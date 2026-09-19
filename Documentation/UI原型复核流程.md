@@ -1,48 +1,127 @@
-# UI 原型验证流程
+# UI 原型复核流程
 
 适用于 `wanhu-ui-prototype` 的重要 UI 修改。
 
-当前默认验证链路不再使用 GitHub Actions Visual Review，也不再自动生成、压缩、上传或下载 Playwright 截图 Artifact。
+## 核心规则
+
+重要 UI 修改 **必须经过 GitHub Actions UI Review 后才能交付**。
+
+Action 成功不等于视觉验收完成。Agent 还必须：
+
+1. 下载 UI Review Artifact；
+2. 实际打开本轮关键截图；
+3. 检查构图、尺寸、层级、留白、遮挡、文字密度、状态反馈与世界背景干扰；
+4. 截图发现问题时继续修改；
+5. 重新运行 Build + UI Review；
+6. 最终回复中提供几张关键截图给用户。
+
+禁止只说“Workflow 成功”而没有实际审图。
 
 ## 默认流程
 
-1. 先阅读当前任务相关正式文档和代码；
-2. 完成代码修改；
-3. 同步更新对应 Documentation；
-4. 执行 Build；
-5. 检查受影响的状态、交互、样式所有权与 Unity UI Toolkit 映射约束；
-6. Build 或逻辑检查失败时先修复；
-7. 完成后直接提交到 `main`。
+1. 阅读当前任务相关文档和代码；
+2. 修改代码；
+3. 同步正式 Documentation；
+4. 执行 `npm run audit:unity`；
+5. 提交 `main`；
+6. GitHub Actions Build 必须成功；
+7. GitHub Actions UI Review 必须成功；
+8. 获取 `ui-review` Artifact；
+9. 实际查看本轮关键截图；
+10. 若存在明显视觉问题，继续修改并重新执行 4–9；
+11. 视觉与逻辑均通过后才向用户交付。
 
-Build 是当前 GitHub Actions 的默认自动验证。
+## GitHub Actions UI Review
 
-## Visual / Playwright
+正式工作流：
 
-`.github/workflows/visual-review.yml` 已移除。
+```text
+.github/workflows/ui-review.yml
+        ↓
+Vite 1920×1080 Review Server
+        ↓
+scripts/capture-ui-review.mjs
+        ↓
+Playwright Assertions
+        ↓
+review-screenshots/*.png
+        ↓
+ui-review Artifact
+        ↓
+Agent 实际审图
+```
 
-仓库中现有 `scripts/capture-*.mjs` 可以继续作为手动调试工具存在，但：
+### Review Scenario 原则
 
-- 不属于每轮任务的必做步骤；
-- 不由 GitHub Actions 自动执行；
-- 不要求上传 Artifact；
-- 不要求在聊天中提供截图；
-- 不因为这些脚本的历史断言阻塞正常 Build 与交付。
+`scripts/capture-ui-review.mjs` 不是固定不变的“万能截图脚本”。
 
-如果未来重新启用视觉自动化，应重新设计独立工作流，而不是默认恢复旧 Visual Review 链路。
+每次重要 UI 任务必须确认它覆盖当前修改涉及的关键状态；如果没有，就在同一轮补充 Scenario / Interaction。
+
+例如地形编辑至少覆盖：
+
+- Raise 默认态；
+- Flatten 参数态；
+- Slope 参数态；
+- Terrain Utility Toggle 状态；
+- 完成后恢复 Gameplay。
+
+### 自动断言与人工审图的职责
+
+Playwright 自动断言负责：
+
+- 元素是否存在；
+- 尺寸是否超出合同；
+- 是否出现不应该存在的控件；
+- Tool / Context / Return State 是否正确；
+- 关键 Toggle / Mode 是否能切换。
+
+人工审图负责：
+
+- 整体是否好看；
+- 是否过高 / 过宽 / 空白过多；
+- 视觉重量是否合理；
+- 世界信息是否被遮挡；
+- 文字是否过多；
+- 状态是否一眼可读；
+- 是否符合 Smoked Graphite / Paper / Brass 体系。
+
+两者缺一不可。
+
+## Build / Migration Audit
+
+Build 与 Visual Review 是两条独立门槛：
+
+```text
+npm run audit:unity
+        ↓
+GitHub Actions Build
+
+GitHub Actions UI Review
+        ↓
+截图 Artifact
+        ↓
+人工审图
+```
+
+UI Review 不替代 TypeScript Build，Build 也不替代视觉复核。
 
 ## Git 与部署职责边界
 
-- 后续修改默认直接提交到 `main`；
-- 不需要为普通 UI 修改建立临时复核分支；
-- Vercel 不属于日常验证与交付流程；
-- 不创建 deploy-only / 空提交来触发部署；
-- 只有用户明确要求部署或排查部署时，才处理 Vercel。
+- 普通 UI 修改直接提交 `main`；
+- 不要求建立临时分支；
+- Vercel 不属于日常验证与交付；
+- 不创建 deploy-only / 空提交；
+- 用户明确要求部署或排查部署时，才处理 Vercel。
 
 ## 交付标准
 
-完成一轮任务时至少应满足：
+完成一轮重要 UI 工作至少满足：
 
-- 代码与正式文档一致；
+- 代码和 Documentation 一致；
+- Unity Migration Audit 通过；
 - Build 成功；
-- 没有保留已知的半成品或明显逻辑错误；
-- 没有为了 Web 原型方便而引入无法合理迁移到 Unity UI Toolkit 的核心结构。
+- UI Review 成功；
+- Agent 已实际查看关键截图；
+- 截图中没有明显构图 / 尺寸 / 遮挡 / 状态问题；
+- 最终回复附带本轮关键截图；
+- 没有为了 Web Prototype 方便引入无法合理迁移到 UI Toolkit 的核心结构。

@@ -3,8 +3,10 @@
 
 .gameplay-screen .tool-overlay.terrain-edit-prototype{
   left:var(--hud-edge);
+  top:auto;
   bottom:var(--hud-edge);
   width:400px;
+  height:auto;
   max-height:var(--hud-left-context-max-height);
 }
 
@@ -110,20 +112,6 @@
 }
 .terrain-brush-preview__cross--h{width:14px;height:1px}
 .terrain-brush-preview__cross--v{width:1px;height:14px}
-.terrain-brush-preview__label{
-  position:absolute;
-  left:50%;
-  top:calc(100% + 10px);
-  translate:-50% 0;
-  min-width:max-content;
-  padding:5px 8px;
-  border:1px solid rgba(238,233,223,.075);
-  border-radius:8px;
-  background:rgba(34,36,34,.88);
-  color:#c8c4ba;
-  font-size:9px;
-  letter-spacing:.02em;
-}
 .terrain-brush-preview--raise .terrain-brush-preview__inner,
 .terrain-brush-preview--flatten .terrain-brush-preview__inner{border-color:rgba(189,153,89,.72)}
 .terrain-brush-preview--lower .terrain-brush-preview__inner,

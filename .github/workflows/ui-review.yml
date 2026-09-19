@@ -1,0 +1,66 @@
+name: UI Review
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'scripts/capture-ui-review.mjs'
+      - 'public/assets/**'
+      - 'index.html'
+      - 'package.json'
+      - 'vite.config.*'
+      - '.github/workflows/ui-review.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ui-review-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install Playwright package
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Start Vite review server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/wanhu-vite.log
+          exit 1
+      - name: Capture and assert UI review
+        run: node scripts/capture-ui-review.mjs
+      - name: Upload UI review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-review
+          path: review-screenshots/
+          if-no-files-found: error
+          retention-days: 7

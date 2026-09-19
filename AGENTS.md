@@ -25,9 +25,11 @@
 - 默认直接修改并提交 `main`；
 - 不需要建立临时分支；
 - 不需要部署 / 推送 Vercel；
-- GitHub Actions 保留 Build；
-- Visual Review 自动化已经退出默认工作流；
-- Playwright capture 脚本只作为手动调试工具，不是每轮强制步骤。
+- GitHub Actions 保留 Build 与 UI Review；
+- 重要 UI 修改必须由 GitHub Actions UI Review 生成固定 1920×1080 截图 Artifact；
+- Agent 必须下载 Artifact、实际打开关键截图并完成视觉复核后才能交付；
+- 每次 UI 任务应更新 `scripts/capture-ui-review.mjs`，覆盖本次受影响的关键状态；不能只依赖旧截图矩阵；
+- Vercel 不属于日常复核链路。
 
 ## 完成门槛
 
@@ -38,8 +40,11 @@
 3. 同步正式 Documentation；
 4. 执行 `npm run audit:unity`；
 5. GitHub Actions Build 必须成功；
-6. 检查状态所有权、输入、Motion、Surface 和 Unity UI Toolkit 映射；
-7. 有已知问题时继续修复，不交付半成品。
+6. GitHub Actions UI Review 必须成功并上传截图 Artifact；
+7. Agent 下载 Artifact，并实际打开本轮关键截图检查：构图、层级、留白、尺寸、遮挡、状态、日夜/世界背景干扰；
+8. 如果截图发现问题，继续修改并重新跑 Build + UI Review，直到通过；
+9. 最终交付时给用户提供本轮关键截图，不允许只报告“Action 成功”；
+10. 检查状态所有权、输入、Motion、Surface 和 Unity UI Toolkit 映射，不交付半成品。
 
 ## Unity Migration Guard
 

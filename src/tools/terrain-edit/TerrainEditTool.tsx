@@ -13,14 +13,6 @@ interface TerrainEditToolProps {
   onExit: () => void;
 }
 
-const MODE_LABELS: Record<TerrainEditMode, string> = {
-  raise: '抬高',
-  lower: '降低',
-  flatten: '整平',
-  smooth: '平滑',
-  slope: '坡面',
-};
-
 export function TerrainEditTool({
   state,
   motionPhase = 'steady',
@@ -84,13 +76,6 @@ export function TerrainEditTool({
           </LeftContextSection>
         )}
 
-        <LeftContextSection title="当前地形">
-          <div className="terrain-edit-metrics">
-            <span><small>当前标高</small><b>12.42 m</b></span>
-            <span><small>当前坡度</small><b>8.2°</b></span>
-            <span><small>保护区域</small><b>{state.terrainProtectBuilt ? '开启' : '关闭'}</b></span>
-          </div>
-        </LeftContextSection>
       </LeftContextPanel>
 
       <div className={`tool-bottom-cluster terrain-edit-toolbar-cluster motion-bottom-surface is-${motionPhase}`} aria-label="地形编辑主控栏" aria-busy={motionPhase !== 'steady'}>
@@ -108,7 +93,6 @@ export function TerrainEditTool({
         <span className="terrain-brush-preview__inner" style={{ width: `${Math.max(28, falloff)}%`, height: `${Math.max(28, falloff)}%` }} />
         <span className="terrain-brush-preview__cross terrain-brush-preview__cross--h" />
         <span className="terrain-brush-preview__cross terrain-brush-preview__cross--v" />
-        <span className="terrain-brush-preview__label">{MODE_LABELS[state.terrainEditMode]} · {radius} m · {strength}%</span>
       </div>
     </>
   );
