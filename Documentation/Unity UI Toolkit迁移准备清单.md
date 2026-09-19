@@ -465,7 +465,9 @@ Surface UI：
 
 ```text
 Scheme Selector
-Color Cards 2×2
+└ [Type Tag] Scheme Name >
+
+Color Cards 4×1
 ├ BaseColor
 ├ SpecularColor
 ├ EmissionColor HDR
@@ -504,7 +506,8 @@ ColorEditorPage
 - 手动 Edit / Paste 统一把 CurrentScheme 标记为 Custom / Unsaved；
 - Apply Preset 恢复对应 SchemeId / Type / Name；
 - Preset Library 的用户自定义项正式 Unity 应持久化到玩家数据；
-- Color Cards 使用显式两行 × 两列 VisualElement，不用动态列宽推断；
+- Scheme Selector 是单行控件：Type Tag + Scheme Name + Chevron，不放四色缩略；
+- Color Cards 使用显式单行四卡 VisualElement；四卡等宽，不根据文字内容决定宽度；
 - Metallic 下 Specular Color Card 保留 Grid Slot 但不可编辑，Specular 下启用；
 - Specular Workflow 下 Metallic Field 直接隐藏但 Controller 值不销毁；
 - Color Editor Numeric Area 使用 RGB / HSV Rebind，同一时刻只挂一组通道；

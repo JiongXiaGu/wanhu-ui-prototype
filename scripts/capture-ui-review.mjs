@@ -698,24 +698,49 @@ const schemeSelector = materialPanel.getByRole('button', { name: '打开材质�
 if ((await schemeSelector.count()) !== 1) {
   throw new Error('Surface should expose one current material-scheme selector.');
 }
-for (const text of ['当前方案', '墙面', '素灰墙']) {
+for (const text of ['墙面', '素灰墙']) {
   if ((await schemeSelector.getByText(text, { exact: true }).count()) !== 1) {
-    throw new Error('Scheme selector missing: ' + text);
+    throw new Error('Scheme selector missing single-line content: ' + text);
   }
+}
+if (await schemeSelector.getByText('当前方案', { exact: true }).count()) {
+  throw new Error('Scheme selector must not restore the old three-line stack.');
+}
+if (await schemeSelector.locator('.material-scheme-selector__swatches').count()) {
+  throw new Error('Scheme selector must not duplicate the four-color swatch strip.');
+}
+const schemeSelectorBox = await schemeSelector.boundingBox();
+if (!schemeSelectorBox || schemeSelectorBox.height > 44) {
+  throw new Error('Scheme selector should stay compact and single-line. height=' + schemeSelectorBox?.height);
 }
 
 const colorCards = materialPanel.locator('.material-color-card');
 if ((await colorCards.count()) !== 4) {
   throw new Error('Surface should show exactly four color cards.');
 }
-const expectedCardLabels = ['主色', '高光颜色', '发光颜色', '夜间发光'];
+const expectedCardLabels = ['主色', '高光', '发光', '夜间发光'];
+const colorCardBoxes = [];
 for (let index = 0; index < expectedCardLabels.length; index += 1) {
   const label = expectedCardLabels[index];
-  if ((await colorCards.nth(index).getByText(label, { exact: true }).count()) !== 1) {
+  const card = colorCards.nth(index);
+  if ((await card.getByText(label, { exact: true }).count()) !== 1) {
     throw new Error('Color card order mismatch at ' + index + ': expected ' + label);
   }
+  const box = await card.boundingBox();
+  if (!box) throw new Error('Color card geometry missing at ' + index);
+  colorCardBoxes.push(box);
 }
-if (!(await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).isDisabled())) {
+const firstCardY = colorCardBoxes[0].y;
+const firstCardWidth = colorCardBoxes[0].width;
+for (const [index, box] of colorCardBoxes.entries()) {
+  if (Math.abs(box.y - firstCardY) > 2) {
+    throw new Error('All four Surface color cards must stay on one row. index=' + index + ', y=' + box.y);
+  }
+  if (Math.abs(box.width - firstCardWidth) > 2) {
+    throw new Error('4x1 Surface color cards should share equal width. index=' + index + ', width=' + box.width);
+  }
+}
+if (!(await materialPanel.getByRole('button', { name: '调整高光', exact: true }).isDisabled())) {
   throw new Error('Specular color card should remain visible but inactive in Metallic workflow.');
 }
 if ((await materialPanel.locator('.material-color-card__badge').filter({ hasText: 'HDR' }).count()) !== 2) {
@@ -840,7 +865,7 @@ if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular')
 if (await materialPanel.locator('[data-material-field="Metallic"]').count()) {
   throw new Error('Metallic should hide in Specular workflow.');
 }
-if (await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).isDisabled()) {
+if (await materialPanel.getByRole('button', { name: '调整高光', exact: true }).isDisabled()) {
   throw new Error('Specular color card should enable in Specular workflow.');
 }
 

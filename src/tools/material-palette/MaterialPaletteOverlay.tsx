@@ -333,24 +333,15 @@ function ColorCard({
 
 function SchemeSelector({
   scheme,
-  draft,
   onOpen,
 }: {
   scheme: MaterialSchemeState;
-  draft: MaterialSurfaceDraft;
   onOpen: () => void;
 }) {
-  const swatches = [draft.baseColor, draft.specularColor, draft.emissionColor, draft.nightEmissionColor];
   return (
     <button className="material-scheme-selector" type="button" onClick={onOpen} aria-label="打开材质方案库">
-      <div className="material-scheme-selector__copy">
-        <span>当前方案</span>
-        <b>{scheme.type}</b>
-        <em>{scheme.name}</em>
-      </div>
-      <div className="material-scheme-selector__swatches" aria-hidden="true">
-        {swatches.map((color, index) => <i key={index} style={{ background: color }} />)}
-      </div>
+      <span className="material-scheme-selector__type">{scheme.type}</span>
+      <b className="material-scheme-selector__name">{scheme.name}</b>
       <ChevronRight className="material-scheme-selector__chevron" aria-hidden="true" />
     </button>
   );
@@ -423,19 +414,19 @@ function SurfacePage({
 
   return (
     <div className="material-palette-surface">
-      <SchemeSelector scheme={scheme} draft={draft} onOpen={onOpenPresetLibrary} />
+      <SchemeSelector scheme={scheme} onOpen={onOpenPresetLibrary} />
 
       <LeftContextSection title="颜色" className="material-palette-section material-palette-colors">
         <div className="material-color-card-grid">
           <ColorCard label="主色" value={draft.baseColor} field="BaseColor" onOpen={onOpenColor} />
           <ColorCard
-            label="高光颜色"
+            label="高光"
             value={draft.specularColor}
             field="SpecularColor"
             disabled={!specularWorkflow}
             onOpen={onOpenColor}
           />
-          <ColorCard label="发光颜色" value={draft.emissionColor} hdr field="EmissionColor" onOpen={onOpenColor} />
+          <ColorCard label="发光" value={draft.emissionColor} hdr field="EmissionColor" onOpen={onOpenColor} />
           <ColorCard label="夜间发光" value={draft.nightEmissionColor} hdr field="NightEmissionColor" onOpen={onOpenColor} />
         </div>
       </LeftContextSection>
