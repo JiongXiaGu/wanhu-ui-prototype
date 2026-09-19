@@ -142,3 +142,18 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - 四张 Card 必须同一行、等宽；
 - Surface 使用短标签；Color Editor 仍使用完整字段标题；
 - UI Review 直接测量四卡的 Y 与 Width，避免后续回退到两行。
+
+
+## Surface 去卡片化重构
+
+4×1 独立 Color Card 仍然导致 Surface 充满小盒子，本轮进一步减少视觉容器：
+
+- 方案入口从有边框 Selector 收成行式导航：方案 + 类型·名称 + 箭头；
+- 默认无完整边框/背景，只在 Hover / Focus 时轻提亮；
+- 四张独立 Color Card 合并为一个共享 Color Strip；
+- Color Strip 父节点拥有共享边界，四个 Item 不再各自拥有完整边框；
+- 色块成为每列的主要视觉面积，HDR 只保留轻量 metadata；
+- “表面 / 贴图”合并为单一“材质属性” Section；
+- PBR 与 Texture 只靠间距分组，不再使用两个强 Section 标题；
+- Material Surface 内部的 Stepper / Value 默认边框进一步弱化，Hover / Focus 才回升；
+- Workflow 去掉完整 Track，改成 Active 实点 / Inactive 空心点的 Inline Choice。

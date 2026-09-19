@@ -710,13 +710,31 @@ if (await schemeSelector.locator('.material-scheme-selector__swatches').count())
   throw new Error('Scheme selector must not duplicate the four-color swatch strip.');
 }
 const schemeSelectorBox = await schemeSelector.boundingBox();
-if (!schemeSelectorBox || schemeSelectorBox.height > 44) {
+if (!schemeSelectorBox || schemeSelectorBox.height > 40) {
   throw new Error('Scheme selector should stay compact and single-line. height=' + schemeSelectorBox?.height);
 }
+const schemeStyle = await schemeSelector.evaluate((node) => getComputedStyle(node));
+if (schemeStyle.borderTopWidth !== '0px') {
+  throw new Error('Scheme selector should be a lightweight navigation row, not another bordered card.');
+}
 
-const colorCards = materialPanel.locator('.material-color-card');
+const colorCards = materialPanel.locator('.material-color-strip__item');
 if ((await colorCards.count()) !== 4) {
-  throw new Error('Surface should show exactly four color cards.');
+  throw new Error('Surface Color Strip should expose exactly four items.');
+}
+const colorStrip = materialPanel.locator('.material-color-strip');
+if ((await colorStrip.count()) !== 1) {
+  throw new Error('Surface colors should share one Color Strip container.');
+}
+const colorStripStyle = await colorStrip.evaluate((node) => getComputedStyle(node));
+if (colorStripStyle.borderTopWidth === '0px') {
+  throw new Error('Color Strip should own the single shared boundary.');
+}
+for (const item of await colorCards.all()) {
+  const style = await item.evaluate((node) => getComputedStyle(node));
+  if (style.borderTopWidth !== '0px' || style.borderRightWidth !== '0px' || style.borderBottomWidth !== '0px') {
+    throw new Error('Color Strip items must not behave like four independent bordered cards.');
+  }
 }
 const expectedCardLabels = ['主色', '高光', '发光', '夜间发光'];
 const colorCardBoxes = [];
@@ -724,30 +742,42 @@ for (let index = 0; index < expectedCardLabels.length; index += 1) {
   const label = expectedCardLabels[index];
   const card = colorCards.nth(index);
   if ((await card.getByText(label, { exact: true }).count()) !== 1) {
-    throw new Error('Color card order mismatch at ' + index + ': expected ' + label);
+    throw new Error('Color Strip item order mismatch at ' + index + ': expected ' + label);
   }
   const box = await card.boundingBox();
-  if (!box) throw new Error('Color card geometry missing at ' + index);
+  if (!box) throw new Error('Color Strip item geometry missing at ' + index);
   colorCardBoxes.push(box);
 }
 const firstCardY = colorCardBoxes[0].y;
 const firstCardWidth = colorCardBoxes[0].width;
 for (const [index, box] of colorCardBoxes.entries()) {
   if (Math.abs(box.y - firstCardY) > 2) {
-    throw new Error('All four Surface color cards must stay on one row. index=' + index + ', y=' + box.y);
+    throw new Error('All four Color Strip items must stay on one row. index=' + index + ', y=' + box.y);
   }
   if (Math.abs(box.width - firstCardWidth) > 2) {
-    throw new Error('4x1 Surface color cards should share equal width. index=' + index + ', width=' + box.width);
+    throw new Error('Color Strip items should share equal width. index=' + index + ', width=' + box.width);
   }
 }
 if (!(await materialPanel.getByRole('button', { name: '调整高光', exact: true }).isDisabled())) {
-  throw new Error('Specular color card should remain visible but inactive in Metallic workflow.');
+  throw new Error('Specular Color Strip item should remain visible but inactive in Metallic workflow.');
 }
-if ((await materialPanel.locator('.material-color-card__badge').filter({ hasText: 'HDR' }).count()) !== 2) {
+if ((await materialPanel.locator('.material-color-strip__item-meta').filter({ hasText: 'HDR' }).count()) !== 2) {
   throw new Error('Emission and Night Emission cards should expose two HDR badges.');
 }
-if (await materialPanel.locator('.material-color-card').filter({ hasText: /#[0-9A-Fa-f]{6}/ }).count()) {
-  throw new Error('Surface color cards should not display HEX values.');
+if (await materialPanel.locator('.material-color-strip__item').filter({ hasText: /#[0-9A-Fa-f]{6}/ }).count()) {
+  throw new Error('Surface Color Strip should not display HEX values.');
+}
+
+const materialSectionTitles = materialPanel.locator('.left-context-panel__section-title');
+for (const requiredSection of ['颜色', '材质属性']) {
+  if ((await materialSectionTitles.filter({ hasText: requiredSection }).count()) !== 1) {
+    throw new Error('Material Surface section missing: ' + requiredSection);
+  }
+}
+for (const retiredSection of ['贴图']) {
+  if (await materialSectionTitles.filter({ hasText: retiredSection }).count()) {
+    throw new Error('Surface and Texture should be merged into one Material Properties section.');
+  }
 }
 
 for (const retired of ['高光反射', 'Alpha 裁剪', '裁剪阈值']) {
@@ -786,10 +816,18 @@ if (!workflowBox || !metallicFieldBox) throw new Error('Material workflow and sl
 if (Math.abs(workflowBox.x - metallicFieldBox.x) > 2 || Math.abs(workflowBox.width - metallicFieldBox.width) > 2) {
   throw new Error('Material workflow must share the same field column as sliders.');
 }
-const textureSectionBox = await materialPanel.locator('.material-palette-texture').boundingBox();
+const propertiesSectionBox = await materialPanel.locator('.material-palette-properties').boundingBox();
 const workflowBottomBox = await materialPanel.locator('.material-palette-workflow-bottom').boundingBox();
-if (!textureSectionBox || !workflowBottomBox || workflowBottomBox.y <= textureSectionBox.y) {
-  throw new Error('Workflow selector should live at the bottom after Texture controls.');
+if (!propertiesSectionBox || !workflowBottomBox || workflowBottomBox.y <= propertiesSectionBox.y) {
+  throw new Error('Workflow selector should live below the merged Material Properties section.');
+}
+const workflowStyle = await workflowControl.evaluate((node) => getComputedStyle(node));
+if (workflowStyle.borderTopWidth !== '0px' || workflowStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+  throw new Error('Workflow should read like an inline parameter, not another framed track. style=' + JSON.stringify({ border: workflowStyle.borderTopWidth, background: workflowStyle.backgroundColor }));
+}
+const workflowIndicators = workflowControl.locator('.material-workflow-control__indicator');
+if ((await workflowIndicators.count()) !== 2) {
+  throw new Error('Workflow inline choice should expose two radio-like indicators.');
 }
 
 const surfaceFooter = materialPanel.locator('.material-palette-footer');
@@ -802,7 +840,7 @@ await surfaceFooter.getByRole('button', { name: '复制参数', exact: true }).c
 if ((await materialPanel.getAttribute('data-material-surface-clipboard')) !== 'ready') {
   throw new Error('Surface copy should populate structured tool clipboard.');
 }
-await page.screenshot({ path: outDir + '/material-palette-28-surface-scheme-cards.png' });
+await page.screenshot({ path: outDir + '/material-palette-28-surface-streamlined.png' });
 
 await schemeSelector.click();
 await page.waitForTimeout(220);
@@ -866,7 +904,7 @@ if (await materialPanel.locator('[data-material-field="Metallic"]').count()) {
   throw new Error('Metallic should hide in Specular workflow.');
 }
 if (await materialPanel.getByRole('button', { name: '调整高光', exact: true }).isDisabled()) {
-  throw new Error('Specular color card should enable in Specular workflow.');
+  throw new Error('Specular Color Strip item should enable in Specular workflow.');
 }
 
 await materialPanel.getByRole('button', { name: '调整主色', exact: true }).click();

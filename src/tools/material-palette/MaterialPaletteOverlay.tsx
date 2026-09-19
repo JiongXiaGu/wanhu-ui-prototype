@@ -318,15 +318,15 @@ function ColorCard({
   return (
     <button
       type="button"
-      className={'material-color-card ' + (disabled ? 'is-disabled' : '')}
+      className={'material-color-strip__item ' + (disabled ? 'is-disabled' : '')}
       data-material-field={field}
       disabled={disabled}
       aria-label={`调整${label}`}
       onClick={() => onOpen(field)}
     >
-      <span className="material-color-card__title">{label}</span>
-      {hdr && <em className="material-color-card__badge">HDR</em>}
-      <i className="material-color-card__swatch" style={{ background: value }} aria-hidden="true" />
+      <span className="material-color-strip__item-title">{label}</span>
+      {hdr && <em className="material-color-strip__item-meta">HDR</em>}
+      <i className="material-color-strip__swatch" style={{ background: value }} aria-hidden="true" />
     </button>
   );
 }
@@ -340,7 +340,9 @@ function SchemeSelector({
 }) {
   return (
     <button className="material-scheme-selector" type="button" onClick={onOpen} aria-label="打开材质方案库">
+      <span className="material-scheme-selector__label">方案</span>
       <span className="material-scheme-selector__type">{scheme.type}</span>
+      <i className="material-scheme-selector__separator" aria-hidden="true">·</i>
       <b className="material-scheme-selector__name">{scheme.name}</b>
       <ChevronRight className="material-scheme-selector__chevron" aria-hidden="true" />
     </button>
@@ -417,7 +419,7 @@ function SurfacePage({
       <SchemeSelector scheme={scheme} onOpen={onOpenPresetLibrary} />
 
       <LeftContextSection title="颜色" className="material-palette-section material-palette-colors">
-        <div className="material-color-card-grid">
+        <div className="material-color-strip">
           <ColorCard label="主色" value={draft.baseColor} field="BaseColor" onOpen={onOpenColor} />
           <ColorCard
             label="高光"
@@ -431,66 +433,68 @@ function SurfacePage({
         </div>
       </LeftContextSection>
 
-      <LeftContextSection title="表面" className="material-palette-section material-palette-properties">
-        {!specularWorkflow && (
-          <div data-material-field="Metallic">
+      <LeftContextSection title="材质属性" className="material-palette-section material-palette-properties">
+        <div className="material-property-group material-property-group--surface">
+          {!specularWorkflow && (
+            <div data-material-field="Metallic">
+              <RuntimeParameterRow
+                label="金属度"
+                value={draft.metallic}
+                min={0}
+                max={1}
+                step={0.01}
+                format={(value) => value.toFixed(2)}
+                onChange={(value) => onUpdate('metallic', value)}
+              />
+            </div>
+          )}
+          <div data-material-field="Smoothness">
             <RuntimeParameterRow
-              label="金属度"
-              value={draft.metallic}
+              label="光滑度"
+              value={draft.smoothness}
               min={0}
               max={1}
               step={0.01}
               format={(value) => value.toFixed(2)}
-              onChange={(value) => onUpdate('metallic', value)}
+              onChange={(value) => onUpdate('smoothness', value)}
             />
           </div>
-        )}
-        <div data-material-field="Smoothness">
-          <RuntimeParameterRow
-            label="光滑度"
-            value={draft.smoothness}
-            min={0}
-            max={1}
-            step={0.01}
-            format={(value) => value.toFixed(2)}
-            onChange={(value) => onUpdate('smoothness', value)}
-          />
+          <div data-material-field="Occlusion">
+            <RuntimeParameterRow
+              label="环境遮蔽"
+              value={draft.occlusion}
+              min={0}
+              max={1}
+              step={0.01}
+              format={(value) => value.toFixed(2)}
+              onChange={(value) => onUpdate('occlusion', value)}
+            />
+          </div>
         </div>
-        <div data-material-field="Occlusion">
-          <RuntimeParameterRow
-            label="环境遮蔽"
-            value={draft.occlusion}
-            min={0}
-            max={1}
-            step={0.01}
-            format={(value) => value.toFixed(2)}
-            onChange={(value) => onUpdate('occlusion', value)}
-          />
-        </div>
-      </LeftContextSection>
 
-      <LeftContextSection title="贴图" className="material-palette-section material-palette-texture">
-        <div data-material-field="TextureTiling">
-          <RuntimeParameterRow
-            label="铺贴倍率"
-            value={draft.textureTiling}
-            min={0.1}
-            max={8}
-            step={0.1}
-            format={(value) => value.toFixed(1)}
-            onChange={(value) => onUpdate('textureTiling', value)}
-          />
-        </div>
-        <div data-material-field="TextureBlendSharpness">
-          <RuntimeParameterRow
-            label="混合锐度"
-            value={draft.textureBlendSharpness}
-            min={0.1}
-            max={8}
-            step={0.1}
-            format={(value) => value.toFixed(1)}
-            onChange={(value) => onUpdate('textureBlendSharpness', value)}
-          />
+        <div className="material-property-group material-property-group--texture">
+          <div data-material-field="TextureTiling">
+            <RuntimeParameterRow
+              label="铺贴倍率"
+              value={draft.textureTiling}
+              min={0.1}
+              max={8}
+              step={0.1}
+              format={(value) => value.toFixed(1)}
+              onChange={(value) => onUpdate('textureTiling', value)}
+            />
+          </div>
+          <div data-material-field="TextureBlendSharpness">
+            <RuntimeParameterRow
+              label="混合锐度"
+              value={draft.textureBlendSharpness}
+              min={0.1}
+              max={8}
+              step={0.1}
+              format={(value) => value.toFixed(1)}
+              onChange={(value) => onUpdate('textureBlendSharpness', value)}
+            />
+          </div>
         </div>
       </LeftContextSection>
 

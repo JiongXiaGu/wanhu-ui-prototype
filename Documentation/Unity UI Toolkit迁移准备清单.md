@@ -464,24 +464,24 @@ MaterialPaletteController
 Surface UI：
 
 ```text
-Scheme Selector
-└ [Type Tag] Scheme Name >
+Scheme Navigation Row
+└ Label + Type · SchemeName + Chevron
 
-Color Cards 4×1
+Shared Color Strip
 ├ BaseColor
 ├ SpecularColor
 ├ EmissionColor HDR
 └ NightEmissionColor HDR
 
-Surface Parameters
+Material Properties
 ├ Metallic (Metallic workflow only)
 ├ Smoothness
 ├ Occlusion
 ├ TextureTiling
 └ TextureBlendSharpness
 
-Workflow
-└ Metallic / Specular
+Workflow Inline Choice
+└ ● Metallic / ○ Specular
 ```
 
 不再暴露：
@@ -506,10 +506,12 @@ ColorEditorPage
 - 手动 Edit / Paste 统一把 CurrentScheme 标记为 Custom / Unsaved；
 - Apply Preset 恢复对应 SchemeId / Type / Name；
 - Preset Library 的用户自定义项正式 Unity 应持久化到玩家数据；
-- Scheme Selector 是单行控件：Type Tag + Scheme Name + Chevron，不放四色缩略；
-- Color Cards 使用显式单行四卡 VisualElement；四卡等宽，不根据文字内容决定宽度；
+- Scheme Navigation 是单行行式控件：Label + Type/Name + Chevron；不使用 Card / Tag Pill / 四色缩略；
+- Color Strip 使用一个父 VisualElement + 四个等宽 Item；父节点拥有共享边界，Item 不拥有独立完整边框；
 - Metallic 下 Specular Color Card 保留 Grid Slot 但不可编辑，Specular 下启用；
 - Specular Workflow 下 Metallic Field 直接隐藏但 Controller 值不销毁；
+- PBR / Texture 统一挂载在一个 MaterialProperties Section 内，只使用 Spacing Group；
+- Workflow 不使用 Segmented Track，使用两个无容器 Choice + 显式状态点；
 - Color Editor Numeric Area 使用 RGB / HSV Rebind，同一时刻只挂一组通道；
 - HDR Color Editor 绑定 EmissionColor / NightEmissionColor；
 - HDR Intensity 是编辑 Adapter，最终重新合成为 HDR Color，不增加 Runtime 持久字段；
