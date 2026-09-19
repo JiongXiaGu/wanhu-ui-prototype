@@ -503,4 +503,10 @@ Material Palette Utility
 - Standard Color Editor 绑定 BaseColor / SpecularColor；
 - HDR Color Editor 绑定 EmissionColor / NightEmissionColor；
 - HDR Intensity 在 Controller 中作为编辑 Adapter，提交时重新合成为 HDR Color，不新增持久字段；
-- NightEmissionColor 的 Runtime Inspector 元数据应与 EmissionColor 一致支持 HDR。
+- NightEmissionColor 的 Runtime Inspector 元数据应与 EmissionColor 一致支持 HDR；
+- Surface Workflow 固定在 Body 底部；不同 Workflow 直接切换字段 Visibility，不销毁隐藏数据；
+- PlacementContextPanel / LeftContextPanel Footer 作为 Material Reset / Copy / Paste 的共享宿主；
+- Color Editor Numeric Area 使用 RGB / HSV Rebind，同一时刻只挂载一组通道；
+- Material Clipboard 由 Controller 持有：Surface Clipboard=完整 Draft，Color Clipboard=Hex/Alpha/HDR/Intensity；
+- Clipboard 不依赖 System Clipboard，未来可额外增加文本 HEX Adapter；
+- 连续颜色拖动正式 Unity 应由 BeginEdit / Preview / Commit 合并为一次 Undo Transaction。

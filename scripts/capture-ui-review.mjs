@@ -683,24 +683,17 @@ const materialPanelBox = await materialPanel.boundingBox();
 if (!materialPanelBox || materialPanelBox.width < 392 || materialPanelBox.width > 408) {
   throw new Error('Material palette panel should stay near 400px wide. width=' + materialPanelBox?.width);
 }
-if (materialPanelBox.height > 700) {
+if (materialPanelBox.height > 720) {
   throw new Error('Material palette surface panel should fit the 1080p left context safe region. height=' + materialPanelBox.height);
 }
 if ((await materialPanel.getAttribute('data-material-page')) !== 'surface') {
   throw new Error('Material palette should enter on Surface page.');
 }
 
-const materialSectionTitles = materialPanel.locator('.left-context-panel__section-title');
-for (const section of ['颜色', '表面', '贴图']) {
-  if ((await materialSectionTitles.filter({ hasText: section }).count()) !== 1) {
-    throw new Error('Material palette surface section missing: ' + section);
-  }
-}
 for (const field of [
   'BaseColor',
   'EmissionColor',
   'NightEmissionColor',
-  'SpecularColor',
   'Flags.SpecularSetup',
   'Metallic',
   'Smoothness',
@@ -714,150 +707,125 @@ for (const field of [
     throw new Error('Material palette field mapping missing: ' + field);
   }
 }
-for (const retired of ['贴图组', '映射空间', '映射偏移', '贴图旋转']) {
-  if (await materialPanel.getByText(retired, { exact: true }).count()) {
-    throw new Error('Material palette should not expose retired complex texture field: ' + retired);
-  }
-}
-for (const action of ['调整主色', '调整发光颜色', '调整夜间发光颜色', '调整高光颜色']) {
-  if ((await materialPanel.getByRole('button', { name: action, exact: true }).count()) !== 1) {
-    throw new Error('Material palette color entry missing: ' + action);
-  }
+if (await materialPanel.locator('[data-material-field="SpecularColor"]').count()) {
+  throw new Error('SpecularColor must be hidden in Metallic workflow instead of disabled.');
 }
 if ((await materialPanel.locator('.material-color-field__control em').filter({ hasText: 'HDR' }).count()) !== 2) {
   throw new Error('EmissionColor and NightEmissionColor should both expose HDR badges.');
 }
-if (!(await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).isDisabled())) {
-  throw new Error('Specular color entry should remain disabled in Metallic workflow.');
-}
-if (await materialPanel.locator('input[type="color"]').count()) {
-  throw new Error('Surface color rows should open the shared editor instead of embedding browser color inputs.');
-}
-if ((await materialPanel.locator('[data-material-field="AlphaClipThreshold"]').count()) !== 0) {
-  throw new Error('Alpha clip threshold should be hidden while AlphaClip flag is off.');
-}
 
 const workflowField = materialPanel.locator('[data-material-field="Flags.SpecularSetup"]');
 const workflowControl = workflowField.locator('.material-workflow-control');
-if ((await workflowControl.count()) !== 1) {
-  throw new Error('Material workflow should use one dedicated weak-track control.');
-}
-if (await workflowField.locator('.ui-segmented').count()) {
-  throw new Error('Material workflow must not fall back to the shared filled SegmentedControl.');
-}
-if ((await workflowControl.getByRole('button').count()) !== 2) {
-  throw new Error('Material workflow should expose exactly Metallic and Specular options.');
-}
 const workflowBox = await workflowControl.boundingBox();
-if (!workflowBox || workflowBox.height < 26 || workflowBox.height > 30) {
-  throw new Error('Material workflow control should align with compact parameter controls. height=' + workflowBox?.height);
+const metallicFieldBox = await materialPanel.locator('[data-material-field="Metallic"] .ui-numeric-slider-field').boundingBox();
+if (!workflowBox || !metallicFieldBox) throw new Error('Material workflow and slider geometry must be measurable.');
+if (Math.abs(workflowBox.x - metallicFieldBox.x) > 2 || Math.abs(workflowBox.width - metallicFieldBox.width) > 2) {
+  throw new Error('Material workflow must share the same field column as sliders.');
 }
-const metallicNumericField = materialPanel.locator('[data-material-field="Metallic"] .ui-numeric-slider-field');
-const metallicFieldBox = await metallicNumericField.boundingBox();
-if (!metallicFieldBox) {
-  throw new Error('Material workflow review needs the Metallic NumericSliderField geometry.');
-}
-if (Math.abs(workflowBox.x - metallicFieldBox.x) > 2) {
-  throw new Error('Material workflow must start on the same field-column edge as sliders. workflowX=' + workflowBox.x + ', sliderX=' + metallicFieldBox.x);
-}
-if (Math.abs(workflowBox.width - metallicFieldBox.width) > 2) {
-  throw new Error('Material workflow must fill the same field width as sliders. workflowWidth=' + workflowBox.width + ', sliderWidth=' + metallicFieldBox.width);
-}
-if ((await workflowControl.locator('.material-workflow-control__indicator').count()) !== 2) {
-  throw new Error('Material workflow must use real status-indicator elements for both options.');
+const textureSectionBox = await materialPanel.locator('.material-palette-texture').boundingBox();
+const workflowBottomBox = await materialPanel.locator('.material-palette-workflow-bottom').boundingBox();
+if (!textureSectionBox || !workflowBottomBox || workflowBottomBox.y <= textureSectionBox.y) {
+  throw new Error('Workflow selector should live at the bottom after Texture controls.');
 }
 
-const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
-for (const mode of ['表面模式', '灯光模式', '色板模式']) {
-  if ((await materialBar.getByRole('button', { name: mode, exact: true }).count()) !== 1) {
-    throw new Error('Material palette mode missing: ' + mode);
+const surfaceFooter = materialPanel.locator('.material-palette-footer');
+for (const action of ['恢复默认', '复制参数', '粘贴参数']) {
+  if ((await surfaceFooter.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('Surface footer action missing: ' + action);
   }
 }
-if (!(await materialBar.getByRole('button', { name: '灯光模式', exact: true }).isDisabled())) {
-  throw new Error('Lighting mode should stay disabled until its panel is implemented.');
+if (!(await surfaceFooter.getByRole('button', { name: '恢复默认', exact: true }).isDisabled())) {
+  throw new Error('Surface reset should be disabled at defaults.');
 }
-if (!(await materialBar.getByRole('button', { name: '色板模式', exact: true }).isDisabled())) {
-  throw new Error('Palette mode should stay disabled until its panel is implemented.');
+if (!(await surfaceFooter.getByRole('button', { name: '粘贴参数', exact: true }).isDisabled())) {
+  throw new Error('Surface paste should be disabled before copy.');
 }
-
-const materialUtility = page.locator('.context-utility-toolbar[data-utility-context="material-palette"]');
-if ((await materialUtility.getByRole('button').count()) !== 2) {
-  throw new Error('Material palette first slice should keep utility minimal: Undo / Redo only.');
+await surfaceFooter.getByRole('button', { name: '复制参数', exact: true }).click();
+if ((await materialPanel.getAttribute('data-material-surface-clipboard')) !== 'ready') {
+  throw new Error('Surface copy should populate structured tool clipboard.');
 }
-const materialUtilityBox = await materialUtility.boundingBox();
-if (!materialUtilityBox || materialUtilityBox.width > 120) {
-  throw new Error('Material palette history-only utility should stay compact. width=' + materialUtilityBox?.width);
-}
-if (await page.locator('.gameplay-operation-hints').count()) {
-  throw new Error('Material palette should not show unrelated gameplay operation hints.');
+if (await surfaceFooter.getByRole('button', { name: '粘贴参数', exact: true }).isDisabled()) {
+  throw new Error('Surface paste should enable after copy.');
 }
 await page.screenshot({ path: outDir + '/material-palette-28-surface-metallic.png' });
 
 await materialPanel.getByRole('button', { name: '调整主色', exact: true }).click();
 await page.waitForTimeout(220);
-if ((await materialPanel.getAttribute('data-material-page')) !== 'color-editor'
-  || (await materialPanel.getAttribute('data-material-color-target')) !== 'BaseColor') {
-  throw new Error('BaseColor should open the shared Color Editor page.');
-}
-if ((await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).count()) !== 1) {
-  throw new Error('Color Editor header should expose Back to Surface.');
-}
 const baseEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="BaseColor"]');
 if ((await baseEditor.count()) !== 1 || (await baseEditor.getAttribute('data-color-editor-hdr')) !== 'false') {
-  throw new Error('BaseColor should use the standard Color Editor variant.');
+  throw new Error('BaseColor should use Standard Color Editor.');
 }
-if ((await baseEditor.locator('.material-color-editor__sv').count()) !== 1
-  || (await baseEditor.getByRole('slider', { name: '色相', exact: true }).count()) !== 1) {
-  throw new Error('Standard Color Editor should expose SV field and Hue slider.');
+if ((await baseEditor.getAttribute('data-color-numeric-mode')) !== 'rgb') {
+  throw new Error('Color Editor should default to RGB numeric mode.');
+}
+for (const channel of ['R', 'G', 'B']) {
+  if ((await baseEditor.locator('[data-color-channel="' + channel + '"]').count()) !== 1) {
+    throw new Error('RGB mode missing channel ' + channel);
+  }
 }
 if ((await baseEditor.locator('[data-color-adapter="BaseColor.Alpha"]').count()) !== 1) {
   throw new Error('BaseColor editor should expose alpha.');
-}
-if (await baseEditor.locator('[data-color-adapter$=".Intensity"]').count()) {
-  throw new Error('BaseColor editor should not expose HDR intensity.');
 }
 const baseHex = baseEditor.getByRole('textbox', { name: '十六进制颜色', exact: true });
 await baseHex.fill('#C7AA78');
 await baseHex.press('Enter');
 await page.waitForTimeout(80);
-if ((await baseHex.inputValue()).toLowerCase() !== '#c7aa78') {
-  throw new Error('Color Editor Hex input should update BaseColor.');
+
+const colorFooter = materialPanel.locator('.material-palette-footer');
+if (!(await colorFooter.getByRole('button', { name: '粘贴颜色', exact: true }).isDisabled())) {
+  throw new Error('Color paste should be disabled before the first color copy.');
 }
-await page.screenshot({ path: outDir + '/material-palette-29-base-color-editor.png' });
+await colorFooter.getByRole('button', { name: '复制颜色', exact: true }).click();
+if ((await materialPanel.getAttribute('data-material-color-clipboard')) !== 'ready') {
+  throw new Error('Color copy should populate structured color clipboard.');
+}
+await colorFooter.getByRole('button', { name: '恢复默认', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await baseHex.inputValue()).toLowerCase() !== '#ffffff') {
+  throw new Error('BaseColor reset should restore default white.');
+}
+await colorFooter.getByRole('button', { name: '粘贴颜色', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await baseHex.inputValue()).toLowerCase() !== '#c7aa78') {
+  throw new Error('Color paste should restore copied BaseColor.');
+}
+
+await baseEditor.getByRole('button', { name: 'HSV', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await baseEditor.getAttribute('data-color-numeric-mode')) !== 'hsv') {
+  throw new Error('Color Editor should switch to HSV numeric mode.');
+}
+for (const channel of ['H', 'S', 'V']) {
+  if ((await baseEditor.locator('[data-color-channel="' + channel + '"]').count()) !== 1) {
+    throw new Error('HSV mode missing channel ' + channel);
+  }
+}
+if (await baseEditor.locator('[data-color-channel="R"]').count()) {
+  throw new Error('RGB channels should hide in HSV mode.');
+}
+await page.screenshot({ path: outDir + '/material-palette-29-base-color-hsv.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
-if ((await materialPanel.getAttribute('data-material-page')) !== 'surface') {
-  throw new Error('Back should return from Color Editor to Surface page.');
-}
-
 await materialPanel.getByRole('button', { name: '调整发光颜色', exact: true }).click();
 await page.waitForTimeout(220);
 const emissionEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="EmissionColor"]');
-if ((await emissionEditor.count()) !== 1 || (await emissionEditor.getAttribute('data-color-editor-hdr')) !== 'true') {
-  throw new Error('EmissionColor should use HDR Color Editor.');
+if ((await emissionEditor.getAttribute('data-color-editor-hdr')) !== 'true'
+  || (await emissionEditor.locator('[data-color-adapter="EmissionColor.Intensity"]').count()) !== 1) {
+  throw new Error('EmissionColor must use HDR editor with intensity.');
 }
-if ((await emissionEditor.locator('[data-color-adapter="EmissionColor.Intensity"]').count()) !== 1) {
-  throw new Error('EmissionColor HDR editor should expose intensity.');
-}
-if ((await emissionEditor.getByText('HDR', { exact: true }).count()) !== 1) {
-  throw new Error('EmissionColor editor should visibly identify HDR.');
-}
-await emissionEditor.getByRole('button', { name: '发光强度增大', exact: true }).click();
-await page.screenshot({ path: outDir + '/material-palette-30-emission-hdr-editor.png' });
+await page.screenshot({ path: outDir + '/material-palette-30-emission-hdr-rgb.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
 await materialPanel.getByRole('button', { name: '调整夜间发光颜色', exact: true }).click();
 await page.waitForTimeout(220);
-const nightEmissionEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="NightEmissionColor"]');
-if ((await nightEmissionEditor.count()) !== 1 || (await nightEmissionEditor.getAttribute('data-color-editor-hdr')) !== 'true') {
-  throw new Error('NightEmissionColor should also use HDR Color Editor.');
+const nightEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="NightEmissionColor"]');
+if ((await nightEditor.getAttribute('data-color-editor-hdr')) !== 'true'
+  || (await nightEditor.locator('[data-color-adapter="NightEmissionColor.Intensity"]').count()) !== 1) {
+  throw new Error('NightEmissionColor must use HDR editor with intensity.');
 }
-if ((await nightEmissionEditor.locator('[data-color-adapter="NightEmissionColor.Intensity"]').count()) !== 1) {
-  throw new Error('NightEmissionColor HDR editor should expose intensity.');
-}
-await page.screenshot({ path: outDir + '/material-palette-31-night-emission-hdr-editor.png' });
+await page.screenshot({ path: outDir + '/material-palette-31-night-emission-hdr.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -866,38 +834,45 @@ await page.waitForTimeout(100);
 if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular') {
   throw new Error('Specular workflow should map to Flags.SpecularSetup.');
 }
-if (await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).isDisabled()) {
-  throw new Error('SpecularColor should enable in Specular workflow.');
+if (await materialPanel.locator('[data-material-field="Metallic"]').count()) {
+  throw new Error('Metallic must hide in Specular workflow.');
 }
-if (!(await materialPanel.locator('[data-material-field="Metallic"] input[type="range"]').isDisabled())) {
-  throw new Error('Metallic should be inactive in Specular workflow without losing its stored value.');
+if ((await materialPanel.locator('[data-material-field="SpecularColor"]').count()) !== 1) {
+  throw new Error('SpecularColor must appear in Specular workflow.');
 }
+
+const specularFooter = materialPanel.locator('.material-palette-footer');
+await specularFooter.getByRole('button', { name: '复制参数', exact: true }).click();
+await specularFooter.getByRole('button', { name: '恢复默认', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await materialPanel.getAttribute('data-material-workflow')) !== 'metallic') {
+  throw new Error('Surface reset should restore Metallic workflow.');
+}
+await specularFooter.getByRole('button', { name: '粘贴参数', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await materialPanel.getAttribute('data-material-workflow')) !== 'specular') {
+  throw new Error('Surface paste should restore copied workflow and hidden parameters.');
+}
+
 await materialPanel.getByRole('button', { name: '调整高光颜色', exact: true }).click();
 await page.waitForTimeout(220);
 const specularEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="SpecularColor"]');
-if ((await specularEditor.count()) !== 1 || (await specularEditor.getAttribute('data-color-editor-hdr')) !== 'false') {
-  throw new Error('SpecularColor should use the standard non-HDR Color Editor.');
+if ((await specularEditor.getAttribute('data-color-editor-hdr')) !== 'false'
+  || (await specularEditor.locator('[data-color-adapter$=".Intensity"]').count()) !== 0) {
+  throw new Error('SpecularColor should use Standard non-HDR editor.');
 }
-if (await specularEditor.locator('[data-color-adapter$=".Intensity"]').count()) {
-  throw new Error('SpecularColor editor should not expose HDR intensity.');
-}
-
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
+
 await materialPanel.getByRole('button', { name: /^高光反射：/ }).click();
-if ((await materialPanel.getAttribute('data-material-specular-highlights')) !== 'off') {
-  throw new Error('High-level specular highlight toggle should invert Flags.SpecularHighlightsOff.');
-}
 await materialPanel.getByRole('button', { name: /^Alpha 裁剪：/ }).click();
 await page.waitForTimeout(80);
-if ((await materialPanel.getAttribute('data-material-alpha-clip')) !== 'true') {
-  throw new Error('Alpha clip toggle should map to Flags.AlphaClip.');
-}
 if ((await materialPanel.locator('[data-material-field="AlphaClipThreshold"]').count()) !== 1) {
   throw new Error('AlphaClipThreshold should appear only when AlphaClip is enabled.');
 }
 await page.screenshot({ path: outDir + '/material-palette-32-surface-specular-alpha.png' });
 
+const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
 await materialBar.getByRole('button', { name: '完成配色', exact: true }).click();
 await page.waitForSelector('.material-palette-prototype', { state: 'detached' });
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');

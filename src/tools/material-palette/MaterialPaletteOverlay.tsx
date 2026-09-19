@@ -5,7 +5,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import { Palette, RotateCcw } from 'lucide-react';
+import { ClipboardPaste, Copy, Palette, RotateCcw } from 'lucide-react';
 import { RuntimeParameterRow, TextInput, ToggleSwitch } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { MOTION_MS, useKeyedTransition, type MotionPhase } from '../../ui/motion';
@@ -14,6 +14,7 @@ import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 type MaterialWorkflow = '金属' | '高光';
 type MaterialColorTarget = 'BaseColor' | 'EmissionColor' | 'NightEmissionColor' | 'SpecularColor';
 type MaterialPageKey = 'surface' | `color:${MaterialColorTarget}`;
+type ColorNumericMode = 'RGB' | 'HSV';
 
 interface MaterialSurfaceDraft {
   baseColor: string;
@@ -43,6 +44,39 @@ interface ColorTargetDefinition {
   defaultAlpha?: number;
   defaultIntensity?: number;
 }
+
+interface ColorClipboardPayload {
+  hex: string;
+  hdr: boolean;
+  alpha?: number;
+  intensity?: number;
+}
+
+interface Props {
+  motionPhase?: MotionPhase;
+  onClose: () => void;
+  onDirty: () => void;
+}
+
+const DEFAULT_SURFACE_DRAFT: MaterialSurfaceDraft = {
+  baseColor: '#ffffff',
+  baseAlpha: 1,
+  emissionColor: '#000000',
+  emissionIntensity: 1,
+  nightEmissionColor: '#000000',
+  nightEmissionIntensity: 1,
+  // Web visual placeholder only. Unity keeps using MaterialSlotGpuDefaults.DielectricSpecularColor.
+  specularColor: '#0a0a0a',
+  workflow: '金属',
+  metallic: 0,
+  smoothness: 0.5,
+  occlusion: 1,
+  specularHighlights: true,
+  alphaClip: false,
+  alphaClipThreshold: 0,
+  textureTiling: 1,
+  textureBlendSharpness: 1,
+};
 
 const COLOR_TARGETS: Record<MaterialColorTarget, ColorTargetDefinition> = {
   BaseColor: {
@@ -78,10 +112,13 @@ const COLOR_TARGETS: Record<MaterialColorTarget, ColorTargetDefinition> = {
   },
 };
 
-interface Props {
-  motionPhase?: MotionPhase;
-  onClose: () => void;
-  onDirty: () => void;
+function cloneDraft(value: MaterialSurfaceDraft): MaterialSurfaceDraft {
+  return { ...value };
+}
+
+function draftsEqual(left: MaterialSurfaceDraft, right: MaterialSurfaceDraft) {
+  return (Object.keys(DEFAULT_SURFACE_DRAFT) as Array<keyof MaterialSurfaceDraft>)
+    .every((key) => Object.is(left[key], right[key]));
 }
 
 function clamp01(value: number) {
@@ -172,28 +209,49 @@ function MaterialWorkflowControl({
   );
 }
 
+function ColorNumericModeControl({
+  value,
+  onChange,
+}: {
+  value: ColorNumericMode;
+  onChange: (value: ColorNumericMode) => void;
+}) {
+  return (
+    <div className="material-color-model-control" role="group" aria-label="颜色数值模式">
+      {(['RGB', 'HSV'] as ColorNumericMode[]).map((item) => (
+        <button
+          key={item}
+          type="button"
+          aria-pressed={value === item}
+          className={value === item ? 'is-active' : ''}
+          onClick={() => onChange(item)}
+        >
+          {item}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function ColorFieldRow({
   label,
   value,
   hdr = false,
-  disabled = false,
   field,
   onOpen,
 }: {
   label: string;
   value: string;
   hdr?: boolean;
-  disabled?: boolean;
   field: MaterialColorTarget;
   onOpen: (field: MaterialColorTarget) => void;
 }) {
   return (
-    <div className={'material-color-field ui-parameter-row ' + (disabled ? 'is-disabled' : '')} data-material-field={field}>
+    <div className="material-color-field ui-parameter-row" data-material-field={field}>
       <span className="material-color-field__label">{label}</span>
       <button
         className="material-color-field__control"
         type="button"
-        disabled={disabled}
         aria-label={`调整${label}`}
         onClick={() => onOpen(field)}
       >
@@ -224,6 +282,56 @@ function ToggleFieldRow({
   );
 }
 
+function MaterialClipboardFooter({
+  resetLabel,
+  resetDisabled,
+  copyLabel,
+  pasteLabel,
+  pasteDisabled,
+  onReset,
+  onCopy,
+  onPaste,
+}: {
+  resetLabel: string;
+  resetDisabled: boolean;
+  copyLabel: string;
+  pasteLabel: string;
+  pasteDisabled: boolean;
+  onReset: () => void;
+  onCopy: () => void;
+  onPaste: () => void;
+}) {
+  return (
+    <>
+      <button
+        className="context-panel-reset-button material-footer-reset"
+        type="button"
+        disabled={resetDisabled}
+        onClick={onReset}
+      >
+        <RotateCcw aria-hidden="true" />
+        <span>{resetLabel}</span>
+      </button>
+      <div className="material-footer-copy-group">
+        <button className="material-footer-action" type="button" onClick={onCopy} aria-label={copyLabel}>
+          <Copy aria-hidden="true" />
+          <span>{copyLabel}</span>
+        </button>
+        <button
+          className="material-footer-action"
+          type="button"
+          disabled={pasteDisabled}
+          onClick={onPaste}
+          aria-label={pasteLabel}
+        >
+          <ClipboardPaste aria-hidden="true" />
+          <span>{pasteLabel}</span>
+        </button>
+      </div>
+    </>
+  );
+}
+
 function SurfacePage({
   draft,
   onUpdate,
@@ -234,41 +342,32 @@ function SurfacePage({
   onOpenColor: (target: MaterialColorTarget) => void;
 }) {
   const specularWorkflow = draft.workflow === '高光';
+
   return (
     <div className="material-palette-surface">
       <LeftContextSection title="颜色" className="material-palette-section material-palette-colors">
         <ColorFieldRow label="主色" value={draft.baseColor} field="BaseColor" onOpen={onOpenColor} />
         <ColorFieldRow label="发光颜色" value={draft.emissionColor} hdr field="EmissionColor" onOpen={onOpenColor} />
         <ColorFieldRow label="夜间发光颜色" value={draft.nightEmissionColor} hdr field="NightEmissionColor" onOpen={onOpenColor} />
-        <ColorFieldRow
-          label="高光颜色"
-          value={draft.specularColor}
-          disabled={!specularWorkflow}
-          field="SpecularColor"
-          onOpen={onOpenColor}
-        />
+        {specularWorkflow && (
+          <ColorFieldRow label="高光颜色" value={draft.specularColor} field="SpecularColor" onOpen={onOpenColor} />
+        )}
       </LeftContextSection>
 
       <LeftContextSection title="表面" className="material-palette-section material-palette-properties">
-        <div className="material-workflow-field ui-parameter-row" data-material-field="Flags.SpecularSetup">
-          <span>工作流</span>
-          <MaterialWorkflowControl
-            value={draft.workflow}
-            onChange={(value) => onUpdate('workflow', value)}
-          />
-        </div>
-        <div data-material-field="Metallic">
-          <RuntimeParameterRow
-            label="金属度"
-            value={draft.metallic}
-            min={0}
-            max={1}
-            step={0.01}
-            disabled={specularWorkflow}
-            format={(value) => value.toFixed(2)}
-            onChange={(value) => onUpdate('metallic', value)}
-          />
-        </div>
+        {!specularWorkflow && (
+          <div data-material-field="Metallic">
+            <RuntimeParameterRow
+              label="金属度"
+              value={draft.metallic}
+              min={0}
+              max={1}
+              step={0.01}
+              format={(value) => value.toFixed(2)}
+              onChange={(value) => onUpdate('metallic', value)}
+            />
+          </div>
+        )}
         <div data-material-field="Smoothness">
           <RuntimeParameterRow
             label="光滑度"
@@ -342,6 +441,13 @@ function SurfacePage({
           />
         </div>
       </LeftContextSection>
+
+      <div className="material-palette-workflow-bottom" data-material-field="Flags.SpecularSetup">
+        <div className="material-workflow-field ui-parameter-row">
+          <span>工作流</span>
+          <MaterialWorkflowControl value={draft.workflow} onChange={(value) => onUpdate('workflow', value)} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -354,7 +460,6 @@ function ColorEditorPage({
   onColorChange,
   onAlphaChange,
   onIntensityChange,
-  onReset,
 }: {
   definition: ColorTargetDefinition;
   color: string;
@@ -363,10 +468,11 @@ function ColorEditorPage({
   onColorChange: (value: string) => void;
   onAlphaChange?: (value: number) => void;
   onIntensityChange?: (value: number) => void;
-  onReset: () => void;
 }) {
   const hsv = useMemo(() => hexToHsv(color), [color]);
+  const rgb = useMemo(() => hexToRgb(color), [color]);
   const [hexDraft, setHexDraft] = useState(color.toUpperCase());
+  const [numericMode, setNumericMode] = useState<ColorNumericMode>('RGB');
 
   useEffect(() => setHexDraft(color.toUpperCase()), [color, definition.target]);
 
@@ -400,11 +506,25 @@ function ColorEditorPage({
     updateSvFromPointer(event);
   }
 
+  function updateRgb(channel: 'r' | 'g' | 'b', value: number) {
+    const next = { r: rgb.r, g: rgb.g, b: rgb.b };
+    next[channel] = clamp01(value / 255);
+    onColorChange(rgbToHex(next.r, next.g, next.b));
+  }
+
+  function updateHsv(channel: 'h' | 's' | 'v', value: number) {
+    const next = { ...hsv };
+    if (channel === 'h') next.h = value;
+    else next[channel] = clamp01(value / 100);
+    onColorChange(hsvToHex(next.h, next.s, next.v));
+  }
+
   return (
     <div
       className="material-color-editor"
       data-color-editor-target={definition.target}
       data-color-editor-hdr={definition.hdr ? 'true' : 'false'}
+      data-color-numeric-mode={numericMode.toLowerCase()}
     >
       <div
         className="material-color-editor__sv"
@@ -425,7 +545,7 @@ function ColorEditorPage({
         />
       </div>
 
-      <div className="material-color-editor__hue-row">
+      <div className="material-color-editor__hue-row ui-parameter-row">
         <span>色相</span>
         <input
           className="material-color-editor__hue-range"
@@ -444,15 +564,51 @@ function ColorEditorPage({
         className="material-color-editor__values"
         action={definition.hdr ? <span className="material-color-editor__hdr-badge">HDR</span> : undefined}
       >
-        <div className="material-color-editor__hex-row">
-          <i className="material-color-editor__preview-swatch" style={{ background: color }} aria-hidden="true" />
-          <TextInput
-            aria-label="十六进制颜色"
-            value={hexDraft}
-            onChange={(event) => setHexDraft(event.currentTarget.value)}
-            onBlur={commitHex}
-            onKeyDown={handleHexKeyDown}
-          />
+        <div className="material-color-editor__hex-field ui-parameter-row">
+          <span>HEX</span>
+          <div className="material-color-editor__hex-control">
+            <i className="material-color-editor__preview-swatch" style={{ background: color }} aria-hidden="true" />
+            <TextInput
+              aria-label="十六进制颜色"
+              value={hexDraft}
+              onChange={(event) => setHexDraft(event.currentTarget.value)}
+              onBlur={commitHex}
+              onKeyDown={handleHexKeyDown}
+            />
+          </div>
+        </div>
+
+        <div className="material-color-model-row ui-parameter-row">
+          <span>数值模式</span>
+          <ColorNumericModeControl value={numericMode} onChange={setNumericMode} />
+        </div>
+
+        <div className="material-color-channel-group">
+          {numericMode === 'RGB' ? (
+            <>
+              <div data-color-channel="R">
+                <RuntimeParameterRow label="R" value={Math.round(rgb.r * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('r', value)} />
+              </div>
+              <div data-color-channel="G">
+                <RuntimeParameterRow label="G" value={Math.round(rgb.g * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('g', value)} />
+              </div>
+              <div data-color-channel="B">
+                <RuntimeParameterRow label="B" value={Math.round(rgb.b * 255)} min={0} max={255} step={1} format={(value) => value.toFixed(0)} onChange={(value) => updateRgb('b', value)} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div data-color-channel="H">
+                <RuntimeParameterRow label="H" value={Math.round(hsv.h)} min={0} max={360} step={1} format={(value) => `${value.toFixed(0)}°`} onChange={(value) => updateHsv('h', value)} />
+              </div>
+              <div data-color-channel="S">
+                <RuntimeParameterRow label="S" value={Math.round(hsv.s * 100)} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateHsv('s', value)} />
+              </div>
+              <div data-color-channel="V">
+                <RuntimeParameterRow label="V" value={Math.round(hsv.v * 100)} min={0} max={100} step={1} format={(value) => `${value.toFixed(0)}%`} onChange={(value) => updateHsv('v', value)} />
+              </div>
+            </>
+          )}
         </div>
 
         {definition.alpha && alpha !== undefined && onAlphaChange && (
@@ -483,11 +639,6 @@ function ColorEditorPage({
           </div>
         )}
       </LeftContextSection>
-
-      <button className="material-color-editor__reset" type="button" onClick={onReset}>
-        <RotateCcw aria-hidden="true" />
-        <span>重置颜色</span>
-      </button>
     </div>
   );
 }
@@ -501,36 +652,26 @@ export function MaterialPaletteOverlay({
   onClose,
   onDirty,
 }: Props) {
-  const [draft, setDraft] = useState<MaterialSurfaceDraft>({
-    baseColor: '#ffffff',
-    baseAlpha: 1,
-    emissionColor: '#000000',
-    emissionIntensity: 1,
-    nightEmissionColor: '#000000',
-    nightEmissionIntensity: 1,
-    // Web visual placeholder only. Unity keeps using MaterialSlotGpuDefaults.DielectricSpecularColor.
-    specularColor: '#0a0a0a',
-    workflow: '金属',
-    metallic: 0,
-    smoothness: 0.5,
-    occlusion: 1,
-    specularHighlights: true,
-    alphaClip: false,
-    alphaClipThreshold: 0,
-    textureTiling: 1,
-    textureBlendSharpness: 1,
-  });
+  const [draft, setDraft] = useState<MaterialSurfaceDraft>(() => cloneDraft(DEFAULT_SURFACE_DRAFT));
   const [activeColorTarget, setActiveColorTarget] = useState<MaterialColorTarget | null>(null);
+  const [surfaceClipboard, setSurfaceClipboard] = useState<MaterialSurfaceDraft | null>(null);
+  const [colorClipboard, setColorClipboard] = useState<ColorClipboardPayload | null>(null);
 
   const requestedPage: MaterialPageKey = activeColorTarget ? `color:${activeColorTarget}` : 'surface';
   const pageTransition = useKeyedTransition<MaterialPageKey>(requestedPage, MOTION_MS.surface);
   const pageDirection = activeColorTarget ? 'forward' : 'back';
   const currentDefinition = activeColorTarget ? COLOR_TARGETS[activeColorTarget] : null;
   const specularWorkflow = draft.workflow === '高光';
+  const surfaceModified = !draftsEqual(draft, DEFAULT_SURFACE_DRAFT);
 
   function update<K extends keyof MaterialSurfaceDraft>(key: K, value: MaterialSurfaceDraft[K]) {
     if (Object.is(draft[key], value)) return;
     setDraft((current) => ({ ...current, [key]: value }));
+    onDirty();
+  }
+
+  function replaceDraft(next: MaterialSurfaceDraft) {
+    setDraft(cloneDraft(next));
     onDirty();
   }
 
@@ -561,10 +702,50 @@ export function MaterialPaletteOverlay({
 
   function resetColor(target: MaterialColorTarget) {
     const definition = COLOR_TARGETS[target];
+    const currentColor = colorForTarget(target);
+    const currentIntensity = intensityForTarget(target);
+    const currentAlpha = target === 'BaseColor' ? draft.baseAlpha : undefined;
+    const nextAlpha = definition.defaultAlpha;
+    const nextIntensity = definition.defaultIntensity;
+    const alreadyDefault = currentColor === definition.defaultHex
+      && (nextAlpha === undefined || Object.is(currentAlpha, nextAlpha))
+      && (nextIntensity === undefined || Object.is(currentIntensity, nextIntensity));
+    if (alreadyDefault) return;
     updateColor(target, definition.defaultHex);
     if (target === 'BaseColor') update('baseAlpha', definition.defaultAlpha ?? 1);
     if (target === 'EmissionColor') update('emissionIntensity', definition.defaultIntensity ?? 1);
     if (target === 'NightEmissionColor') update('nightEmissionIntensity', definition.defaultIntensity ?? 1);
+  }
+
+  function isColorDefault(target: MaterialColorTarget) {
+    const definition = COLOR_TARGETS[target];
+    if (colorForTarget(target) !== definition.defaultHex) return false;
+    if (target === 'BaseColor' && !Object.is(draft.baseAlpha, definition.defaultAlpha ?? 1)) return false;
+    if (target === 'EmissionColor' && !Object.is(draft.emissionIntensity, definition.defaultIntensity ?? 1)) return false;
+    if (target === 'NightEmissionColor' && !Object.is(draft.nightEmissionIntensity, definition.defaultIntensity ?? 1)) return false;
+    return true;
+  }
+
+  function copyCurrentColor(target: MaterialColorTarget) {
+    const definition = COLOR_TARGETS[target];
+    setColorClipboard({
+      hex: colorForTarget(target),
+      hdr: definition.hdr,
+      alpha: definition.alpha && target === 'BaseColor' ? draft.baseAlpha : undefined,
+      intensity: definition.hdr ? intensityForTarget(target) : undefined,
+    });
+  }
+
+  function pasteCurrentColor(target: MaterialColorTarget) {
+    if (!colorClipboard) return;
+    updateColor(target, colorClipboard.hex);
+    const definition = COLOR_TARGETS[target];
+    if (definition.alpha && target === 'BaseColor' && colorClipboard.alpha !== undefined) {
+      update('baseAlpha', colorClipboard.alpha);
+    }
+    if (definition.hdr && colorClipboard.hdr && colorClipboard.intensity !== undefined) {
+      updateIntensity(target, colorClipboard.intensity);
+    }
   }
 
   function renderPage(page: MaterialPageKey, phase: MotionPhase, outgoing = false) {
@@ -596,11 +777,34 @@ export function MaterialPaletteOverlay({
           onColorChange={(value) => updateColor(target, value)}
           onAlphaChange={target === 'BaseColor' ? (value) => update('baseAlpha', value) : undefined}
           onIntensityChange={definition.hdr ? (value) => updateIntensity(target, value) : undefined}
-          onReset={() => resetColor(target)}
         />
       </div>
     );
   }
+
+  const footer = activeColorTarget ? (
+    <MaterialClipboardFooter
+      resetLabel="恢复默认"
+      resetDisabled={isColorDefault(activeColorTarget)}
+      copyLabel="复制颜色"
+      pasteLabel="粘贴颜色"
+      pasteDisabled={!colorClipboard}
+      onReset={() => resetColor(activeColorTarget)}
+      onCopy={() => copyCurrentColor(activeColorTarget)}
+      onPaste={() => pasteCurrentColor(activeColorTarget)}
+    />
+  ) : (
+    <MaterialClipboardFooter
+      resetLabel="恢复默认"
+      resetDisabled={!surfaceModified}
+      copyLabel="复制参数"
+      pasteLabel="粘贴参数"
+      pasteDisabled={!surfaceClipboard}
+      onReset={() => replaceDraft(DEFAULT_SURFACE_DRAFT)}
+      onCopy={() => setSurfaceClipboard(cloneDraft(draft))}
+      onPaste={() => surfaceClipboard && replaceDraft(surfaceClipboard)}
+    />
+  );
 
   return (
     <PlacementContextPanel
@@ -611,6 +815,8 @@ export function MaterialPaletteOverlay({
       closeLabel="退出配色工具"
       backLabel="返回表面参数"
       onBack={activeColorTarget ? () => setActiveColorTarget(null) : undefined}
+      footerClassName="material-palette-footer"
+      footer={footer}
       className={'material-palette-prototype motion-left-surface is-' + motionPhase}
       bodyClassName="material-palette-prototype__body"
       onClose={onClose}
@@ -621,6 +827,8 @@ export function MaterialPaletteOverlay({
         'data-material-workflow': specularWorkflow ? 'specular' : 'metallic',
         'data-material-alpha-clip': draft.alphaClip ? 'true' : 'false',
         'data-material-specular-highlights': draft.specularHighlights ? 'on' : 'off',
+        'data-material-surface-clipboard': surfaceClipboard ? 'ready' : 'empty',
+        'data-material-color-clipboard': colorClipboard ? 'ready' : 'empty',
       }}
     >
       <div className="material-palette-page-host">

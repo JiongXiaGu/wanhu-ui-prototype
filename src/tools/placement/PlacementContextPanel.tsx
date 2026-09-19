@@ -10,6 +10,8 @@ export interface PlacementContextPanelProps {
   closeLabel: string;
   backLabel?: string;
   onBack?: () => void;
+  footer?: ReactNode;
+  footerClassName?: string;
   className?: string;
   bodyClassName?: string;
   onClose: () => void;
@@ -32,6 +34,8 @@ export function PlacementContextPanel({
   closeLabel,
   backLabel,
   onBack,
+  footer,
+  footerClassName = '',
   className = '',
   bodyClassName = '',
   onClose,
@@ -48,6 +52,8 @@ export function PlacementContextPanel({
       closeLabel={closeLabel}
       backLabel={backLabel}
       onBack={onBack}
+      footer={footer}
+      footerClassName={footerClassName}
       className={`placement-context-panel ${className}`.trim()}
       bodyClassName={`placement-context-panel__body ${bodyClassName}`.trim()}
       onClose={onClose}

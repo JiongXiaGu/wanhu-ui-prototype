@@ -88,3 +88,21 @@ Surface Color Row 不再使用浏览器原生 Color Input 直接编辑。
 - Color Editor 提供 SV / Hue / Hex / Reset；
 - HDR Intensity 是 UI Adapter，不新增 Runtime 持久字段；
 - NightEmissionColor 在产品定义中升级为 HDR，Unity Inspector 元数据后续需同步。
+
+
+## Surface Footer / Workflow / 精确颜色编辑
+
+本轮继续收束 Material Palette：
+
+- Workflow 从 PBR 参数区移动到 Surface Body 最底部；
+- Metallic 模式隐藏 SpecularColor；Specular 模式隐藏 Metallic；隐藏值不清空；
+- PlacementContextPanel 正式支持透传 Left Context Footer；
+- Surface Footer：恢复默认 / 复制参数 / 粘贴参数；
+- Surface Clipboard 保存完整 Draft，包括隐藏工作流值与 HDR Adapter；
+- Color Editor Footer：恢复默认 / 复制颜色 / 粘贴颜色；
+- Color Clipboard 保存 Hex / Alpha? / HDR / Intensity?，支持 Standard/HDR 跨类型粘贴；
+- Color Editor 增加常驻 HEX；
+- 精确数值区增加 RGB / HSV 模式切换；
+- RGB 使用 0–255；HSV 使用 H 0–360° / S,V 0–100%；
+- 不同时显示 RGB+HSV 六条 Slider，避免 400px 面板过长；
+- Clipboard 为 Tool Session 状态，不依赖 Web Clipboard API，方便迁 Unity Controller。

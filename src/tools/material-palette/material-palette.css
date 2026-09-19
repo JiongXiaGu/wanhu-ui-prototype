@@ -134,6 +134,12 @@
 }
 .material-toggle-field .ui-toggle{margin-left:auto}
 
+.material-palette-workflow-bottom{
+  margin-top:1px;
+  padding:10px 1px 2px;
+  border-top:1px solid var(--wanhu-surface-context-rule,rgba(238,233,223,.055));
+}
+
 .material-palette-properties [data-material-field="Metallic"] .runtime-parameter-row,
 .material-palette-properties [data-material-field="Smoothness"] .runtime-parameter-row,
 .material-palette-properties [data-material-field="Occlusion"] .runtime-parameter-row,
@@ -257,13 +263,16 @@
   font-weight:600;
   letter-spacing:.08em;
 }
-.material-color-editor__hex-row{
-  min-height:38px;
+.material-color-editor__hex-field,
+.material-color-model-row{
+  min-height:35px;
+}
+.material-color-editor__hex-control{
+  min-width:0;
   display:grid;
   grid-template-columns:30px minmax(0,1fr);
   align-items:center;
   gap:8px;
-  margin-bottom:3px;
 }
 .material-color-editor__preview-swatch{
   width:30px;
@@ -272,7 +281,7 @@
   border-radius:8px;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);
 }
-.material-color-editor__hex-row .ui-text-input{
+.material-color-editor__hex-control .ui-text-input{
   width:100%;
   height:30px;
   text-transform:uppercase;
@@ -280,37 +289,101 @@
   letter-spacing:.04em;
   font-variant-numeric:tabular-nums;
 }
-.material-color-editor__values .runtime-parameter-row{
-  padding-left:0;
-  padding-right:0;
-}
-.material-color-editor__reset{
-  min-height:30px;
-  margin-top:8px;
-  padding:0 8px;
+.material-color-model-control{
+  width:100%;
+  min-width:0;
+  height:28px;
+  padding:2px;
   display:flex;
-  align-items:center;
-  gap:7px;
-  border:0;
+  align-items:stretch;
+  border:1px solid rgba(238,233,223,.072);
   border-radius:8px;
+  background:rgba(255,255,255,.014);
+}
+.material-color-model-control>button{
+  flex:1 1 50%;
+  min-width:0;
+  padding:0;
+  border:0;
   background:transparent;
-  color:#858a85;
+  color:#999e98;
   font:inherit;
   font-size:9px;
   cursor:pointer;
   transition-property:background,color;
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
-.material-color-editor__reset:hover{
-  background:rgba(255,255,255,.025);
-  color:#c9c4ba;
+.material-color-model-control>button+button{
+  border-left:1px solid rgba(238,233,223,.045);
 }
-.material-color-editor__reset:focus-visible{
+.material-color-model-control>button:hover{
+  background:rgba(255,255,255,.020);
+  color:#c3bfb6;
+}
+.material-color-model-control>button.is-active,
+.material-color-model-control>button[aria-pressed="true"]{
+  background:rgba(169,132,75,.045);
+  color:#ddd7cb;
+}
+.material-color-model-control>button:focus-visible{
   outline:1px solid rgba(189,153,89,.38);
+  outline-offset:-2px;
+}
+.material-color-channel-group{
+  min-width:0;
+}
+.material-color-editor__values .runtime-parameter-row{
+  padding-left:0;
+  padding-right:0;
+}
+
+/* Material footer ----------------------------------------------------------- */
+.material-palette-footer{
+  gap:8px;
+}
+.material-palette-footer .material-footer-reset{
+  flex:0 0 auto;
+}
+.material-footer-copy-group{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:2px;
+}
+.material-footer-action{
+  height:32px;
+  min-height:32px;
+  padding:0 8px;
+  border:0;
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  background:transparent;
+  color:#9d9f9a;
+  font:inherit;
+  font-size:9px;
+  font-weight:560;
+  cursor:pointer;
+  transition-property:background,color;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.material-footer-action svg{
+  width:13px;
+  height:13px;
+  stroke-width:1.8;
+}
+.material-footer-action:hover:not(:disabled){
+  background:var(--wanhu-control-hover-strong,rgba(255,255,255,.052));
+  color:var(--wanhu-color-paper-primary,#eee9df);
+}
+.material-footer-action:focus-visible{
+  outline:1px solid rgba(169,132,75,.40);
   outline-offset:1px;
 }
-.material-color-editor__reset svg{
-  width:14px;
-  height:14px;
-  stroke-width:1.7;
+.material-footer-action:disabled{
+  opacity:.34;
+  cursor:default;
 }
+
