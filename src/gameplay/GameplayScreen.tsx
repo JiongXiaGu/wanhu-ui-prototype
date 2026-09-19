@@ -8,6 +8,7 @@ import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlace
 import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
 import { RoadPlacementDock } from '../tools/road-placement/RoadPlacementDock';
 import { TerrainEditTool } from '../tools/terrain-edit/TerrainEditTool';
+import { TreePlacementTool } from '../tools/tree-placement/TreePlacementTool';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -157,6 +158,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           terrainContours={state.terrainContours}
           terrainSlopeView={state.terrainSlopeView}
           terrainProtectBuilt={state.terrainProtectBuilt}
+          treeAvoidBuildings={state.treeAvoidBuildings}
+          treeAvoidRoads={state.treeAvoidRoads}
           onToggleGridSnap={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}
           onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
           onUndo={() => dispatch({ type: 'UNDO' })}
@@ -164,6 +167,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleTerrainContours={() => dispatch({ type: 'TOGGLE_TERRAIN_CONTOURS' })}
           onToggleTerrainSlopeView={() => dispatch({ type: 'TOGGLE_TERRAIN_SLOPE_VIEW' })}
           onToggleTerrainProtection={() => dispatch({ type: 'TOGGLE_TERRAIN_PROTECTION' })}
+          onToggleTreeAvoidBuildings={() => dispatch({ type: 'TOGGLE_TREE_AVOID_BUILDINGS' })}
+          onToggleTreeAvoidRoads={() => dispatch({ type: 'TOGGLE_TREE_AVOID_ROADS' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
@@ -187,9 +192,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           definition={renderedWorkspace}
           motionPhase={workspacePresence.phase}
           onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
-          onSelectItem={() => {
+          onSelectItem={(item) => {
             if (renderedWorkspace.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
             if (renderedWorkspace.id === 'road') dispatch({ type: 'ENTER_ROAD_PLACEMENT' });
+            if (renderedWorkspace.id === 'tree') dispatch({ type: 'ENTER_TREE_PLACEMENT', speciesId: item.id, speciesName: item.name });
           }}
         />
       )}
@@ -238,7 +244,11 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         />
       )}
 
-      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && (
+      {toolPresence.mounted && renderedTool === 'tree-placement' && (
+        <TreePlacementTool state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onExit={exitTool} />
+      )}
+
+      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && (
         <GameplayOperationHints
           tool={state.tool}
           adjustmentMode={state.adjustmentMode}

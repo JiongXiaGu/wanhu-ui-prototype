@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import type { Tool } from '../app/ui-state';
 
-export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit';
+export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement';
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'unlock'
@@ -38,7 +38,9 @@ export type UtilityItemId =
   | 'road-connect-node'
   | 'terrain-contours'
   | 'terrain-slope-view'
-  | 'terrain-protect-built';
+  | 'terrain-protect-built'
+  | 'tree-avoid-buildings'
+  | 'tree-avoid-roads';
 
 interface UtilityItem {
   id: UtilityItemId;
@@ -56,6 +58,8 @@ interface ContextUtilityToolbarProps {
   terrainContours: boolean;
   terrainSlopeView: boolean;
   terrainProtectBuilt: boolean;
+  treeAvoidBuildings: boolean;
+  treeAvoidRoads: boolean;
   onToggleGridSnap: () => void;
   onToggleGridVisible: () => void;
   onUndo: () => void;
@@ -63,6 +67,8 @@ interface ContextUtilityToolbarProps {
   onToggleTerrainContours: () => void;
   onToggleTerrainSlopeView: () => void;
   onToggleTerrainProtection: () => void;
+  onToggleTreeAvoidBuildings: () => void;
+  onToggleTreeAvoidRoads: () => void;
   onToolAction: (id: UtilityItemId) => void;
 }
 
@@ -129,17 +135,30 @@ const TERRAIN_GROUPS: readonly (readonly UtilityItem[])[] = [
   ],
 ];
 
+const TREE_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'tree-avoid-buildings', label: '避让建筑', icon: Building2, kind: 'toggle' },
+    { id: 'tree-avoid-roads', label: '避让道路', icon: Route, kind: 'toggle' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
 const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> = {
   world: WORLD_GROUPS,
   'building-placement': BUILDING_GROUPS,
   'road-placement': ROAD_GROUPS,
   'terrain-edit': TERRAIN_GROUPS,
+  'tree-placement': TREE_GROUPS,
 };
 
 function contextForTool(tool: Tool): UtilityContext {
   if (tool === 'building-placement') return 'building-placement';
   if (tool === 'road-placement') return 'road-placement';
   if (tool === 'terrain-edit') return 'terrain-edit';
+  if (tool === 'tree-placement') return 'tree-placement';
   return 'world';
 }
 
@@ -147,6 +166,7 @@ function ariaLabelForContext(context: UtilityContext) {
   if (context === 'building-placement') return '建筑放置辅助工具';
   if (context === 'road-placement') return '道路铺设辅助工具';
   if (context === 'terrain-edit') return '地形编辑辅助工具';
+  if (context === 'tree-placement') return '树木放置辅助工具';
   return '世界工具';
 }
 
@@ -159,6 +179,8 @@ export function ContextUtilityToolbar({
   terrainContours,
   terrainSlopeView,
   terrainProtectBuilt,
+  treeAvoidBuildings,
+  treeAvoidRoads,
   onToggleGridSnap,
   onToggleGridVisible,
   onUndo,
@@ -166,6 +188,8 @@ export function ContextUtilityToolbar({
   onToggleTerrainContours,
   onToggleTerrainSlopeView,
   onToggleTerrainProtection,
+  onToggleTreeAvoidBuildings,
+  onToggleTreeAvoidRoads,
   onToolAction,
 }: ContextUtilityToolbarProps) {
   const requestedContext = contextForTool(tool);
@@ -204,6 +228,8 @@ export function ContextUtilityToolbar({
     if (item.id === 'terrain-contours') return { active: terrainContours, pressed: terrainContours, onClick: onToggleTerrainContours };
     if (item.id === 'terrain-slope-view') return { active: terrainSlopeView, pressed: terrainSlopeView, onClick: onToggleTerrainSlopeView };
     if (item.id === 'terrain-protect-built') return { active: terrainProtectBuilt, pressed: terrainProtectBuilt, onClick: onToggleTerrainProtection };
+    if (item.id === 'tree-avoid-buildings') return { active: treeAvoidBuildings, pressed: treeAvoidBuildings, onClick: onToggleTreeAvoidBuildings };
+    if (item.id === 'tree-avoid-roads') return { active: treeAvoidRoads, pressed: treeAvoidRoads, onClick: onToggleTreeAvoidRoads };
     if (item.kind === 'action') return { onClick: () => onToolAction(item.id) };
     return {};
   }

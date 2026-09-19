@@ -3,9 +3,10 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit';
+export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
+export type TreePlacementMode = 'brush' | 'single';
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
 export type RoadDrawMode = 'smart-curve' | 'curve' | 'straight';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
@@ -71,6 +72,12 @@ export interface GameplayUiState {
   terrainContours: boolean;
   terrainSlopeView: boolean;
   terrainProtectBuilt: boolean;
+  treePlacementMode: TreePlacementMode;
+  treeSpeciesId: string;
+  treeSpeciesName: string;
+  treeVariant: number;
+  treeAvoidBuildings: boolean;
+  treeAvoidRoads: boolean;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
@@ -97,6 +104,12 @@ export const initialGameplayUiState: GameplayUiState = {
   terrainContours: false,
   terrainSlopeView: false,
   terrainProtectBuilt: true,
+  treePlacementMode: 'brush',
+  treeSpeciesId: 'tree-pine',
+  treeSpeciesName: '油松',
+  treeVariant: 0,
+  treeAvoidBuildings: true,
+  treeAvoidRoads: true,
   adjustmentMode: 'position',
   roadDrawMode: 'smart-curve',
   gridSnap: true,
@@ -111,6 +124,7 @@ export type GameplayUiAction =
   | { type: 'CLOSE_WORKSPACE' }
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'ENTER_ROAD_PLACEMENT' }
+  | { type: 'ENTER_TREE_PLACEMENT'; speciesId: string; speciesName: string }
   | { type: 'ENTER_TERRAIN_EDIT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
@@ -126,6 +140,10 @@ export type GameplayUiAction =
   | { type: 'TOGGLE_TERRAIN_CONTOURS' }
   | { type: 'TOGGLE_TERRAIN_SLOPE_VIEW' }
   | { type: 'TOGGLE_TERRAIN_PROTECTION' }
+  | { type: 'SET_TREE_PLACEMENT_MODE'; mode: TreePlacementMode }
+  | { type: 'SET_TREE_VARIANT'; variant: number }
+  | { type: 'TOGGLE_TREE_AVOID_BUILDINGS' }
+  | { type: 'TOGGLE_TREE_AVOID_ROADS' }
   | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
   | { type: 'SET_ROAD_DRAW_MODE'; mode: RoadDrawMode }
   | { type: 'TOGGLE_GRID_SNAP' }
@@ -207,6 +225,23 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapView: 'default',
         mapPanelOpen: false,
         roadDrawMode: 'smart-curve',
+        canUndo: false,
+        canRedo: false,
+      };
+    case 'ENTER_TREE_PLACEMENT':
+      return {
+        ...state,
+        toolOrigin: captureToolOrigin(state),
+        workspace: 'none',
+        tool: 'tree-placement',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        treePlacementMode: 'brush',
+        treeSpeciesId: action.speciesId,
+        treeSpeciesName: action.speciesName,
+        treeVariant: 0,
         canUndo: false,
         canRedo: false,
       };
@@ -315,6 +350,14 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return { ...state, terrainSlopeView: !state.terrainSlopeView };
     case 'TOGGLE_TERRAIN_PROTECTION':
       return { ...state, terrainProtectBuilt: !state.terrainProtectBuilt };
+    case 'SET_TREE_PLACEMENT_MODE':
+      return { ...state, treePlacementMode: action.mode, treeVariant: action.mode === 'single' && state.treeVariant === 0 ? 1 : state.treeVariant };
+    case 'SET_TREE_VARIANT':
+      return { ...state, treeVariant: Math.max(0, Math.min(8, action.variant)) };
+    case 'TOGGLE_TREE_AVOID_BUILDINGS':
+      return { ...state, treeAvoidBuildings: !state.treeAvoidBuildings };
+    case 'TOGGLE_TREE_AVOID_ROADS':
+      return { ...state, treeAvoidRoads: !state.treeAvoidRoads };
     case 'SET_ADJUSTMENT_MODE':
       return { ...state, adjustmentMode: action.mode, canUndo: true, canRedo: false };
     case 'SET_ROAD_DRAW_MODE':

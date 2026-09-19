@@ -24,6 +24,7 @@
 - Utility Toolbar / Main Dock
 - Building Selection Workspace
 - Building Placement ToolOverlay / Tool Dock
+- Terrain Edit / Tree Placement Tool
 - GameplayOperationHints
 - Camera / Weather Right Edge Flyout
 - Pause Layer

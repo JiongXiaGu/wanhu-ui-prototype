@@ -15,6 +15,9 @@ export type ReviewScenario =
   | 'workspace-bridge'
   | 'workspace-building'
   | 'workspace-city-wall'
+  | 'workspace-tree'
+  | 'tree-brush'
+  | 'tree-single'
   | 'building-position'
   | 'building-massing'
   | 'building-roof'
@@ -37,7 +40,7 @@ export interface ReviewBootstrap {
   loadingProgress?: number;
 }
 
-function designWorkspace(gameplay: GameplayUiState, dockCategory: 'road' | 'bridge' | 'building' | 'city-wall'): ReviewBootstrap {
+function designWorkspace(gameplay: GameplayUiState, dockCategory: 'road' | 'bridge' | 'building' | 'city-wall' | 'tree'): ReviewBootstrap {
   return {
     screen: 'gameplay',
     gameplay: { ...gameplay, workspace: 'design', dockMode: 'design', dockCategory },
@@ -73,6 +76,12 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return designWorkspace(gameplay, 'building');
     case 'workspace-city-wall':
       return designWorkspace(gameplay, 'city-wall');
+    case 'workspace-tree':
+      return designWorkspace(gameplay, 'tree');
+    case 'tree-brush':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'tree-placement', toolOrigin: { kind: 'design-workspace', category: 'tree' }, dockMode: 'design', dockCategory: 'tree', treeSpeciesId: 'tree-pine', treeSpeciesName: '油松', treePlacementMode: 'brush', treeVariant: 0 } };
+    case 'tree-single':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'tree-placement', toolOrigin: { kind: 'design-workspace', category: 'tree' }, dockMode: 'design', dockCategory: 'tree', treeSpeciesId: 'tree-willow', treeSpeciesName: '垂柳', treePlacementMode: 'single', treeVariant: 3 } };
     case 'building-position':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building' } };
     case 'building-massing':

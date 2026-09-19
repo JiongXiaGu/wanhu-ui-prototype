@@ -200,3 +200,25 @@ Terrain Brush Preview DOM
 - Legacy Class 从 DOM 删除，不作为兼容钩子长期保留；
 - Shared Control 的结构 Owner 必须显式声明关键 Layout，不依赖“旧规则刚好没命中”；
 - UI Review 对 Building / Road / Terrain 同时测量 NumericSliderField 是否填满 ParameterRow。
+
+
+## 12. Tree Placement Vertical Slice
+
+树木放置继续复用现有 Tool Space，不建立新的 Web-only 空间模型。
+
+```text
+GameplayUiState.tool = tree-placement
+  → TreePlacementController
+Tree Left Context → TreePlacementContext.uxml
+ToolActionBar → Brush / Single Definition
+Tree Context Utility → UtilityToolbarHost.Rebind(Tree)
+Brush / Selected Tree Preview DOM → TreePlacementWorldRenderer / Selection Gizmo
+```
+
+- 一个 Tree Species 最多 8 个 Variant；
+- Variant 只表示树形差异，不承载 Season / Growth / LOD；
+- Brush 参数只保留 Radius / Density / Scale Randomness；
+- Single 只暴露统一 Scale，不做 XYZ 非等比缩放；
+- 单棵放置与已有单棵编辑共用同一个 Single Mode；
+- Undo / Redo 进入正式 World Command History；
+- 树木避让建筑 / 道路属于 World Placement Query，不由 UI Toolkit 实现。
