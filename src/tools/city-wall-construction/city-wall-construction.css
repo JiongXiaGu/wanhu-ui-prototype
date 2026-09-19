@@ -1,0 +1,86 @@
+/* City Wall Construction business content + Web world-preview placeholder only.
+   Shared shell/material/control ownership remains in Placement / Left Context systems. */
+
+.city-wall-construction-context{display:flex;flex-direction:column;gap:0}
+.city-wall-construction-summary p{margin:2px 0 0;color:#7f8780;font-size:9px;line-height:1.7}
+.city-wall-construction-summary__metrics{margin-top:9px;display:flex;align-items:center;gap:14px;color:#858c84;font-size:8.5px;font-variant-numeric:tabular-nums}
+.city-wall-construction-summary__metrics b{color:#bbb8ae;font-weight:500}
+.city-wall-construction-summary .left-context-panel__section-title,
+.city-wall-construction-parameters .left-context-panel__section-title,
+.city-wall-construction-metrics .left-context-panel__section-title{margin-bottom:5px}
+
+.city-wall-construction__segment-row .segment{min-width:0}
+.city-wall-construction-metrics>div{display:flex;align-items:center;gap:14px;min-height:28px;color:#858c84;font-size:8.5px;font-variant-numeric:tabular-nums}
+.city-wall-construction-metrics span{display:flex;gap:5px;white-space:nowrap}
+.city-wall-construction-metrics b{color:#bbb8ae;font-weight:500}
+
+.city-wall-path-preview{
+  position:absolute;
+  z-index:8;
+  left:58%;
+  top:53%;
+  width:420px;
+  height:220px;
+  translate:-50% -50%;
+  pointer-events:none;
+  filter:drop-shadow(0 3px 5px rgba(5,8,7,.28));
+}
+.city-wall-path-preview__segment{
+  position:absolute;
+  height:18px;
+  border:1px solid rgba(226,220,208,.42);
+  background:linear-gradient(180deg,rgba(93,93,84,.54),rgba(49,51,47,.58));
+  transform-origin:0 50%;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+.city-wall-path-preview__segment--1{left:38px;top:132px;width:128px;rotate:-10deg}
+.city-wall-path-preview__segment--2{left:163px;top:110px;width:124px;rotate:8deg}
+.city-wall-path-preview__segment--3{left:285px;top:127px;width:98px;rotate:-18deg;opacity:.72}
+.city-wall-path-preview--straight .city-wall-path-preview__segment--1{left:36px;top:122px;width:150px;rotate:0deg}
+.city-wall-path-preview--straight .city-wall-path-preview__segment--2{left:184px;top:122px;width:154px;rotate:0deg}
+.city-wall-path-preview--straight .city-wall-path-preview__segment--3{left:336px;top:122px;width:62px;rotate:0deg}
+.city-wall-path-preview--curve .city-wall-path-preview__segment{height:14px;border-radius:12px}
+.city-wall-path-preview--curve .city-wall-path-preview__segment--1{rotate:-16deg}
+.city-wall-path-preview--curve .city-wall-path-preview__segment--2{rotate:12deg}
+.city-wall-path-preview--curve .city-wall-path-preview__segment--3{rotate:-24deg}
+
+.city-wall-path-preview__top-line{
+  position:absolute;
+  left:40px;
+  top:103px;
+  width:344px;
+  height:1px;
+  border-top:1px dashed rgba(185,153,91,.62);
+  rotate:-1deg;
+  opacity:.8;
+}
+.city-wall-path-preview__node{
+  position:absolute;
+  width:9px;
+  height:9px;
+  border:1px solid rgba(234,228,216,.78);
+  border-radius:50%;
+  background:rgba(34,38,34,.94);
+  box-shadow:0 0 0 2px rgba(8,10,9,.20);
+}
+.city-wall-path-preview__node--1{left:34px;top:137px}
+.city-wall-path-preview__node--2{left:159px;top:115px}
+.city-wall-path-preview__node--3{left:282px;top:131px}
+.city-wall-path-preview__node--4{left:378px;top:101px;border-color:rgba(189,153,89,.82)}
+.city-wall-path-preview--straight .city-wall-path-preview__node--1{left:32px;top:126px}
+.city-wall-path-preview--straight .city-wall-path-preview__node--2{left:180px;top:126px}
+.city-wall-path-preview--straight .city-wall-path-preview__node--3{left:332px;top:126px}
+.city-wall-path-preview--straight .city-wall-path-preview__node--4{left:394px;top:126px}
+.city-wall-path-preview__outside{
+  position:absolute;
+  left:184px;
+  top:166px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:rgba(220,214,202,.66);
+  font-size:9px;
+  letter-spacing:.08em;
+}
+.city-wall-path-preview__outside b{font-size:16px;font-weight:400;color:rgba(189,153,89,.82)}
+.city-wall-path-preview.is-outside-left .city-wall-path-preview__outside{top:72px}

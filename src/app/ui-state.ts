@@ -3,12 +3,14 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement';
+export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
 export type TreePlacementMode = 'brush' | 'single';
 export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
 export type RoadDrawMode = 'smart-curve' | 'curve' | 'straight';
+export type CityWallDrawMode = 'smart-polyline' | 'straight' | 'curve';
+export type CityWallOutsideSide = 'left' | 'right';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
 export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 0 | 1 | 2 | 4;
@@ -78,6 +80,14 @@ export interface GameplayUiState {
   treeVariant: number;
   treeAvoidBuildings: boolean;
   treeAvoidRoads: boolean;
+  cityWallDrawMode: CityWallDrawMode;
+  cityWallOutsideSide: CityWallOutsideSide;
+  cityWallModuleId: string;
+  cityWallModuleName: string;
+  cityWallSystemId: string;
+  cityWallSystemName: string;
+  cityWallTopLine: boolean;
+  cityWallNodes: boolean;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
@@ -110,6 +120,14 @@ export const initialGameplayUiState: GameplayUiState = {
   treeVariant: 0,
   treeAvoidBuildings: true,
   treeAvoidRoads: true,
+  cityWallDrawMode: 'smart-polyline',
+  cityWallOutsideSide: 'right',
+  cityWallModuleId: 'citywall-gentle-wall',
+  cityWallModuleName: '标准墙段',
+  cityWallSystemId: 'gentle-wall',
+  cityWallSystemName: '小倾斜角',
+  cityWallTopLine: true,
+  cityWallNodes: true,
   adjustmentMode: 'position',
   roadDrawMode: 'smart-curve',
   gridSnap: true,
@@ -125,6 +143,7 @@ export type GameplayUiAction =
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'ENTER_ROAD_PLACEMENT' }
   | { type: 'ENTER_TREE_PLACEMENT'; speciesId: string; speciesName: string }
+  | { type: 'ENTER_CITY_WALL_CONSTRUCTION'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_TERRAIN_EDIT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
@@ -144,6 +163,10 @@ export type GameplayUiAction =
   | { type: 'SET_TREE_VARIANT'; variant: number }
   | { type: 'TOGGLE_TREE_AVOID_BUILDINGS' }
   | { type: 'TOGGLE_TREE_AVOID_ROADS' }
+  | { type: 'SET_CITY_WALL_DRAW_MODE'; mode: CityWallDrawMode }
+  | { type: 'FLIP_CITY_WALL_OUTSIDE' }
+  | { type: 'TOGGLE_CITY_WALL_TOP_LINE' }
+  | { type: 'TOGGLE_CITY_WALL_NODES' }
   | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
   | { type: 'SET_ROAD_DRAW_MODE'; mode: RoadDrawMode }
   | { type: 'TOGGLE_GRID_SNAP' }
@@ -242,6 +265,27 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         treeSpeciesId: action.speciesId,
         treeSpeciesName: action.speciesName,
         treeVariant: 0,
+        canUndo: false,
+        canRedo: false,
+      };
+    case 'ENTER_CITY_WALL_CONSTRUCTION':
+      return {
+        ...state,
+        toolOrigin: captureToolOrigin(state),
+        workspace: 'none',
+        tool: 'city-wall-construction',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        cityWallDrawMode: 'smart-polyline',
+        cityWallOutsideSide: 'right',
+        cityWallModuleId: action.moduleId,
+        cityWallModuleName: action.moduleName,
+        cityWallSystemId: action.systemId,
+        cityWallSystemName: action.systemName,
+        cityWallTopLine: true,
+        cityWallNodes: true,
         canUndo: false,
         canRedo: false,
       };
@@ -358,6 +402,14 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return { ...state, treeAvoidBuildings: !state.treeAvoidBuildings };
     case 'TOGGLE_TREE_AVOID_ROADS':
       return { ...state, treeAvoidRoads: !state.treeAvoidRoads };
+    case 'SET_CITY_WALL_DRAW_MODE':
+      return { ...state, cityWallDrawMode: action.mode, canUndo: true, canRedo: false };
+    case 'FLIP_CITY_WALL_OUTSIDE':
+      return { ...state, cityWallOutsideSide: state.cityWallOutsideSide === 'left' ? 'right' : 'left', canUndo: true, canRedo: false };
+    case 'TOGGLE_CITY_WALL_TOP_LINE':
+      return { ...state, cityWallTopLine: !state.cityWallTopLine };
+    case 'TOGGLE_CITY_WALL_NODES':
+      return { ...state, cityWallNodes: !state.cityWallNodes };
     case 'SET_ADJUSTMENT_MODE':
       return { ...state, adjustmentMode: action.mode, canUndo: true, canRedo: false };
     case 'SET_ROAD_DRAW_MODE':

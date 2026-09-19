@@ -1,4 +1,4 @@
-import type { AdjustmentMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
+import type { AdjustmentMode, CityWallDrawMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
 
 type HintRow = { binding: string; description: string; primary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
@@ -98,6 +98,41 @@ const roadPresets: Record<RoadDrawMode, HintPreset> = {
 };
 
 
+const cityWallPresets: Record<CityWallDrawMode, HintPreset> = {
+  'smart-polyline': {
+    task: '城墙 · 智能折线',
+    rows: [
+      { binding: '鼠标左键', description: '放置墙体节点', primary: true },
+      { binding: '鼠标右键', description: '结束当前墙段' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: '鼠标滚轮', description: '缩放镜头' },
+      { binding: 'Ctrl + Z', description: '撤销节点' },
+      { binding: 'Esc', description: '取消城墙营造' },
+    ],
+  },
+  straight: {
+    task: '城墙 · 直线',
+    rows: [
+      { binding: '鼠标左键', description: '确定起点 / 终点', primary: true },
+      { binding: '鼠标右键', description: '结束当前墙段' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: 'Ctrl + Z', description: '撤销端点' },
+      { binding: 'Esc', description: '取消城墙营造' },
+    ],
+  },
+  curve: {
+    task: '城墙 · 曲线',
+    rows: [
+      { binding: '鼠标左键', description: '放置曲线控制点', primary: true },
+      { binding: '鼠标右键', description: '结束当前墙段' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: 'Ctrl + Z', description: '撤销控制点' },
+      { binding: 'Esc', description: '取消城墙营造' },
+    ],
+  },
+};
+
+
 const terrainPresets: Record<TerrainEditMode, HintPreset> = {
   raise: {
     task: '地形 · 抬高',
@@ -173,16 +208,19 @@ interface Props {
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   terrainEditMode: TerrainEditMode;
+  cityWallDrawMode: CityWallDrawMode;
 }
 
-export function GameplayOperationHints({ tool, adjustmentMode, roadDrawMode, terrainEditMode }: Props) {
+export function GameplayOperationHints({ tool, adjustmentMode, roadDrawMode, terrainEditMode, cityWallDrawMode }: Props) {
   const preset = tool === 'building-placement'
     ? buildingPresets[adjustmentMode]
     : tool === 'road-placement'
       ? roadPresets[roadDrawMode]
       : tool === 'terrain-edit'
         ? terrainPresets[terrainEditMode]
-        : gameplayPreset;
+        : tool === 'city-wall-construction'
+          ? cityWallPresets[cityWallDrawMode]
+          : gameplayPreset;
 
   return (
     <aside className="gameplay-operation-hints" aria-label="当前操作提示">

@@ -9,6 +9,8 @@ import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverl
 import { RoadPlacementDock } from '../tools/road-placement/RoadPlacementDock';
 import { TerrainEditTool } from '../tools/terrain-edit/TerrainEditTool';
 import { TreePlacementTool } from '../tools/tree-placement/TreePlacementTool';
+import { CityWallConstructionOverlay } from '../tools/city-wall-construction/CityWallConstructionOverlay';
+import { CityWallConstructionDock } from '../tools/city-wall-construction/CityWallConstructionDock';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -160,6 +162,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           terrainProtectBuilt={state.terrainProtectBuilt}
           treeAvoidBuildings={state.treeAvoidBuildings}
           treeAvoidRoads={state.treeAvoidRoads}
+          cityWallTopLine={state.cityWallTopLine}
+          cityWallNodes={state.cityWallNodes}
           onToggleGridSnap={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}
           onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
           onUndo={() => dispatch({ type: 'UNDO' })}
@@ -169,6 +173,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleTerrainProtection={() => dispatch({ type: 'TOGGLE_TERRAIN_PROTECTION' })}
           onToggleTreeAvoidBuildings={() => dispatch({ type: 'TOGGLE_TREE_AVOID_BUILDINGS' })}
           onToggleTreeAvoidRoads={() => dispatch({ type: 'TOGGLE_TREE_AVOID_ROADS' })}
+          onToggleCityWallTopLine={() => dispatch({ type: 'TOGGLE_CITY_WALL_TOP_LINE' })}
+          onToggleCityWallNodes={() => dispatch({ type: 'TOGGLE_CITY_WALL_NODES' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
@@ -196,6 +202,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             if (renderedWorkspace.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
             if (renderedWorkspace.id === 'road') dispatch({ type: 'ENTER_ROAD_PLACEMENT' });
             if (renderedWorkspace.id === 'tree') dispatch({ type: 'ENTER_TREE_PLACEMENT', speciesId: item.id, speciesName: item.name });
+            if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-construction') {
+              const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
+              dispatch({ type: 'ENTER_CITY_WALL_CONSTRUCTION', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
+            }
           }}
         />
       )}
@@ -235,6 +245,23 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         </>
       )}
 
+      {toolPresence.mounted && renderedTool === 'city-wall-construction' && (
+        <>
+          <CityWallConstructionOverlay
+            moduleName={state.cityWallModuleName}
+            systemName={state.cityWallSystemName}
+            drawMode={state.cityWallDrawMode}
+            outsideSide={state.cityWallOutsideSide}
+            showTopLine={state.cityWallTopLine}
+            showNodes={state.cityWallNodes}
+            motionPhase={toolPresence.phase}
+            onClose={exitTool}
+            onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+          />
+          <CityWallConstructionDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+        </>
+      )}
+
       {toolPresence.mounted && renderedTool === 'terrain-edit' && (
         <TerrainEditTool
           state={state}
@@ -254,6 +281,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           adjustmentMode={state.adjustmentMode}
           roadDrawMode={state.roadDrawMode}
           terrainEditMode={state.terrainEditMode}
+          cityWallDrawMode={state.cityWallDrawMode}
         />
       )}
 

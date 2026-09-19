@@ -249,3 +249,47 @@ UI Toolkit 映射：
 - 墙高、门洞尺寸、楼梯宽高与坡度属于后续 Tool Controller，不进入 Workspace Card 枚举。
 
 后续四类 Tool 可以分别映射 Path / Embedded Module / Wall Attachment / Walkway Transition，但不得反向污染 Workspace 信息层级。
+
+
+## 14. City Wall Construction Tool
+
+城墙体系不使用一个万能 Tool Controller。四种构件拥有独立业务 Tool，但继续共享 UI Primitive 与 Surface：
+
+```text
+CityWallConstructionTool
+  → Path Construction Controller
+
+CityWallGateTool
+  → Embedded Wall Module Controller
+
+CityWallAccessStairTool
+  → Wall-to-Ground Attachment Controller
+
+CityWallTransitionStairTool
+  → Walkway-to-Walkway Transition Controller
+```
+
+当前 Web Vertical Slice 已完成 `city-wall-construction`：
+
+```text
+CityWallConstructionOverlay
+  → PlacementContextPanel / LeftContextPanel
+
+CityWallConstructionDock
+  → PlacementActionBar
+
+City Wall Utility
+  → ContextUtilityToolbar Definition
+
+Path Preview DOM
+  → 不迁 UI Toolkit
+  → CityWallWorldRenderer
+```
+
+约束：
+
+- UI Toolkit 不负责真实城墙路径生成；
+- Draw Mode / Wall Height / Terrain Relation / Base Treatment / Outside Side 属于 Construction Controller；
+- Wall Top Line / Node Display 只属于 Visualization State，不进入 World Command History；
+- Workspace 的 `toolType` 决定进入哪套独立 ToolOverlay；
+- 四套 Tool 可以有不同 Mode / Workflow Step / 附加窗口，但不得复制 Shared Surface / Control CSS。

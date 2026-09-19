@@ -44,6 +44,12 @@ export interface DesignWorkspaceFilter {
   label: string;
 }
 
+export type DesignWorkspaceToolType =
+  | 'city-wall-construction'
+  | 'city-wall-gate'
+  | 'city-wall-access-stair'
+  | 'city-wall-transition-stair';
+
 export interface DesignWorkspaceItem {
   id: string;
   name: string;
@@ -52,6 +58,7 @@ export interface DesignWorkspaceItem {
   meta: string;
   detail: string;
   tone: DesignWorkspaceTone;
+  toolType?: DesignWorkspaceToolType;
 }
 
 export interface DesignWorkspaceDefinition {
@@ -238,25 +245,25 @@ const cityWall: DesignWorkspaceDefinition = {
     { key: 'walkway-transition-stair', label: '高差楼梯' },
   ],
   items: [
-    { id: 'citywall-gentle-wall', name: '标准墙段', primary: 'gentle-wall', filters: ['wall'], meta: '小倾斜角 · 城墙', detail: '一般城防 / 路径绘制', tone: 'hall' },
-    { id: 'citywall-gentle-gate', name: '拱券门洞', primary: 'gentle-wall', filters: ['gate-opening'], meta: '小倾斜角 · 门洞', detail: '嵌入墙段 / 通行', tone: 'gate' },
-    { id: 'citywall-gentle-ground-stair', name: '直登城梯', primary: 'gentle-wall', filters: ['ground-access-stair'], meta: '小倾斜角 · 登城梯', detail: '地面至马道 / 贴墙', tone: 'pavilion' },
-    { id: 'citywall-gentle-transition-stair', name: '马道高差梯', primary: 'gentle-wall', filters: ['walkway-transition-stair'], meta: '小倾斜角 · 高差楼梯', detail: '连接马道高差 / 贴墙', tone: 'tower' },
+    { id: 'citywall-gentle-wall', name: '标准墙段', primary: 'gentle-wall', filters: ['wall'], meta: '小倾斜角 · 城墙', detail: '一般城防 / 路径绘制', tone: 'hall', toolType: 'city-wall-construction' },
+    { id: 'citywall-gentle-gate', name: '拱券门洞', primary: 'gentle-wall', filters: ['gate-opening'], meta: '小倾斜角 · 门洞', detail: '嵌入墙段 / 通行', tone: 'gate', toolType: 'city-wall-gate' },
+    { id: 'citywall-gentle-ground-stair', name: '直登城梯', primary: 'gentle-wall', filters: ['ground-access-stair'], meta: '小倾斜角 · 登城梯', detail: '地面至马道 / 贴墙', tone: 'pavilion', toolType: 'city-wall-access-stair' },
+    { id: 'citywall-gentle-transition-stair', name: '马道高差梯', primary: 'gentle-wall', filters: ['walkway-transition-stair'], meta: '小倾斜角 · 高差楼梯', detail: '连接马道高差 / 贴墙', tone: 'tower', toolType: 'city-wall-transition-stair' },
 
-    { id: 'citywall-steep-wall', name: '高倾角标准墙段', primary: 'steep-wall', filters: ['wall'], meta: '高倾斜角 · 城墙', detail: '高大城防 / 路径绘制', tone: 'special' },
-    { id: 'citywall-steep-gate', name: '高墙拱券门洞', primary: 'steep-wall', filters: ['gate-opening'], meta: '高倾斜角 · 门洞', detail: '嵌入高墙 / 通行', tone: 'gate' },
-    { id: 'citywall-steep-ground-stair', name: '高墙登城梯', primary: 'steep-wall', filters: ['ground-access-stair'], meta: '高倾斜角 · 登城梯', detail: '地面至高马道 / 贴墙', tone: 'pagoda' },
-    { id: 'citywall-steep-transition-stair', name: '高墙高差梯', primary: 'steep-wall', filters: ['walkway-transition-stair'], meta: '高倾斜角 · 高差楼梯', detail: '连接高位马道 / 贴墙', tone: 'tower' },
+    { id: 'citywall-steep-wall', name: '高倾角标准墙段', primary: 'steep-wall', filters: ['wall'], meta: '高倾斜角 · 城墙', detail: '高大城防 / 路径绘制', tone: 'special', toolType: 'city-wall-construction' },
+    { id: 'citywall-steep-gate', name: '高墙拱券门洞', primary: 'steep-wall', filters: ['gate-opening'], meta: '高倾斜角 · 门洞', detail: '嵌入高墙 / 通行', tone: 'gate', toolType: 'city-wall-gate' },
+    { id: 'citywall-steep-ground-stair', name: '高墙登城梯', primary: 'steep-wall', filters: ['ground-access-stair'], meta: '高倾斜角 · 登城梯', detail: '地面至高马道 / 贴墙', tone: 'pagoda', toolType: 'city-wall-access-stair' },
+    { id: 'citywall-steep-transition-stair', name: '高墙高差梯', primary: 'steep-wall', filters: ['walkway-transition-stair'], meta: '高倾斜角 · 高差楼梯', detail: '连接高位马道 / 贴墙', tone: 'tower', toolType: 'city-wall-transition-stair' },
 
-    { id: 'citywall-waterside-wall', name: '临水标准墙段', primary: 'waterside-wall', filters: ['wall'], meta: '临水 · 城墙', detail: '滨河城防 / 路径绘制', tone: 'waterside' },
-    { id: 'citywall-waterside-gate', name: '拱券水门洞', primary: 'waterside-wall', filters: ['gate-opening'], meta: '临水 · 门洞', detail: '跨水墙段 / 水门', tone: 'waterside' },
-    { id: 'citywall-waterside-ground-stair', name: '临水登城梯', primary: 'waterside-wall', filters: ['ground-access-stair'], meta: '临水 · 登城梯', detail: '岸侧至马道 / 贴墙', tone: 'pavilion' },
-    { id: 'citywall-waterside-transition-stair', name: '临水高差梯', primary: 'waterside-wall', filters: ['walkway-transition-stair'], meta: '临水 · 高差楼梯', detail: '连接滨水马道 / 贴墙', tone: 'tower' },
+    { id: 'citywall-waterside-wall', name: '临水标准墙段', primary: 'waterside-wall', filters: ['wall'], meta: '临水 · 城墙', detail: '滨河城防 / 路径绘制', tone: 'waterside', toolType: 'city-wall-construction' },
+    { id: 'citywall-waterside-gate', name: '拱券水门洞', primary: 'waterside-wall', filters: ['gate-opening'], meta: '临水 · 门洞', detail: '跨水墙段 / 水门', tone: 'waterside', toolType: 'city-wall-gate' },
+    { id: 'citywall-waterside-ground-stair', name: '临水登城梯', primary: 'waterside-wall', filters: ['ground-access-stair'], meta: '临水 · 登城梯', detail: '岸侧至马道 / 贴墙', tone: 'pavilion', toolType: 'city-wall-access-stair' },
+    { id: 'citywall-waterside-transition-stair', name: '临水高差梯', primary: 'waterside-wall', filters: ['walkway-transition-stair'], meta: '临水 · 高差楼梯', detail: '连接滨水马道 / 贴墙', tone: 'tower', toolType: 'city-wall-transition-stair' },
 
-    { id: 'citywall-mountain-wall', name: '山地顺坡墙段', primary: 'mountain-wall', filters: ['wall'], meta: '山地 · 城墙', detail: '顺坡城防 / 路径绘制', tone: 'tower' },
-    { id: 'citywall-mountain-gate', name: '山地拱券门洞', primary: 'mountain-wall', filters: ['gate-opening'], meta: '山地 · 门洞', detail: '嵌入坡地墙段 / 通行', tone: 'gate' },
-    { id: 'citywall-mountain-ground-stair', name: '山地登城梯', primary: 'mountain-wall', filters: ['ground-access-stair'], meta: '山地 · 登城梯', detail: '坡地至马道 / 贴墙', tone: 'special' },
-    { id: 'citywall-mountain-transition-stair', name: '山地高差梯', primary: 'mountain-wall', filters: ['walkway-transition-stair'], meta: '山地 · 高差楼梯', detail: '连接顺坡马道 / 贴墙', tone: 'pavilion' },
+    { id: 'citywall-mountain-wall', name: '山地顺坡墙段', primary: 'mountain-wall', filters: ['wall'], meta: '山地 · 城墙', detail: '顺坡城防 / 路径绘制', tone: 'tower', toolType: 'city-wall-construction' },
+    { id: 'citywall-mountain-gate', name: '山地拱券门洞', primary: 'mountain-wall', filters: ['gate-opening'], meta: '山地 · 门洞', detail: '嵌入坡地墙段 / 通行', tone: 'gate', toolType: 'city-wall-gate' },
+    { id: 'citywall-mountain-ground-stair', name: '山地登城梯', primary: 'mountain-wall', filters: ['ground-access-stair'], meta: '山地 · 登城梯', detail: '坡地至马道 / 贴墙', tone: 'special', toolType: 'city-wall-access-stair' },
+    { id: 'citywall-mountain-transition-stair', name: '山地高差梯', primary: 'mountain-wall', filters: ['walkway-transition-stair'], meta: '山地 · 高差楼梯', detail: '连接顺坡马道 / 贴墙', tone: 'pavilion', toolType: 'city-wall-transition-stair' },
   ],
 };
 

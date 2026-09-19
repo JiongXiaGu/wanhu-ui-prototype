@@ -25,6 +25,7 @@ import './tools/building-placement/building-placement.css';
 import './tools/road-placement/road-placement.css';
 import './tools/terrain-edit/terrain-edit.css';
 import './tools/tree-placement/tree-placement.css';
+import './tools/city-wall-construction/city-wall-construction.css';
 import './gameplay/city-management.css';
 import './gameplay/inventory-management.css';
 import './gameplay/gameplay-top-shell.css';

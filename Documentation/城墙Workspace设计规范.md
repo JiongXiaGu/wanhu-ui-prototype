@@ -123,7 +123,7 @@ Card 表示具体模块，不表示参数组合。
 - 登城梯 → 依附墙侧；
 - 高差楼梯 → 连接马道。
 
-Description 可以说明后续 Tool 的参数职责，但本轮 Card 点击不进入 Tool。
+Description 可以说明后续 Tool 的参数职责，但当前 Card 已增加 `toolType` 路由身份。城墙主体 Card 已进入 `city-wall-construction`；门洞 / 登城梯 / 高差楼梯的独立 ToolType 已预留，但对应 ToolOverlay 尚未实现。
 
 ## 7. 后续 Tool 边界
 
@@ -151,7 +151,7 @@ Description 可以说明后续 Tool 的参数职责，但本轮 Card 点击不�
 → 楼梯宽度 / 楼梯高差 / 目标坡度
 ```
 
-本轮不实现这些 Tool，只固定 Workspace 数据边界。
+本轮已实现四类 Tool 中的第一套：`CityWallConstructionTool`。另外三套仍只保留独立 ToolType 与领域边界，不与城墙主体共用业务 Overlay。
 
 ## 8. Unity UI Toolkit 映射
 

@@ -271,4 +271,79 @@ for (const value of ['临水', '城墙门洞', '嵌入墙段']) {
 }
 await page.screenshot({ path: outDir + '/city-wall-14-inspector.png' });
 
+
+
+await open('workspace-city-wall', '.workspace[data-design-category="city-wall"]');
+const cityWallConstructionWorkspace = page.locator('.workspace[data-design-category="city-wall"]');
+await cityWallConstructionWorkspace.getByRole('button', { name: '小倾斜角', exact: true }).click();
+await cityWallConstructionWorkspace.getByRole('button', { name: '城墙', exact: true }).click();
+await cityWallConstructionWorkspace.getByRole('button', { name: /标准墙段/ }).click();
+await page.waitForSelector('.city-wall-construction-prototype');
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="city-wall-construction"]');
+await page.waitForTimeout(260);
+
+const wallPanel = page.locator('.city-wall-construction-prototype');
+const wallPanelBox = await wallPanel.boundingBox();
+if (!wallPanelBox || wallPanelBox.width < 392 || wallPanelBox.width > 408) {
+  throw new Error('City wall construction panel should stay near 400px wide. width=' + wallPanelBox?.width);
+}
+for (const text of ['墙体参数', '墙高', '地形关系', '基底处理', '自动计算']) {
+  if ((await wallPanel.getByText(text, { exact: true }).count()) !== 1) {
+    throw new Error('City wall construction panel missing: ' + text);
+  }
+}
+await assertParameterFieldFillsRow('.city-wall-construction-prototype', 'city wall construction');
+
+const wallBar = page.locator('.city-wall-construction-toolbar-cluster .tool-action-bar');
+for (const mode of ['智能折线', '直线', '曲线']) {
+  if ((await wallBar.getByRole('button', { name: mode, exact: true }).count()) !== 1) {
+    throw new Error('City wall construction mode missing: ' + mode);
+  }
+}
+for (const action of ['反转城外方向', '完成城墙营造', '取消城墙营造']) {
+  if ((await wallBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall construction action missing: ' + action);
+  }
+}
+
+const wallUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-construction"]');
+for (const action of ['网格吸附', '网格显示', '墙顶线', '节点显示', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
+  if ((await wallUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall construction utility missing: ' + action);
+  }
+}
+if ((await page.locator('.city-wall-path-preview').count()) !== 1) {
+  throw new Error('City wall construction needs one world path preview.');
+}
+if ((await page.getByText('城墙 · 智能折线', { exact: true }).count()) !== 1) {
+  throw new Error('City wall construction operation hints should match smart polyline mode.');
+}
+await page.screenshot({ path: outDir + '/city-wall-15-construction-smart.png' });
+
+await wallBar.getByRole('button', { name: '曲线', exact: true }).click();
+await wallBar.getByRole('button', { name: '反转城外方向', exact: true }).click();
+await page.waitForTimeout(140);
+if ((await wallPanel.getAttribute('data-wall-draw-mode')) !== 'curve') {
+  throw new Error('City wall construction panel should expose curve mode.');
+}
+if ((await wallPanel.getAttribute('data-wall-outside')) !== 'left') {
+  throw new Error('City wall outside side should flip to left.');
+}
+if ((await page.getByText('城墙 · 曲线', { exact: true }).count()) !== 1) {
+  throw new Error('City wall operation hints should rebind to curve mode.');
+}
+
+await wallUtility.getByRole('button', { name: '墙顶线', exact: true }).click();
+await page.waitForTimeout(100);
+if (await page.locator('.city-wall-path-preview__top-line').count()) {
+  throw new Error('Wall top-line toggle should hide the world preview line.');
+}
+await page.screenshot({ path: outDir + '/city-wall-16-construction-curve.png' });
+
+await wallBar.getByRole('button', { name: '完成城墙营造', exact: true }).click();
+await page.waitForSelector('.city-wall-construction-prototype', { state: 'detached' });
+await page.waitForSelector('.workspace[data-design-category="city-wall"]');
+await page.waitForTimeout(180);
+await page.screenshot({ path: outDir + '/city-wall-17-return-workspace.png' });
+
 await browser.close();

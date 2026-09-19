@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import type { Tool } from '../app/ui-state';
 
-export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement';
+export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction';
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'unlock'
@@ -40,7 +40,9 @@ export type UtilityItemId =
   | 'terrain-slope-view'
   | 'terrain-protect-built'
   | 'tree-avoid-buildings'
-  | 'tree-avoid-roads';
+  | 'tree-avoid-roads'
+  | 'city-wall-top-line'
+  | 'city-wall-nodes';
 
 interface UtilityItem {
   id: UtilityItemId;
@@ -60,6 +62,8 @@ interface ContextUtilityToolbarProps {
   terrainProtectBuilt: boolean;
   treeAvoidBuildings: boolean;
   treeAvoidRoads: boolean;
+  cityWallTopLine: boolean;
+  cityWallNodes: boolean;
   onToggleGridSnap: () => void;
   onToggleGridVisible: () => void;
   onUndo: () => void;
@@ -69,6 +73,8 @@ interface ContextUtilityToolbarProps {
   onToggleTerrainProtection: () => void;
   onToggleTreeAvoidBuildings: () => void;
   onToggleTreeAvoidRoads: () => void;
+  onToggleCityWallTopLine: () => void;
+  onToggleCityWallNodes: () => void;
   onToolAction: (id: UtilityItemId) => void;
 }
 
@@ -146,12 +152,28 @@ const TREE_GROUPS: readonly (readonly UtilityItem[])[] = [
   ],
 ];
 
+const CITY_WALL_CONSTRUCTION_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
+  ],
+  [
+    { id: 'city-wall-top-line', label: '墙顶线', icon: Layers3, kind: 'toggle' },
+    { id: 'city-wall-nodes', label: '节点显示', icon: ScanLine, kind: 'toggle' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
 const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> = {
   world: WORLD_GROUPS,
   'building-placement': BUILDING_GROUPS,
   'road-placement': ROAD_GROUPS,
   'terrain-edit': TERRAIN_GROUPS,
   'tree-placement': TREE_GROUPS,
+  'city-wall-construction': CITY_WALL_CONSTRUCTION_GROUPS,
 };
 
 function contextForTool(tool: Tool): UtilityContext {
@@ -159,6 +181,7 @@ function contextForTool(tool: Tool): UtilityContext {
   if (tool === 'road-placement') return 'road-placement';
   if (tool === 'terrain-edit') return 'terrain-edit';
   if (tool === 'tree-placement') return 'tree-placement';
+  if (tool === 'city-wall-construction') return 'city-wall-construction';
   return 'world';
 }
 
@@ -167,6 +190,7 @@ function ariaLabelForContext(context: UtilityContext) {
   if (context === 'road-placement') return '道路铺设辅助工具';
   if (context === 'terrain-edit') return '地形编辑辅助工具';
   if (context === 'tree-placement') return '树木放置辅助工具';
+  if (context === 'city-wall-construction') return '城墙主体营造辅助工具';
   return '世界工具';
 }
 
@@ -181,6 +205,8 @@ export function ContextUtilityToolbar({
   terrainProtectBuilt,
   treeAvoidBuildings,
   treeAvoidRoads,
+  cityWallTopLine,
+  cityWallNodes,
   onToggleGridSnap,
   onToggleGridVisible,
   onUndo,
@@ -190,6 +216,8 @@ export function ContextUtilityToolbar({
   onToggleTerrainProtection,
   onToggleTreeAvoidBuildings,
   onToggleTreeAvoidRoads,
+  onToggleCityWallTopLine,
+  onToggleCityWallNodes,
   onToolAction,
 }: ContextUtilityToolbarProps) {
   const requestedContext = contextForTool(tool);
@@ -230,6 +258,8 @@ export function ContextUtilityToolbar({
     if (item.id === 'terrain-protect-built') return { active: terrainProtectBuilt, pressed: terrainProtectBuilt, onClick: onToggleTerrainProtection };
     if (item.id === 'tree-avoid-buildings') return { active: treeAvoidBuildings, pressed: treeAvoidBuildings, onClick: onToggleTreeAvoidBuildings };
     if (item.id === 'tree-avoid-roads') return { active: treeAvoidRoads, pressed: treeAvoidRoads, onClick: onToggleTreeAvoidRoads };
+    if (item.id === 'city-wall-top-line') return { active: cityWallTopLine, pressed: cityWallTopLine, onClick: onToggleCityWallTopLine };
+    if (item.id === 'city-wall-nodes') return { active: cityWallNodes, pressed: cityWallNodes, onClick: onToggleCityWallNodes };
     if (item.kind === 'action') return { onClick: () => onToolAction(item.id) };
     return {};
   }

@@ -15,6 +15,7 @@ export type ReviewScenario =
   | 'workspace-bridge'
   | 'workspace-building'
   | 'workspace-city-wall'
+  | 'city-wall-construction'
   | 'workspace-tree'
   | 'tree-brush'
   | 'tree-single'
@@ -76,6 +77,8 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return designWorkspace(gameplay, 'building');
     case 'workspace-city-wall':
       return designWorkspace(gameplay, 'city-wall');
+    case 'city-wall-construction':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'city-wall-construction', toolOrigin: { kind: 'design-workspace', category: 'city-wall' }, dockMode: 'design', dockCategory: 'city-wall', cityWallModuleId: 'citywall-gentle-wall', cityWallModuleName: '标准墙段', cityWallSystemId: 'gentle-wall', cityWallSystemName: '小倾斜角', cityWallDrawMode: 'smart-polyline', cityWallOutsideSide: 'right', cityWallTopLine: true, cityWallNodes: true } };
     case 'workspace-tree':
       return designWorkspace(gameplay, 'tree');
     case 'tree-brush':
