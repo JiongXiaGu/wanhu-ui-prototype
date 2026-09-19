@@ -89,7 +89,7 @@ export function usePresence(
 }
 
 
-export function useKeyedTransition<T extends string>(requested: T, exitMs = MOTION_MS.fast) {
+export function useKeyedTransition<T extends string>(requested: T, exitMs: number = MOTION_MS.fast) {
   const [active, setActive] = useState(requested);
   const [outgoing, setOutgoing] = useState<T | null>(null);
   const [activePhase, setActivePhase] = useState<MotionPhase>('steady');
