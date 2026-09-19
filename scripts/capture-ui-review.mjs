@@ -23,7 +23,7 @@ async function assertTerrainShell(label) {
   if (panelBox.width < 392 || panelBox.width > 408) {
     throw new Error(`${label}: terrain panel should stay near 400px wide. width=${panelBox.width}`);
   }
-  if (panelBox.height > 390) {
+  if (panelBox.height > 360) {
     throw new Error(`${label}: terrain panel must size to content instead of stretching down the screen. height=${panelBox.height}`);
   }
   if (Math.abs((panelBox.y + panelBox.height) - (1080 - 16)) > 3) {
@@ -38,6 +38,9 @@ async function assertTerrainShell(label) {
   }
   if ((await page.locator('.terrain-brush-preview__outer').count()) !== 1) {
     throw new Error(`${label}: terrain world preview should retain one outer brush ring.`);
+  }
+  if (await page.locator('.gameplay-operation-hints').count()) {
+    throw new Error(`${label}: terrain tool should not keep the persistent text-heavy operation-hints panel.`);
   }
 
   const utility = page.locator('.context-utility-toolbar[data-utility-context="terrain-edit"]');

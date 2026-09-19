@@ -238,7 +238,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         />
       )}
 
-      {space !== 'management' && !state.paused && (
+      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && (
         <GameplayOperationHints
           tool={state.tool}
           adjustmentMode={state.adjustmentMode}

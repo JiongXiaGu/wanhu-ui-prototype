@@ -72,7 +72,6 @@ export function TerrainEditTool({
               <span><small>终点高度</small><b>18.60 m</b></span>
               <span><small>预估坡度</small><b>7.2°</b></span>
             </div>
-            <p className="terrain-edit-note">依次在世界中指定坡面起点与终点；正式 Unity 工具由 TerrainBrushController 计算连续坡面。</p>
           </LeftContextSection>
         )}
 
