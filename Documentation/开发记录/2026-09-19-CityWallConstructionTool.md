@@ -20,3 +20,18 @@
 ## 迁移约束
 
 四套城墙 Tool 可以拥有完全不同的业务状态与附加窗口，但共享 Left Context / Placement Action Bar / Utility / Motion / Surface。禁止恢复旧 ToolOverlay CSS 壳。
+
+
+## 逻辑修正：范围 / 定宽延伸
+
+第一版使用“智能折线 / 直线 / 曲线”，复核旧城墙方案后确认这仍然过于道路化，已整体撤回。
+
+修正后：
+
+- Range：拖矩形，一次生成四边墙，外部自动 Front；
+- Fixed Width：指定墙厚连续延伸，可形成 L / U / 闭合轮廓；
+- 新增 Wall Thickness；
+- Fixed Width 开放 Path 支持 Front / Back 交换；
+- North / East / South / West 正面语义正式退出；
+- World Preview 从单线 Path 改成有厚度矩形 / L Shape；
+- UI Review 明确禁止旧三种道路式模式回归。

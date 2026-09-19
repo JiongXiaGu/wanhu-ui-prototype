@@ -1,86 +1,170 @@
-/* City Wall Construction business content + Web world-preview placeholder only.
+/* City Wall Construction business content + Web world-preview placeholders only.
    Shared shell/material/control ownership remains in Placement / Left Context systems. */
 
 .city-wall-construction-context{display:flex;flex-direction:column;gap:0}
 .city-wall-construction-summary p{margin:2px 0 0;color:#7f8780;font-size:9px;line-height:1.7}
-.city-wall-construction-summary__metrics{margin-top:9px;display:flex;align-items:center;gap:14px;color:#858c84;font-size:8.5px;font-variant-numeric:tabular-nums}
-.city-wall-construction-summary__metrics b{color:#bbb8ae;font-weight:500}
 .city-wall-construction-summary .left-context-panel__section-title,
 .city-wall-construction-parameters .left-context-panel__section-title,
 .city-wall-construction-metrics .left-context-panel__section-title{margin-bottom:5px}
-
 .city-wall-construction__segment-row .segment{min-width:0}
-.city-wall-construction-metrics>div{display:flex;align-items:center;gap:14px;min-height:28px;color:#858c84;font-size:8.5px;font-variant-numeric:tabular-nums}
-.city-wall-construction-metrics span{display:flex;gap:5px;white-space:nowrap}
-.city-wall-construction-metrics b{color:#bbb8ae;font-weight:500}
 
-.city-wall-path-preview{
-  position:absolute;
-  z-index:8;
-  left:58%;
-  top:53%;
-  width:420px;
-  height:220px;
-  translate:-50% -50%;
-  pointer-events:none;
-  filter:drop-shadow(0 3px 5px rgba(5,8,7,.28));
-}
-.city-wall-path-preview__segment{
-  position:absolute;
-  height:18px;
-  border:1px solid rgba(226,220,208,.42);
-  background:linear-gradient(180deg,rgba(93,93,84,.54),rgba(49,51,47,.58));
-  transform-origin:0 50%;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
-}
-.city-wall-path-preview__segment--1{left:38px;top:132px;width:128px;rotate:-10deg}
-.city-wall-path-preview__segment--2{left:163px;top:110px;width:124px;rotate:8deg}
-.city-wall-path-preview__segment--3{left:285px;top:127px;width:98px;rotate:-18deg;opacity:.72}
-.city-wall-path-preview--straight .city-wall-path-preview__segment--1{left:36px;top:122px;width:150px;rotate:0deg}
-.city-wall-path-preview--straight .city-wall-path-preview__segment--2{left:184px;top:122px;width:154px;rotate:0deg}
-.city-wall-path-preview--straight .city-wall-path-preview__segment--3{left:336px;top:122px;width:62px;rotate:0deg}
-.city-wall-path-preview--curve .city-wall-path-preview__segment{height:14px;border-radius:12px}
-.city-wall-path-preview--curve .city-wall-path-preview__segment--1{rotate:-16deg}
-.city-wall-path-preview--curve .city-wall-path-preview__segment--2{rotate:12deg}
-.city-wall-path-preview--curve .city-wall-path-preview__segment--3{rotate:-24deg}
-
-.city-wall-path-preview__top-line{
-  position:absolute;
-  left:40px;
-  top:103px;
-  width:344px;
-  height:1px;
-  border-top:1px dashed rgba(185,153,91,.62);
-  rotate:-1deg;
-  opacity:.8;
-}
-.city-wall-path-preview__node{
-  position:absolute;
-  width:9px;
-  height:9px;
-  border:1px solid rgba(234,228,216,.78);
-  border-radius:50%;
-  background:rgba(34,38,34,.94);
-  box-shadow:0 0 0 2px rgba(8,10,9,.20);
-}
-.city-wall-path-preview__node--1{left:34px;top:137px}
-.city-wall-path-preview__node--2{left:159px;top:115px}
-.city-wall-path-preview__node--3{left:282px;top:131px}
-.city-wall-path-preview__node--4{left:378px;top:101px;border-color:rgba(189,153,89,.82)}
-.city-wall-path-preview--straight .city-wall-path-preview__node--1{left:32px;top:126px}
-.city-wall-path-preview--straight .city-wall-path-preview__node--2{left:180px;top:126px}
-.city-wall-path-preview--straight .city-wall-path-preview__node--3{left:332px;top:126px}
-.city-wall-path-preview--straight .city-wall-path-preview__node--4{left:394px;top:126px}
-.city-wall-path-preview__outside{
-  position:absolute;
-  left:184px;
-  top:166px;
+.city-wall-construction-metrics>div{
   display:flex;
   align-items:center;
-  gap:6px;
-  color:rgba(220,214,202,.66);
+  gap:14px;
+  min-height:28px;
+  color:#858c84;
+  font-size:8.5px;
+  font-variant-numeric:tabular-nums;
+}
+.city-wall-construction-metrics span{display:flex;gap:5px;white-space:nowrap}
+.city-wall-construction-metrics b{color:#bbb8ae;font-weight:500}
+.city-wall-construction-note{
+  margin:5px 0 0;
+  color:#727872;
+  font-size:8.5px;
+  line-height:1.6;
+}
+.city-wall-facing-summary{
+  border-top:1px solid var(--wanhu-surface-context-rule,rgba(238,233,223,.055));
+  padding-top:5px;
+}
+
+/* Range mode: a rectangle with visibly thick wall bands. The outside of the
+   rectangle is always Front; the inside is always Back. */
+.city-wall-range-preview{
+  position:absolute;
+  z-index:8;
+  left:59%;
+  top:52%;
+  width:390px;
+  height:246px;
+  translate:-50% -50%;
+  pointer-events:none;
+  filter:drop-shadow(0 5px 8px rgba(5,8,7,.28));
+}
+.city-wall-range-preview__fill{
+  position:absolute;
+  left:38px;
+  right:38px;
+  top:38px;
+  bottom:38px;
+  border:1px solid rgba(189,153,89,.20);
+  background:rgba(189,153,89,.025);
+}
+.city-wall-range-preview__wall{
+  position:absolute;
+  border:1px solid rgba(226,220,208,.42);
+  background:linear-gradient(180deg,rgba(95,94,84,.58),rgba(47,50,46,.62));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+.city-wall-range-preview__wall--top{left:38px;right:38px;top:25px;height:26px}
+.city-wall-range-preview__wall--bottom{left:38px;right:38px;bottom:25px;height:26px}
+.city-wall-range-preview__wall--left{left:25px;top:38px;bottom:38px;width:26px}
+.city-wall-range-preview__wall--right{right:25px;top:38px;bottom:38px;width:26px}
+.city-wall-range-preview__top-line{
+  position:absolute;
+  left:48px;
+  right:48px;
+  top:37px;
+  height:172px;
+  border:1px dashed rgba(189,153,89,.48);
+}
+.city-wall-range-preview__handle{
+  position:absolute;
+  width:10px;
+  height:10px;
+  border:1px solid rgba(237,231,218,.82);
+  background:rgba(31,35,31,.96);
+  box-shadow:0 0 0 2px rgba(8,10,9,.20);
+}
+.city-wall-range-preview__handle--tl{left:20px;top:20px}
+.city-wall-range-preview__handle--tr{right:20px;top:20px}
+.city-wall-range-preview__handle--br{right:20px;bottom:20px}
+.city-wall-range-preview__handle--bl{left:20px;bottom:20px}
+.city-wall-range-preview__front{
+  position:absolute;
+  color:rgba(218,211,198,.62);
+  font-size:8.5px;
+  letter-spacing:.06em;
+}
+.city-wall-range-preview__front--top{left:50%;top:0;translate:-50% 0}
+.city-wall-range-preview__front--right{right:-14px;top:50%;translate:0 -50%}
+.city-wall-range-preview__front--bottom{left:50%;bottom:0;translate:-50% 0}
+.city-wall-range-preview__front--left{left:-14px;top:50%;translate:0 -50%}
+.city-wall-range-preview__inside{
+  position:absolute;
+  left:50%;
+  top:50%;
+  translate:-50% -50%;
+  color:rgba(210,204,191,.40);
   font-size:9px;
   letter-spacing:.08em;
 }
-.city-wall-path-preview__outside b{font-size:16px;font-weight:400;color:rgba(189,153,89,.82)}
-.city-wall-path-preview.is-outside-left .city-wall-path-preview__outside{top:72px}
+
+/* Fixed-width mode: a thick L-shaped wall, not a road center line. */
+.city-wall-fixed-preview{
+  position:absolute;
+  z-index:8;
+  left:59%;
+  top:52%;
+  width:410px;
+  height:250px;
+  translate:-50% -50%;
+  pointer-events:none;
+  filter:drop-shadow(0 5px 8px rgba(5,8,7,.30));
+}
+.city-wall-fixed-preview__wall{
+  position:absolute;
+  border:1px solid rgba(226,220,208,.44);
+  background:linear-gradient(180deg,rgba(97,96,86,.60),rgba(47,50,46,.64));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+.city-wall-fixed-preview__wall--horizontal{left:42px;top:64px;width:246px;height:34px}
+.city-wall-fixed-preview__wall--vertical{left:255px;top:64px;width:34px;height:142px}
+.city-wall-fixed-preview__inner{
+  position:absolute;
+  background:rgba(18,22,19,.34);
+  border:1px solid rgba(8,10,9,.18);
+}
+.city-wall-fixed-preview__inner--horizontal{left:48px;top:72px;width:201px;height:18px}
+.city-wall-fixed-preview__inner--vertical{left:263px;top:101px;width:18px;height:98px}
+.city-wall-fixed-preview__top-line{
+  position:absolute;
+  border-top:1px dashed rgba(189,153,89,.58);
+}
+.city-wall-fixed-preview__top-line--horizontal{left:48px;top:80px;width:205px}
+.city-wall-fixed-preview__top-line--vertical{
+  left:272px;
+  top:102px;
+  width:96px;
+  rotate:90deg;
+  transform-origin:0 50%;
+}
+.city-wall-fixed-preview__node{
+  position:absolute;
+  width:10px;
+  height:10px;
+  border:1px solid rgba(236,230,217,.82);
+  background:rgba(31,35,31,.96);
+  border-radius:50%;
+  box-shadow:0 0 0 2px rgba(8,10,9,.20);
+}
+.city-wall-fixed-preview__node--1{left:36px;top:76px}
+.city-wall-fixed-preview__node--2{left:250px;top:76px}
+.city-wall-fixed-preview__node--3{left:267px;top:201px;border-color:rgba(189,153,89,.88)}
+.city-wall-fixed-preview__front,
+.city-wall-fixed-preview__back{
+  position:absolute;
+  color:rgba(218,211,198,.62);
+  font-size:8.5px;
+  letter-spacing:.06em;
+}
+.city-wall-fixed-preview__front--horizontal{left:122px;top:39px}
+.city-wall-fixed-preview__back--horizontal{left:122px;top:104px}
+.city-wall-fixed-preview__front--vertical{left:302px;top:126px}
+.city-wall-fixed-preview__back--vertical{left:210px;top:126px}
+.city-wall-fixed-preview.is-facing-right .city-wall-fixed-preview__front{color:rgba(154,159,151,.46)}
+.city-wall-fixed-preview.is-facing-right .city-wall-fixed-preview__back{color:rgba(218,211,198,.66)}
+.city-wall-fixed-preview.is-facing-left .city-wall-fixed-preview__front{color:rgba(218,211,198,.66)}
+.city-wall-fixed-preview.is-facing-left .city-wall-fixed-preview__back{color:rgba(154,159,151,.46)}

@@ -287,20 +287,28 @@ const wallPanelBox = await wallPanel.boundingBox();
 if (!wallPanelBox || wallPanelBox.width < 392 || wallPanelBox.width > 408) {
   throw new Error('City wall construction panel should stay near 400px wide. width=' + wallPanelBox?.width);
 }
-for (const text of ['墙体参数', '墙高', '地形关系', '基底处理', '自动计算']) {
+for (const text of ['范围模式', '墙体参数', '墙高', '墙体厚度', '地形关系', '基底处理', '当前范围']) {
   if ((await wallPanel.getByText(text, { exact: true }).count()) !== 1) {
-    throw new Error('City wall construction panel missing: ' + text);
+    throw new Error('City wall range panel missing: ' + text);
   }
 }
 await assertParameterFieldFillsRow('.city-wall-construction-prototype', 'city wall construction');
 
 const wallBar = page.locator('.city-wall-construction-toolbar-cluster .tool-action-bar');
-for (const mode of ['智能折线', '直线', '曲线']) {
+for (const mode of ['范围模式', '定宽延伸']) {
   if ((await wallBar.getByRole('button', { name: mode, exact: true }).count()) !== 1) {
     throw new Error('City wall construction mode missing: ' + mode);
   }
 }
-for (const action of ['反转城外方向', '完成城墙营造', '取消城墙营造']) {
+for (const retired of ['智能折线', '直线', '曲线']) {
+  if (await wallBar.getByRole('button', { name: retired, exact: true }).count()) {
+    throw new Error('Retired road-like wall mode is still visible: ' + retired);
+  }
+}
+if (await wallBar.getByRole('button', { name: '交换正反面', exact: true }).count()) {
+  throw new Error('Range mode must not expose facing flip; rectangle outside is automatically Front.');
+}
+for (const action of ['完成城墙营造', '取消城墙营造']) {
   if ((await wallBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
     throw new Error('City wall construction action missing: ' + action);
   }
@@ -312,33 +320,64 @@ for (const action of ['网格吸附', '网格显示', '墙顶线', '节点显示
     throw new Error('City wall construction utility missing: ' + action);
   }
 }
-if ((await page.locator('.city-wall-path-preview').count()) !== 1) {
-  throw new Error('City wall construction needs one world path preview.');
+if ((await page.locator('.city-wall-range-preview').count()) !== 1) {
+  throw new Error('Range mode needs one rectangular thick-wall preview.');
 }
-if ((await page.getByText('城墙 · 智能折线', { exact: true }).count()) !== 1) {
-  throw new Error('City wall construction operation hints should match smart polyline mode.');
+if ((await page.locator('.city-wall-range-preview__wall').count()) !== 4) {
+  throw new Error('Range mode must preview four thick wall sides.');
 }
-await page.screenshot({ path: outDir + '/city-wall-15-construction-smart.png' });
+if ((await page.locator('.city-wall-range-preview__front').count()) !== 4) {
+  throw new Error('Range mode must show four outward Front indicators.');
+}
+if ((await wallPanel.getAttribute('data-wall-construction-mode')) !== 'range') {
+  throw new Error('Range mode should expose range state.');
+}
+if ((await wallPanel.getAttribute('data-wall-facing')) !== 'outside-auto') {
+  throw new Error('Range mode facing must be automatically outside.');
+}
+if ((await page.getByText('城墙 · 范围模式', { exact: true }).count()) !== 1) {
+  throw new Error('City wall operation hints should match range mode.');
+}
+await page.screenshot({ path: outDir + '/city-wall-15-construction-range.png' });
 
-await wallBar.getByRole('button', { name: '曲线', exact: true }).click();
-await wallBar.getByRole('button', { name: '反转城外方向', exact: true }).click();
+await wallBar.getByRole('button', { name: '定宽延伸', exact: true }).click();
 await page.waitForTimeout(140);
-if ((await wallPanel.getAttribute('data-wall-draw-mode')) !== 'curve') {
-  throw new Error('City wall construction panel should expose curve mode.');
+if ((await wallPanel.getAttribute('data-wall-construction-mode')) !== 'fixed-width') {
+  throw new Error('City wall construction panel should expose fixed-width mode.');
 }
-if ((await wallPanel.getAttribute('data-wall-outside')) !== 'left') {
-  throw new Error('City wall outside side should flip to left.');
+if ((await wallPanel.getAttribute('data-wall-facing')) !== 'right') {
+  throw new Error('Fixed-width mode should default Front to path right side.');
 }
-if ((await page.getByText('城墙 · 曲线', { exact: true }).count()) !== 1) {
-  throw new Error('City wall operation hints should rebind to curve mode.');
+if ((await wallBar.getByRole('button', { name: '交换正反面', exact: true }).count()) !== 1) {
+  throw new Error('Fixed-width mode must expose facing flip.');
+}
+for (const text of ['定宽延伸', '当前路径', '正面', '背面']) {
+  if ((await wallPanel.getByText(text, { exact: true }).count()) !== 1) {
+    throw new Error('Fixed-width wall panel missing: ' + text);
+  }
+}
+if ((await page.locator('.city-wall-fixed-preview').count()) !== 1) {
+  throw new Error('Fixed-width mode needs one L-shaped wall preview.');
+}
+if ((await page.locator('.city-wall-fixed-preview__wall').count()) !== 2) {
+  throw new Error('Fixed-width preview should expose two thick L wall legs.');
+}
+if ((await page.getByText('城墙 · 定宽延伸', { exact: true }).count()) !== 1) {
+  throw new Error('City wall operation hints should rebind to fixed-width mode.');
+}
+
+await wallBar.getByRole('button', { name: '交换正反面', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await wallPanel.getAttribute('data-wall-facing')) !== 'left') {
+  throw new Error('City wall facing should flip from path right to path left.');
 }
 
 await wallUtility.getByRole('button', { name: '墙顶线', exact: true }).click();
 await page.waitForTimeout(100);
-if (await page.locator('.city-wall-path-preview__top-line').count()) {
-  throw new Error('Wall top-line toggle should hide the world preview line.');
+if (await page.locator('.city-wall-fixed-preview__top-line').count()) {
+  throw new Error('Wall top-line toggle should hide fixed-width preview lines.');
 }
-await page.screenshot({ path: outDir + '/city-wall-16-construction-curve.png' });
+await page.screenshot({ path: outDir + '/city-wall-16-construction-fixed-width.png' });
 
 await wallBar.getByRole('button', { name: '完成城墙营造', exact: true }).click();
 await page.waitForSelector('.city-wall-construction-prototype', { state: 'detached' });

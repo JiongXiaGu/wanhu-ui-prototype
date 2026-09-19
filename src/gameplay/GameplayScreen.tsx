@@ -250,8 +250,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           <CityWallConstructionOverlay
             moduleName={state.cityWallModuleName}
             systemName={state.cityWallSystemName}
-            drawMode={state.cityWallDrawMode}
-            outsideSide={state.cityWallOutsideSide}
+            constructionMode={state.cityWallConstructionMode}
+            facingSide={state.cityWallFacingSide}
             showTopLine={state.cityWallTopLine}
             showNodes={state.cityWallNodes}
             motionPhase={toolPresence.phase}
@@ -281,7 +281,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           adjustmentMode={state.adjustmentMode}
           roadDrawMode={state.roadDrawMode}
           terrainEditMode={state.terrainEditMode}
-          cityWallDrawMode={state.cityWallDrawMode}
+          cityWallConstructionMode={state.cityWallConstructionMode}
         />
       )}
 

@@ -253,35 +253,48 @@ UI Toolkit 映射：
 
 ## 14. City Wall Construction Tool
 
-城墙体系不使用一个万能 Tool Controller。四种构件拥有独立业务 Tool，但继续共享 UI Primitive 与 Surface：
+城墙体系不使用一个万能 Tool Controller。四种构件拥有独立业务 Tool，但共享 UI Primitive 与 Surface。
+
+当前 `city-wall-construction` 的正式输入模式：
 
 ```text
-CityWallConstructionTool
-  → Path Construction Controller
+Range
+  → Drag Rect
+  → 4 Points + Closed Path
+  → Outside = Front / Inside = Back
 
-CityWallGateTool
-  → Embedded Wall Module Controller
-
-CityWallAccessStairTool
-  → Wall-to-Ground Attachment Controller
-
-CityWallTransitionStairTool
-  → Walkway-to-Walkway Transition Controller
+Fixed Width
+  → Fixed Wall Thickness
+  → Orthogonal Point Extension
+  → L / U / Closed Outline
+  → FacingSide = Left / Right for open paths
 ```
 
-当前 Web Vertical Slice 已完成 `city-wall-construction`：
+正式数据目标：
+
+```text
+CityWallPath
+├ Points[]
+├ Closed
+├ WallThickness
+├ WallHeight
+├ Facing
+└ TerrainAlignment
+```
+
+UI Toolkit 映射：
 
 ```text
 CityWallConstructionOverlay
   → PlacementContextPanel / LeftContextPanel
 
 CityWallConstructionDock
-  → PlacementActionBar
+  → Range / Fixed Width Action Definition
 
 City Wall Utility
   → ContextUtilityToolbar Definition
 
-Path Preview DOM
+Range / Fixed Width Preview DOM
   → 不迁 UI Toolkit
   → CityWallWorldRenderer
 ```
@@ -289,7 +302,12 @@ Path Preview DOM
 约束：
 
 - UI Toolkit 不负责真实城墙路径生成；
-- Draw Mode / Wall Height / Terrain Relation / Base Treatment / Outside Side 属于 Construction Controller；
+- 不使用道路式 Smart Polyline / Straight / Curve 作为城墙主模式；
+- Range 的 Front 自动朝 Polygon 外部，不显示 Facing Flip；
+- Fixed Width 开放 Path 使用相对路径方向的 Left / Right Facing；
+- 正反面是 Front / Back 语义，不是 North / East / South / West；
+- Wall Height / Thickness / Terrain Relation / Base Treatment 属于 Construction Controller；
 - Wall Top Line / Node Display 只属于 Visualization State，不进入 World Command History；
 - Workspace 的 `toolType` 决定进入哪套独立 ToolOverlay；
 - 四套 Tool 可以有不同 Mode / Workflow Step / 附加窗口，但不得复制 Shared Surface / Control CSS。
+

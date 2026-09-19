@@ -1,4 +1,4 @@
-import type { AdjustmentMode, CityWallDrawMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
+import type { AdjustmentMode, CityWallConstructionMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
 
 type HintRow = { binding: string; description: string; primary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
@@ -97,41 +97,30 @@ const roadPresets: Record<RoadDrawMode, HintPreset> = {
   },
 };
 
-
-const cityWallPresets: Record<CityWallDrawMode, HintPreset> = {
-  'smart-polyline': {
-    task: '城墙 · 智能折线',
+const cityWallPresets: Record<CityWallConstructionMode, HintPreset> = {
+  range: {
+    task: '城墙 · 范围模式',
     rows: [
-      { binding: '鼠标左键', description: '放置墙体节点', primary: true },
-      { binding: '鼠标右键', description: '结束当前墙段' },
+      { binding: '鼠标左键拖动', description: '拉出矩形城墙范围', primary: true },
+      { binding: '拖动四角', description: '调整营造范围' },
       { binding: 'W / A / S / D', description: '移动镜头' },
       { binding: '鼠标滚轮', description: '缩放镜头' },
+      { binding: 'Ctrl + Z', description: '撤销范围调整' },
+      { binding: 'Esc', description: '取消城墙营造' },
+    ],
+  },
+  'fixed-width': {
+    task: '城墙 · 定宽延伸',
+    rows: [
+      { binding: '鼠标左键', description: '起点 / 添加转角', primary: true },
+      { binding: '拖动', description: '按固定墙厚延伸' },
+      { binding: 'Shift', description: '临时关闭正交吸附' },
+      { binding: '鼠标右键', description: '结束当前路径' },
       { binding: 'Ctrl + Z', description: '撤销节点' },
       { binding: 'Esc', description: '取消城墙营造' },
     ],
   },
-  straight: {
-    task: '城墙 · 直线',
-    rows: [
-      { binding: '鼠标左键', description: '确定起点 / 终点', primary: true },
-      { binding: '鼠标右键', description: '结束当前墙段' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
-      { binding: 'Ctrl + Z', description: '撤销端点' },
-      { binding: 'Esc', description: '取消城墙营造' },
-    ],
-  },
-  curve: {
-    task: '城墙 · 曲线',
-    rows: [
-      { binding: '鼠标左键', description: '放置曲线控制点', primary: true },
-      { binding: '鼠标右键', description: '结束当前墙段' },
-      { binding: 'W / A / S / D', description: '移动镜头' },
-      { binding: 'Ctrl + Z', description: '撤销控制点' },
-      { binding: 'Esc', description: '取消城墙营造' },
-    ],
-  },
 };
-
 
 const terrainPresets: Record<TerrainEditMode, HintPreset> = {
   raise: {
@@ -196,7 +185,7 @@ function Keycap({ binding }: { binding: string }) {
 
 function HintRowView({ row }: { row: HintRow }) {
   return (
-    <div className={`operation-hints__row ${row.primary ? 'is-primary' : ''}`}>
+    <div className={'operation-hints__row ' + (row.primary ? 'is-primary' : '')}>
       <Keycap binding={row.binding} />
       <span className="operation-hints__description">{row.description}</span>
     </div>
@@ -208,10 +197,16 @@ interface Props {
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   terrainEditMode: TerrainEditMode;
-  cityWallDrawMode: CityWallDrawMode;
+  cityWallConstructionMode: CityWallConstructionMode;
 }
 
-export function GameplayOperationHints({ tool, adjustmentMode, roadDrawMode, terrainEditMode, cityWallDrawMode }: Props) {
+export function GameplayOperationHints({
+  tool,
+  adjustmentMode,
+  roadDrawMode,
+  terrainEditMode,
+  cityWallConstructionMode,
+}: Props) {
   const preset = tool === 'building-placement'
     ? buildingPresets[adjustmentMode]
     : tool === 'road-placement'
@@ -219,14 +214,14 @@ export function GameplayOperationHints({ tool, adjustmentMode, roadDrawMode, ter
       : tool === 'terrain-edit'
         ? terrainPresets[terrainEditMode]
         : tool === 'city-wall-construction'
-          ? cityWallPresets[cityWallDrawMode]
+          ? cityWallPresets[cityWallConstructionMode]
           : gameplayPreset;
 
   return (
     <aside className="gameplay-operation-hints" aria-label="当前操作提示">
       <div className="operation-hints__task"><strong>{preset.task}</strong></div>
       <div className="operation-hints__group">
-        {preset.rows.slice(0, 8).map((row) => <HintRowView key={`${row.binding}-${row.description}`} row={row} />)}
+        {preset.rows.slice(0, 8).map((row) => <HintRowView key={row.binding + '-' + row.description} row={row} />)}
       </div>
     </aside>
   );
