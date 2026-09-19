@@ -17,9 +17,9 @@ import {
   ScanLine,
   Undo2,
 } from 'lucide-react';
-import type { Tool } from '../app/ui-state';
+import type { CityWallGatePlacementMode, Tool } from '../app/ui-state';
 
-export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction';
+export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected';
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'unlock'
@@ -42,7 +42,9 @@ export type UtilityItemId =
   | 'tree-avoid-buildings'
   | 'tree-avoid-roads'
   | 'city-wall-top-line'
-  | 'city-wall-nodes';
+  | 'city-wall-nodes'
+  | 'city-wall-gate-connections'
+  | 'city-wall-gate-clearance';
 
 interface UtilityItem {
   id: UtilityItemId;
@@ -64,6 +66,9 @@ interface ContextUtilityToolbarProps {
   treeAvoidRoads: boolean;
   cityWallTopLine: boolean;
   cityWallNodes: boolean;
+  cityWallGatePlacementMode: CityWallGatePlacementMode;
+  cityWallGateConnections: boolean;
+  cityWallGateClearance: boolean;
   onToggleGridSnap: () => void;
   onToggleGridVisible: () => void;
   onUndo: () => void;
@@ -75,6 +80,8 @@ interface ContextUtilityToolbarProps {
   onToggleTreeAvoidRoads: () => void;
   onToggleCityWallTopLine: () => void;
   onToggleCityWallNodes: () => void;
+  onToggleCityWallGateConnections: () => void;
+  onToggleCityWallGateClearance: () => void;
   onToolAction: (id: UtilityItemId) => void;
 }
 
@@ -167,6 +174,30 @@ const CITY_WALL_CONSTRUCTION_GROUPS: readonly (readonly UtilityItem[])[] = [
   ],
 ];
 
+const CITY_WALL_GATE_FREE_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
+    { id: 'city-wall-gate-clearance', label: '门洞净空', icon: Ruler, kind: 'toggle' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
+const CITY_WALL_GATE_CONNECTED_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
+    { id: 'city-wall-gate-connections', label: '墙体连接点', icon: ScanLine, kind: 'toggle' },
+    { id: 'city-wall-gate-clearance', label: '门洞净空', icon: Ruler, kind: 'toggle' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
 const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> = {
   world: WORLD_GROUPS,
   'building-placement': BUILDING_GROUPS,
@@ -174,14 +205,17 @@ const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> =
   'terrain-edit': TERRAIN_GROUPS,
   'tree-placement': TREE_GROUPS,
   'city-wall-construction': CITY_WALL_CONSTRUCTION_GROUPS,
+  'city-wall-gate-free': CITY_WALL_GATE_FREE_GROUPS,
+  'city-wall-gate-connected': CITY_WALL_GATE_CONNECTED_GROUPS,
 };
 
-function contextForTool(tool: Tool): UtilityContext {
+function contextForTool(tool: Tool, gateMode: CityWallGatePlacementMode): UtilityContext {
   if (tool === 'building-placement') return 'building-placement';
   if (tool === 'road-placement') return 'road-placement';
   if (tool === 'terrain-edit') return 'terrain-edit';
   if (tool === 'tree-placement') return 'tree-placement';
   if (tool === 'city-wall-construction') return 'city-wall-construction';
+  if (tool === 'city-wall-gate') return gateMode === 'wall-connected' ? 'city-wall-gate-connected' : 'city-wall-gate-free';
   return 'world';
 }
 
@@ -191,6 +225,8 @@ function ariaLabelForContext(context: UtilityContext) {
   if (context === 'terrain-edit') return '地形编辑辅助工具';
   if (context === 'tree-placement') return '树木放置辅助工具';
   if (context === 'city-wall-construction') return '城墙主体营造辅助工具';
+  if (context === 'city-wall-gate-free') return '城墙门洞自由放置辅助工具';
+  if (context === 'city-wall-gate-connected') return '城墙门洞连接辅助工具';
   return '世界工具';
 }
 
@@ -207,6 +243,9 @@ export function ContextUtilityToolbar({
   treeAvoidRoads,
   cityWallTopLine,
   cityWallNodes,
+  cityWallGatePlacementMode,
+  cityWallGateConnections,
+  cityWallGateClearance,
   onToggleGridSnap,
   onToggleGridVisible,
   onUndo,
@@ -218,9 +257,11 @@ export function ContextUtilityToolbar({
   onToggleTreeAvoidRoads,
   onToggleCityWallTopLine,
   onToggleCityWallNodes,
+  onToggleCityWallGateConnections,
+  onToggleCityWallGateClearance,
   onToolAction,
 }: ContextUtilityToolbarProps) {
-  const requestedContext = contextForTool(tool);
+  const requestedContext = contextForTool(tool, cityWallGatePlacementMode);
   const [displayedContext, setDisplayedContext] = useState<UtilityContext>(requestedContext);
   const [phase, setPhase] = useState<'steady' | 'exiting' | 'entering'>('steady');
   const swapTimer = useRef<number | null>(null);
@@ -260,6 +301,8 @@ export function ContextUtilityToolbar({
     if (item.id === 'tree-avoid-roads') return { active: treeAvoidRoads, pressed: treeAvoidRoads, onClick: onToggleTreeAvoidRoads };
     if (item.id === 'city-wall-top-line') return { active: cityWallTopLine, pressed: cityWallTopLine, onClick: onToggleCityWallTopLine };
     if (item.id === 'city-wall-nodes') return { active: cityWallNodes, pressed: cityWallNodes, onClick: onToggleCityWallNodes };
+    if (item.id === 'city-wall-gate-connections') return { active: cityWallGateConnections, pressed: cityWallGateConnections, onClick: onToggleCityWallGateConnections };
+    if (item.id === 'city-wall-gate-clearance') return { active: cityWallGateClearance, pressed: cityWallGateClearance, onClick: onToggleCityWallGateClearance };
     if (item.kind === 'action') return { onClick: () => onToolAction(item.id) };
     return {};
   }

@@ -311,3 +311,48 @@ Range / Fixed Width Preview DOM
 - Workspace 的 `toolType` 决定进入哪套独立 ToolOverlay；
 - 四套 Tool 可以有不同 Mode / Workflow Step / 附加窗口，但不得复制 Shared Surface / Control CSS。
 
+
+
+## 15. City Wall Gate Tool
+
+`city-wall-gate` 是独立于城墙主体的第二套业务 Tool。
+
+正式 Controller：
+
+```text
+CityWallGateController
+├ PlacementMode = Free / WallConnected
+├ OpeningWidth
+├ OpeningHeight
+├ BuildingDepth
+├ Transform
+├ FrontBackFacing
+└ WallConnections[]
+```
+
+UI Toolkit：
+
+```text
+CityWallGateOverlay
+  → PlacementContextPanel / LeftContextPanel
+
+CityWallGateDock
+  → Free / Wall Connected Action Definition
+
+Gate Utility
+  → UtilityToolbarHost.Rebind(Free | Connected)
+
+Gate Preview DOM
+  → 不迁 UI Toolkit
+  → CityWallGateWorldRenderer
+```
+
+约束：
+
+- Gate 可以脱离 Wall 独立存在；
+- Wall Connected 不允许 UI 自由 Rotate，Transform Direction 由 World Query / Wall Anchor 决定；
+- Facing Flip 是语义状态，不等于 Rotate 180°；
+- Gate Building Depth 不受 Wall Thickness 强制约束；
+- Wall Snap 是 Connected Mode 的工具规则，不做 Toggle；
+- Opening Clearance / Wall Connection Anchor 属于 World Visualization；
+- 不依赖 Mesh Boolean 作为核心数据关系。

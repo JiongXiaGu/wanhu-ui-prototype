@@ -16,6 +16,8 @@ export type ReviewScenario =
   | 'workspace-building'
   | 'workspace-city-wall'
   | 'city-wall-construction'
+  | 'city-wall-gate-free'
+  | 'city-wall-gate-connected'
   | 'workspace-tree'
   | 'tree-brush'
   | 'tree-single'
@@ -79,6 +81,10 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return designWorkspace(gameplay, 'city-wall');
     case 'city-wall-construction':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'city-wall-construction', toolOrigin: { kind: 'design-workspace', category: 'city-wall' }, dockMode: 'design', dockCategory: 'city-wall', cityWallModuleId: 'citywall-gentle-wall', cityWallModuleName: '标准墙段', cityWallSystemId: 'gentle-wall', cityWallSystemName: '小倾斜角', cityWallConstructionMode: 'range', cityWallFacingSide: 'right', cityWallTopLine: true, cityWallNodes: true } };
+    case 'city-wall-gate-free':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'city-wall-gate', toolOrigin: { kind: 'design-workspace', category: 'city-wall' }, dockMode: 'design', dockCategory: 'city-wall', cityWallModuleId: 'citywall-gentle-gate', cityWallModuleName: '拱券门洞', cityWallSystemId: 'gentle-wall', cityWallSystemName: '小倾斜角', cityWallGatePlacementMode: 'free', cityWallGateRotation: 0, cityWallGateFacingFlipped: false, cityWallGateConnections: true, cityWallGateClearance: true } };
+    case 'city-wall-gate-connected':
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'city-wall-gate', toolOrigin: { kind: 'design-workspace', category: 'city-wall' }, dockMode: 'design', dockCategory: 'city-wall', cityWallModuleId: 'citywall-gentle-gate', cityWallModuleName: '拱券门洞', cityWallSystemId: 'gentle-wall', cityWallSystemName: '小倾斜角', cityWallGatePlacementMode: 'wall-connected', cityWallGateRotation: 0, cityWallGateFacingFlipped: false, cityWallGateConnections: true, cityWallGateClearance: true } };
     case 'workspace-tree':
       return designWorkspace(gameplay, 'tree');
     case 'tree-brush':

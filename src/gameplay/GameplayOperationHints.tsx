@@ -1,4 +1,4 @@
-import type { AdjustmentMode, CityWallConstructionMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
+import type { AdjustmentMode, CityWallConstructionMode, CityWallGatePlacementMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
 
 type HintRow = { binding: string; description: string; primary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
@@ -122,6 +122,30 @@ const cityWallPresets: Record<CityWallConstructionMode, HintPreset> = {
   },
 };
 
+const cityWallGatePresets: Record<CityWallGatePlacementMode, HintPreset> = {
+  free: {
+    task: '城门 · 自由放置',
+    rows: [
+      { binding: '鼠标左键', description: '放置独立城门', primary: true },
+      { binding: '拖动', description: '调整城门位置' },
+      { binding: 'R / Shift+R', description: '旋转城门' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: 'Ctrl + Z', description: '撤销放置' },
+      { binding: 'Esc', description: '取消城门放置' },
+    ],
+  },
+  'wall-connected': {
+    task: '城门 · 城墙连接',
+    rows: [
+      { binding: '鼠标移动', description: '寻找可连接墙段', primary: true },
+      { binding: '鼠标左键', description: '确认墙体连接位置' },
+      { binding: '自动', description: '对齐墙体并继承正反面' },
+      { binding: 'Ctrl + Z', description: '撤销放置' },
+      { binding: 'Esc', description: '取消城门放置' },
+    ],
+  },
+};
+
 const terrainPresets: Record<TerrainEditMode, HintPreset> = {
   raise: {
     task: '地形 · 抬高',
@@ -198,6 +222,7 @@ interface Props {
   roadDrawMode: RoadDrawMode;
   terrainEditMode: TerrainEditMode;
   cityWallConstructionMode: CityWallConstructionMode;
+  cityWallGatePlacementMode: CityWallGatePlacementMode;
 }
 
 export function GameplayOperationHints({
@@ -206,6 +231,7 @@ export function GameplayOperationHints({
   roadDrawMode,
   terrainEditMode,
   cityWallConstructionMode,
+  cityWallGatePlacementMode,
 }: Props) {
   const preset = tool === 'building-placement'
     ? buildingPresets[adjustmentMode]
@@ -215,7 +241,9 @@ export function GameplayOperationHints({
         ? terrainPresets[terrainEditMode]
         : tool === 'city-wall-construction'
           ? cityWallPresets[cityWallConstructionMode]
-          : gameplayPreset;
+          : tool === 'city-wall-gate'
+            ? cityWallGatePresets[cityWallGatePlacementMode]
+            : gameplayPreset;
 
   return (
     <aside className="gameplay-operation-hints" aria-label="当前操作提示">

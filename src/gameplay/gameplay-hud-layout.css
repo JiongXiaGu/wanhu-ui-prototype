@@ -100,7 +100,9 @@
 .gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="terrain-edit"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="tree-placement"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-construction"]{width:var(--hud-tool-tools-width)}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-construction"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-free"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-connected"]{width:var(--hud-tool-tools-width)}
 
 .gameplay-screen .gameplay-operation-hints{
   right:var(--hud-edge);
@@ -125,7 +127,8 @@
 .gameplay-screen .road-placement-prototype,
 .gameplay-screen .terrain-edit-prototype,
 .gameplay-screen .tree-placement-prototype,
-.gameplay-screen .city-wall-construction-prototype{
+.gameplay-screen .city-wall-construction-prototype,
+.gameplay-screen .city-wall-gate-prototype{
   left:var(--hud-edge);
   bottom:var(--hud-edge);
 }
@@ -135,6 +138,7 @@
 .gameplay-screen .road-placement-toolbar-cluster,
 .gameplay-screen .terrain-edit-toolbar-cluster,
 .gameplay-screen .tree-placement-toolbar-cluster,
-.gameplay-screen .city-wall-construction-toolbar-cluster{
+.gameplay-screen .city-wall-construction-toolbar-cluster,
+.gameplay-screen .city-wall-gate-toolbar-cluster{
   bottom:var(--hud-edge);
 }

@@ -6,7 +6,8 @@
 .gameplay-screen .building-placement-toolbar-cluster,
 .gameplay-screen .road-placement-toolbar-cluster,
 .gameplay-screen .terrain-edit-toolbar-cluster,
-.gameplay-screen .city-wall-construction-toolbar-cluster{
+.gameplay-screen .city-wall-construction-toolbar-cluster,
+.gameplay-screen .city-wall-gate-toolbar-cluster{
   left:50%;
   transform:translateX(-50%);
   z-index:24;

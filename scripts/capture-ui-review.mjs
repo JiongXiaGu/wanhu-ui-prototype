@@ -392,4 +392,117 @@ await page.waitForSelector('.workspace[data-design-category="city-wall"]');
 await page.waitForTimeout(180);
 await page.screenshot({ path: outDir + '/city-wall-17-return-workspace.png' });
 
+
+
+await open('workspace-city-wall', '.workspace[data-design-category="city-wall"]');
+const cityWallGateWorkspace = page.locator('.workspace[data-design-category="city-wall"]');
+await cityWallGateWorkspace.getByRole('button', { name: '小倾斜角', exact: true }).click();
+await cityWallGateWorkspace.getByRole('button', { name: '门洞', exact: true }).click();
+await cityWallGateWorkspace.getByRole('button', { name: /拱券门洞/ }).click();
+await page.waitForSelector('.city-wall-gate-prototype');
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="city-wall-gate-free"]');
+await page.waitForTimeout(260);
+
+const gatePanel = page.locator('.city-wall-gate-prototype');
+const gatePanelBox = await gatePanel.boundingBox();
+if (!gatePanelBox || gatePanelBox.width < 392 || gatePanelBox.width > 408) {
+  throw new Error('City wall gate panel should stay near 400px wide. width=' + gatePanelBox?.width);
+}
+for (const text of ['门洞尺寸', '洞口净宽', '洞口净高', '建筑纵深', '放置状态']) {
+  if ((await gatePanel.getByText(text, { exact: true }).count()) !== 1) {
+    throw new Error('City wall gate free panel missing: ' + text);
+  }
+}
+await assertParameterFieldFillsRow('.city-wall-gate-prototype', 'city wall gate');
+
+const gateBar = page.locator('.city-wall-gate-toolbar-cluster .tool-action-bar');
+for (const mode of ['自由放置', '城墙连接']) {
+  if ((await gateBar.getByRole('button', { name: mode, exact: true }).count()) !== 1) {
+    throw new Error('City wall gate placement mode missing: ' + mode);
+  }
+}
+for (const action of ['城门左转', '城门右转', '交换正反面', '完成城墙门洞放置', '取消城墙门洞放置']) {
+  if ((await gateBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall gate free action missing: ' + action);
+  }
+}
+
+const gateFreeUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-gate-free"]');
+for (const action of ['网格吸附', '网格显示', '门洞净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
+  if ((await gateFreeUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall gate free utility missing: ' + action);
+  }
+}
+if (await gateFreeUtility.getByRole('button', { name: '墙体连接点', exact: true }).count()) {
+  throw new Error('Free gate placement must not expose wall connection points.');
+}
+if ((await page.locator('.city-wall-gate-free-preview').count()) !== 1) {
+  throw new Error('Free gate placement needs one independent building preview.');
+}
+if ((await page.locator('.city-wall-gate-free-preview__volume').count()) !== 1) {
+  throw new Error('Free gate preview must express a building volume, not only a door icon.');
+}
+if ((await page.getByText('城门 · 自由放置', { exact: true }).count()) !== 1) {
+  throw new Error('Gate operation hints should match free mode.');
+}
+await page.screenshot({ path: outDir + '/city-wall-gate-18-free.png' });
+
+await gateBar.getByRole('button', { name: '城墙连接', exact: true }).click();
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="city-wall-gate-connected"]');
+await page.waitForTimeout(180);
+
+if ((await gatePanel.getAttribute('data-gate-placement-mode')) !== 'wall-connected') {
+  throw new Error('Gate panel should expose wall-connected mode.');
+}
+for (const text of ['当前连接', '城墙体系', '墙体厚度', '墙高', '城门纵深', '正面']) {
+  if ((await gatePanel.getByText(text, { exact: true }).count()) !== 1) {
+    throw new Error('Connected gate panel missing: ' + text);
+  }
+}
+for (const retiredAction of ['城门左转', '城门右转']) {
+  if (await gateBar.getByRole('button', { name: retiredAction, exact: true }).count()) {
+    throw new Error('Wall-connected gate should hide free rotation action: ' + retiredAction);
+  }
+}
+if ((await gateBar.getByRole('button', { name: '交换正反面', exact: true }).count()) !== 1) {
+  throw new Error('Wall-connected gate should retain semantic facing flip.');
+}
+
+const gateConnectedUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-gate-connected"]');
+for (const action of ['网格显示', '墙体连接点', '门洞净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
+  if ((await gateConnectedUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('Connected gate utility missing: ' + action);
+  }
+}
+if (await gateConnectedUtility.getByRole('button', { name: '网格吸附', exact: true }).count()) {
+  throw new Error('Wall connection is mandatory in connected mode; grid snap should not compete with it.');
+}
+if ((await page.locator('.city-wall-gate-connected-preview').count()) !== 1) {
+  throw new Error('Connected gate placement needs one wall integration preview.');
+}
+if ((await page.locator('.city-wall-gate-connected-preview__connection').count()) !== 2) {
+  throw new Error('Connected gate preview should expose two wall connection anchors.');
+}
+const depthLabel = await page.locator('.city-wall-gate-connected-preview__depth-label').textContent();
+if (!depthLabel || !depthLabel.includes('10.0 m') || !depthLabel.includes('墙厚 6.0 m')) {
+  throw new Error('Connected gate preview must preserve custom building depth independently from wall thickness.');
+}
+if ((await page.getByText('城门 · 城墙连接', { exact: true }).count()) !== 1) {
+  throw new Error('Gate operation hints should rebind to wall-connected mode.');
+}
+await page.screenshot({ path: outDir + '/city-wall-gate-19-connected.png' });
+
+await gateBar.getByRole('button', { name: '交换正反面', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await gatePanel.getAttribute('data-gate-facing-flipped')) !== 'true') {
+  throw new Error('Gate facing semantic should flip independently from transform rotation.');
+}
+await page.screenshot({ path: outDir + '/city-wall-gate-20-connected-flipped.png' });
+
+await gateBar.getByRole('button', { name: '完成城墙门洞放置', exact: true }).click();
+await page.waitForSelector('.city-wall-gate-prototype', { state: 'detached' });
+await page.waitForSelector('.workspace[data-design-category="city-wall"]');
+await page.waitForTimeout(180);
+await page.screenshot({ path: outDir + '/city-wall-gate-21-return-workspace.png' });
+
 await browser.close();
