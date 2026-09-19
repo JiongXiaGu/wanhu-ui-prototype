@@ -119,9 +119,9 @@
 .gameplay-screen .gameplay-context-panel--camera{width:var(--hud-context-camera-width)}
 .gameplay-screen .gameplay-context-panel--weather{width:var(--hud-context-weather-width)}
 
-.gameplay-screen .tool-overlay.building-placement-prototype,
-.gameplay-screen .tool-overlay.road-placement-prototype,
-.gameplay-screen .tool-overlay.terrain-edit-prototype{
+.gameplay-screen .building-placement-prototype,
+.gameplay-screen .road-placement-prototype,
+.gameplay-screen .terrain-edit-prototype{
   left:var(--hud-edge);
   bottom:var(--hud-edge);
 }

@@ -1,7 +1,7 @@
 /* Terrain Edit World Tool.
    Panel material comes from LeftContext/Surface System; this file owns terrain-specific geometry and world-preview placeholders only. */
 
-.gameplay-screen .tool-overlay.terrain-edit-prototype{
+.gameplay-screen .terrain-edit-prototype{
   left:var(--hud-edge);
   top:auto;
   bottom:var(--hud-edge);
