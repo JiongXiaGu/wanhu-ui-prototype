@@ -746,6 +746,10 @@ const materialUtility = page.locator('.context-utility-toolbar[data-utility-cont
 if ((await materialUtility.getByRole('button').count()) !== 2) {
   throw new Error('Material palette first slice should keep utility minimal: Undo / Redo only.');
 }
+const materialUtilityBox = await materialUtility.boundingBox();
+if (!materialUtilityBox || materialUtilityBox.width > 120) {
+  throw new Error('Material palette history-only utility should stay compact. width=' + materialUtilityBox?.width);
+}
 for (const action of ['撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
   if ((await materialUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
     throw new Error('Material palette utility missing: ' + action);
