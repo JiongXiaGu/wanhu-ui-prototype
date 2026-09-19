@@ -13,8 +13,8 @@ interface TreePlacementToolProps {
   onExit: () => void;
 }
 
-const TREE_VARIANTS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
-const TREE_VARIANT_ROWS = [TREE_VARIANTS.slice(0, 4), TREE_VARIANTS.slice(4, 8)];
+const TREE_VARIANTS = [1, 2, 3, 4] as const;
+const TREE_VARIANT_ROWS = [TREE_VARIANTS];
 
 export function TreePlacementTool({ state, motionPhase = 'steady', dispatch, onExit }: TreePlacementToolProps) {
   const [radius, setRadius] = useState(18);
@@ -65,8 +65,8 @@ export function TreePlacementTool({ state, motionPhase = 'steady', dispatch, onE
       >
         <LeftContextSection title="树木样式">
           {state.treePlacementMode === 'brush' && (
-            <button type="button" className={'tree-variant-mix ' + (state.treeVariant === 0 ? 'is-active' : '')} aria-label="随机混合八种树形" aria-pressed={state.treeVariant === 0} onClick={() => selectVariant(0)}>
-              <Shuffle aria-hidden="true" /><span>随机混合</span><small>01–08</small>
+            <button type="button" className={'tree-variant-mix ' + (state.treeVariant === 0 ? 'is-active' : '')} aria-label="随机混合四种树形" aria-pressed={state.treeVariant === 0} onClick={() => selectVariant(0)}>
+              <Shuffle aria-hidden="true" /><span>随机混合</span><small>01–04</small>
             </button>
           )}
           <div className="tree-variant-rows" aria-label={state.treeSpeciesName + '树形样式'}>

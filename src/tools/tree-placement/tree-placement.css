@@ -13,7 +13,7 @@
 .tree-variant-button svg{width:27px;height:27px;stroke-width:1.35;transform-origin:50% 100%}.tree-variant-button span{position:absolute;right:6px;bottom:4px;font-size:8.5px;font-variant-numeric:tabular-nums;opacity:.7}
 .tree-variant-button:hover{border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));background:rgba(255,255,255,.04);color:var(--wanhu-color-paper-primary,#eee9df)}
 .tree-variant-button.is-active{border-color:rgba(183,150,88,.36);background:rgba(183,150,88,.075);color:var(--wanhu-color-brass-high,#bd9959)}
-.tree-variant-button--2 svg{transform:scale(.88,1.08) rotate(-3deg)}.tree-variant-button--3 svg{transform:scale(1.08,.92) rotate(2deg)}.tree-variant-button--4 svg{transform:scale(.92,.96) rotate(-5deg)}.tree-variant-button--5 svg{transform:scale(1.04,1.1) rotate(4deg)}.tree-variant-button--6 svg{transform:scale(.82,.9) rotate(3deg)}.tree-variant-button--7 svg{transform:scale(1.1,1.02) rotate(-2deg)}.tree-variant-button--8 svg{transform:scale(.94,1.12) rotate(5deg)}
+.tree-variant-button--2 svg{transform:scale(.88,1.08) rotate(-3deg)}.tree-variant-button--3 svg{transform:scale(1.08,.92) rotate(2deg)}.tree-variant-button--4 svg{transform:scale(.92,.96) rotate(-5deg)}
 
 .tree-placement-mode-section{animation:tree-placement-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both}
 .tree-single-state{min-height:30px;margin-top:6px;padding:0 2px;display:flex;align-items:center;gap:8px;color:var(--wanhu-color-text-muted,#999b96);font-size:9px}.tree-single-state b{color:var(--wanhu-color-brass-high,#bd9959);font-size:10px;font-variant-numeric:tabular-nums}.tree-single-state i{margin-left:auto;font-style:normal;color:var(--wanhu-color-paper-secondary,#d4cfc6)}

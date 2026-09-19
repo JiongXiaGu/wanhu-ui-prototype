@@ -71,7 +71,7 @@ async function assertTreeShell(label, mode) {
   if (!panelBox) throw new Error(label + ': tree panel must be measurable.');
   if (panelBox.width < 392 || panelBox.width > 408) throw new Error(label + ': tree panel width=' + panelBox.width);
   if (panelBox.height > 520) throw new Error(label + ': tree panel too tall. height=' + panelBox.height);
-  if ((await panel.locator('.tree-variant-button').count()) !== 8) throw new Error(label + ': expected eight tree variants.');
+  if ((await panel.locator('.tree-variant-button').count()) !== 4) throw new Error(label + ': expected four tree variants.');
 
   const utility = page.locator('.context-utility-toolbar[data-utility-context="tree-placement"]');
   if ((await utility.count()) !== 1) throw new Error(label + ': tree utility missing.');
@@ -85,10 +85,10 @@ async function assertTreeShell(label, mode) {
   if (await page.locator('.gameplay-operation-hints').count()) throw new Error(label + ': persistent operation hints should be hidden.');
 
   if (mode === 'brush') {
-    if ((await panel.getByRole('button', { name: '随机混合八种树形', exact: true }).count()) !== 1) throw new Error(label + ': random mix missing.');
+    if ((await panel.getByRole('button', { name: '随机混合四种树形', exact: true }).count()) !== 1) throw new Error(label + ': random mix missing.');
     if ((await page.locator('.tree-brush-preview').count()) !== 1) throw new Error(label + ': brush preview missing.');
   } else {
-    if (await panel.getByRole('button', { name: '随机混合八种树形', exact: true }).count()) throw new Error(label + ': single mode must use a concrete variant.');
+    if (await panel.getByRole('button', { name: '随机混合四种树形', exact: true }).count()) throw new Error(label + ': single mode must use a concrete variant.');
     if ((await page.locator('.tree-single-preview').count()) !== 1) throw new Error(label + ': single preview missing.');
     for (const action of ['移动选中树木', '逆时针旋转', '顺时针旋转', '删除选中树木']) {
       if ((await bar.getByRole('button', { name: action, exact: true }).count()) !== 1) throw new Error(label + ': single action missing ' + action);
@@ -182,6 +182,8 @@ await page.waitForSelector('.tree-placement-prototype');
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="tree-placement"]');
 await page.waitForTimeout(260);
 await assertTreeShell('tree brush', 'brush');
+const treeBrushBox = await page.locator('.tree-placement-prototype').boundingBox();
+if (!treeBrushBox || treeBrushBox.height > 430) throw new Error('Tree brush panel should stay compact with one row of four variants. height=' + treeBrushBox?.height);
 await assertParameterFieldFillsRow('.tree-placement-prototype', 'tree brush');
 await page.screenshot({ path: outDir + '/tree-08-brush.png' });
 

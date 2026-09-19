@@ -215,7 +215,7 @@ Tree Context Utility → UtilityToolbarHost.Rebind(Tree)
 Brush / Selected Tree Preview DOM → TreePlacementWorldRenderer / Selection Gizmo
 ```
 
-- 一个 Tree Species 最多 8 个 Variant；
+- 一个 Tree Species 最多 4 个 Variant，并以单行 4 Slot 映射 UXML；
 - Variant 只表示树形差异，不承载 Season / Growth / LOD；
 - Brush 参数只保留 Radius / Density / Scale Randomness；
 - Single 只暴露统一 Scale，不做 XYZ 非等比缩放；

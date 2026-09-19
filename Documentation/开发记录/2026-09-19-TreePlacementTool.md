@@ -2,7 +2,7 @@
 
 - 新增 `Tool = tree-placement` 与 Brush / Single；
 - Workspace 点击树种传入 Species Id / Name；
-- 每个 Tree Species 固定 8 Variant；
+- 每个 Tree Species 最多 4 Variant；左侧由 4×2 收敛为单行 1×4；
 - Brush 支持随机混合或锁定 Variant，并提供 Radius / Density / Scale Randomness；
 - Single 支持 Variant / Scale / Move / Rotate / Delete；
 - Tree Utility：避让建筑 / 避让道路 / Undo / Redo；

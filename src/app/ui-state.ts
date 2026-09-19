@@ -353,7 +353,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
     case 'SET_TREE_PLACEMENT_MODE':
       return { ...state, treePlacementMode: action.mode, treeVariant: action.mode === 'single' && state.treeVariant === 0 ? 1 : state.treeVariant };
     case 'SET_TREE_VARIANT':
-      return { ...state, treeVariant: Math.max(0, Math.min(8, action.variant)) };
+      return { ...state, treeVariant: Math.max(0, Math.min(4, action.variant)) };
     case 'TOGGLE_TREE_AVOID_BUILDINGS':
       return { ...state, treeAvoidBuildings: !state.treeAvoidBuildings };
     case 'TOGGLE_TREE_AVOID_ROADS':
