@@ -351,10 +351,17 @@ if ((await wallPanel.getAttribute('data-wall-facing')) !== 'right') {
 if ((await wallBar.getByRole('button', { name: '交换正反面', exact: true }).count()) !== 1) {
   throw new Error('Fixed-width mode must expose facing flip.');
 }
-for (const text of ['定宽延伸', '当前路径', '正面', '背面']) {
+for (const text of ['定宽延伸', '当前路径']) {
   if ((await wallPanel.getByText(text, { exact: true }).count()) !== 1) {
     throw new Error('Fixed-width wall panel missing: ' + text);
   }
+}
+const facingSummary = wallPanel.locator('.city-wall-facing-summary');
+if ((await facingSummary.getByText(/^正面/).count()) !== 1) {
+  throw new Error('Fixed-width wall panel should expose one Front summary row.');
+}
+if ((await facingSummary.getByText(/^背面/).count()) !== 1) {
+  throw new Error('Fixed-width wall panel should expose one Back summary row.');
 }
 if ((await page.locator('.city-wall-fixed-preview').count()) !== 1) {
   throw new Error('Fixed-width mode needs one L-shaped wall preview.');
