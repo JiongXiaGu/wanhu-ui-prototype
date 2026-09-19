@@ -203,4 +203,72 @@ await page.waitForSelector('.workspace[data-design-category="tree"]');
 await page.waitForTimeout(180);
 await page.screenshot({ path: outDir + '/tree-10-return-workspace.png' });
 
+
+
+await open('workspace-city-wall', '.workspace[data-design-category="city-wall"]');
+const cityWallWorkspace = page.locator('.workspace[data-design-category="city-wall"]');
+for (const system of ['所有', '小倾斜角', '高倾斜角', '临水', '山地']) {
+  if ((await cityWallWorkspace.getByRole('button', { name: system, exact: true }).count()) !== 1) {
+    throw new Error('City wall workspace missing system rail item: ' + system);
+  }
+}
+for (const category of ['全部', '城墙', '门洞', '登城梯', '高差楼梯']) {
+  if ((await cityWallWorkspace.getByRole('button', { name: category, exact: true }).count()) !== 1) {
+    throw new Error('City wall workspace missing module filter: ' + category);
+  }
+}
+for (const retired of ['夯土城墙', '包砖城墙', '马面角楼', '平地', '缓坡', '陡坡', '河岸']) {
+  if (await cityWallWorkspace.getByRole('button', { name: retired, exact: true }).count()) {
+    throw new Error('City wall workspace still exposes retired category: ' + retired);
+  }
+}
+if ((await cityWallWorkspace.locator('.design-item-card').count()) !== 8) {
+  throw new Error('City wall all-systems first page should expose eight module cards.');
+}
+await page.screenshot({ path: outDir + '/city-wall-11-all-systems.png' });
+
+await cityWallWorkspace.getByRole('button', { name: '小倾斜角', exact: true }).click();
+await page.waitForTimeout(120);
+if ((await cityWallWorkspace.locator('.design-item-card').count()) !== 4) {
+  throw new Error('Small-slope wall system should expose exactly four module categories.');
+}
+for (const name of ['标准墙段', '拱券门洞', '直登城梯', '马道高差梯']) {
+  if ((await cityWallWorkspace.getByRole('button', { name: new RegExp(name) }).count()) !== 1) {
+    throw new Error('Small-slope wall system missing module: ' + name);
+  }
+}
+await page.screenshot({ path: outDir + '/city-wall-12-gentle-system.png' });
+
+await cityWallWorkspace.getByRole('button', { name: '门洞', exact: true }).click();
+await page.waitForTimeout(120);
+if ((await cityWallWorkspace.locator('.design-item-card').count()) !== 1) {
+  throw new Error('Small-slope gate-opening filter should expose one module.');
+}
+if ((await cityWallWorkspace.getByRole('button', { name: /拱券门洞/ }).count()) !== 1) {
+  throw new Error('Small-slope gate-opening module missing.');
+}
+
+await cityWallWorkspace.getByRole('button', { name: '临水', exact: true }).click();
+await page.waitForTimeout(120);
+if ((await cityWallWorkspace.getByRole('button', { name: /拱券水门洞/ }).count()) !== 1) {
+  throw new Error('Waterside gate-opening should remain under the shared gate-opening category.');
+}
+await page.screenshot({ path: outDir + '/city-wall-13-waterside-gate.png' });
+
+const watersideGateCard = cityWallWorkspace.getByRole('button', { name: /拱券水门洞/ });
+await watersideGateCard.hover();
+await page.waitForTimeout(340);
+const cityWallInspector = page.locator('#design-asset-inspector');
+for (const fact of ['所属体系', '构件类型', '营造方式']) {
+  if ((await cityWallInspector.getByText(fact, { exact: true }).count()) !== 1) {
+    throw new Error('City wall inspector missing fact: ' + fact);
+  }
+}
+for (const value of ['临水', '城墙门洞', '嵌入墙段']) {
+  if ((await cityWallInspector.getByText(value, { exact: true }).count()) !== 1) {
+    throw new Error('City wall inspector missing value: ' + value);
+  }
+}
+await page.screenshot({ path: outDir + '/city-wall-14-inspector.png' });
+
 await browser.close();

@@ -222,3 +222,30 @@ Brush / Selected Tree Preview DOM → TreePlacementWorldRenderer / Selection Giz
 - 单棵放置与已有单棵编辑共用同一个 Single Mode；
 - Undo / Redo 进入正式 World Command History；
 - 树木避让建筑 / 道路属于 World Placement Query，不由 UI Toolkit 实现。
+
+
+## 13. City Wall Workspace
+
+城墙 Workspace 继续复用共享 Design Workspace，不迁移旧独立 `CityWallSelectionWorkspace` Shell。
+
+正式数据关系：
+
+```text
+CityWallSystem
+  └ CityWallModule
+       ├ SystemId
+       ├ Category
+       ├ ModuleId
+       └ ToolType
+```
+
+UI Toolkit 映射：
+
+- Primary Rail → `CityWallSystem`；
+- Context Filter → `CityWallModuleCategory`；
+- 4×2 Content Pool → 当前过滤后的 `CityWallModule`；
+- Asset Inspector → 体系 / 构件类型 / 营造方式；
+- 水门属于 Gate Opening Module，不新增一级 Filter；
+- 墙高、门洞尺寸、楼梯宽高与坡度属于后续 Tool Controller，不进入 Workspace Card 枚举。
+
+后续四类 Tool 可以分别映射 Path / Embedded Module / Wall Attachment / Walkway Transition，但不得反向污染 Workspace 信息层级。

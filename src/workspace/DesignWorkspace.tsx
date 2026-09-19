@@ -65,13 +65,6 @@ const COST_BY_PRIMARY: Record<string, Record<string, string>> = {
     terrace: '1,240 钱',
     stair: '560 钱',
   },
-  'city-wall': {
-    earth: '180 钱 / 段',
-    brick: '360 钱 / 段',
-    slope: '420 钱 / 段',
-    gate: '2,400 钱',
-    defense: '1,600 钱',
-  },
   wall: {
     earth: '36 钱 / 段',
     brick: '68 钱 / 段',
@@ -140,10 +133,14 @@ function getSizeLabel(definition: DesignWorkspaceDefinition, item: DesignWorkspa
       };
       return sizes[item.primary] ?? '按轮廓调整';
     }
-    case 'city-wall':
-      if (item.primary === 'gate') return '6 × 8 格';
-      if (item.primary === 'defense') return '4 × 6 格';
-      return '8 m / 段';
+    case 'city-wall': {
+      const category = item.filters[0];
+      if (category === 'wall') return '6 m / Cell';
+      if (category === 'gate-opening') return '嵌入墙段';
+      if (category === 'ground-access-stair') return '依附墙侧';
+      if (category === 'walkway-transition-stair') return '连接马道';
+      return '城墙构件';
+    }
     case 'wall':
       return item.primary === 'gate' ? '2 × 2 格' : '4 m / 段';
     case 'decoration':
@@ -155,7 +152,30 @@ function getSizeLabel(definition: DesignWorkspaceDefinition, item: DesignWorkspa
   }
 }
 
+function getDefinitionLabel(items: readonly { key: string; label: string }[], key: string, fallback: string) {
+  return items.find((entry) => entry.key === key)?.label ?? fallback;
+}
+
+function getCityWallModuleType(item: DesignWorkspaceItem) {
+  const category = item.filters[0];
+  if (category === 'wall') return { label: '城墙', operation: '路径绘制' };
+  if (category === 'gate-opening') return { label: '城墙门洞', operation: '嵌入墙段' };
+  if (category === 'ground-access-stair') return { label: '登城梯', operation: '依附墙侧' };
+  if (category === 'walkway-transition-stair') return { label: '高差楼梯', operation: '连接马道' };
+  return { label: '城墙构件', operation: '模块放置' };
+}
+
 function getInspectorFacts(definition: DesignWorkspaceDefinition, item: DesignWorkspaceItem): InspectorFact[] {
+  if (definition.id === 'city-wall') {
+    const system = getDefinitionLabel(definition.primaryCategories, item.primary, '城墙体系');
+    const module = getCityWallModuleType(item);
+    return [
+      { label: '所属体系', value: system },
+      { label: '构件类型', value: module.label },
+      { label: '营造方式', value: module.operation },
+    ];
+  }
+
   const cost = COST_BY_PRIMARY[definition.id]?.[item.primary] ?? '—';
   return [
     { label: '尺寸', value: getSizeLabel(definition, item) },
@@ -175,8 +195,15 @@ function getInspectorDescription(definition: DesignWorkspaceDefinition, item: De
       return `适用于${usage}。进入放置工具后可继续调整位置、体量、屋顶与高度。`;
     case 'platform':
       return `适用于${usage}的台基构型，进入工具后可继续调整轮廓、高度与层级。`;
-    case 'city-wall':
-      return `适用于${usage}的城防构件，正式工具会根据地形与连接关系调整墙体形态。`;
+    case 'city-wall': {
+      const system = getDefinitionLabel(definition.primaryCategories, item.primary, '当前城墙');
+      const category = item.filters[0];
+      if (category === 'wall') return `${system}体系的主体墙段。后续进入路径绘制工具；墙高、城外正面与随地形 / 整体找平属于 Tool 参数。`;
+      if (category === 'gate-opening') return `${system}体系的城墙门洞。水门等特殊门洞仍归入这一类；后续通过嵌入式工具调整城门纵深与门洞净空。`;
+      if (category === 'ground-access-stair') return `${system}体系的登城梯，用于从地面连接墙顶马道；楼梯宽度、高度与坡度在后续 Tool 中调整。`;
+      if (category === 'walkway-transition-stair') return `${system}体系的高差楼梯，用于连接不同标高的墙顶马道；宽度、高差与坡度在后续 Tool 中调整。`;
+      return `${system}体系的城墙构件。`;
+    }
     case 'wall':
       return `适用于${usage}的围合构件，可用于院落边界、园林分隔与街巷界面。`;
     case 'decoration':
