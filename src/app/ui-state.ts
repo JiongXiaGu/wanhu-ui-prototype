@@ -97,6 +97,9 @@ export interface GameplayUiState {
   cityWallAccessStairRotation: number;
   cityWallAccessStairReversed: boolean;
   cityWallAccessStairClearance: boolean;
+  cityWallTransitionStairRotation: number;
+  cityWallTransitionStairReversed: boolean;
+  cityWallTransitionStairClearance: boolean;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
@@ -145,6 +148,9 @@ export const initialGameplayUiState: GameplayUiState = {
   cityWallAccessStairRotation: 0,
   cityWallAccessStairReversed: false,
   cityWallAccessStairClearance: true,
+  cityWallTransitionStairRotation: 0,
+  cityWallTransitionStairReversed: false,
+  cityWallTransitionStairClearance: true,
   adjustmentMode: 'position',
   roadDrawMode: 'smart-curve',
   gridSnap: true,
@@ -163,6 +169,7 @@ export type GameplayUiAction =
   | { type: 'ENTER_CITY_WALL_CONSTRUCTION'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_CITY_WALL_GATE'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_CITY_WALL_ACCESS_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
+  | { type: 'ENTER_CITY_WALL_TRANSITION_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_TERRAIN_EDIT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
@@ -194,6 +201,9 @@ export type GameplayUiAction =
   | { type: 'ROTATE_CITY_WALL_ACCESS_STAIR'; direction: 'left' | 'right' }
   | { type: 'FLIP_CITY_WALL_ACCESS_STAIR_DIRECTION' }
   | { type: 'TOGGLE_CITY_WALL_ACCESS_STAIR_CLEARANCE' }
+  | { type: 'ROTATE_CITY_WALL_TRANSITION_STAIR'; direction: 'left' | 'right' }
+  | { type: 'FLIP_CITY_WALL_TRANSITION_STAIR_DIRECTION' }
+  | { type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' }
   | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
   | { type: 'SET_ROAD_DRAW_MODE'; mode: RoadDrawMode }
   | { type: 'TOGGLE_GRID_SNAP' }
@@ -358,6 +368,26 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canUndo: false,
         canRedo: false,
       };
+    case 'ENTER_CITY_WALL_TRANSITION_STAIR':
+      return {
+        ...state,
+        toolOrigin: captureToolOrigin(state),
+        workspace: 'none',
+        tool: 'city-wall-transition-stair',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        cityWallModuleId: action.moduleId,
+        cityWallModuleName: action.moduleName,
+        cityWallSystemId: action.systemId,
+        cityWallSystemName: action.systemName,
+        cityWallTransitionStairRotation: 0,
+        cityWallTransitionStairReversed: false,
+        cityWallTransitionStairClearance: true,
+        canUndo: false,
+        canRedo: false,
+      };
     case 'ENTER_TERRAIN_EDIT':
       return {
         ...state,
@@ -511,6 +541,17 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return { ...state, cityWallAccessStairReversed: !state.cityWallAccessStairReversed, canUndo: true, canRedo: false };
     case 'TOGGLE_CITY_WALL_ACCESS_STAIR_CLEARANCE':
       return { ...state, cityWallAccessStairClearance: !state.cityWallAccessStairClearance };
+    case 'ROTATE_CITY_WALL_TRANSITION_STAIR':
+      return {
+        ...state,
+        cityWallTransitionStairRotation: (state.cityWallTransitionStairRotation + (action.direction === 'right' ? 90 : 270)) % 360,
+        canUndo: true,
+        canRedo: false,
+      };
+    case 'FLIP_CITY_WALL_TRANSITION_STAIR_DIRECTION':
+      return { ...state, cityWallTransitionStairReversed: !state.cityWallTransitionStairReversed, canUndo: true, canRedo: false };
+    case 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE':
+      return { ...state, cityWallTransitionStairClearance: !state.cityWallTransitionStairClearance };
     case 'SET_ADJUSTMENT_MODE':
       return { ...state, adjustmentMode: action.mode, canUndo: true, canRedo: false };
     case 'SET_ROAD_DRAW_MODE':

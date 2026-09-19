@@ -147,11 +147,11 @@ Description 可以说明后续 Tool 的参数职责，但当前 Card 已增加 `
 
 高差楼梯
 → CityWallWalkwayTransitionPlacement
-→ Walkway Transition Tool
-→ 楼梯宽度 / 楼梯高差 / 目标坡度
+→ Independent Transition Stair Tool
+→ 楼梯宽度 / 楼梯高差 / 楼梯长度
 ```
 
-当前已实现 `CityWallConstructionTool`、`CityWallGateTool`、`CityWallAccessStairTool` 三套独立业务 Tool。高差楼梯仍只保留独立 ToolType 与领域边界。
+当前四套独立业务 Tool 已全部形成 Web Vertical Slice：`CityWallConstructionTool`、`CityWallGateTool`、`CityWallAccessStairTool`、`CityWallTransitionStairTool`。
 
 ## 8. Unity UI Toolkit 映射
 

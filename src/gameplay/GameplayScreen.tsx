@@ -15,6 +15,8 @@ import { CityWallGateOverlay } from '../tools/city-wall-gate/CityWallGateOverlay
 import { CityWallGateDock } from '../tools/city-wall-gate/CityWallGateDock';
 import { CityWallAccessStairOverlay } from '../tools/city-wall-access-stair/CityWallAccessStairOverlay';
 import { CityWallAccessStairDock } from '../tools/city-wall-access-stair/CityWallAccessStairDock';
+import { CityWallTransitionStairOverlay } from '../tools/city-wall-transition-stair/CityWallTransitionStairOverlay';
+import { CityWallTransitionStairDock } from '../tools/city-wall-transition-stair/CityWallTransitionStairDock';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -172,6 +174,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           cityWallGateConnections={state.cityWallGateConnections}
           cityWallGateClearance={state.cityWallGateClearance}
           cityWallAccessStairClearance={state.cityWallAccessStairClearance}
+          cityWallTransitionStairClearance={state.cityWallTransitionStairClearance}
           onToggleGridSnap={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}
           onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
           onUndo={() => dispatch({ type: 'UNDO' })}
@@ -186,6 +189,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleCityWallGateConnections={() => dispatch({ type: 'TOGGLE_CITY_WALL_GATE_CONNECTIONS' })}
           onToggleCityWallGateClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_GATE_CLEARANCE' })}
           onToggleCityWallAccessStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_ACCESS_STAIR_CLEARANCE' })}
+          onToggleCityWallTransitionStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
@@ -224,6 +228,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-access-stair') {
               const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
               dispatch({ type: 'ENTER_CITY_WALL_ACCESS_STAIR', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
+            }
+            if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-transition-stair') {
+              const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
+              dispatch({ type: 'ENTER_CITY_WALL_TRANSITION_STAIR', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
             }
           }}
         />
@@ -312,6 +320,22 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
           <CityWallAccessStairDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+        </>
+      )}
+
+      {toolPresence.mounted && renderedTool === 'city-wall-transition-stair' && (
+        <>
+          <CityWallTransitionStairOverlay
+            moduleName={state.cityWallModuleName}
+            systemName={state.cityWallSystemName}
+            rotation={state.cityWallTransitionStairRotation}
+            reversed={state.cityWallTransitionStairReversed}
+            showClearance={state.cityWallTransitionStairClearance}
+            motionPhase={toolPresence.phase}
+            onClose={exitTool}
+            onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+          />
+          <CityWallTransitionStairDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 

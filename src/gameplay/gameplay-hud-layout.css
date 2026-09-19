@@ -103,7 +103,8 @@
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-construction"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-free"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-connected"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-access-stair"]{width:var(--hud-tool-tools-width)}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-access-stair"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-transition-stair"]{width:var(--hud-tool-tools-width)}
 
 .gameplay-screen .gameplay-operation-hints{
   right:var(--hud-edge);
@@ -130,7 +131,8 @@
 .gameplay-screen .tree-placement-prototype,
 .gameplay-screen .city-wall-construction-prototype,
 .gameplay-screen .city-wall-gate-prototype,
-.gameplay-screen .city-wall-access-stair-prototype{
+.gameplay-screen .city-wall-access-stair-prototype,
+.gameplay-screen .city-wall-transition-stair-prototype{
   left:var(--hud-edge);
   bottom:var(--hud-edge);
 }
@@ -142,6 +144,7 @@
 .gameplay-screen .tree-placement-toolbar-cluster,
 .gameplay-screen .city-wall-construction-toolbar-cluster,
 .gameplay-screen .city-wall-gate-toolbar-cluster,
-.gameplay-screen .city-wall-access-stair-toolbar-cluster{
+.gameplay-screen .city-wall-access-stair-toolbar-cluster,
+.gameplay-screen .city-wall-transition-stair-toolbar-cluster{
   bottom:var(--hud-edge);
 }

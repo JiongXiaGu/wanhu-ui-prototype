@@ -400,3 +400,46 @@ Stair Preview DOM
 - Slope / Step Count 可以作为 World System 派生数据，但不常驻 UI；
 - High / Low Reverse 是明确玩家操作；
 - Stair Clearance 属于 World Visualization。
+
+
+## 17. City Wall Transition Stair Tool
+
+`city-wall-transition-stair` 第一版是独立 Free Placement Tool。
+
+Controller：
+
+```text
+CityWallTransitionStairController
+├ Width
+├ HeightDelta
+├ Length
+├ Position
+├ Rotation
+└ Reversed
+```
+
+UI Toolkit：
+
+```text
+CityWallTransitionStairOverlay
+  → PlacementContextPanel / LeftContextPanel
+
+CityWallTransitionStairDock
+  → Quick Actions only, no Mode Group
+
+Transition Stair Utility
+  → Grid / Clearance / History
+
+Transition Stair Preview DOM
+  → 不迁 UI Toolkit
+  → CityWallTransitionStairWorldRenderer
+```
+
+约束：
+
+- 第一版不做 Walkway Anchor / Wall Query；
+- 不做 Auto Height Delta / Auto Length / Target Slope；
+- Left Context 只绑定 Width / HeightDelta / Length；
+- Low / High Platform 仅是 World Preview 语义，不代表已经建立自动连接；
+- Slope / Step Count 可以作为 World System 派生数据，但不常驻 UI；
+- High / Low Reverse 是明确玩家操作。

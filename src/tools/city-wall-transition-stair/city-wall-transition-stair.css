@@ -1,0 +1,103 @@
+/* City Wall Transition Stair: same simple free-placement philosophy as Access Stair.
+   First version only exposes width, height delta and length. */
+
+.city-wall-transition-stair-context{display:flex;flex-direction:column;gap:0}
+.city-wall-transition-stair-parameters .left-context-panel__section-title{margin-bottom:5px}
+
+.city-wall-transition-stair-preview{
+  position:absolute;
+  z-index:8;
+  left:59%;
+  top:52%;
+  width:440px;
+  height:300px;
+  translate:-50% -50%;
+  pointer-events:none;
+  filter:drop-shadow(0 6px 10px rgba(5,8,7,.30));
+  --transition-stair-width:106px;
+  --transition-stair-rise:78px;
+  --transition-stair-run:182px;
+}
+.city-wall-transition-stair-preview__platform{
+  position:absolute;
+  height:24px;
+  border:1px solid rgba(228,221,207,.34);
+  background:linear-gradient(180deg,rgba(91,90,80,.62),rgba(47,50,45,.66));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.city-wall-transition-stair-preview__platform--low{
+  left:66px;
+  top:214px;
+  width:72px;
+}
+.city-wall-transition-stair-preview__platform--high{
+  left:302px;
+  top:90px;
+  width:72px;
+}
+.city-wall-transition-stair-preview__body{
+  position:absolute;
+  left:112px;
+  bottom:76px;
+  width:var(--transition-stair-run);
+  height:var(--transition-stair-rise);
+  transform-origin:50% 100%;
+}
+.city-wall-transition-stair-preview__step{
+  position:absolute;
+  width:calc(14.2857% + 2px);
+  height:calc(14.2857% + 1px);
+  border-top:1px solid rgba(229,222,208,.52);
+  border-left:1px solid rgba(229,222,208,.26);
+  background:linear-gradient(180deg,rgba(98,96,85,.70),rgba(51,53,48,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.city-wall-transition-stair-preview__side{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:100%;
+  border-left:1px solid rgba(229,222,208,.30);
+  border-bottom:1px solid rgba(229,222,208,.34);
+  background:linear-gradient(135deg,transparent 48%,rgba(43,46,42,.46) 49%);
+}
+.city-wall-transition-stair-preview__low,
+.city-wall-transition-stair-preview__high{
+  position:absolute;
+  color:rgba(220,213,199,.68);
+  font-size:8.5px;
+  letter-spacing:.08em;
+}
+.city-wall-transition-stair-preview__low{left:76px;top:244px}
+.city-wall-transition-stair-preview__high{left:322px;top:64px}
+.city-wall-transition-stair-preview.is-reversed .city-wall-transition-stair-preview__low{left:322px;top:64px}
+.city-wall-transition-stair-preview.is-reversed .city-wall-transition-stair-preview__high{left:76px;top:244px}
+.city-wall-transition-stair-preview__clearance{
+  position:absolute;
+  left:207px;
+  top:146px;
+  min-width:86px;
+  padding:4px 8px;
+  border:1px dashed rgba(189,153,89,.46);
+  color:rgba(215,208,194,.60);
+  font-size:8px;
+  text-align:center;
+}
+.city-wall-transition-stair-preview__width-label,
+.city-wall-transition-stair-preview__height-label,
+.city-wall-transition-stair-preview__length-label{
+  position:absolute;
+  color:rgba(189,153,89,.72);
+  font-size:8.5px;
+  white-space:nowrap;
+}
+.city-wall-transition-stair-preview__width-label{left:120px;top:252px}
+.city-wall-transition-stair-preview__height-label{left:326px;top:146px}
+.city-wall-transition-stair-preview__length-label{left:194px;top:272px}
+.city-wall-transition-stair-preview.rotation-90 .city-wall-transition-stair-preview__body{transform:rotate(4deg)}
+.city-wall-transition-stair-preview.rotation-90 .city-wall-transition-stair-preview__platform{transform:rotate(4deg)}
+.city-wall-transition-stair-preview.rotation-180 .city-wall-transition-stair-preview__body{transform:rotate(8deg)}
+.city-wall-transition-stair-preview.rotation-180 .city-wall-transition-stair-preview__platform{transform:rotate(8deg)}
+.city-wall-transition-stair-preview.rotation-270 .city-wall-transition-stair-preview__body{transform:rotate(-4deg)}
+.city-wall-transition-stair-preview.rotation-270 .city-wall-transition-stair-preview__platform{transform:rotate(-4deg)}

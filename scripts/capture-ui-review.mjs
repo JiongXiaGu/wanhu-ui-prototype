@@ -591,4 +591,82 @@ await page.waitForSelector('.workspace[data-design-category="city-wall"]');
 await page.waitForTimeout(180);
 await page.screenshot({ path: outDir + '/city-wall-access-stair-24-return-workspace.png' });
 
+
+
+await open('workspace-city-wall', '.workspace[data-design-category="city-wall"]');
+const cityWallTransitionStairWorkspace = page.locator('.workspace[data-design-category="city-wall"]');
+await cityWallTransitionStairWorkspace.getByRole('button', { name: '小倾斜角', exact: true }).click();
+await cityWallTransitionStairWorkspace.getByRole('button', { name: '高差楼梯', exact: true }).click();
+await cityWallTransitionStairWorkspace.getByRole('button', { name: /马道高差梯/ }).click();
+await page.waitForSelector('.city-wall-transition-stair-prototype');
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="city-wall-transition-stair"]');
+await page.waitForTimeout(260);
+
+const transitionStairPanel = page.locator('.city-wall-transition-stair-prototype');
+const transitionStairPanelBox = await transitionStairPanel.boundingBox();
+if (!transitionStairPanelBox || transitionStairPanelBox.width < 392 || transitionStairPanelBox.width > 408) {
+  throw new Error('City wall transition stair panel should stay near 400px wide. width=' + transitionStairPanelBox?.width);
+}
+if (transitionStairPanelBox.height > 250) {
+  throw new Error('City wall transition stair panel should stay compact. height=' + transitionStairPanelBox.height);
+}
+for (const text of ['楼梯尺寸', '楼梯宽度', '楼梯高差', '楼梯长度']) {
+  if ((await transitionStairPanel.getByText(text, { exact: true }).count()) !== 1) {
+    throw new Error('City wall transition stair panel missing: ' + text);
+  }
+}
+for (const retired of ['自动高差', '自动高度', '目标坡度', '马道连接', '当前连接', '墙顶挂点']) {
+  if (await transitionStairPanel.getByText(retired, { exact: true }).count()) {
+    throw new Error('City wall transition stair first version should not expose automated connection logic: ' + retired);
+  }
+}
+await assertParameterFieldFillsRow('.city-wall-transition-stair-prototype', 'city wall transition stair');
+
+const transitionStairBar = page.locator('.city-wall-transition-stair-toolbar-cluster .tool-action-bar');
+if ((await transitionStairBar.locator('.placement-action-bar__button--mode').count()) !== 0) {
+  throw new Error('City wall transition stair should not expose placement mode buttons in the first version.');
+}
+for (const action of ['高差楼梯左转', '高差楼梯右转', '交换上下端', '完成高差楼梯放置', '取消高差楼梯放置']) {
+  if ((await transitionStairBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall transition stair action missing: ' + action);
+  }
+}
+
+const transitionStairUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-transition-stair"]');
+for (const action of ['网格吸附', '网格显示', '楼梯净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
+  if ((await transitionStairUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall transition stair utility missing: ' + action);
+  }
+}
+if ((await page.locator('.city-wall-transition-stair-preview').count()) !== 1) {
+  throw new Error('City wall transition stair needs one independent stair ghost.');
+}
+if ((await page.locator('.city-wall-transition-stair-preview__step').count()) !== 7) {
+  throw new Error('City wall transition stair preview should visibly express stair steps.');
+}
+if ((await page.locator('.city-wall-transition-stair-preview__platform').count()) !== 2) {
+  throw new Error('City wall transition stair preview should show low and high walkway platform ends.');
+}
+if ((await page.getByText('高差楼梯 · 自由放置', { exact: true }).count()) !== 1) {
+  throw new Error('City wall transition stair operation hints should describe simple free placement.');
+}
+await page.screenshot({ path: outDir + '/city-wall-transition-stair-25-free.png' });
+
+await transitionStairBar.getByRole('button', { name: '高差楼梯右转', exact: true }).click();
+await transitionStairBar.getByRole('button', { name: '交换上下端', exact: true }).click();
+await page.waitForTimeout(120);
+if ((await transitionStairPanel.getAttribute('data-transition-stair-rotation')) !== '90') {
+  throw new Error('City wall transition stair should rotate by explicit player action.');
+}
+if ((await transitionStairPanel.getAttribute('data-transition-stair-reversed')) !== 'true') {
+  throw new Error('City wall transition stair should allow explicit High/Low direction reversal.');
+}
+await page.screenshot({ path: outDir + '/city-wall-transition-stair-26-rotated-reversed.png' });
+
+await transitionStairBar.getByRole('button', { name: '完成高差楼梯放置', exact: true }).click();
+await page.waitForSelector('.city-wall-transition-stair-prototype', { state: 'detached' });
+await page.waitForSelector('.workspace[data-design-category="city-wall"]');
+await page.waitForTimeout(180);
+await page.screenshot({ path: outDir + '/city-wall-transition-stair-27-return-workspace.png' });
+
 await browser.close();

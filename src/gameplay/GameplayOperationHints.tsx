@@ -157,6 +157,17 @@ const cityWallAccessStairPreset: HintPreset = {
   ],
 };
 
+const cityWallTransitionStairPreset: HintPreset = {
+  task: '高差楼梯 · 自由放置',
+  rows: [
+    { binding: '鼠标左键', description: '放置高差楼梯', primary: true },
+    { binding: '拖动', description: '调整楼梯位置' },
+    { binding: 'R / Shift+R', description: '旋转楼梯' },
+    { binding: 'Ctrl + Z', description: '撤销放置' },
+    { binding: 'Esc', description: '取消高差楼梯放置' },
+  ],
+};
+
 const terrainPresets: Record<TerrainEditMode, HintPreset> = {
   raise: {
     task: '地形 · 抬高',
@@ -256,7 +267,9 @@ export function GameplayOperationHints({
             ? cityWallGatePresets[cityWallGatePlacementMode]
             : tool === 'city-wall-access-stair'
               ? cityWallAccessStairPreset
-              : gameplayPreset;
+              : tool === 'city-wall-transition-stair'
+                ? cityWallTransitionStairPreset
+                : gameplayPreset;
 
   return (
     <aside className="gameplay-operation-hints" aria-label="当前操作提示">
