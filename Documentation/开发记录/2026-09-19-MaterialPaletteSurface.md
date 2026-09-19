@@ -27,3 +27,17 @@
 - TextureOffset；
 - TextureRotationRadians；
 - 材质吸取 / 应用范围。
+
+
+## Workflow 控件视觉收束
+
+原 Surface Workflow 直接复用共享 Filled SegmentedControl，Active 金属块视觉过重。
+
+已改为 Material 专用控件：
+
+- 弱圆角 Neutral Track；
+- 金属 / 高光两项不使用大面积 Fill；
+- Active 文字轻提亮；
+- Active 底部使用短熟铜 Selection Line；
+- 使用真实 Indicator Element，便于 Unity UI Toolkit 映射；
+- 不修改其它页面的共享 SegmentedControl。

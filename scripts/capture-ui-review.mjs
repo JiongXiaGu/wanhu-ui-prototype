@@ -725,6 +725,42 @@ if ((await materialPanel.locator('[data-material-field="AlphaClipThreshold"]').c
   throw new Error('Alpha clip threshold should be hidden while AlphaClip flag is off.');
 }
 
+const workflowField = materialPanel.locator('[data-material-field="Flags.SpecularSetup"]');
+const workflowControl = workflowField.locator('.material-workflow-control');
+if ((await workflowControl.count()) !== 1) {
+  throw new Error('Material workflow should use one dedicated weak-track control.');
+}
+if (await workflowField.locator('.ui-segmented').count()) {
+  throw new Error('Material workflow must not fall back to the shared filled SegmentedControl.');
+}
+if ((await workflowControl.getByRole('button').count()) !== 2) {
+  throw new Error('Material workflow should expose exactly Metallic and Specular options.');
+}
+const workflowBox = await workflowControl.boundingBox();
+if (!workflowBox || workflowBox.height < 28 || workflowBox.height > 34) {
+  throw new Error('Material workflow control should stay compact at about 32px. height=' + workflowBox?.height);
+}
+if ((await workflowControl.locator('.material-workflow-control__indicator').count()) !== 2) {
+  throw new Error('Material workflow must use real selection-indicator elements for both options.');
+}
+const activeWorkflow = workflowControl.locator('.material-workflow-control__option.is-active');
+const activeIndicator = activeWorkflow.locator('.material-workflow-control__indicator');
+const inactiveIndicator = workflowControl.locator('.material-workflow-control__option:not(.is-active) .material-workflow-control__indicator');
+const activeIndicatorStyle = await activeIndicator.evaluate((node) => getComputedStyle(node));
+const inactiveIndicatorStyle = await inactiveIndicator.evaluate((node) => getComputedStyle(node));
+if (Number(activeIndicatorStyle.opacity) < 0.9 || Number(inactiveIndicatorStyle.opacity) > 0.1) {
+  throw new Error('Material workflow selection should be communicated by one short brass line.');
+}
+const activeIndicatorBox = await activeIndicator.boundingBox();
+if (!activeIndicatorBox || activeIndicatorBox.width < 34 || activeIndicatorBox.width > 50 || activeIndicatorBox.height > 3) {
+  throw new Error('Material workflow selection line should remain short and thin. box=' + JSON.stringify(activeIndicatorBox));
+}
+const activeWorkflowBackground = await activeWorkflow.evaluate((node) => getComputedStyle(node).backgroundColor);
+const activeWorkflowAlpha = Number(activeWorkflowBackground.match(/[\d.]+/g)?.[3] ?? 0);
+if (activeWorkflowAlpha > 0.06) {
+  throw new Error('Material workflow active item should not return to a large filled brass segment. background=' + activeWorkflowBackground);
+}
+
 const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
 for (const mode of ['表面模式', '灯光模式', '色板模式']) {
   if ((await materialBar.getByRole('button', { name: mode, exact: true }).count()) !== 1) {

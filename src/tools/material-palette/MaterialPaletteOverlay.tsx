@@ -1,11 +1,39 @@
 import { useState } from 'react';
 import { Palette } from 'lucide-react';
-import { RuntimeParameterRow, SegmentedControl, ToggleSwitch } from '../../ui/Controls';
+import { RuntimeParameterRow, ToggleSwitch } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import type { MotionPhase } from '../../ui/motion';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 
 type MaterialWorkflow = '金属' | '高光';
+
+function MaterialWorkflowControl({
+  value,
+  onChange,
+}: {
+  value: MaterialWorkflow;
+  onChange: (value: MaterialWorkflow) => void;
+}) {
+  return (
+    <div className="material-workflow-control" role="group" aria-label="材质工作流">
+      {(['金属', '高光'] as MaterialWorkflow[]).map((item) => {
+        const active = item === value;
+        return (
+          <button
+            key={item}
+            type="button"
+            className={'material-workflow-control__option ' + (active ? 'is-active' : '')}
+            aria-pressed={active}
+            onClick={() => onChange(item)}
+          >
+            <span>{item}</span>
+            <i className="material-workflow-control__indicator" aria-hidden="true" />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 interface MaterialSurfaceDraft {
   baseColor: string;
@@ -146,10 +174,9 @@ export function MaterialPaletteOverlay({
         <LeftContextSection title="表面" className="material-palette-section material-palette-properties">
           <div className="material-workflow-field left-context-panel__labeled-control" data-material-field="Flags.SpecularSetup">
             <span>工作流</span>
-            <SegmentedControl
-              items={['金属', '高光']}
-              active={draft.workflow}
-              onChange={(value) => update('workflow', value as MaterialWorkflow)}
+            <MaterialWorkflowControl
+              value={draft.workflow}
+              onChange={(value) => update('workflow', value)}
             />
           </div>
           <div data-material-field="Metallic">
