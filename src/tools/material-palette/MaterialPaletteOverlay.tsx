@@ -852,7 +852,7 @@ export function MaterialPaletteOverlay({
     const target = pageTarget(page);
     const pageClass = [
       'material-palette-page',
-      page === 'surface' ? 'is-surface-page' : page === 'preset-library' ? 'is-preset-page' : 'is-color-page',
+      page === 'surface' ? 'is-surface-page' : 'is-color-page',
       `is-${phase}`,
       `is-${pageDirection}`,
       outgoing ? 'is-outgoing' : 'is-active-page',
