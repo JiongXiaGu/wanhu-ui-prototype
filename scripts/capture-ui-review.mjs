@@ -64,6 +64,27 @@ async function assertTerrainShell(label) {
   }
 }
 
+async function assertParameterFieldFillsRow(rootSelector, label) {
+  const root = page.locator(rootSelector);
+  await root.waitFor();
+  const row = root.locator('.ui-parameter-row').first();
+  const field = row.locator('.ui-numeric-slider-field');
+  const rowBox = await row.boundingBox();
+  const fieldBox = await field.boundingBox();
+  if (!rowBox || !fieldBox) throw new Error(`${label}: parameter row and field must be measurable.`);
+  if (fieldBox.width < 220) {
+    throw new Error(`${label}: NumericSliderField is still constrained by a legacy grid column. width=${fieldBox.width}`);
+  }
+  const rightGap = rowBox.x + rowBox.width - (fieldBox.x + fieldBox.width);
+  if (rightGap > 3) {
+    throw new Error(`${label}: NumericSliderField must reach the right edge of ParameterRow. gap=${rightGap}`);
+  }
+  const directChildren = await row.locator(':scope > *').count();
+  if (directChildren !== 2) {
+    throw new Error(`${label}: RuntimeParameterRow must keep exactly Label + NumericSliderField direct children. count=${directChildren}`);
+  }
+}
+
 await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
 const worldUtility = page.locator('.context-utility-toolbar[data-utility-context="world"]');
 await worldUtility.getByRole('button', { name: '地形编辑', exact: true }).click();
@@ -71,6 +92,7 @@ await page.waitForSelector('.terrain-edit-prototype');
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="terrain-edit"]');
 await page.waitForTimeout(260);
 await assertTerrainShell('raise');
+await assertParameterFieldFillsRow('.terrain-edit-prototype', 'terrain raise');
 const raiseBox = await page.locator('.terrain-edit-prototype').boundingBox();
 if (!raiseBox || raiseBox.height > 280) {
   throw new Error(`Raise mode should stay compact. height=${raiseBox?.height}`);
@@ -112,5 +134,13 @@ await page.waitForSelector('.command-bar');
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
 await page.waitForTimeout(180);
 await page.screenshot({ path: `${outDir}/terrain-05-return-gameplay.png` });
+
+await open('building-position', '.building-placement-prototype');
+await assertParameterFieldFillsRow('.building-placement-prototype', 'building placement');
+await page.screenshot({ path: `${outDir}/tool-06-building-parameter-width.png` });
+
+await open('road-smart', '.road-placement-prototype');
+await assertParameterFieldFillsRow('.road-placement-prototype', 'road placement');
+await page.screenshot({ path: `${outDir}/tool-07-road-parameter-width.png` });
 
 await browser.close();

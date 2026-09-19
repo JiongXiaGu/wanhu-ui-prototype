@@ -42,8 +42,8 @@ export function PlacementContextPanel({
       title={title}
       subtitle={subtitle}
       closeLabel={closeLabel}
-      className={`tool-overlay placement-context-panel ${className}`.trim()}
-      bodyClassName={`tool-body placement-context-panel__body ${bodyClassName}`.trim()}
+      className={`placement-context-panel ${className}`.trim()}
+      bodyClassName={`placement-context-panel__body ${bodyClassName}`.trim()}
       onClose={onClose}
       dataAttributes={dataAttributes}
     >

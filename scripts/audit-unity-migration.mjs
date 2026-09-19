@@ -63,6 +63,13 @@ const lucideIcons=new Set();
 for(const file of files){
   const text=await readFile(file,'utf8');
 
+  const legacyMarkers = ['tool-overlay', 'tool-body'];
+  for (const marker of legacyMarkers) {
+    if (text.includes(marker)) {
+      errors.push(`${file}: Legacy runtime class "${marker}" is retired. Use LeftContextPanel / PlacementContextPanel ownership instead.`);
+    }
+  }
+
   if(file.endsWith('.css')){
     const hasHits=lineHits(text,/:has\(/);
     for(const hit of hasHits)errors.push(`${file}:${hit.line} CSS :has() is forbidden in runtime prototype structure.`);

@@ -47,7 +47,7 @@ export function TerrainEditTool({
         title="地形编辑"
         subtitle="塑形与标高"
         closeLabel="退出地形编辑"
-        className={`tool-overlay terrain-edit-prototype motion-left-surface is-${motionPhase}`}
+        className={`terrain-edit-prototype motion-left-surface is-${motionPhase}`}
         bodyClassName="terrain-edit-prototype__body"
         onClose={onExit}
         dataAttributes={{ 'data-terrain-edit-mode': state.terrainEditMode }}

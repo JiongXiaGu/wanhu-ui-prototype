@@ -137,7 +137,12 @@
   --ui-parameter-label-width:86px;
   --ui-parameter-step-size:28px;
   --ui-parameter-value-width:50px;
+  width:100%;
+  min-width:0;
   min-height:35px;
+  display:grid;
+  grid-template-columns:var(--ui-parameter-label-width) minmax(0,1fr);
+  align-items:center;
   gap:5px;
 }
 .left-context-panel .ui-parameter-row>span{
@@ -146,6 +151,8 @@
   font-weight:520;
 }
 .left-context-panel .ui-numeric-slider-field{
+  width:100%;
+  min-width:0;
   gap:5px;
 }
 .game-canvas .left-context-panel .ui-numeric-slider-field>.ui-stepper-button{

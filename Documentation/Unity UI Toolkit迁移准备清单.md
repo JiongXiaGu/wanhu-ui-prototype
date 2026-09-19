@@ -182,3 +182,21 @@ Terrain Brush Preview DOM
 - Undo / Redo 进入正式 Terrain Command History；
 - ToolOrigin 由 UI State / Tool Controller 持有，不通过 VisualTree 推断；
 - `BuildingTerrainMode` 与 `TerrainEditMode` 必须保持不同类型，避免建筑基底处理和世界地形编辑混淆。
+
+
+## 11. Legacy CSS Ownership Leakage
+
+迁移前不仅检查 Web-only API，也必须检查旧 Selector 是否仍命中新组件。
+
+已修复案例：
+
+- 旧 `tool-overlay.css` 把 `.parameter-row` 强制成五列；
+- 新 `RuntimeParameterRow` 实际只有 `Label + NumericSliderField` 两个直接 Child；
+- 浏览器仍为不存在的第 3–5 列保留空间，造成 Terrain / Placement 参数右侧大块空白。
+
+正式规则：
+
+- 已退出组件结构的 CSS 文件直接退出 Runtime import；
+- Legacy Class 从 DOM 删除，不作为兼容钩子长期保留；
+- Shared Control 的结构 Owner 必须显式声明关键 Layout，不依赖“旧规则刚好没命中”；
+- UI Review 对 Building / Road / Terrain 同时测量 NumericSliderField 是否填满 ParameterRow。

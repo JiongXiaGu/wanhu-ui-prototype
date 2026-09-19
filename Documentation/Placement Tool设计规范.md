@@ -131,6 +131,26 @@ Action Bar 只有一个道路绘制 ModeGroup：
 
 ## 5. Placement Context 与 Left Context System
 
+### Legacy ToolOverlay 已退役
+
+旧 `src/tool-overlay.css` 的五列 ParameterRow、旧 Header、Segment、Icon Strip 皮肤已经退出 Runtime。
+
+正式 Tool 参数链只有：
+
+```text
+RuntimeParameterRow
+├ Label
+└ NumericSliderField
+   ├ Step -
+   ├ Slider
+   ├ Step +
+   └ ValueButton
+```
+
+Left Context 明确拥有两列外层布局：`Label | minmax(0,1fr) Field`。Building / Road 只能通过 `placement-parameter-controls.css` 调整 Label / Stepper / Value 尺寸 Token，不得恢复五列外层 Grid。
+
+
+
 Placement Tool 的左侧参数区不是一套独立 Tool Panel 系统，而是 `Left Context System` 的 Placement 分支。
 
 共享所有权固定为：
