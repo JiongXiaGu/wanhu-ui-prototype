@@ -70,6 +70,26 @@
   font-weight:580;
   font-variant-numeric:tabular-nums;
 }
+
+.terrain-edit-metrics--slope{
+  flex-direction:row;
+  align-items:stretch;
+  gap:0;
+}
+.terrain-edit-metrics--slope>span{
+  min-width:0;
+  min-height:48px;
+  flex:1 1 0;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:4px;
+  padding:0 9px;
+}
+.terrain-edit-metrics--slope>span:first-child{padding-left:1px}
+.terrain-edit-metrics--slope>span+span{
+  border-left:1px solid var(--wanhu-surface-context-rule,rgba(238,233,223,.055));
+}
 .terrain-edit-note{
   margin:10px 0 0;
   color:var(--wanhu-color-text-muted,#999b96);

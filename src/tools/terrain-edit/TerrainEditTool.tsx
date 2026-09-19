@@ -67,7 +67,7 @@ export function TerrainEditTool({
 
         {state.terrainEditMode === 'slope' && (
           <LeftContextSection title="坡面参数" className="terrain-edit-mode-section">
-            <div className="terrain-edit-metrics">
+            <div className="terrain-edit-metrics terrain-edit-metrics--slope">
               <span><small>起点高度</small><b>12.40 m</b></span>
               <span><small>终点高度</small><b>18.60 m</b></span>
               <span><small>预估坡度</small><b>7.2°</b></span>
