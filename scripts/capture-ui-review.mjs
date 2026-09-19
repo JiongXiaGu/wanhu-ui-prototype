@@ -737,11 +737,14 @@ if ((await workflowControl.getByRole('button').count()) !== 2) {
   throw new Error('Material workflow should expose exactly Metallic and Specular options.');
 }
 const workflowBox = await workflowControl.boundingBox();
-if (!workflowBox || workflowBox.height < 28 || workflowBox.height > 34) {
-  throw new Error('Material workflow control should stay compact at about 32px. height=' + workflowBox?.height);
+if (!workflowBox || workflowBox.height < 26 || workflowBox.height > 30) {
+  throw new Error('Material workflow control should align with compact parameter controls. height=' + workflowBox?.height);
+}
+if (workflowBox.width < 150 || workflowBox.width > 170) {
+  throw new Error('Material workflow should be a compact selector instead of filling the whole parameter column. width=' + workflowBox.width);
 }
 if ((await workflowControl.locator('.material-workflow-control__indicator').count()) !== 2) {
-  throw new Error('Material workflow must use real selection-indicator elements for both options.');
+  throw new Error('Material workflow must use real status-indicator elements for both options.');
 }
 const activeWorkflow = workflowControl.locator('.material-workflow-control__option.is-active');
 const activeIndicator = activeWorkflow.locator('.material-workflow-control__indicator');
@@ -749,16 +752,16 @@ const inactiveIndicator = workflowControl.locator('.material-workflow-control__o
 const activeIndicatorStyle = await activeIndicator.evaluate((node) => getComputedStyle(node));
 const inactiveIndicatorStyle = await inactiveIndicator.evaluate((node) => getComputedStyle(node));
 if (Number(activeIndicatorStyle.opacity) < 0.9 || Number(inactiveIndicatorStyle.opacity) > 0.1) {
-  throw new Error('Material workflow selection should be communicated by one short brass line.');
+  throw new Error('Material workflow selection should be communicated by one small brass status dot.');
 }
 const activeIndicatorBox = await activeIndicator.boundingBox();
-if (!activeIndicatorBox || activeIndicatorBox.width < 34 || activeIndicatorBox.width > 50 || activeIndicatorBox.height > 3) {
-  throw new Error('Material workflow selection line should remain short and thin. box=' + JSON.stringify(activeIndicatorBox));
+if (!activeIndicatorBox || activeIndicatorBox.width < 3 || activeIndicatorBox.width > 5 || activeIndicatorBox.height < 3 || activeIndicatorBox.height > 5) {
+  throw new Error('Material workflow status dot should remain small. box=' + JSON.stringify(activeIndicatorBox));
 }
 const activeWorkflowBackground = await activeWorkflow.evaluate((node) => getComputedStyle(node).backgroundColor);
 const activeWorkflowAlpha = Number(activeWorkflowBackground.match(/[\d.]+/g)?.[3] ?? 0);
-if (activeWorkflowAlpha > 0.06) {
-  throw new Error('Material workflow active item should not return to a large filled brass segment. background=' + activeWorkflowBackground);
+if (activeWorkflowAlpha > 0.04) {
+  throw new Error('Material workflow active item should keep only a very weak brass tint. background=' + activeWorkflowBackground);
 }
 
 const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');

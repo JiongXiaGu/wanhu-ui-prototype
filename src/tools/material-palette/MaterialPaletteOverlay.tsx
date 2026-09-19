@@ -26,8 +26,8 @@ function MaterialWorkflowControl({
             aria-pressed={active}
             onClick={() => onChange(item)}
           >
-            <span>{item}</span>
             <i className="material-workflow-control__indicator" aria-hidden="true" />
+            <span>{item}</span>
           </button>
         );
       })}

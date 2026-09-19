@@ -41,3 +41,19 @@
 - Active 底部使用短熟铜 Selection Line；
 - 使用真实 Indicator Element，便于 Unity UI Toolkit 映射；
 - 不修改其它页面的共享 SegmentedControl。
+
+
+## Workflow 第二次视觉收束
+
+短下划线方案仍然过于接近网页 Tab，与 Surface 面板的圆角输入框 / Slider / Toggle 语言不统一。
+
+已进一步改成 Compact Neutral Selector：
+
+- 宽度约 160px，不再铺满参数区域；
+- 高度约 28px；
+- 使用弱中性圆角 Track；
+- 两项之间只有极弱中性分隔；
+- Active 使用 Paper White 文字 + 4px 熟铜状态点；
+- Active 只有极弱熟铜 Tint；
+- 删除下划线 Selection Line；
+- 与下方 Metallic 行保持普通参数间距。
