@@ -160,7 +160,7 @@ const BUILTIN_PRESETS: MaterialPreset[] = [
   },
 ];
 
-const INITIAL_PRESET = BUILTIN_PRESETS[2];
+const INITIAL_PRESET = BUILTIN_PRESETS.find((preset) => preset.id === 'wall-plaster') ?? BUILTIN_PRESETS[0];
 
 const COLOR_TARGETS: Record<MaterialColorTarget, ColorTargetDefinition> = {
   BaseColor: {
