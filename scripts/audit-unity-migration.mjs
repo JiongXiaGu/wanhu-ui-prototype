@@ -70,6 +70,10 @@ for(const file of files){
     }
   }
 
+  if (file === 'src/styles.css' && /\.parameter-row\s*\{[^}]*grid-template-columns\s*:[^;}]*29px[^;}]*29px/s.test(text)) {
+    errors.push(`${file}: Legacy five-column ParameterRow layout is retired. RuntimeParameterRow must be Label + NumericSliderField.`);
+  }
+
   if(file.endsWith('.css')){
     const hasHits=lineHits(text,/:has\(/);
     for(const hit of hasHits)errors.push(`${file}:${hit.line} CSS :has() is forbidden in runtime prototype structure.`);

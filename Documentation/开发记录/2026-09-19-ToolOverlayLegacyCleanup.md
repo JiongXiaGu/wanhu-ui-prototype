@@ -34,3 +34,14 @@ ParameterRow VisualElement
 ```
 
 不再需要解释历史五列 Web CSS。
+
+
+## Guard 复核
+
+第一次清理后 Migration Audit 继续发现：
+
+- `src/styles.css` 仍有更早期的全局 `.tool-overlay / .tool-body`；
+- 同文件仍有全局五列 `.parameter-row`；
+- `src/ui/ui-visual-system.css` 仍有 ToolOverlay 材质 selector。
+
+这些也已清除。旧 `.segment` Base 暂不在本轮重写，避免把参数布局修复扩大成所有 SegmentedControl 的视觉重构；后续 Control Ownership Cleanup 再单独迁入 `ui-control-system.css`。

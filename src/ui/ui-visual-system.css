@@ -22,9 +22,7 @@
 /* Gameplay glass surfaces keep a jade tone of their own, then let a softened world image show through.
    Brightness is raised slightly so night scenes do not turn every surface into a black block. */
 .gameplay-screen .workspace,
-.gameplay-screen .gameplay-context-panel,
-.gameplay-screen .tool-overlay.building-placement-prototype,
-.gameplay-screen .tool-overlay.road-placement-prototype{
+.gameplay-screen .gameplay-context-panel{
   border-color:var(--hud-border-strong,rgba(239,233,221,.14));
   box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
   backdrop-filter:var(--hud-glass-filter,blur(14px) saturate(.86) brightness(1.05));
