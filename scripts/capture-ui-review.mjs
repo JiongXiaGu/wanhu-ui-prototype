@@ -686,8 +686,9 @@ if (!materialPanelBox || materialPanelBox.width < 392 || materialPanelBox.width 
 if (materialPanelBox.height > 700) {
   throw new Error('Material palette surface panel should fit the 1080p left context safe region. height=' + materialPanelBox.height);
 }
+const materialSectionTitles = materialPanel.locator('.left-context-panel__section-title');
 for (const section of ['颜色', '表面', '贴图']) {
-  if ((await materialPanel.getByText(section, { exact: true }).count()) !== 1) {
+  if ((await materialSectionTitles.filter({ hasText: section }).count()) !== 1) {
     throw new Error('Material palette surface section missing: ' + section);
   }
 }
