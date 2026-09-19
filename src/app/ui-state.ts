@@ -94,6 +94,9 @@ export interface GameplayUiState {
   cityWallGateFacingFlipped: boolean;
   cityWallGateConnections: boolean;
   cityWallGateClearance: boolean;
+  cityWallAccessStairRotation: number;
+  cityWallAccessStairReversed: boolean;
+  cityWallAccessStairClearance: boolean;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
@@ -139,6 +142,9 @@ export const initialGameplayUiState: GameplayUiState = {
   cityWallGateFacingFlipped: false,
   cityWallGateConnections: true,
   cityWallGateClearance: true,
+  cityWallAccessStairRotation: 0,
+  cityWallAccessStairReversed: false,
+  cityWallAccessStairClearance: true,
   adjustmentMode: 'position',
   roadDrawMode: 'smart-curve',
   gridSnap: true,
@@ -156,6 +162,7 @@ export type GameplayUiAction =
   | { type: 'ENTER_TREE_PLACEMENT'; speciesId: string; speciesName: string }
   | { type: 'ENTER_CITY_WALL_CONSTRUCTION'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_CITY_WALL_GATE'; moduleId: string; moduleName: string; systemId: string; systemName: string }
+  | { type: 'ENTER_CITY_WALL_ACCESS_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_TERRAIN_EDIT' }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
@@ -184,6 +191,9 @@ export type GameplayUiAction =
   | { type: 'FLIP_CITY_WALL_GATE_FACING' }
   | { type: 'TOGGLE_CITY_WALL_GATE_CONNECTIONS' }
   | { type: 'TOGGLE_CITY_WALL_GATE_CLEARANCE' }
+  | { type: 'ROTATE_CITY_WALL_ACCESS_STAIR'; direction: 'left' | 'right' }
+  | { type: 'FLIP_CITY_WALL_ACCESS_STAIR_DIRECTION' }
+  | { type: 'TOGGLE_CITY_WALL_ACCESS_STAIR_CLEARANCE' }
   | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
   | { type: 'SET_ROAD_DRAW_MODE'; mode: RoadDrawMode }
   | { type: 'TOGGLE_GRID_SNAP' }
@@ -325,6 +335,26 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         cityWallGateFacingFlipped: false,
         cityWallGateConnections: true,
         cityWallGateClearance: true,
+        canUndo: false,
+        canRedo: false,
+      };
+    case 'ENTER_CITY_WALL_ACCESS_STAIR':
+      return {
+        ...state,
+        toolOrigin: captureToolOrigin(state),
+        workspace: 'none',
+        tool: 'city-wall-access-stair',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        cityWallModuleId: action.moduleId,
+        cityWallModuleName: action.moduleName,
+        cityWallSystemId: action.systemId,
+        cityWallSystemName: action.systemName,
+        cityWallAccessStairRotation: 0,
+        cityWallAccessStairReversed: false,
+        cityWallAccessStairClearance: true,
         canUndo: false,
         canRedo: false,
       };
@@ -470,6 +500,17 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return { ...state, cityWallGateConnections: !state.cityWallGateConnections };
     case 'TOGGLE_CITY_WALL_GATE_CLEARANCE':
       return { ...state, cityWallGateClearance: !state.cityWallGateClearance };
+    case 'ROTATE_CITY_WALL_ACCESS_STAIR':
+      return {
+        ...state,
+        cityWallAccessStairRotation: (state.cityWallAccessStairRotation + (action.direction === 'right' ? 90 : 270)) % 360,
+        canUndo: true,
+        canRedo: false,
+      };
+    case 'FLIP_CITY_WALL_ACCESS_STAIR_DIRECTION':
+      return { ...state, cityWallAccessStairReversed: !state.cityWallAccessStairReversed, canUndo: true, canRedo: false };
+    case 'TOGGLE_CITY_WALL_ACCESS_STAIR_CLEARANCE':
+      return { ...state, cityWallAccessStairClearance: !state.cityWallAccessStairClearance };
     case 'SET_ADJUSTMENT_MODE':
       return { ...state, adjustmentMode: action.mode, canUndo: true, canRedo: false };
     case 'SET_ROAD_DRAW_MODE':

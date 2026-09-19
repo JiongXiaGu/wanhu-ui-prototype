@@ -357,3 +357,46 @@ Gate Preview DOM
 - Wall Snap 是 Connected Mode 的工具规则，不做 Toggle；
 - Opening Clearance / Wall Connection Anchor 属于 World Visualization；
 - 不依赖 Mesh Boolean 作为核心数据关系。
+
+
+## 16. City Wall Access Stair Tool
+
+`city-wall-access-stair` 第一版是独立 Free Placement Tool。
+
+Controller：
+
+```text
+CityWallAccessStairController
+├ Width
+├ Height
+├ Length
+├ Position
+├ Rotation
+└ Reversed
+```
+
+UI Toolkit：
+
+```text
+CityWallAccessStairOverlay
+  → PlacementContextPanel / LeftContextPanel
+
+CityWallAccessStairDock
+  → Quick Actions only, no Mode Group
+
+Access Stair Utility
+  → Grid / Clearance / History
+
+Stair Preview DOM
+  → 不迁 UI Toolkit
+  → CityWallAccessStairWorldRenderer
+```
+
+约束：
+
+- 第一版不做 Wall Snap / Terrain Query；
+- 不做 Auto Height / Auto Length / Target Slope；
+- Left Context 只绑定 Width / Height / Length；
+- Slope / Step Count 可以作为 World System 派生数据，但不常驻 UI；
+- High / Low Reverse 是明确玩家操作；
+- Stair Clearance 属于 World Visualization。

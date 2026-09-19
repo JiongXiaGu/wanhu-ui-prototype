@@ -516,4 +516,79 @@ await page.waitForSelector('.workspace[data-design-category="city-wall"]');
 await page.waitForTimeout(180);
 await page.screenshot({ path: outDir + '/city-wall-gate-21-return-workspace.png' });
 
+
+
+await open('workspace-city-wall', '.workspace[data-design-category="city-wall"]');
+const cityWallAccessStairWorkspace = page.locator('.workspace[data-design-category="city-wall"]');
+await cityWallAccessStairWorkspace.getByRole('button', { name: '小倾斜角', exact: true }).click();
+await cityWallAccessStairWorkspace.getByRole('button', { name: '登城梯', exact: true }).click();
+await cityWallAccessStairWorkspace.getByRole('button', { name: /直登城梯/ }).click();
+await page.waitForSelector('.city-wall-access-stair-prototype');
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="city-wall-access-stair"]');
+await page.waitForTimeout(260);
+
+const accessStairPanel = page.locator('.city-wall-access-stair-prototype');
+const accessStairPanelBox = await accessStairPanel.boundingBox();
+if (!accessStairPanelBox || accessStairPanelBox.width < 392 || accessStairPanelBox.width > 408) {
+  throw new Error('City wall access stair panel should stay near 400px wide. width=' + accessStairPanelBox?.width);
+}
+if (accessStairPanelBox.height > 250) {
+  throw new Error('City wall access stair panel should stay compact. height=' + accessStairPanelBox.height);
+}
+for (const text of ['楼梯尺寸', '楼梯宽度', '楼梯高度', '楼梯长度']) {
+  if ((await accessStairPanel.getByText(text, { exact: true }).count()) !== 1) {
+    throw new Error('City wall access stair panel missing: ' + text);
+  }
+}
+for (const retired of ['自动高度', '目标坡度', '城墙连接', '登城连接', '当前连接', '墙顶挂点']) {
+  if (await accessStairPanel.getByText(retired, { exact: true }).count()) {
+    throw new Error('City wall access stair first version should not expose automated wall logic: ' + retired);
+  }
+}
+await assertParameterFieldFillsRow('.city-wall-access-stair-prototype', 'city wall access stair');
+
+const accessStairBar = page.locator('.city-wall-access-stair-toolbar-cluster .tool-action-bar');
+if ((await accessStairBar.locator('.placement-action-bar__button--mode').count()) !== 0) {
+  throw new Error('City wall access stair should not expose placement mode buttons in the first version.');
+}
+for (const action of ['登城梯左转', '登城梯右转', '交换上下端', '完成登城梯放置', '取消登城梯放置']) {
+  if ((await accessStairBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall access stair action missing: ' + action);
+  }
+}
+
+const accessStairUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-access-stair"]');
+for (const action of ['网格吸附', '网格显示', '楼梯净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
+  if ((await accessStairUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall access stair utility missing: ' + action);
+  }
+}
+if ((await page.locator('.city-wall-access-stair-preview').count()) !== 1) {
+  throw new Error('City wall access stair needs one independent stair ghost.');
+}
+if ((await page.locator('.city-wall-access-stair-preview__step').count()) !== 8) {
+  throw new Error('City wall access stair preview should visibly express stair steps.');
+}
+if ((await page.getByText('登城梯 · 自由放置', { exact: true }).count()) !== 1) {
+  throw new Error('City wall access stair operation hints should describe simple free placement.');
+}
+await page.screenshot({ path: outDir + '/city-wall-access-stair-22-free.png' });
+
+await accessStairBar.getByRole('button', { name: '登城梯右转', exact: true }).click();
+await accessStairBar.getByRole('button', { name: '交换上下端', exact: true }).click();
+await page.waitForTimeout(120);
+if ((await accessStairPanel.getAttribute('data-stair-rotation')) !== '90') {
+  throw new Error('City wall access stair should rotate by explicit player action.');
+}
+if ((await accessStairPanel.getAttribute('data-stair-reversed')) !== 'true') {
+  throw new Error('City wall access stair should allow explicit High/Low direction reversal.');
+}
+await page.screenshot({ path: outDir + '/city-wall-access-stair-23-rotated-reversed.png' });
+
+await accessStairBar.getByRole('button', { name: '完成登城梯放置', exact: true }).click();
+await page.waitForSelector('.city-wall-access-stair-prototype', { state: 'detached' });
+await page.waitForSelector('.workspace[data-design-category="city-wall"]');
+await page.waitForTimeout(180);
+await page.screenshot({ path: outDir + '/city-wall-access-stair-24-return-workspace.png' });
+
 await browser.close();

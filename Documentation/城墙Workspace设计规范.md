@@ -106,7 +106,7 @@ Card 表示具体模块，不表示参数组合。
 - 山地登城梯；
 - 山地高差梯。
 
-楼梯宽度、高度、高差、坡度、门洞净宽/净高、墙高等都属于后续 Tool 参数，不允许为了这些参数复制大量 Card。
+楼梯宽度 / 高度 / 长度、门洞净宽 / 净高 / 建筑纵深、墙高等都属于 Tool 参数，不允许为了这些参数复制大量 Card。
 
 ## 6. Asset Inspector
 
@@ -142,8 +142,8 @@ Description 可以说明后续 Tool 的参数职责，但当前 Card 已增加 `
 
 登城梯
 → CityWallGroundAccessPlacement
-→ Wall Attachment Tool
-→ 楼梯宽度 / 楼梯高度 / 目标坡度
+→ Independent Stair Placement Tool
+→ 楼梯宽度 / 楼梯高度 / 楼梯长度
 
 高差楼梯
 → CityWallWalkwayTransitionPlacement
@@ -151,7 +151,7 @@ Description 可以说明后续 Tool 的参数职责，但当前 Card 已增加 `
 → 楼梯宽度 / 楼梯高差 / 目标坡度
 ```
 
-当前已实现 `CityWallConstructionTool` 与 `CityWallGateTool` 两套独立业务 Tool。登城梯 / 高差楼梯仍只保留独立 ToolType 与领域边界。
+当前已实现 `CityWallConstructionTool`、`CityWallGateTool`、`CityWallAccessStairTool` 三套独立业务 Tool。高差楼梯仍只保留独立 ToolType 与领域边界。
 
 ## 8. Unity UI Toolkit 映射
 

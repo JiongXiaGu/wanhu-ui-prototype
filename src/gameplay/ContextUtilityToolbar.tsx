@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import type { CityWallGatePlacementMode, Tool } from '../app/ui-state';
 
-export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected';
+export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair';
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'unlock'
@@ -44,7 +44,8 @@ export type UtilityItemId =
   | 'city-wall-top-line'
   | 'city-wall-nodes'
   | 'city-wall-gate-connections'
-  | 'city-wall-gate-clearance';
+  | 'city-wall-gate-clearance'
+  | 'city-wall-access-stair-clearance';
 
 interface UtilityItem {
   id: UtilityItemId;
@@ -69,6 +70,7 @@ interface ContextUtilityToolbarProps {
   cityWallGatePlacementMode: CityWallGatePlacementMode;
   cityWallGateConnections: boolean;
   cityWallGateClearance: boolean;
+  cityWallAccessStairClearance: boolean;
   onToggleGridSnap: () => void;
   onToggleGridVisible: () => void;
   onUndo: () => void;
@@ -82,6 +84,7 @@ interface ContextUtilityToolbarProps {
   onToggleCityWallNodes: () => void;
   onToggleCityWallGateConnections: () => void;
   onToggleCityWallGateClearance: () => void;
+  onToggleCityWallAccessStairClearance: () => void;
   onToolAction: (id: UtilityItemId) => void;
 }
 
@@ -198,6 +201,18 @@ const CITY_WALL_GATE_CONNECTED_GROUPS: readonly (readonly UtilityItem[])[] = [
   ],
 ];
 
+const CITY_WALL_ACCESS_STAIR_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
+    { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
+    { id: 'city-wall-access-stair-clearance', label: '楼梯净空', icon: Ruler, kind: 'toggle' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
 const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> = {
   world: WORLD_GROUPS,
   'building-placement': BUILDING_GROUPS,
@@ -207,6 +222,7 @@ const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> =
   'city-wall-construction': CITY_WALL_CONSTRUCTION_GROUPS,
   'city-wall-gate-free': CITY_WALL_GATE_FREE_GROUPS,
   'city-wall-gate-connected': CITY_WALL_GATE_CONNECTED_GROUPS,
+  'city-wall-access-stair': CITY_WALL_ACCESS_STAIR_GROUPS,
 };
 
 function contextForTool(tool: Tool, gateMode: CityWallGatePlacementMode): UtilityContext {
@@ -216,6 +232,7 @@ function contextForTool(tool: Tool, gateMode: CityWallGatePlacementMode): Utilit
   if (tool === 'tree-placement') return 'tree-placement';
   if (tool === 'city-wall-construction') return 'city-wall-construction';
   if (tool === 'city-wall-gate') return gateMode === 'wall-connected' ? 'city-wall-gate-connected' : 'city-wall-gate-free';
+  if (tool === 'city-wall-access-stair') return 'city-wall-access-stair';
   return 'world';
 }
 
@@ -227,6 +244,7 @@ function ariaLabelForContext(context: UtilityContext) {
   if (context === 'city-wall-construction') return '城墙主体营造辅助工具';
   if (context === 'city-wall-gate-free') return '城墙门洞自由放置辅助工具';
   if (context === 'city-wall-gate-connected') return '城墙门洞连接辅助工具';
+  if (context === 'city-wall-access-stair') return '登城梯放置辅助工具';
   return '世界工具';
 }
 
@@ -246,6 +264,7 @@ export function ContextUtilityToolbar({
   cityWallGatePlacementMode,
   cityWallGateConnections,
   cityWallGateClearance,
+  cityWallAccessStairClearance,
   onToggleGridSnap,
   onToggleGridVisible,
   onUndo,
@@ -259,6 +278,7 @@ export function ContextUtilityToolbar({
   onToggleCityWallNodes,
   onToggleCityWallGateConnections,
   onToggleCityWallGateClearance,
+  onToggleCityWallAccessStairClearance,
   onToolAction,
 }: ContextUtilityToolbarProps) {
   const requestedContext = contextForTool(tool, cityWallGatePlacementMode);
@@ -303,6 +323,7 @@ export function ContextUtilityToolbar({
     if (item.id === 'city-wall-nodes') return { active: cityWallNodes, pressed: cityWallNodes, onClick: onToggleCityWallNodes };
     if (item.id === 'city-wall-gate-connections') return { active: cityWallGateConnections, pressed: cityWallGateConnections, onClick: onToggleCityWallGateConnections };
     if (item.id === 'city-wall-gate-clearance') return { active: cityWallGateClearance, pressed: cityWallGateClearance, onClick: onToggleCityWallGateClearance };
+    if (item.id === 'city-wall-access-stair-clearance') return { active: cityWallAccessStairClearance, pressed: cityWallAccessStairClearance, onClick: onToggleCityWallAccessStairClearance };
     if (item.kind === 'action') return { onClick: () => onToolAction(item.id) };
     return {};
   }

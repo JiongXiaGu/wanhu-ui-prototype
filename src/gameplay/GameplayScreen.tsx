@@ -13,6 +13,8 @@ import { CityWallConstructionOverlay } from '../tools/city-wall-construction/Cit
 import { CityWallConstructionDock } from '../tools/city-wall-construction/CityWallConstructionDock';
 import { CityWallGateOverlay } from '../tools/city-wall-gate/CityWallGateOverlay';
 import { CityWallGateDock } from '../tools/city-wall-gate/CityWallGateDock';
+import { CityWallAccessStairOverlay } from '../tools/city-wall-access-stair/CityWallAccessStairOverlay';
+import { CityWallAccessStairDock } from '../tools/city-wall-access-stair/CityWallAccessStairDock';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -169,6 +171,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           cityWallGatePlacementMode={state.cityWallGatePlacementMode}
           cityWallGateConnections={state.cityWallGateConnections}
           cityWallGateClearance={state.cityWallGateClearance}
+          cityWallAccessStairClearance={state.cityWallAccessStairClearance}
           onToggleGridSnap={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}
           onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
           onUndo={() => dispatch({ type: 'UNDO' })}
@@ -182,6 +185,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleCityWallNodes={() => dispatch({ type: 'TOGGLE_CITY_WALL_NODES' })}
           onToggleCityWallGateConnections={() => dispatch({ type: 'TOGGLE_CITY_WALL_GATE_CONNECTIONS' })}
           onToggleCityWallGateClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_GATE_CLEARANCE' })}
+          onToggleCityWallAccessStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_ACCESS_STAIR_CLEARANCE' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
@@ -216,6 +220,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-gate') {
               const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
               dispatch({ type: 'ENTER_CITY_WALL_GATE', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
+            }
+            if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-access-stair') {
+              const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
+              dispatch({ type: 'ENTER_CITY_WALL_ACCESS_STAIR', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
             }
           }}
         />
@@ -288,6 +296,22 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
           <CityWallGateDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+        </>
+      )}
+
+      {toolPresence.mounted && renderedTool === 'city-wall-access-stair' && (
+        <>
+          <CityWallAccessStairOverlay
+            moduleName={state.cityWallModuleName}
+            systemName={state.cityWallSystemName}
+            rotation={state.cityWallAccessStairRotation}
+            reversed={state.cityWallAccessStairReversed}
+            showClearance={state.cityWallAccessStairClearance}
+            motionPhase={toolPresence.phase}
+            onClose={exitTool}
+            onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+          />
+          <CityWallAccessStairDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 
