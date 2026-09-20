@@ -63,14 +63,13 @@
 .loading-space__tip span{
   animation:loading-tip-in .16s ease-out both;
 }
-.loading-space__tip svg{
+.loading-space__tip .ui-icon{
   flex:0 0 auto;
   color:#b5a26f;
   opacity:.68;
-  stroke-width:1.4;
   transition:color .13s ease,opacity .13s ease,transform .18s ease;
 }
-.loading-space__tip:hover svg{
+.loading-space__tip:hover .ui-icon{
   color:#dec171;
   opacity:1;
   transform:rotate(28deg);

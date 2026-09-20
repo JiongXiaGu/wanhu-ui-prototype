@@ -68,10 +68,9 @@
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
 }
 
-.context-utility-toolbar__button svg{
+.context-utility-toolbar__button .ui-icon{
   width:var(--command-icon-size,20px);
   height:var(--command-icon-size,20px);
-  stroke-width:1.55;
   pointer-events:none;
 }
 

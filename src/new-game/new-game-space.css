@@ -172,7 +172,7 @@
   color:var(--wanhu-color-paper-tertiary);
   backdrop-filter:blur(6px);
 }
-.new-game-map-card__badge svg{stroke-width:1.5;color:var(--wanhu-color-icon)}
+.new-game-map-card__badge .ui-icon{color:var(--wanhu-color-icon)}
 .new-game-map-card__badge em{font-size:8px;font-style:normal;letter-spacing:.035em;white-space:nowrap}
 
 .new-game-map-card__copy{
@@ -384,7 +384,7 @@
   outline:1px solid var(--wanhu-control-active-line);
   outline-offset:2px;
 }
-.new-game-randomize-button svg{stroke-width:1.45}
+.new-game-randomize-button .ui-icon{}
 
 .new-game-space__footer{
   flex:0 0 72px;

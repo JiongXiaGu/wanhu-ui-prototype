@@ -4,27 +4,27 @@
 .gameplay-screen .tree-placement-toolbar-cluster{left:50%;bottom:var(--hud-edge);transform:translateX(-50%);z-index:24;display:flex;flex-direction:column;align-items:center}
 
 .tree-variant-mix{width:100%;height:34px;margin-bottom:8px;padding:0 10px;border:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));border-radius:8px;background:rgba(255,255,255,.018);color:var(--wanhu-color-text-muted,#999b96);display:flex;align-items:center;gap:8px;cursor:pointer;transition-property:background,color,border-color;transition-duration:var(--wanhu-motion-control,120ms)}
-.tree-variant-mix svg{width:15px;height:15px}.tree-variant-mix span{font-size:10px}.tree-variant-mix small{margin-left:auto;font-size:9px;color:inherit;opacity:.7}
+.tree-variant-mix .ui-icon{width:15px;height:15px}.tree-variant-mix span{font-size:10px}.tree-variant-mix small{margin-left:auto;font-size:9px;color:inherit;opacity:.7}
 .tree-variant-mix:hover{border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));background:rgba(255,255,255,.04);color:var(--wanhu-color-paper-primary,#eee9df)}
 .tree-variant-mix.is-active{border-color:rgba(183,150,88,.34);background:rgba(183,150,88,.08);color:var(--wanhu-color-brass-high,#bd9959)}
 
 .tree-variant-rows{display:flex;flex-direction:column;gap:7px}.tree-variant-row{display:flex;gap:7px}
 .tree-variant-button{position:relative;flex:1 1 0;min-width:0;height:58px;border:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));border-radius:8px;background:rgba(255,255,255,.016);color:var(--wanhu-color-text-muted,#999b96);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition-property:background,color,border-color;transition-duration:var(--wanhu-motion-control,120ms)}
-.tree-variant-button svg{width:27px;height:27px;stroke-width:1.35;transform-origin:50% 100%}.tree-variant-button span{position:absolute;right:6px;bottom:4px;font-size:8.5px;font-variant-numeric:tabular-nums;opacity:.7}
+.tree-variant-button .ui-icon{width:27px;height:27px;transform-origin:50% 100%}.tree-variant-button span{position:absolute;right:6px;bottom:4px;font-size:8.5px;font-variant-numeric:tabular-nums;opacity:.7}
 .tree-variant-button:hover{border-color:var(--wanhu-control-border-hover,rgba(238,233,223,.15));background:rgba(255,255,255,.04);color:var(--wanhu-color-paper-primary,#eee9df)}
 .tree-variant-button.is-active{border-color:rgba(183,150,88,.36);background:rgba(183,150,88,.075);color:var(--wanhu-color-brass-high,#bd9959)}
-.tree-variant-button--2 svg{transform:scale(.88,1.08) rotate(-3deg)}.tree-variant-button--3 svg{transform:scale(1.08,.92) rotate(2deg)}.tree-variant-button--4 svg{transform:scale(.92,.96) rotate(-5deg)}
+.tree-variant-button--2 .ui-icon{transform:scale(.88,1.08) rotate(-3deg)}.tree-variant-button--3 .ui-icon{transform:scale(1.08,.92) rotate(2deg)}.tree-variant-button--4 .ui-icon{transform:scale(.92,.96) rotate(-5deg)}
 
 .tree-placement-mode-section{animation:tree-placement-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both}
 .tree-single-state{min-height:30px;margin-top:6px;padding:0 2px;display:flex;align-items:center;gap:8px;color:var(--wanhu-color-text-muted,#999b96);font-size:9px}.tree-single-state b{color:var(--wanhu-color-brass-high,#bd9959);font-size:10px;font-variant-numeric:tabular-nums}.tree-single-state i{margin-left:auto;font-style:normal;color:var(--wanhu-color-paper-secondary,#d4cfc6)}
 
 .tree-brush-preview{position:absolute;z-index:8;left:57%;top:53%;width:192px;height:192px;translate:-50% -50%;pointer-events:none;opacity:.92}
 .tree-brush-preview__ring{position:absolute;inset:0;border:1px solid rgba(231,224,211,.68);border-radius:50%;box-shadow:0 0 0 1px rgba(8,10,9,.22),inset 0 0 30px rgba(183,150,88,.035)}
-.tree-brush-preview__tree{position:absolute;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:rgba(224,218,205,.76);filter:drop-shadow(0 2px 3px rgba(6,8,7,.42))}.tree-brush-preview__tree svg{width:100%;height:100%;stroke-width:1.25}
+.tree-brush-preview__tree{position:absolute;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:rgba(224,218,205,.76);filter:drop-shadow(0 2px 3px rgba(6,8,7,.42))}.tree-brush-preview__tree .ui-icon{width:100%;height:100%;}
 .tree-brush-preview__tree--1{left:80px;top:35px;transform:scale(.86)}.tree-brush-preview__tree--2{left:37px;top:81px;transform:scale(1.05) rotate(-7deg)}.tree-brush-preview__tree--3{left:111px;top:91px;transform:scale(.92) rotate(6deg)}.tree-brush-preview__tree--4{left:73px;top:120px;transform:scale(.76) rotate(3deg)}.tree-brush-preview__tree--5{left:124px;top:48px;transform:scale(.66) rotate(-4deg)}
 
 .tree-single-preview{position:absolute;z-index:8;left:57%;top:53%;width:170px;height:170px;translate:-50% -50%;pointer-events:none;transition-property:translate,opacity;transition-duration:var(--wanhu-motion-control,120ms)}.tree-single-preview.is-moved{translate:calc(-50% + 24px) calc(-50% - 12px)}
 .tree-single-preview__ring{position:absolute;left:50%;bottom:15px;width:104px;height:42px;translate:-50% 0;border:1px solid rgba(183,150,88,.68);border-radius:50%;box-shadow:0 0 0 1px rgba(8,10,9,.24)}
-.tree-single-preview__tree{position:absolute;left:50%;bottom:31px;width:82px;height:82px;translate:-50% 0;color:rgba(231,224,211,.84);stroke-width:1.1;transform-origin:50% 100%;filter:drop-shadow(0 4px 6px rgba(6,8,7,.45))}
+.tree-single-preview__tree{position:absolute;left:50%;bottom:31px;width:82px;height:82px;translate:-50% 0;color:rgba(231,224,211,.84);transform-origin:50% 100%;filter:drop-shadow(0 4px 6px rgba(6,8,7,.45))}
 .tree-single-preview__axis{position:absolute;left:50%;bottom:35px;height:1px;transform-origin:0 50%}.tree-single-preview__axis--x{width:54px;background:rgba(188,116,98,.72);transform:rotate(-10deg)}.tree-single-preview__axis--z{width:46px;background:rgba(111,153,142,.72);transform:rotate(206deg)}
 @keyframes tree-placement-content-enter{from{opacity:.45;translate:0 4px}to{opacity:1;translate:0 0}}@media (prefers-reduced-motion:reduce){.tree-placement-mode-section{animation:none}.tree-single-preview{transition:none}}

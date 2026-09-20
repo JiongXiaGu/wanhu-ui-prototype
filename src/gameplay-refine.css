@@ -86,7 +86,7 @@
   letter-spacing:.022em;
   transition:background .13s ease,color .13s ease,transform .09s ease;
 }
-.gameplay-screen .category-row button svg{width:21px;height:21px;stroke-width:1.55}
+.gameplay-screen .category-row button .ui-icon{width:21px;height:21px;}
 .gameplay-screen .category-row button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d8d3ca)}
 .gameplay-screen .category-row button:active{transform:translateY(1px)}
 .gameplay-screen .category-row button.is-active{

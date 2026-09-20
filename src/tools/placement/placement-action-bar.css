@@ -67,10 +67,9 @@
   transition-property:background,color,transform;
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
 }
-.placement-action-bar__button svg{
+.placement-action-bar__button .ui-icon{
   width:var(--command-icon-size,20px);
   height:var(--command-icon-size,20px);
-  stroke-width:1.55;
 }
 .placement-action-bar__button:hover{
   background:var(--command-hover,rgba(255,255,255,.030));

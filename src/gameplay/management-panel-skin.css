@@ -89,7 +89,7 @@
   background:transparent;
   color:var(--management-topic-accent);
 }
-.management-space__heading-icon svg{width:20px;height:20px;stroke-width:1.75}
+.management-space__heading-icon .ui-icon{width:20px;height:20px;}
 .management-space__heading h2{
   color:var(--management-paper);
   font-size:19px;
@@ -136,8 +136,8 @@
 .management-task-row>span b{color:#d0cbc2;font-size:11px;font-weight:560}
 .management-task-row>span small{color:#858a87}
 .management-task-row em{color:var(--management-topic-accent)}
-.management-task-row>svg{color:#6f7672}
-.management-task-row:hover>svg{color:var(--management-topic-accent);transform:translateX(2px)}
+.management-task-row>.ui-icon{color:#6f7672}
+.management-task-row:hover>.ui-icon{color:var(--management-topic-accent);transform:translateX(2px)}
 
 .management-note-row{border-bottom-color:var(--management-rule)}
 .management-note-row small{color:#858a87}
@@ -186,7 +186,7 @@
 .management-space--inventory .inventory-location-list__body>button.is-active{background:rgba(169,132,75,.045)}
 .management-space--inventory .inventory-location-list__body>button.is-active::before,
 .management-space--inventory .inventory-content-list>div>i>em{background:var(--management-topic-accent)}
-.management-space--inventory .inventory-route-card>svg{color:var(--management-topic-accent)}
+.management-space--inventory .inventory-route-card>.ui-icon{color:var(--management-topic-accent)}
 .management-space--inventory .inventory-village-focus{background:rgba(255,255,255,.008);border-color:var(--management-rule)}
 
 @media (prefers-reduced-motion:reduce){.management-space__panel{animation:none}}

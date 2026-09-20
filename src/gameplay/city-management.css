@@ -55,7 +55,7 @@
 }
 .management-space__heading{display:flex;align-items:center;gap:12px;min-width:0}
 .management-space__heading-icon{width:30px;height:30px;display:grid;place-items:center;color:#c2a66a;border:1px solid rgba(201,165,95,.13);background:rgba(201,165,95,.035)}
-.management-space__heading-icon svg{width:16px;height:16px;stroke-width:1.6}
+.management-space__heading-icon .ui-icon{width:16px;height:16px;}
 .management-space__heading>div{display:flex;align-items:baseline;gap:12px}
 .management-space__heading small{font-size:9px;color:#777e76;letter-spacing:.08em}
 .management-space__heading h2{margin:0;color:#ece5d9;font-size:21px;font-weight:550;letter-spacing:.035em}
@@ -106,8 +106,8 @@
 .management-task-row>span b{font-size:11px;font-weight:520;color:#c9c6bd}
 .management-task-row>span small{font-size:9px;color:#777f77;line-height:1.45}
 .management-task-row em{font-style:normal;color:#b9a162;font-size:9.5px;white-space:nowrap}
-.management-task-row>svg{width:14px;height:14px;color:#626a63;stroke-width:1.6;transition:transform .12s ease,color .12s ease}
-.management-task-row:hover>svg{color:#b79f63;transform:translateX(2px)}
+.management-task-row>.ui-icon{width:14px;height:14px;color:#626a63;transition:transform .12s ease,color .12s ease}
+.management-task-row:hover>.ui-icon{color:#b79f63;transform:translateX(2px)}
 .management-section--aside{display:flex;flex-direction:column}
 .management-note-list{padding:8px 16px 0}
 .management-note-row{min-height:54px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(239,233,221,.05)}

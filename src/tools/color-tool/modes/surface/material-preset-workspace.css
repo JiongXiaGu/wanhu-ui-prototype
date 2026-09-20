@@ -48,10 +48,9 @@
   transition-property:background,color,opacity;
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
-.material-preset-workspace__action svg{
+.material-preset-workspace__action .ui-icon{
   width:12px;
   height:12px;
-  stroke-width:1.7;
 }
 .material-preset-workspace__action:hover:not(:disabled){
   background:rgba(255,255,255,.032);
@@ -109,7 +108,7 @@
   background:rgba(255,255,255,.045);
   color:#d1ccc2;
 }
-.material-preset-workspace__menu-trigger svg{width:14px;height:14px;stroke-width:1.8}
+.material-preset-workspace__menu-trigger .ui-icon{width:14px;height:14px;}
 
 .material-preset-workspace__card-menu{
   position:absolute;
@@ -150,7 +149,7 @@
 }
 .material-preset-workspace__card-menu>button.is-danger{color:#bd867c}
 .material-preset-workspace__card-menu>button.is-danger:hover{background:rgba(152,84,71,.075);color:#dda096}
-.material-preset-workspace__card-menu>button svg{width:12px;height:12px;stroke-width:1.7}
+.material-preset-workspace__card-menu>button .ui-icon{width:12px;height:12px;}
 
 .material-preset-workspace.is-dragging-preset .material-preset-workspace__rail-list>button{
   transition-property:background,color,opacity,box-shadow;
@@ -272,7 +271,7 @@
   gap:5px;
   color:#777d78;
 }
-.material-preset-workspace__empty svg{
+.material-preset-workspace__empty .ui-icon{
   width:18px;
   height:18px;
   opacity:.7;

@@ -86,7 +86,7 @@
 .settings-space__tabs button:active{transform:translateY(0)}
 .settings-space__tabs button:focus-visible{outline:1px solid var(--wanhu-control-active-line);outline-offset:-2px}
 .settings-space__tabs button.is-active::after{opacity:1;transform:scaleX(1)}
-.settings-space__tabs button svg{stroke-width:1.55}
+.settings-space__tabs button .ui-icon{}
 
 .settings-space__content{
   flex:1 1 auto;
@@ -178,7 +178,7 @@
   cursor:pointer;
   transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease;
 }
-.settings-footer-back svg{stroke-width:1.6}
+.settings-footer-back .ui-icon{}
 .settings-restore{
   height:36px;
   padding:0 11px;

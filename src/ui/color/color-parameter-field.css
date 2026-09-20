@@ -90,17 +90,16 @@
   line-height:1;
   letter-spacing:.035em;
 }
-.ui-color-parameter-field__meta>svg{
+.ui-color-parameter-field__meta>.ui-icon{
   width:12px;
   height:12px;
   flex:0 0 12px;
   color:#747b75;
-  stroke-width:1.7;
 }
 .ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__hdr{
   color:#d1cbbf;
 }
-.ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__meta>svg{
+.ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__meta>.ui-icon{
   color:#a3a8a2;
 }
 .ui-color-parameter-field.is-disabled{opacity:.72}

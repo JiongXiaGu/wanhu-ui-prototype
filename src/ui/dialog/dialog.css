@@ -43,7 +43,6 @@
 }
 .ui-dialog__tone-icon{
   flex:0 0 auto;
-  stroke-width:1.7;
 }
 .ui-dialog__header h2{
   margin:0;
@@ -220,19 +219,18 @@
   border-color:var(--ui-field-border-focus,rgba(201,165,95,.38));
   box-shadow:0 0 0 3px rgba(169,132,75,.055);
 }
-.ui-dialog-choice-trigger svg{
+.ui-dialog-choice-trigger .ui-icon{
   width:14px;
   height:14px;
   flex:0 0 14px;
   color:#7f8580;
-  stroke-width:1.7;
   transition:transform var(--wanhu-motion-control,120ms) ease;
 }
 .ui-dialog-choice-trigger .ui-dialog-choice-chevron{
   color:#7f8580;
   transition:transform var(--wanhu-motion-control,120ms) ease;
 }
-.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger svg,
+.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger .ui-icon,
 .ui-dialog-choice-select.is-open .ui-dialog-choice-trigger .ui-dialog-choice-chevron{transform:rotate(180deg)}
 .ui-dialog-choice-menu{
   max-height:150px;
@@ -269,11 +267,10 @@
   background:rgba(169,132,75,.050);
   color:#c8b995;
 }
-.ui-dialog-choice-menu>button svg{
+.ui-dialog-choice-menu>button .ui-icon{
   width:12px;
   height:12px;
   color:#bd9959;
-  stroke-width:1.8;
 }
 .ui-dialog-choice-menu>button .ui-dialog-choice-check{color:#bd9959}
 
@@ -393,7 +390,7 @@
   white-space:nowrap;
   animation:ui-toast-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }
-.ui-toast__surface svg{flex:0 0 auto;color:var(--wanhu-color-paper-tertiary,#8c8f89)}
+.ui-toast__surface .ui-icon{flex:0 0 auto;color:var(--wanhu-color-paper-tertiary,#8c8f89)}
 
 .ui-toast__action{
   margin-left:5px;
@@ -409,9 +406,9 @@
 .ui-toast__action:hover{background:rgba(169,132,75,.105);color:#d9ba72}
 .ui-toast__action:focus-visible{outline:1px solid rgba(189,153,89,.42);outline-offset:1px}
 .ui-toast__surface{pointer-events:auto}
-.ui-toast.is-success .ui-toast__surface svg{color:#a8b68f}
-.ui-toast.is-warning .ui-toast__surface svg{color:var(--wanhu-color-brass-high,#bd9959)}
-.ui-toast.is-error .ui-toast__surface svg{color:#cf8e82}
+.ui-toast.is-success .ui-toast__surface .ui-icon{color:#a8b68f}
+.ui-toast.is-warning .ui-toast__surface .ui-icon{color:var(--wanhu-color-brass-high,#bd9959)}
+.ui-toast.is-error .ui-toast__surface .ui-icon{color:#cf8e82}
 .ui-toast.is-exiting .ui-toast__surface{animation:ui-toast-exit var(--wanhu-motion-space,200ms) var(--wanhu-motion-ease-in,ease-in) forwards}
 
 @keyframes ui-dialog-enter{

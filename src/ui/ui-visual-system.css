@@ -124,8 +124,8 @@
   cursor:pointer;
   transition:color .13s ease,border-color .13s ease,background .13s ease,box-shadow .13s ease,transform .08s ease;
 }
-.global-space-secondary svg,
-.global-space-primary svg{stroke-width:1.55}
+.global-space-secondary .ui-icon,
+.global-space-primary .ui-icon{}
 .global-space-secondary:hover:not(:disabled){
   color:var(--wanhu-color-paper-primary);
   border-color:var(--ui-control-border-hover);

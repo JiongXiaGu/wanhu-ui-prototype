@@ -68,7 +68,7 @@
   border-radius:8px;
 }
 
-.gameplay-screen .workspace--catalog .workspace-primary-rail__page>button svg{
+.gameplay-screen .workspace--catalog .workspace-primary-rail__page>button .ui-icon{
   width:15px;
   height:15px;
   flex-basis:15px;

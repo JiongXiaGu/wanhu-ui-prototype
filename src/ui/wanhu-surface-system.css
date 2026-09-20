@@ -267,8 +267,8 @@
 .settings-space .settings-row:hover .settings-row__label b{color:var(--wanhu-color-paper-primary)}
 .settings-space .settings-binding-table-header{color:var(--wanhu-color-paper-tertiary)}
 .settings-space .settings-binding-row__label>b{color:var(--wanhu-color-text-secondary)}
-.settings-space .settings-footer-back svg{color:var(--wanhu-color-icon)}
-.settings-space .settings-footer-back:hover svg{color:var(--wanhu-color-icon-hover)}
+.settings-space .settings-footer-back .ui-icon{color:var(--wanhu-color-icon)}
+.settings-space .settings-footer-back:hover .ui-icon{color:var(--wanhu-color-icon-hover)}
 .settings-space .settings-restore{color:var(--wanhu-color-paper-tertiary);background:transparent}
 .settings-space .settings-restore:hover{color:var(--wanhu-color-paper-secondary);background:var(--wanhu-control-hover)}
 
@@ -307,7 +307,7 @@
 .gameplay-screen .gameplay-top-status__weather-state{color:#bcb6aa}
 .gameplay-screen .gameplay-top-status__weather-state b{color:#d4cec2}
 .gameplay-screen .gameplay-top-status__resources>span{color:#8d918f}
-.gameplay-screen .gameplay-top-status__resources svg{color:var(--wanhu-color-icon);opacity:.92}
+.gameplay-screen .gameplay-top-status__resources .ui-icon{color:var(--wanhu-color-icon);opacity:.92}
 .gameplay-screen .gameplay-top-status__resources small{color:#999b97}
 .gameplay-screen .gameplay-top-status__resources b{color:var(--wanhu-color-paper-primary);font-weight:640}
 .gameplay-screen .gameplay-top-status__clock::before,

@@ -184,7 +184,7 @@
   opacity:.82;
   transition:opacity var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease;
 }
-.gameplay-system-menu-button svg{width:19px;height:19px;stroke-width:1.55}
+.gameplay-system-menu-button .ui-icon{width:19px;height:19px;}
 .gameplay-system-menu-button:hover{
   opacity:1;
   color:#d0cdc3;

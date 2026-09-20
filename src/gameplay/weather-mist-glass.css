@@ -79,7 +79,6 @@
 .weather-preset-card__icon{
   width:18px;
   height:18px;
-  stroke-width:1.72;
   color:#a5a69f;
 }
 .weather-preset-card:hover .weather-preset-card__icon{color:#d6d1c8}

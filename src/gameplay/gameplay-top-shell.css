@@ -54,7 +54,7 @@
   gap:7px;
   color:#bda96d;
 }
-.gameplay-top-status__weather-state svg{width:16px;height:16px;stroke-width:1.6}
+.gameplay-top-status__weather-state .ui-icon{width:16px;height:16px;}
 .gameplay-top-status__weather-state b{font-size:10px;font-weight:530;color:#c8b477}
 .gameplay-top-status__clock{
   position:relative;
@@ -94,7 +94,7 @@
   border-right:1px solid var(--hud-rule,rgba(239,233,221,.065));
 }
 .gameplay-screen .gameplay-top-status__resources>span:last-child{border-right:0}
-.gameplay-screen .gameplay-top-status__resources svg{width:15px;height:15px;opacity:.88;stroke-width:1.65}
+.gameplay-screen .gameplay-top-status__resources .ui-icon{width:15px;height:15px;opacity:.88;}
 .gameplay-screen .gameplay-top-status__resources small{font-size:var(--wanhu-type-caption,10px);letter-spacing:.018em}
 .gameplay-screen .gameplay-top-status__resources b{
   margin-left:auto;
@@ -127,7 +127,7 @@
   cursor:pointer;
   transition:background var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease;
 }
-.gameplay-top-speed-button svg{width:15px;height:15px;stroke-width:1.7}
+.gameplay-top-speed-button .ui-icon{width:15px;height:15px;}
 .gameplay-top-speed-button:hover{background:rgba(255,255,255,.038);color:#cfccc3}
 .gameplay-top-speed-button.is-active{background:var(--hud-accent-bg,rgba(201,165,95,.085));color:var(--hud-accent-text,#dec17a)}
 .gameplay-top-speed-button:active{transform:translateY(1px)}
@@ -224,7 +224,7 @@
 .gameplay-top-navigation__view .gameplay-top-navigation__button{width:42px;flex:0 0 42px}
 .gameplay-top-navigation__management .gameplay-top-navigation__button{width:50px;flex:0 0 50px}
 .gameplay-top-navigation__scene .gameplay-top-navigation__button{width:42px;flex:0 0 42px}
-.gameplay-top-navigation__button svg{width:18px;height:18px;stroke-width:1.55;pointer-events:none}
+.gameplay-top-navigation__button .ui-icon{width:18px;height:18px;pointer-events:none}
 .gameplay-top-navigation__button:hover{background:rgba(255,255,255,.028);color:#c9c7be}
 .gameplay-top-navigation__button:active{transform:translateY(1px)}
 .gameplay-top-navigation__button.is-active{color:var(--hud-accent-text,#dec17a);background:linear-gradient(180deg,rgba(201,165,95,.10),rgba(201,165,95,.028))}
@@ -288,7 +288,7 @@
   font-size:var(--wanhu-type-caption,10px);
   text-align:left;
 }
-.gameplay-top-map-grid button svg{width:14px;height:14px;stroke-width:1.55}
+.gameplay-top-map-grid button .ui-icon{width:14px;height:14px;}
 .gameplay-top-map-grid button:hover{background:rgba(255,255,255,.034);color:#c7c5bc}
 .gameplay-top-map-grid button.is-active{border-color:rgba(201,165,95,.24);background:rgba(201,165,95,.07);color:#d8bb77}
 .gameplay-top-map-grid button.is-active::before{content:'';position:absolute;left:-1px;top:9px;bottom:9px;width:2px;background:#c9a55f}

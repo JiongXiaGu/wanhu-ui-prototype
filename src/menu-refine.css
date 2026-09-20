@@ -7,7 +7,7 @@
 .top-meta,.main-footer,.kicker{display:none}
 .main-menu-list{width:470px;border-top:0;background:none}
 .menu-row{position:relative;height:58px;padding:0 16px 0 18px;grid-template-columns:34px 1fr;column-gap:10px;border-left:0;border-bottom:1px solid rgba(239,233,221,.055);background:transparent;transition:background .15s ease,color .15s ease}
-.menu-index,.menu-row>svg{display:none}
+.menu-index,.menu-row>.ui-icon{display:none}
 .menu-icon{width:34px;height:34px;display:grid;place-items:center;color:#8e958d}
 .menu-copy{gap:3px}
 .menu-copy b{font-size:17px;font-weight:500;letter-spacing:.025em}

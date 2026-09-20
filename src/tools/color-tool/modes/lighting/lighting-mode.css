@@ -120,7 +120,7 @@
   text-align:center;
 }
 
-.light-adjustment-empty>svg{
+.light-adjustment-empty>.ui-icon{
   width:22px;
   height:22px;
   opacity:.72;

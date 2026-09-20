@@ -41,12 +41,11 @@
   transition:background .14s ease,color .14s ease,transform .08s ease;
 }
 
-.gameplay-top-resource-shortcut svg{
+.gameplay-top-resource-shortcut .ui-icon{
   width:16px;
   height:16px;
   flex:0 0 16px;
   color:#8d918e;
-  stroke-width:1.72;
   transition:color .14s ease;
 }
 
@@ -65,7 +64,7 @@
   background:rgba(255,255,255,.030);
   color:#c7c5bd;
 }
-.gameplay-top-resource-shortcut:hover svg{color:#bbb8b0}
+.gameplay-top-resource-shortcut:hover .ui-icon{color:#bbb8b0}
 .gameplay-top-resource-shortcut:active{transform:translateY(1px)}
 
 /* Intentionally no .is-active state here. These are shortcuts only; the control tray
