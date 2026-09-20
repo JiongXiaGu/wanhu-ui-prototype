@@ -51,7 +51,6 @@ function renderSourceSvg(sourceName) {
   );
 
   return markup
-    .replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ')
     .replaceAll('currentColor', '#ffffff')
     .replace(/ class="[^"]*"/g, '')
     .replace(/ aria-hidden="true"/g, '');
