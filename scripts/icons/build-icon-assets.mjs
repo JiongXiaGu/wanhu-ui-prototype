@@ -90,7 +90,7 @@ function buildRuntimeIconTs(entries) {
     "import { createUiIconComponent } from './UiIcon';",
     "import type { UiIconComponent } from './icon-types';",
     '',
-    "export type { UiIconComponent as LucideIcon } from './icon-types';",
+    "export type { UiIconComponent } from './icon-types';",
     '',
     iconLines,
     '',
