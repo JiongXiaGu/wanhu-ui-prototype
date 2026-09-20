@@ -422,15 +422,15 @@ UI 只负责参数与状态；真实 Terrain Raycast / Brush / Height Modify / U
 
 详细规范：`Documentation/地形编辑工具设计规范.md`。
 
-### 11.3 Material Palette 三模式
+### 11.3 Color Tool 三模式
 
 右下 World Utility 的“配色工具”只进入一个顶层 Tool：
 
 ```text
-Tool = material-palette
+Tool = color-tool
 ```
 
-底部 MaterialPaletteDock 在整个配色流程中保持挂载，并切换：
+底部 ColorToolDock 在整个配色流程中保持挂载，并切换：
 
 ```text
 surface  → 表面模式
@@ -444,7 +444,7 @@ scheme   → 方案模式
 
 - Lighting / Scheme 不是独立 World Tool；
 - World Utility 不增加“灯光调整 / 方案模式”两个入口；
-- 切换三个模式不退出 `material-palette`；
+- 切换三个模式不退出 `color-tool`；
 - 中央 Scheme Workspace 是配色工具内部 Work Surface，不写入顶层 `Workspace=design`；
 - 正式设计见 `Documentation/灯光调整工具设计规范.md` 与 `Documentation/建筑配色方案模式设计规范.md`。
 
