@@ -353,3 +353,15 @@ Card 信息架构同步调整：
   - Pager Marker 尺寸与 Rail Item 高度继续共用同一 Contract。
 
 最终 Actions 已验证 Material 与 Building 使用相同 Rail Gutter，且“金属”等中段分类不再与 Pager 点贴在一起。
+
+
+## 保存配色默认分类跟随当前筛选
+
+此前 Save Dialog 的默认 Material Family 固定读取 `CurrentFamily`。这会导致玩家已经在方案库左 Rail 切到“金属 / 石材 / 布料”等分类后，点击“保存配色”仍预选当前材质原始 Family，和用户正在整理的目录上下文不一致。
+
+本轮改为：
+
+- 若左 Rail 当前选中具体 Material Family，则 Save Dialog 默认选择该 Family；
+- 若 Rail 当前为“全部”，才回退 `CurrentFamily`；
+- 不改变保存后的导航规则；
+- UI Review 增加“Rail=金属，但 CurrentFamily 仍为木材时，Save Dialog 必须默认选中金属”的断言。
