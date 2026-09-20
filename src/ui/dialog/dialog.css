@@ -319,7 +319,7 @@
 }
 .ui-toast__action:hover{background:rgba(169,132,75,.105);color:#d9ba72}
 .ui-toast__action:focus-visible{outline:1px solid rgba(189,153,89,.42);outline-offset:1px}
-.ui-toast__surface:has(.ui-toast__action){pointer-events:auto}
+.ui-toast__surface{pointer-events:auto}
 .ui-toast.is-success .ui-toast__surface svg{color:#a8b68f}
 .ui-toast.is-warning .ui-toast__surface svg{color:var(--wanhu-color-brass-high,#bd9959)}
 .ui-toast.is-error .ui-toast__surface svg{color:#cf8e82}
