@@ -1,15 +1,27 @@
 import { useMemo, useState } from 'react';
-import { Bookmark, Grid3X3, House, Palette, Save, Trash2, Trees, X, type LucideIcon } from 'lucide-react';
+import {
+  Bookmark,
+  ClipboardPaste,
+  Grid3X3,
+  House,
+  Palette,
+  Save,
+  Trash2,
+  Trees,
+  X,
+  type LucideIcon,
+} from 'lucide-react';
 import type { MotionPhase } from '../../ui/motion';
 
-export type MaterialSchemeWorkspacePage = 'system' | 'mine';
 export type MaterialSchemeWorkspaceCategory = '全部' | '木头' | '瓦片' | '墙面';
+export type MaterialSchemeWorkspaceSource = 'all' | 'builtin' | 'workshop' | 'mine';
+export type MaterialSchemePresetSource = Exclude<MaterialSchemeWorkspaceSource, 'all'>;
 
 export interface MaterialSchemeWorkspacePreset {
   id: string;
-  type: '木头' | '瓦片' | '墙面' | '自定义';
+  type: '木头' | '瓦片' | '墙面';
   name: string;
-  source: 'builtin' | 'custom';
+  source: MaterialSchemePresetSource;
   selected: boolean;
   colors: readonly [string, string, string, string];
   workflow: '金属' | '高光';
@@ -20,10 +32,13 @@ export interface MaterialSchemeWorkspacePreset {
 interface Props {
   motionPhase?: MotionPhase;
   systemPresets: readonly MaterialSchemeWorkspacePreset[];
+  workshopPresets: readonly MaterialSchemeWorkspacePreset[];
   customPresets: readonly MaterialSchemeWorkspacePreset[];
+  canPasteCurrent: boolean;
   onClose: () => void;
   onApply: (id: string) => void;
   onSaveCurrent: () => void;
+  onPasteCurrent: () => void;
   onDelete: (id: string) => void;
 }
 
@@ -39,6 +54,22 @@ const SYSTEM_CATEGORIES: readonly {
   { id: '瓦片', label: '瓦片', icon: House },
   { id: '墙面', label: '墙面', icon: House },
 ];
+
+const SOURCE_FILTERS: readonly {
+  id: MaterialSchemeWorkspaceSource;
+  label: string;
+}[] = [
+  { id: 'all', label: '全部' },
+  { id: 'builtin', label: '系统内置' },
+  { id: 'workshop', label: '创意工坊' },
+  { id: 'mine', label: '我的方案' },
+];
+
+const SOURCE_LABELS: Record<MaterialSchemePresetSource, string> = {
+  builtin: '系统内置',
+  workshop: '创意工坊',
+  mine: '我的方案',
+};
 
 function pageItems<T>(items: readonly T[], page: number) {
   return items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -61,13 +92,14 @@ function SchemeCard({
   onDelete: (id: string) => void;
 }) {
   const finishLabel = materialFinishLabel(preset.smoothness);
+  const sourceLabel = SOURCE_LABELS[preset.source];
 
   return (
     <article
       className={[
         'material-scheme-workspace__card',
         preset.selected ? 'is-selected' : '',
-        preset.source === 'custom' ? 'has-delete' : '',
+        preset.source === 'mine' ? 'has-delete' : '',
       ].filter(Boolean).join(' ')}
     >
       <button
@@ -81,20 +113,22 @@ function SchemeCard({
         <div className="workspace-item-card__copy material-scheme-workspace__card-copy">
           <b className="workspace-item-card__title">{preset.name}</b>
           <span className="workspace-item-card__meta material-scheme-workspace__card-meta">
+            <span className={'material-scheme-workspace__source is-' + preset.source}>{sourceLabel}</span>
             <i
               className="material-scheme-workspace__color-line"
               style={{ backgroundColor: preset.colors[0] }}
               aria-hidden="true"
             />
-            <span>{preset.type} · {finishLabel}</span>
+            <span className="material-scheme-workspace__card-detail">{preset.type} · {finishLabel}</span>
           </span>
         </div>
       </button>
-      {preset.source === 'custom' && (
+
+      {preset.source === 'mine' && (
         <button
           type="button"
           className="material-scheme-workspace__card-delete"
-          aria-label={'删除自定义方案 ' + preset.name}
+          aria-label={'删除我的方案 ' + preset.name}
           onClick={() => onDelete(preset.id)}
         >
           <Trash2 aria-hidden="true" />
@@ -137,84 +171,78 @@ function Pager({
 export function MaterialSchemeWorkspace({
   motionPhase = 'steady',
   systemPresets,
+  workshopPresets,
   customPresets,
+  canPasteCurrent,
   onClose,
   onApply,
   onSaveCurrent,
+  onPasteCurrent,
   onDelete,
 }: Props) {
-  const [workspacePage, setWorkspacePage] = useState<MaterialSchemeWorkspacePage>('system');
   const [category, setCategory] = useState<MaterialSchemeWorkspaceCategory>('全部');
-  const [systemPage, setSystemPage] = useState(0);
-  const [minePage, setMinePage] = useState(0);
+  const [source, setSource] = useState<MaterialSchemeWorkspaceSource>('all');
+  const [page, setPage] = useState(0);
 
-  const filteredSystem = useMemo(
-    () => category === '全部' ? systemPresets : systemPresets.filter((preset) => preset.type === category),
-    [category, systemPresets],
+  const allPresets = useMemo(
+    () => [...systemPresets, ...workshopPresets, ...customPresets],
+    [customPresets, systemPresets, workshopPresets],
   );
 
-  const activeItems = workspacePage === 'system' ? filteredSystem : customPresets;
-  const activePage = workspacePage === 'system' ? systemPage : minePage;
+  const activeItems = useMemo(
+    () => allPresets.filter((preset) => {
+      const matchesCategory = category === '全部' || preset.type === category;
+      const matchesSource = source === 'all' || preset.source === source;
+      return matchesCategory && matchesSource;
+    }),
+    [allPresets, category, source],
+  );
+
   const pageCount = Math.max(1, Math.ceil(activeItems.length / PAGE_SIZE));
-  const safePage = Math.min(activePage, pageCount - 1);
+  const safePage = Math.min(page, pageCount - 1);
   const visibleItems = pageItems(activeItems, safePage);
   const rows = [visibleItems.slice(0, 4), visibleItems.slice(4, 8)].filter((row) => row.length > 0);
 
-  function selectWorkspacePage(next: MaterialSchemeWorkspacePage) {
-    setWorkspacePage(next);
-    if (next === 'system') setSystemPage(0);
-    else setMinePage(0);
-  }
-
   function selectCategory(next: MaterialSchemeWorkspaceCategory) {
     setCategory(next);
-    setSystemPage(0);
+    setPage(0);
   }
 
-  function setActivePage(next: number) {
-    if (workspacePage === 'system') setSystemPage(next);
-    else setMinePage(next);
+  function selectSource(next: MaterialSchemeWorkspaceSource) {
+    setSource(next);
+    setPage(0);
   }
 
   function saveCurrent() {
     onSaveCurrent();
-    setWorkspacePage('mine');
-    setMinePage(0);
+    setCategory('全部');
+    setSource('mine');
+    setPage(0);
   }
+
+  const emptyTitle = source === 'mine'
+    ? '还没有保存的我的方案'
+    : source === 'workshop'
+      ? '没有符合条件的创意工坊方案'
+      : '没有符合条件的材质方案';
+
+  const emptyDetail = source === 'mine'
+    ? '使用右上“保存配色”把左侧当前参数加入这里。'
+    : '切换左侧材质类型或顶部来源筛选继续浏览。';
 
   return (
     <section
       className={'workspace workspace--design workspace--material-scheme material-scheme-workspace motion-bottom-surface is-' + motionPhase}
       aria-label="材质方案工作区"
       aria-busy={motionPhase !== 'steady'}
-      data-material-scheme-workspace-page={workspacePage}
+      data-material-scheme-source={source}
+      data-material-scheme-category={category}
     >
       <header className="workspace-header material-scheme-workspace__header">
         <div className="workspace-title">
           <Palette aria-hidden="true" />
           <b>材质方案</b>
         </div>
-
-        <nav className="material-scheme-workspace__page-tabs" aria-label="材质方案页面">
-          <button
-            type="button"
-            className={workspacePage === 'system' ? 'is-active' : ''}
-            aria-pressed={workspacePage === 'system'}
-            onClick={() => selectWorkspacePage('system')}
-          >
-            <span>系统方案</span>
-            <i className="material-scheme-workspace__tab-indicator" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className={workspacePage === 'mine' ? 'is-active' : ''}
-            aria-pressed={workspacePage === 'mine'}
-            onClick={() => selectWorkspacePage('mine')}
-          >
-            <span>我的方案</span>
-            <i className="material-scheme-workspace__tab-indicator" aria-hidden="true" />
-          </button>
-        </nav>
 
         <button className="icon-button" type="button" onClick={onClose} aria-label="关闭材质方案工作区">
           <X />
@@ -226,36 +254,61 @@ export function MaterialSchemeWorkspace({
           <div className="workspace-primary-rail__content">
             <span className="workspace-rail-pager-marker" aria-hidden="true" />
             <div className="workspace-primary-rail__page material-scheme-workspace__rail-list">
-              {workspacePage === 'system' ? (
-                SYSTEM_CATEGORIES.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    type="button"
-                    className={category === id ? 'is-active' : ''}
-                    aria-pressed={category === id}
-                    onClick={() => selectCategory(id)}
-                  >
-                    <Icon aria-hidden="true" />
-                    <span>{label}</span>
-                  </button>
-                ))
-              ) : (
-                <>
-                  <button type="button" className="is-active" aria-pressed="true">
-                    <Bookmark aria-hidden="true" />
-                    <span>已保存</span>
-                  </button>
-                  <button type="button" className="material-scheme-workspace__save" onClick={saveCurrent}>
-                    <Save aria-hidden="true" />
-                    <span>保存当前</span>
-                  </button>
-                </>
-              )}
+              {SYSTEM_CATEGORIES.map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={category === id ? 'is-active' : ''}
+                  aria-pressed={category === id}
+                  onClick={() => selectCategory(id)}
+                >
+                  <Icon aria-hidden="true" />
+                  <span>{label}</span>
+                </button>
+              ))}
             </div>
           </div>
         </aside>
 
         <div className="workspace-catalog material-scheme-workspace__catalog">
+          <nav className="workspace-context-filter material-scheme-workspace__source-filter" aria-label="材质方案来源筛选">
+            <div className="workspace-context-filter__scroll">
+              {SOURCE_FILTERS.map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  className={source === id ? 'is-active' : ''}
+                  aria-pressed={source === id}
+                  onClick={() => selectSource(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="material-scheme-workspace__actions">
+              <button
+                type="button"
+                className="material-scheme-workspace__action is-primary"
+                onClick={saveCurrent}
+                aria-label="保存配色"
+              >
+                <Save aria-hidden="true" />
+                <span>保存配色</span>
+              </button>
+              <button
+                type="button"
+                className="material-scheme-workspace__action"
+                disabled={!canPasteCurrent}
+                onClick={onPasteCurrent}
+                aria-label="粘贴配色"
+              >
+                <ClipboardPaste aria-hidden="true" />
+                <span>粘贴配色</span>
+              </button>
+            </div>
+          </nav>
+
           <div className="workspace-content-stage material-scheme-workspace__stage">
             {visibleItems.length > 0 ? (
               <div className="workspace-content-rows material-scheme-workspace__rows">
@@ -270,13 +323,13 @@ export function MaterialSchemeWorkspace({
             ) : (
               <div className="workspace-empty material-scheme-workspace__empty">
                 <Bookmark aria-hidden="true" />
-                <b>还没有保存的自定义方案</b>
-                <span>使用左侧“保存当前”把现在的材质参数加入这里。</span>
+                <b>{emptyTitle}</b>
+                <span>{emptyDetail}</span>
               </div>
             )}
           </div>
 
-          <Pager page={safePage} pageCount={pageCount} onChange={setActivePage} />
+          <Pager page={safePage} pageCount={pageCount} onChange={setPage} />
         </div>
       </div>
     </section>
