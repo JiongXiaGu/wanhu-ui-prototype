@@ -86,8 +86,8 @@
   filter:none;
 }
 .gameplay-screen .gameplay-context-panel__heading-icon{
-  width:19px;
-  height:19px;
+  width:var(--wanhu-icon-lg,20px);
+  height:var(--wanhu-icon-lg,20px);
   flex:0 0 19px;
   display:grid;
   place-items:center;
@@ -105,7 +105,7 @@
 .gameplay-screen .workspace--design .workspace-title>b,
 .gameplay-screen .gameplay-context-panel__title{
   color:var(--wanhu-color-paper-primary,#eee9df);
-  font-size:16px;
+  font-size:var(--wanhu-type-panel-title,16px);
   font-weight:600;
   line-height:1.08;
   letter-spacing:.012em;
@@ -113,7 +113,7 @@
 .gameplay-screen .gameplay-context-panel__heading-copy{gap:3px}
 .gameplay-screen .gameplay-context-panel__heading-copy>span{
   color:#888d8a;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   line-height:1;
   letter-spacing:.035em;
 }
