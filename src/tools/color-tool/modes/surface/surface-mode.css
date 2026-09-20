@@ -1,4 +1,4 @@
-/* Material Palette Tool — Surface Mode vertical slice.
+/* Color Tool — Surface Mode vertical slice.
    UI mirrors the MaterialSlotValue/MaterialSlotFlags semantic fields without becoming a raw Inspector. */
 
 .color-tool-surface{display:flex;flex-direction:column;gap:0}
@@ -132,7 +132,7 @@
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.10);
 }
 
-/* Material Palette page stack ------------------------------------------------
+/* Color Tool Surface page stack ----------------------------------------------
    Surface and Color Editor share one Left Context host. Content rebind uses
    opacity + small translate only; no width/height animation. */
 .color-tool-surface-page-host{
@@ -159,6 +159,79 @@
 .color-tool-surface-page.is-entering.is-back{opacity:0;transform:translateX(-12px)}
 .color-tool-surface-page.is-exiting.is-back{opacity:0;transform:translateX(12px)}
 .color-tool-surface-page.is-steady{opacity:1;transform:translateX(0)}
+
+/* Surface workflow + property grouping ----------------------------------------
+   These selectors belong to Surface Mode. Workspace CSS must not own parameter
+   controls or workflow layout. */
+.material-workflow-field{
+  min-height:34px;
+}
+.material-workflow-control{
+  width:100%;
+  min-width:0;
+  height:28px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  gap:18px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+}
+.material-workflow-control__option{
+  flex:0 0 auto;
+  min-width:0;
+  padding:0 3px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:6px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#8e948e;
+  font:inherit;
+  font-size:9px;
+  cursor:pointer;
+  transition-property:background,color;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.material-workflow-control__option:hover{
+  background:rgba(255,255,255,.020);
+  color:#c2beb5;
+}
+.material-workflow-control__option:focus-visible{
+  outline:1px solid rgba(189,153,89,.34);
+  outline-offset:1px;
+}
+.material-workflow-control__option.is-active{
+  color:#d8d3c9;
+}
+.material-workflow-control__indicator{
+  width:7px;
+  height:7px;
+  flex:0 0 7px;
+  border:1px solid rgba(238,233,223,.26);
+  border-radius:50%;
+  background:transparent;
+  opacity:1;
+  transform:none;
+  transition-property:background,border-color,box-shadow;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.material-workflow-control__option.is-active .material-workflow-control__indicator{
+  border-color:rgba(189,153,89,.92);
+  background:rgba(189,153,89,.90);
+  box-shadow:0 0 0 2px rgba(189,153,89,.07);
+}
+.material-property-group .runtime-parameter-row{
+  padding-left:0;
+  padding-right:0;
+}
+.material-property-group--texture{
+  margin-top:8px;
+  padding-top:5px;
+}
 
 /* Color editor --------------------------------------------------------------- */
 .material-color-editor{
