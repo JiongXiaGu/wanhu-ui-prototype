@@ -810,6 +810,10 @@ const materialToolbarBox = await materialToolbar.boundingBox();
 if (!schemeWorkspaceBox || !materialToolbarBox) {
   throw new Error('Scheme Workspace and Material toolbar geometry must be measurable.');
 }
+const materialPanelRight = materialPanelBox.x + materialPanelBox.width;
+if (schemeWorkspaceBox.x < materialPanelRight + 16) {
+  throw new Error('Scheme Workspace must not overlap the persistent left Surface panel. gap=' + (schemeWorkspaceBox.x - materialPanelRight));
+}
 const workspaceCenter = schemeWorkspaceBox.x + schemeWorkspaceBox.width / 2;
 if (Math.abs(workspaceCenter - 960) > 4) {
   throw new Error('Scheme Workspace should stay centered above the Material toolbar. center=' + workspaceCenter);
