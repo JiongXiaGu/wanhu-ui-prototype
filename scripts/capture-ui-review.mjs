@@ -1341,7 +1341,7 @@ if (lightColorPreviewBox.height < 16
   || lightColorFillOpacity > 0.76) {
   throw new Error('ColorParameterField must use a simple readable preview/meta split instead of a dominant full-color block or tiny inset strip. preview=' + JSON.stringify(lightColorPreviewBox) + ' control=' + JSON.stringify(lightColorControlBox) + ' ratio=' + previewRatio + ' opacity=' + lightColorFillOpacity);
 }
-if (lightHdrFontSize < 8.5) {
+if (lightHdrFontSize < 9.5) {
   throw new Error('HDR text must remain readable at normal parameter-label scale. fontSize=' + lightHdrFontSize);
 }
 if (lightHdrBadgeBox.x < lightColorMetaBox.x
