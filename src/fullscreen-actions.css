@@ -78,7 +78,7 @@
   background:transparent!important;
   box-shadow:none!important;
   color:var(--wanhu-color-paper-tertiary)!important;
-  font-size:9px!important;
+  font-size:var(--wanhu-type-caption,10px)!important;
   font-weight:500!important;
   letter-spacing:.012em!important;
   cursor:pointer;
