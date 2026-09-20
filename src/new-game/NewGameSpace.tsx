@@ -212,7 +212,7 @@ export function NewGameSpace({ onBack, onStart }: NewGameSpaceProps) {
                 aria-pressed={map.id === selectedMap.id}
                 onClick={() => setSelectedMapId(map.id)}
               >
-                {map.kind === 'random' && <span className="new-game-map-card__badge"><Dices size={12} /><em>随机地图</em></span>}
+                {map.kind === 'random' && <span className="new-game-map-card__badge"><Dices size={14} /><em>随机地图</em></span>}
                 <span className="new-game-map-card__image" style={{ backgroundImage: `url(${map.image})` }} />
                 <span className="new-game-map-card__copy">
                   <b>{map.name}</b>
