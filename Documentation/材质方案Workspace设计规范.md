@@ -66,33 +66,33 @@ Material ToolActionBar
 
 ### 方案卡与 Design Workspace 共用视觉母版
 
-材质方案不再拥有独立 Card 皮肤。它直接复用建筑 / Design Workspace 的 WorkspaceItemCard：
+材质方案继续复用建筑 / Design Workspace 的 WorkspaceItemCard，但 Material 业务不强制使用 Preview 槽。当前没有真实材质缩略图时，不用纯色块或假材质纹理冒充 Preview。
+
+稳定规则：
 
 - Card 高度 64px；
-- Preview 固定 64×64、1:1；
 - 4 列 × 2 行，每页 8 项；
-- Material Scheme Host 宽度约 1040px；它与左侧 400px Surface Panel 共存，因此不直接继承建筑 Workspace 的 1240px Host 宽度，但 Card / Rail / Typography / Hover 仍共用同一母版；
 - Card 默认无常驻边框；
-- Hover / Focus、Typography、Copy 间距和缩略图几何与 Design Workspace 共用；
-- Card 两层信息：方案名 + “类型 · 质感”，例如“深胡桃 / 木头 · 偏哑光”；
-- Current 材质方案只增加共享状态线和极弱熟铜 Tone，不重新发明 Selected Card；
-- 自定义方案额外拥有删除按钮，这是 Material 的业务差异。
+- Hover / Focus、Typography、Copy 间距与 Design Workspace 共用；
+- Material Card 不显示 1:1 图片、不显示纯色方块、不显示假木纹 / 假瓦纹 / 假墙纹；
+- 第一行只显示方案名；
+- 第二行固定为“细 BaseColor 色线 + 类型 · 质感”，例如“━━ 木头 · 偏哑光”；
+- BaseColor 色线约 38×3px，只是辅助色彩记忆，不承担主要识别；
+- Current 材质方案仍只增加共享状态线和极弱熟铜 Tone；
+- 自定义方案额外拥有删除按钮，这是 Material 的业务差异；
+- 如果未来拥有真实 MaterialPresetThumbnail，可恢复共享 Preview 槽，但不能用低信息量占位图替代真实内容。
 
-方案库负责让玩家判断“这个材质大概长什么样”，不是展示底层参数结构。
+Material Scheme Host 宽度约 1040px；它与左侧 400px Surface Panel 共存，因此不直接继承建筑 Workspace 的 1240px Host 宽度，但 Card / Rail / Typography / Hover 仍共用同一母版。
 
-第一阶段 Web Prototype：
-
-- 使用 BaseColor 作为 1:1 样片主色；
-- 使用固定方向受光表达 Smoothness 的粗糙 / 哑光 / 偏哑光 / 光滑差异；
-- 木头 / 瓦片 / 墙面只用极弱类型纹理帮助识别，不额外写纹理说明文字；
-- Emission / NightEmission / Specular 不再拆成四色条展示。
+方案库负责让玩家通过名称、类型和质感快速选择方案。精确颜色、HDR、PBR 与贴图参数继续留在左侧 Surface 参数面板，不在方案 Card 中重复。
 
 正式 Unity：
 
-- WorkspaceItemCard.uss / 对应 UXML 结构同时供建筑目录与 Material Scheme 使用；
-- Material 只追加 workspace-item-card--material / Current / Delete 等业务 Modifier；
-- 系统方案优先绑定预生成 MaterialPresetThumbnail（Texture / Sprite）；
-- 没有缩略图时可回退到 BaseColor + 轻量材质样片；
+- WorkspaceItemCard UXML / USS 同时供建筑目录与 Material Scheme 使用；
+- Preview Element 应允许按业务隐藏；
+- Material 只追加 workspace-item-card--material / Current / Delete / ColorAccent 等业务 Modifier；
+- BaseColor Accent 使用普通 VisualElement，不使用结构性 pseudo-element；
+- 未来只有存在真实材质缩略图资源时才启用 Preview；
 - 精确颜色与 PBR 参数仍只在左侧 Surface 参数面板编辑。
 
 ### 我的方案
