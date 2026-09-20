@@ -841,13 +841,22 @@ if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) 
 if ((await schemeWorkspace.locator('.workspace-item-card').count()) !== 8) {
   throw new Error('Every Material Scheme Card should consume the shared WorkspaceItemCard primitive.');
 }
-const materialPreviews = schemeWorkspace.locator('.material-scheme-workspace__card-preview');
-if ((await materialPreviews.count()) !== 8) {
-  throw new Error('Each Scheme Card should expose one dominant material preview sample.');
+if (await schemeWorkspace.locator('.workspace-item-card__preview').count()) {
+  throw new Error('Material Scheme Cards must not render placeholder preview images.');
 }
-const previewBox = await materialPreviews.first().boundingBox();
-if (!previewBox || Math.abs(previewBox.width - previewBox.height) > 1 || Math.abs(previewBox.width - 64) > 1) {
-  throw new Error('Material Scheme preview must match Design Workspace 64x64 / 1:1 thumbnail geometry. box=' + JSON.stringify(previewBox));
+if (await schemeWorkspace.locator('.material-scheme-workspace__card-preview').count()) {
+  throw new Error('Retired material preview blocks must not return.');
+}
+if (await schemeWorkspace.locator('.material-scheme-workspace__card-swatches').count()) {
+  throw new Error('Scheme Cards must not regress to the four-color swatch strip.');
+}
+const materialColorLines = schemeWorkspace.locator('.material-scheme-workspace__color-line');
+if ((await materialColorLines.count()) !== 8) {
+  throw new Error('Each Scheme Card should expose exactly one subtle BaseColor accent line.');
+}
+const colorLineBox = await materialColorLines.first().boundingBox();
+if (!colorLineBox || colorLineBox.width < 32 || colorLineBox.width > 44 || colorLineBox.height > 4) {
+  throw new Error('Material BaseColor must remain a thin accent line, not a preview block. box=' + JSON.stringify(colorLineBox));
 }
 const firstMaterialCardBox = await schemeWorkspace.locator('.workspace-item-card').first().boundingBox();
 if (!firstMaterialCardBox || Math.abs(firstMaterialCardBox.height - 64) > 1) {
@@ -856,9 +865,6 @@ if (!firstMaterialCardBox || Math.abs(firstMaterialCardBox.height - 64) > 1) {
 const firstMaterialCardStyle = await schemeWorkspace.locator('.workspace-item-card').first().evaluate((node) => getComputedStyle(node));
 if (firstMaterialCardStyle.borderTopWidth !== '0px') {
   throw new Error('Shared WorkspaceItemCard must remain borderless by default.');
-}
-if (await schemeWorkspace.locator('.material-scheme-workspace__card-swatches').count()) {
-  throw new Error('Scheme Cards must not regress to the four-color swatch strip.');
 }
 const materialMeta = schemeWorkspace.locator('.workspace-item-card__meta');
 if ((await materialMeta.count()) !== 8) {
