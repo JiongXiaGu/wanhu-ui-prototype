@@ -445,14 +445,14 @@ Transition Stair Preview DOM
 - High / Low Reverse 是明确玩家操作。
 
 
-## 18. Material Palette / Surface Mode
+## 18. Color Tool / Surface Mode
 
-`material-palette` 从 Gameplay World Utility 进入独立 Tool Space。
+`color-tool` 从 Gameplay World Utility 的“配色工具”进入唯一 Color Tool Space。
 
 Controller 数据：
 
 ```text
-MaterialPaletteController
+ColorToolController
 ├ Mode = Surface
 ├ CurrentScheme
 ├ MaterialSlotValue Draft
@@ -499,21 +499,21 @@ Left Host
 └ ColorEditorPage
 
 Center Work Surface
-└ MaterialSchemeWorkspace
+└ MaterialPresetWorkspace
 
 Bottom
-└ MaterialToolActionBar
+└ ColorToolDock
 ```
 
 约束：
 
-- Surface / ColorEditor 共用 Left Context Shell；方案浏览使用 Material Tool 内部的中央 Work Surface，不建立第二个业务状态；
+- Surface / ColorEditor 共用 Left Context Shell；方案浏览使用 Color Tool 内部的中央 Work Surface，不建立第二个业务状态；
 - Scheme Selector 绑定 CurrentScheme；
 - 手动 Edit / Paste 统一把 CurrentScheme 标记为 Custom / Unsaved；
 - Apply Preset 恢复对应 SchemeId / Type / Name；
 - Preset Library 的用户自定义项正式 Unity 应持久化到玩家数据；
-- Scheme Navigation 是左侧参数页的轻量入口；点击后打开中央 MaterialSchemeWorkspace；
-- MaterialSchemeWorkspace 使用显式 2×3 Flex Rows + Pager，位于 Bottom ToolActionBar 上方；
+- Scheme Navigation 是左侧参数页的轻量入口；点击后打开中央 MaterialPresetWorkspace；
+- MaterialPresetWorkspace 使用显式 2×3 Flex Rows + Pager，位于 Bottom ToolActionBar 上方；
 - Color Strip 使用一个父 VisualElement + 四个等宽 Item；父节点拥有共享边界，Item 不拥有独立完整边框；
 - Metallic 下不挂载 SpecularColor；Specular 下挂载在 Color Strip 最后一位；
 - Specular Workflow 下 Metallic Field 直接隐藏但 Controller 值不销毁；
