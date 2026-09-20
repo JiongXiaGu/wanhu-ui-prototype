@@ -53,8 +53,21 @@ for(const file of files){
         svgSelectors.push({file,line,selector,body:body.trim().replace(/\s+/g,' ')});
       }
       for(const sizeMatch of body.matchAll(/font-size\s*:\s*([^;}]*)/g)){
-        if(/var\(/.test(sizeMatch[1])) fontSizeTokenUses+=1;
-        else if(/px\b/.test(sizeMatch[1])) fontSizeHardcodedUses+=1;
+        const raw=sizeMatch[1].trim();
+        if(/var\(/.test(raw)) fontSizeTokenUses+=1;
+        else if(/px\b/.test(raw)) fontSizeHardcodedUses+=1;
+
+        const numeric=raw.match(/^([0-9.]+)px$/);
+        if(numeric){
+          const value=Number(numeric[1]);
+          if(value<READABLE_FONT_FLOOR){
+            const item={file,line,selector,value,text:'font-size:'+raw};
+            const allowed=ALLOWED_BELOW_FLOOR.some((entry)=>
+              entry.file===file && entry.selectors.some((allowedSelector)=>selector.includes(allowedSelector))
+            );
+            (allowed?allowedBelowFloorFonts:belowFloorFonts).push(item);
+          }
+        }
       }
     }
     lines.forEach((line,index)=>{
@@ -63,12 +76,6 @@ for(const file of files){
         const item={file,line:index+1,text:line.trim()};
         add(fonts,value,item);
         if(value<10) tinyFonts.push({value,...item});
-        if(value<READABLE_FONT_FLOOR){
-          const allowed=ALLOWED_BELOW_FLOOR.some((entry)=>
-            entry.file===file && entry.selectors.some((selector)=>line.includes(selector))
-          );
-          (allowed?allowedBelowFloorFonts:belowFloorFonts).push({value,...item});
-        }
       }
       if(/\.ui-icon\b|\bicon\b/i.test(line)){
         for(const match of line.matchAll(/(?:width|height|flex-basis)\s*:\s*([0-9.]+)px/g)){
@@ -114,10 +121,14 @@ const fileFontStats=new Map();
 for(const hit of tinyFonts){
   const stat=fileFontStats.get(hit.file)??{below10:0,belowFloor:0,below9:0,below8:0,min:Infinity};
   stat.below10+=1;
-  if(hit.value<READABLE_FONT_FLOOR) stat.belowFloor+=1;
   if(hit.value<9) stat.below9+=1;
   if(hit.value<8) stat.below8+=1;
   stat.min=Math.min(stat.min,hit.value);
+  fileFontStats.set(hit.file,stat);
+}
+for(const hit of belowFloorFonts){
+  const stat=fileFontStats.get(hit.file)??{below10:0,belowFloor:0,below9:0,below8:0,min:Infinity};
+  stat.belowFloor+=1;
   fileFontStats.set(hit.file,stat);
 }
 
