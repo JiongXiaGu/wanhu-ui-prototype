@@ -1,6 +1,6 @@
 # 材质方案 Workspace 设计规范
 
-`MaterialSchemeWorkspace` 是 `material-palette` Tool 内部的中央 Work Surface，用于浏览系统材质方案和玩家保存的自定义方案。
+`MaterialSchemeWorkspace` 是 `material-palette` Tool 内部的中央 Work Surface，用于浏览系统内置、创意工坊与玩家保存的材质方案。
 
 它不是新的 Gameplay Workspace 状态，也不替代左侧 Surface 参数面板。
 
@@ -32,41 +32,84 @@ Material ToolActionBar
 - 不退出 Material Tool；
 - 不关闭左侧参数。
 
-## 2. Workspace 页面
+Material Scheme Host 宽度约 1040px；它与左侧约 400px Surface Panel 共存，因此不直接照搬建筑 Workspace 的 1240px Host 宽度，但 Rail、Filter、Card、Typography、Hover / Focus 与 Pager 继续共用同一视觉母版。
 
-顶部页签：
+## 2. Workspace 信息架构
+
+材质方案 Workspace 采用和建筑 Workspace 相同的“左分类 + 顶部筛选 + 内容卡片 + 底部分页”结构。
+
+### 左侧材质分类 Rail
+
+固定为：
 
 ```text
-系统方案 | 我的方案
+全部
+木头
+瓦片
+墙面
 ```
 
-使用真实 Selection Indicator Element，不依赖结构性 pseudo-element。
+左侧分类只表达材质类别，不承担来源切换。
 
-### 系统方案
+### 顶部来源筛选
 
-左侧 Rail：
+顶部 Catalog Filter 固定为：
 
-- 全部；
-- 木头；
-- 瓦片；
-- 墙面。
+```text
+全部 | 系统内置 | 创意工坊 | 我的方案
+```
 
-内容：
+它不是页面切换，而是来源筛选，并与左侧材质分类组合生效：
 
-- 2 行 × 4 Card；
-- 8 Card / 页；
-- 超过 8 个方案使用 Workspace Pager；
-- Card 以单个材质样片 Preview 为主要识别，右侧只显示类型、名称和一个简短质感词；
-- 方案卡不显示四色拼条，不常驻显示 Smoothness / Tiling 等技术数值，也不显示“中等纹理 / 细纹 / 粗纹”等纹理粒度文字；
-- 点击 Card 立即应用方案；
-- 应用后 Workspace 保持打开，方便连续对比；
-- 左侧 Surface 参数实时刷新。
+```text
+Source Filter × Material Category
+```
 
-第一阶段 Web Demo 内置 9 个演示方案，用于验证分类和分页。它们是交互 / 构图占位，不代表最终美术库。
+例如：
 
-### 方案卡与 Design Workspace 共用视觉母版
+- 系统内置 × 木头；
+- 创意工坊 × 瓦片；
+- 我的方案 × 墙面。
 
-材质方案继续复用建筑 / Design Workspace 的 WorkspaceItemCard，但 Material 业务不强制使用 Preview 槽。当前没有真实材质缩略图时，不用纯色块或假材质纹理冒充 Preview。
+第一阶段 Web Demo：
+
+- 系统内置保留 9 个演示方案；
+- 创意工坊提供少量演示方案，只用于验证来源筛选与 Card 来源标识；
+- 我的方案来自当前 Tool Session 内玩家保存的数据。
+
+正式 Unity：
+
+- 系统内置接 `SystemPresetLibrary`；
+- 创意工坊接 Workshop / Mod Content Source；
+- 我的方案接玩家存档 / `UserPresetLibrary`。
+
+### 右上 Workspace Action
+
+来源筛选右侧保留两个与方案库直接相关的动作：
+
+```text
+保存配色 | 粘贴配色
+```
+
+#### 保存配色
+
+- 将左侧当前完整 Surface Draft 保存为“我的方案”；
+- 保存后自动切换到“我的方案”来源；
+- Web Demo 当前自动命名为“我的配色 NN”；
+- 保存方案保留当前材质类别，例如从木头方案修改后保存，仍归类到木头；
+- 正式 Unity 后续接统一命名 Dialog 与持久化。
+
+#### 粘贴配色
+
+- 读取 Material Surface Clipboard；
+- Clipboard 为空时按钮 Disabled；
+- 点击后把完整 Surface 参数粘贴到左侧当前 Draft；
+- 粘贴后 CurrentScheme 变为“自定义 · 未保存”；
+- 不新增另一套 Clipboard 状态。
+
+## 3. Card 视觉与来源
+
+材质方案继续复用建筑 / Design Workspace 的 `WorkspaceItemCard`，但 Material 业务不强制使用 Preview 槽。没有真实材质缩略图时，不用纯色块或假材质纹理冒充 Preview。
 
 稳定规则：
 
@@ -74,45 +117,25 @@ Material ToolActionBar
 - 4 列 × 2 行，每页 8 项；
 - Card 默认无常驻边框；
 - Hover / Focus、Typography、Copy 间距与 Design Workspace 共用；
-- Material Card 不显示 1:1 图片、不显示纯色方块、不显示假木纹 / 假瓦纹 / 假墙纹；
-- 第一行只显示方案名；
-- 第二行固定为“细 BaseColor 色线 + 类型 · 质感”，例如“━━ 木头 · 偏哑光”；
-- BaseColor 色线约 38×3px，只是辅助色彩记忆，不承担主要识别；
-- Current 材质方案仍只增加共享状态线和极弱熟铜 Tone；
-- 自定义方案额外拥有删除按钮，这是 Material 的业务差异；
-- 如果未来拥有真实 MaterialPresetThumbnail，可恢复共享 Preview 槽，但不能用低信息量占位图替代真实内容。
+- Material Card 不显示纯色大图、假木纹 / 假瓦纹 / 假墙纹；
+- 第一行：方案名；
+- 第二行：来源 Badge + 细 BaseColor 色线 + 类型 · 质感；
+- BaseColor 色线约 28×3px，只承担辅助色彩记忆；
+- Current 材质方案继续使用共享左侧熟铜状态线；
+- “我的方案”额外拥有删除按钮；
+- 如果未来存在真实 `MaterialPresetThumbnail`，才启用共享 Preview 槽。
 
-Material Scheme Host 宽度约 1040px；它与左侧 400px Surface Panel 共存，因此不直接继承建筑 Workspace 的 1240px Host 宽度，但 Card / Rail / Typography / Hover 仍共用同一母版。
+来源 Badge 固定三种：
 
-方案库负责让玩家通过名称、类型和质感快速选择方案。精确颜色、HDR、PBR 与贴图参数继续留在左侧 Surface 参数面板，不在方案 Card 中重复。
+```text
+系统内置
+创意工坊
+我的方案
+```
 
-正式 Unity：
+来源是方案的重要元数据，Card 本身必须能够脱离当前 Filter 后仍说明其来源。
 
-- WorkspaceItemCard UXML / USS 同时供建筑目录与 Material Scheme 使用；
-- Preview Element 应允许按业务隐藏；
-- Material 只追加 workspace-item-card--material / Current / Delete / ColorAccent 等业务 Modifier；
-- BaseColor Accent 使用普通 VisualElement，不使用结构性 pseudo-element；
-- 未来只有存在真实材质缩略图资源时才启用 Preview；
-- 精确颜色与 PBR 参数仍只在左侧 Surface 参数面板编辑。
-
-### 我的方案
-
-左侧 Rail：
-
-- 已保存；
-- 保存当前。
-
-内容：
-
-- 同样使用 2×4 Card Pool；
-- 保存当前会生成玩家自定义方案；
-- 自定义方案可应用；
-- 自定义方案可删除；
-- 空列表显示明确 Empty State。
-
-Web Prototype 自定义方案只保存在当前 Tool Session。正式 Unity 应接玩家存档 / MaterialPresetLibrary。
-
-## 3. Surface 与方案状态
+## 4. Surface 与方案状态
 
 Material Surface 默认工作流为 Metallic。
 
@@ -143,12 +166,13 @@ SpecularColor
 
 切换工作流只改变可见性，不清空隐藏值。
 
-## 4. Apply / Custom
+## 5. Apply / Custom / Source
 
-应用系统 / 自定义方案：
+应用任意来源方案：
 
 - 替换完整 Surface Draft；
 - 更新 CurrentScheme；
+- 更新当前材质类别；
 - Workspace 不自动关闭；
 - 左侧参数立即刷新。
 
@@ -159,27 +183,33 @@ CurrentScheme
 → 自定义 · 未保存
 ```
 
-包括 Color、HDR Intensity、RGB/HSV、PBR、Texture、Workflow、Paste。
+但当前材质类别继续保留，以便之后“保存配色”时仍进入正确的木头 / 瓦片 / 墙面分类。
 
-保存当前：
+包括以下操作都会进入未保存状态：
 
-- 将当前完整 Draft 写入自定义方案；
-- CurrentScheme 更新为保存后的方案；
-- 正式 Unity 需要命名 / 持久化流程；Web Demo 目前自动生成“我的配色 NN”。
+- Color；
+- HDR Intensity；
+- RGB / HSV；
+- PBR；
+- Texture；
+- Workflow；
+- Paste。
 
-## 5. Unity UI Toolkit 映射
+## 6. Unity UI Toolkit 映射
 
 ```text
 MaterialPaletteController
 ├ CurrentDraft
 ├ CurrentScheme
+├ CurrentCategory
+├ SurfaceClipboard
 ├ SystemPresetLibrary
+├ WorkshopPresetLibrary
 ├ UserPresetLibrary
 └ SchemeWorkspaceState
-
-MaterialSurfacePanel.uxml
-MaterialSchemeWorkspace.uxml
-MaterialToolActionBar.uxml
+   ├ SourceFilter
+   ├ CategoryFilter
+   └ Page
 ```
 
 `MaterialSchemeWorkspace.uxml`：
@@ -187,38 +217,64 @@ MaterialToolActionBar.uxml
 ```text
 Header
 ├ Title
-├ Page Tabs
 └ Close
 
 Body
 ├ Primary Rail
 └ Catalog
-   ├ Summary
-   ├ 2×3 Pooled Cards
+   ├ Source Filter
+   │  ├ 全部
+   │  ├ 系统内置
+   │  ├ 创意工坊
+   │  ├ 我的方案
+   │  └ Actions
+   │     ├ 保存配色
+   │     └ 粘贴配色
+   ├ 4×2 Pooled Cards
    └ Pager
+```
+
+Card：
+
+```text
+WorkspaceItemCard
+├ StateLine
+└ Copy
+   ├ Title
+   └ Meta
+      ├ SourceBadge
+      ├ BaseColorAccent
+      └ TypeAndFinish
 ```
 
 规则：
 
-- 2×4 通过显式 Flex Rows 实现，不依赖 CSS Grid；
-- Pager Marker / Tab Indicator 使用真实 VisualElement；
+- 4×2 使用显式 Flex Rows，不依赖 CSS Grid；
+- Preview Element 必须可选；
+- BaseColor Accent / SourceBadge / StateLine 都使用真实 VisualElement；
 - Workspace 自身不拥有 Material Draft；
-- Workspace 只向 Controller 发送 Apply / Save / Delete / Filter / Page 请求；
+- Workspace 只向 Controller 发送 Apply / Save / Paste / Delete / Filter / Page 请求；
 - 左侧参数与中央 Workspace 读取同一 Controller 状态。
 
-## 6. UI Review
+## 7. UI Review
 
 必须检查：
 
 - 点击方案入口后左侧 Surface 仍存在；
-- 中央 Workspace 位于 Material ToolActionBar 上方且不重叠；
-- Workspace 水平居中；
-- 系统方案 / 我的方案两页存在；
-- 系统分类 Rail 存在；
-- 9 个演示预设形成两页 Pager，第一页 8 个、第二页 1 个；
-- Apply 后 Workspace 不关闭，左侧 Scheme / 参数实时更新；
-- 手动修改后 CurrentScheme 变成“自定义 · 未保存”；
-- 我的方案支持保存 / 应用 / 删除；
-- 关闭中央 Workspace 不退出 Material Tool；
+- 中央 Workspace 位于 Material ToolActionBar 上方且不与左侧 Surface 重叠；
+- 左侧 Rail 固定为全部 / 木头 / 瓦片 / 墙面；
+- 顶部来源固定为全部 / 系统内置 / 创意工坊 / 我的方案；
+- 左侧分类与顶部来源可以组合筛选；
+- 右上存在保存配色 / 粘贴配色；
+- Surface Clipboard 为空时粘贴 Disabled，有值时 Enabled；
+- 系统内置 9 个方案形成两页；
+- 创意工坊演示方案能单独筛选；
+- 每张 Card 显示来源 Badge；
+- Material Card 不回归纯色 Preview / 四色条；
+- BaseColor 只保持细线级别；
+- 保存配色后进入我的方案并保留材质类别；
+- 我的方案支持应用 / 删除；
+- 粘贴配色后 CurrentScheme 变为自定义 · 未保存；
+- Apply 后 Workspace 不关闭，左侧参数实时更新；
 - Metallic 下 SpecularColor 不存在；
 - Specular 下 SpecularColor 出现在颜色序列最后。
