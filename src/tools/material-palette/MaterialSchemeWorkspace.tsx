@@ -296,12 +296,13 @@ export function MaterialSchemeWorkspace({
   const [draggingPresetId, setDraggingPresetId] = useState('');
   const [dragTargetFamily, setDragTargetFamily] = useState<MaterialFamily | null>(null);
   const [highlightPresetId, setHighlightPresetId] = useState('');
+  const [highlightVersion, setHighlightVersion] = useState(0);
 
   useEffect(() => {
     if (!highlightPresetId) return;
     const timer = window.setTimeout(() => setHighlightPresetId(''), 650);
     return () => window.clearTimeout(timer);
-  }, [highlightPresetId]);
+  }, [highlightPresetId, highlightVersion]);
 
   const allPresets = useMemo(
     () => [...systemPresets, ...workshopPresets, ...customPresets],
@@ -357,6 +358,7 @@ export function MaterialSchemeWorkspace({
     setCategory(nextFamily);
     setPage(Math.floor(targetIndex / PAGE_SIZE));
     setHighlightPresetId(presetId);
+    setHighlightVersion((current) => current + 1);
   }
 
   function openSaveDialog() {
@@ -383,6 +385,7 @@ export function MaterialSchemeWorkspace({
         setCategory(family);
         setPage(Math.floor(existingInFamily / PAGE_SIZE));
         setHighlightPresetId(newId);
+        setHighlightVersion((current) => current + 1);
       },
     });
   }
@@ -410,6 +413,7 @@ export function MaterialSchemeWorkspace({
           revealMovedPreset(preset.id, family);
         } else {
           setHighlightPresetId(preset.id);
+          setHighlightVersion((current) => current + 1);
         }
       },
     });
