@@ -63,6 +63,38 @@ const lucideIcons=new Set();
 for(const file of files){
   const text=await readFile(file,'utf8');
 
+  if (
+    file.startsWith('src/tools/material-palette/')
+    || file.startsWith('src/tools/light-adjustment/')
+    || file.startsWith('src/tools/building-scheme/')
+  ) {
+    errors.push(`${file}: retired color-tool path. Surface / Lighting / Scheme must live under src/tools/color-tool/.`);
+  }
+
+  if (!file.endsWith('.css')) {
+    const legacyColorIdentifiers = [
+      'MaterialPaletteMode',
+      'materialPaletteMode',
+      'ENTER_MATERIAL_PALETTE',
+      'SET_MATERIAL_PALETTE_MODE',
+      'MaterialPaletteTool',
+      'MaterialPaletteDock',
+    ];
+    for (const marker of legacyColorIdentifiers) {
+      if (text.includes(marker)) {
+        errors.push(`${file}: retired color-tool identifier "${marker}". Use ColorTool ownership and ColorToolMode.`);
+      }
+    }
+  }
+
+  if (
+    file.startsWith('src/tools/color-tool/modes/')
+    && file.endsWith('.css')
+    && /\.workspace--catalog\s+\.workspace-(?:primary-rail|catalog|context-filter|content-stage|content-row|content-pager)\b/.test(text)
+  ) {
+    errors.push(`${file}: mode CSS must not own shared Catalog geometry. Move layout to src/workspace/workspace-catalog.css and keep only feature modifiers here.`);
+  }
+
   const legacyMarkers = ['tool-overlay', 'tool-body'];
   for (const marker of legacyMarkers) {
     if (text.includes(marker)) {
