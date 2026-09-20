@@ -41,7 +41,7 @@
   background:transparent;
   color:#969b95;
   font:inherit;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   font-weight:560;
   white-space:nowrap;
   cursor:pointer;
@@ -140,7 +140,7 @@
   background:transparent;
   color:#a3a7a1;
   font:inherit;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   text-align:left;
   cursor:pointer;
 }
@@ -159,7 +159,7 @@
 .material-preset-workspace.is-dragging-preset .material-preset-workspace__rail-list>button small{
   margin-left:auto;
   color:#777d78;
-  font-size:6.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   font-weight:500;
   white-space:nowrap;
 }
@@ -222,7 +222,7 @@
   border-radius:5px;
   background:rgba(255,255,255,.025);
   color:#858b85;
-  font-size:7.2px;
+  font-size:var(--wanhu-type-micro,9.5px);
   line-height:1.1;
   font-weight:560;
   white-space:nowrap;
@@ -279,10 +279,10 @@
 }
 .material-preset-workspace__empty b{
   color:#a6aaa5;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   font-weight:560;
 }
 .material-preset-workspace__empty span{
   color:#747a75;
-  font-size:7.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
 }
