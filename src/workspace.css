@@ -451,11 +451,23 @@
 }
 
 .gameplay-screen .workspace--catalog .workspace-rail-pager button{
+  /* Explicitly neutralize the old generic aside-button padding/flex.
+     Without this, the 12px legacy padding shifts Material's page dot toward
+     the Selected line even though Design happens to look acceptable. */
+  flex:0 0 14px;
   width:8px;
+  height:14px;
+  min-height:14px;
+  padding:0;
+  gap:0;
+  text-align:center;
 }
 
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__page>button{
+  /* Reset the legacy .workspace-body aside button { flex:1 } rule from
+     styles.css. Catalog Rail items own a fixed row height. */
+  flex:0 0 29px;
   height:29px;
   min-height:29px;
   padding:0 10px;
