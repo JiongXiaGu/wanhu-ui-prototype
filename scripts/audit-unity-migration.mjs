@@ -183,7 +183,7 @@ for(const file of files){
 }
 
 if(lucideRuntimeFiles.size){
-  warnings.push(`Lucide runtime migration debt: ${lucideRuntimeFiles.size} files still import lucide-react. Keep this transitional until PNG Pilot passes, then replace Shared/Business contracts with UiIconId.`);
+  errors.push(`Lucide Runtime imports are frozen out: ${lucideRuntimeFiles.size} src files still import lucide-react. Runtime must consume committed PNG assets through the local icon adapter / UiIconId contract.`);
 }
 if(metrics.cssGrid){
   warnings.push(`CSS Grid migration debt: ${metrics.cssGrid} declarations across ${gridFiles.size} files. Keep every layout expressible as nested Flex/UXML rows and columns.`);
