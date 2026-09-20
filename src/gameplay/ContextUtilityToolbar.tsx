@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import type { CityWallGatePlacementMode, Tool } from '../app/ui-state';
 
-export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'material-palette';
+export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'unlock'
@@ -228,7 +228,7 @@ const CITY_WALL_TRANSITION_STAIR_GROUPS: readonly (readonly UtilityItem[])[] = [
   ],
 ];
 
-const MATERIAL_PALETTE_GROUPS: readonly (readonly UtilityItem[])[] = [
+const COLOR_TOOL_GROUPS: readonly (readonly UtilityItem[])[] = [
   [
     { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
     { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
@@ -246,7 +246,7 @@ const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> =
   'city-wall-gate-connected': CITY_WALL_GATE_CONNECTED_GROUPS,
   'city-wall-access-stair': CITY_WALL_ACCESS_STAIR_GROUPS,
   'city-wall-transition-stair': CITY_WALL_TRANSITION_STAIR_GROUPS,
-  'material-palette': MATERIAL_PALETTE_GROUPS,
+  'color-tool': COLOR_TOOL_GROUPS,
 };
 
 function contextForTool(tool: Tool, gateMode: CityWallGatePlacementMode): UtilityContext {
@@ -258,7 +258,7 @@ function contextForTool(tool: Tool, gateMode: CityWallGatePlacementMode): Utilit
   if (tool === 'city-wall-gate') return gateMode === 'wall-connected' ? 'city-wall-gate-connected' : 'city-wall-gate-free';
   if (tool === 'city-wall-access-stair') return 'city-wall-access-stair';
   if (tool === 'city-wall-transition-stair') return 'city-wall-transition-stair';
-  if (tool === 'material-palette') return 'material-palette';
+  if (tool === 'color-tool') return 'color-tool';
   return 'world';
 }
 
@@ -272,7 +272,7 @@ function ariaLabelForContext(context: UtilityContext) {
   if (context === 'city-wall-gate-connected') return '城墙门洞连接辅助工具';
   if (context === 'city-wall-access-stair') return '登城梯放置辅助工具';
   if (context === 'city-wall-transition-stair') return '高差楼梯放置辅助工具';
-  if (context === 'material-palette') return '配色工具辅助操作';
+  if (context === 'color-tool') return '配色工具辅助操作';
   return '世界工具';
 }
 
