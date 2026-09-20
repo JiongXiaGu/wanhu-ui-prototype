@@ -221,3 +221,22 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - BaseColor 只作为低权重辅助信息，不再作为主视觉；
 - Current 状态继续使用左侧熟铜状态线，避免和 BaseColor 语义冲突；
 - UI Review 增加断言：Material Card 不得出现 Preview / 四色条，色彩表达必须保持细线级别。
+
+
+## 材质方案升级为来源资源库
+
+本轮继续让 MaterialSchemeWorkspace 向建筑 Workspace 的资源目录结构靠拢，不再使用“系统方案 / 我的方案”两页切换。
+
+结构调整：
+
+- 左侧 Rail 继续固定为全部 / 木头 / 瓦片 / 墙面；
+- 顶部改为来源筛选：全部 / 系统内置 / 创意工坊 / 我的方案；
+- 来源筛选和左侧材质分类组合生效；
+- 右上新增“保存配色 / 粘贴配色”；
+- 保存配色直接读取左侧当前 Surface Draft，并写入“我的方案”；
+- 粘贴配色复用现有 Surface Clipboard，不建立第二套 Clipboard；
+- 保存方案保留当前材质类别，避免自定义方案无法被左侧类型 Rail 筛选；
+- 增加 3 个创意工坊演示方案用于验证来源筛选，正式 Unity 后续替换为 Workshop / Mod 数据源；
+- Card 第二行增加来源 Badge，并继续保留极弱 BaseColor 细线和“类型 · 质感”；
+- 我的方案仍支持删除；
+- UI Review 增加来源筛选、组合筛选、Workspace Action、来源 Badge、保存 / 粘贴 / 删除完整流程。
