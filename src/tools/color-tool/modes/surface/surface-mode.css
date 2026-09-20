@@ -1,8 +1,8 @@
 /* Material Palette Tool — Surface Mode vertical slice.
    UI mirrors the MaterialSlotValue/MaterialSlotFlags semantic fields without becoming a raw Inspector. */
 
-.material-palette-surface{display:flex;flex-direction:column;gap:0}
-.material-palette-section .left-context-panel__section-title{margin-bottom:5px}
+.color-tool-surface{display:flex;flex-direction:column;gap:0}
+.color-tool-surface-section .left-context-panel__section-title{margin-bottom:5px}
 
 /* Surface scheme + color-card composition ----------------------------------- */
 .material-scheme-selector{
@@ -135,12 +135,12 @@
 /* Material Palette page stack ------------------------------------------------
    Surface and Color Editor share one Left Context host. Content rebind uses
    opacity + small translate only; no width/height animation. */
-.material-palette-page-host{
+.color-tool-surface-page-host{
   position:relative;
   min-width:0;
   overflow:hidden;
 }
-.material-palette-page{
+.color-tool-surface-page{
   width:100%;
   min-width:0;
   opacity:1;
@@ -149,16 +149,16 @@
   transition-duration:var(--wanhu-motion-surface,160ms),var(--wanhu-motion-surface,160ms);
   transition-timing-function:var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
 }
-.material-palette-page.is-outgoing{
+.color-tool-surface-page.is-outgoing{
   position:absolute;
   inset:0;
   pointer-events:none;
 }
-.material-palette-page.is-entering.is-forward{opacity:0;transform:translateX(12px)}
-.material-palette-page.is-exiting.is-forward{opacity:0;transform:translateX(-12px)}
-.material-palette-page.is-entering.is-back{opacity:0;transform:translateX(-12px)}
-.material-palette-page.is-exiting.is-back{opacity:0;transform:translateX(12px)}
-.material-palette-page.is-steady{opacity:1;transform:translateX(0)}
+.color-tool-surface-page.is-entering.is-forward{opacity:0;transform:translateX(12px)}
+.color-tool-surface-page.is-exiting.is-forward{opacity:0;transform:translateX(-12px)}
+.color-tool-surface-page.is-entering.is-back{opacity:0;transform:translateX(-12px)}
+.color-tool-surface-page.is-exiting.is-back{opacity:0;transform:translateX(12px)}
+.color-tool-surface-page.is-steady{opacity:1;transform:translateX(0)}
 
 /* Color editor --------------------------------------------------------------- */
 .material-color-editor{
@@ -321,10 +321,10 @@
 }
 
 /* Material footer ----------------------------------------------------------- */
-.material-palette-footer{
+.color-tool-surface-footer{
   gap:8px;
 }
-.material-palette-footer .material-footer-reset{
+.color-tool-surface-footer .material-footer-reset{
   flex:0 0 auto;
 }
 .material-footer-copy-group{
