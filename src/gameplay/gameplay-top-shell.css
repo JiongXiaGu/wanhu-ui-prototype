@@ -60,7 +60,7 @@
   position:relative;
   padding-left:12px;
   color:#a6a69d;
-  font-size:9.5px;
+  font-size:var(--wanhu-type-caption,10px);
   font-variant-numeric:tabular-nums;
   letter-spacing:.035em;
   white-space:nowrap;
@@ -95,7 +95,7 @@
 }
 .gameplay-screen .gameplay-top-status__resources>span:last-child{border-right:0}
 .gameplay-screen .gameplay-top-status__resources svg{width:15px;height:15px;opacity:.88;stroke-width:1.65}
-.gameplay-screen .gameplay-top-status__resources small{font-size:9.5px;letter-spacing:.018em}
+.gameplay-screen .gameplay-top-status__resources small{font-size:var(--wanhu-type-caption,10px);letter-spacing:.018em}
 .gameplay-screen .gameplay-top-status__resources b{
   margin-left:auto;
   color:var(--hud-text,#e5dfd4);
@@ -150,7 +150,7 @@
   border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
   border-radius:var(--hud-radius-sm,10px);
   box-shadow:0 8px 24px rgba(4,7,6,.28);
-  font-size:9px;
+  font-size:var(--wanhu-type-tooltip,10px);
   letter-spacing:.025em;
   transition:opacity var(--wanhu-motion-fast,100ms) ease,transform var(--wanhu-motion-fast,100ms) ease,visibility var(--wanhu-motion-fast,100ms) ease;
   transition-delay:0s;
@@ -285,14 +285,14 @@
   align-items:center;
   gap:8px;
   cursor:pointer;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   text-align:left;
 }
 .gameplay-top-map-grid button svg{width:14px;height:14px;stroke-width:1.55}
 .gameplay-top-map-grid button:hover{background:rgba(255,255,255,.034);color:#c7c5bc}
 .gameplay-top-map-grid button.is-active{border-color:rgba(201,165,95,.24);background:rgba(201,165,95,.07);color:#d8bb77}
 .gameplay-top-map-grid button.is-active::before{content:'';position:absolute;left:-1px;top:9px;bottom:9px;width:2px;background:#c9a55f}
-.gameplay-top-map-legend{height:24px;margin-top:8px;display:grid;grid-template-columns:18px 1fr 18px;align-items:center;gap:6px;color:#757d75;font-size:8px}
+.gameplay-top-map-legend{height:24px;margin-top:8px;display:grid;grid-template-columns:18px 1fr 18px;align-items:center;gap:6px;color:#757d75;font-size:var(--wanhu-type-micro,9.5px)}
 .gameplay-top-map-legend i{height:3px;background:linear-gradient(90deg,rgba(90,146,116,.8),rgba(198,176,91,.9),rgba(177,91,74,.92))}
 .gameplay-top-map-legend span:last-child{text-align:right}
 @keyframes gameplay-top-map-enter{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
