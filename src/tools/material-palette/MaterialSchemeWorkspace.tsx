@@ -51,13 +51,6 @@ function materialFinishLabel(smoothness: number) {
   return '光滑';
 }
 
-function materialPreviewClass(type: MaterialSchemeWorkspacePreset['type']) {
-  if (type === '木头') return 'is-wood';
-  if (type === '瓦片') return 'is-tile';
-  if (type === '墙面') return 'is-wall';
-  return 'is-custom';
-}
-
 function SchemeCard({
   preset,
   onApply,
@@ -68,7 +61,6 @@ function SchemeCard({
   onDelete: (id: string) => void;
 }) {
   const finishLabel = materialFinishLabel(preset.smoothness);
-  const previewLightOpacity = 0.09 + preset.smoothness * 0.2;
 
   return (
     <article
@@ -86,17 +78,16 @@ function SchemeCard({
         onClick={() => onApply(preset.id)}
       >
         <i className="workspace-item-card__state-line" aria-hidden="true" />
-        <div
-          className={'workspace-item-card__preview material-scheme-workspace__card-preview ' + materialPreviewClass(preset.type)}
-          style={{ backgroundColor: preset.colors[0] }}
-          aria-hidden="true"
-        >
-          <i className="material-scheme-workspace__card-preview-texture" />
-          <i className="material-scheme-workspace__card-preview-light" style={{ opacity: previewLightOpacity }} />
-        </div>
         <div className="workspace-item-card__copy material-scheme-workspace__card-copy">
           <b className="workspace-item-card__title">{preset.name}</b>
-          <span className="workspace-item-card__meta">{preset.type} · {finishLabel}</span>
+          <span className="workspace-item-card__meta material-scheme-workspace__card-meta">
+            <i
+              className="material-scheme-workspace__color-line"
+              style={{ backgroundColor: preset.colors[0] }}
+              aria-hidden="true"
+            />
+            <span>{preset.type} · {finishLabel}</span>
+          </span>
         </div>
       </button>
       {preset.source === 'custom' && (
