@@ -851,20 +851,27 @@ export function MaterialPaletteOverlay({
     setCurrentFamily(family);
     setCustomPresets((current) => [...current, preset]);
     setCurrentScheme({ id: preset.id, family, name, source: 'saved' });
+    return preset.id;
   }
 
-  function renameCustomPreset(id: string, name: string) {
-    setCustomPresets((current) => current.map((preset) => preset.id === id ? { ...preset, name } : preset));
-    if (currentScheme.id === id) {
-      setCurrentScheme((current) => ({ ...current, name }));
-    }
-  }
+  function updateCustomPresetMetadata(id: string, patch: { name?: string; family?: MaterialFamily }) {
+    setCustomPresets((current) => current.map((preset) => (
+      preset.id === id
+        ? {
+            ...preset,
+            name: patch.name ?? preset.name,
+            family: patch.family ?? preset.family,
+          }
+        : preset
+    )));
 
-  function moveCustomPreset(id: string, family: MaterialFamily) {
-    setCustomPresets((current) => current.map((preset) => preset.id === id ? { ...preset, family } : preset));
     if (currentScheme.id === id) {
-      setCurrentFamily(family);
-      setCurrentScheme((current) => ({ ...current, family }));
+      if (patch.family) setCurrentFamily(patch.family);
+      setCurrentScheme((current) => ({
+        ...current,
+        name: patch.name ?? current.name,
+        family: patch.family ?? current.family,
+      }));
     }
   }
 
@@ -1024,8 +1031,7 @@ export function MaterialPaletteOverlay({
         onPasteCurrent={() => {
           if (surfaceClipboard) replaceDraft(surfaceClipboard);
         }}
-        onRename={renameCustomPreset}
-        onMove={moveCustomPreset}
+        onUpdateMetadata={updateCustomPresetMetadata}
         onCopy={copyCustomPreset}
         onDelete={(id) => {
           const preset = customPresets.find((entry) => entry.id === id);
