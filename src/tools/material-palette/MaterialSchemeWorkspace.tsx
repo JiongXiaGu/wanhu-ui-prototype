@@ -44,6 +44,20 @@ function pageItems<T>(items: readonly T[], page: number) {
   return items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 }
 
+function materialFinishLabel(smoothness: number) {
+  if (smoothness < 0.2) return '粗糙';
+  if (smoothness < 0.32) return '哑光';
+  if (smoothness < 0.5) return '偏哑光';
+  return '光滑';
+}
+
+function materialPreviewClass(type: MaterialSchemeWorkspacePreset['type']) {
+  if (type === '木头') return 'is-wood';
+  if (type === '瓦片') return 'is-tile';
+  if (type === '墙面') return 'is-wall';
+  return 'is-custom';
+}
+
 function SchemeCard({
   preset,
   onApply,
@@ -53,23 +67,35 @@ function SchemeCard({
   onApply: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
+  const finishLabel = materialFinishLabel(preset.smoothness);
+  const previewLightOpacity = 0.09 + preset.smoothness * 0.2;
+
   return (
-    <article className={'material-scheme-workspace__card ' + (preset.selected ? 'is-selected' : '')}>
+    <article
+      className={[
+        'material-scheme-workspace__card',
+        preset.selected ? 'is-selected' : '',
+        preset.source === 'custom' ? 'has-delete' : '',
+      ].filter(Boolean).join(' ')}
+    >
       <button
         type="button"
         className="material-scheme-workspace__card-apply"
         aria-label={'应用材质方案 ' + preset.type + ' · ' + preset.name}
         onClick={() => onApply(preset.id)}
       >
-        <span className="material-scheme-workspace__card-head">
+        <span
+          className={'material-scheme-workspace__card-preview ' + materialPreviewClass(preset.type)}
+          style={{ backgroundColor: preset.colors[0] }}
+          aria-hidden="true"
+        >
+          <i className="material-scheme-workspace__card-preview-texture" />
+          <i className="material-scheme-workspace__card-preview-light" style={{ opacity: previewLightOpacity }} />
+        </span>
+        <span className="material-scheme-workspace__card-copy">
           <span className="material-scheme-workspace__card-meta">{preset.type}</span>
           <b>{preset.name}</b>
-        </span>
-        <span className="material-scheme-workspace__card-swatches" aria-hidden="true">
-          {preset.colors.map((color, index) => <i key={index} style={{ background: color }} />)}
-        </span>
-        <span className="material-scheme-workspace__card-detail">
-          {preset.workflow} · 光滑 {preset.smoothness.toFixed(2)} · 铺贴 {preset.textureTiling.toFixed(1)}
+          <span className="material-scheme-workspace__card-detail">{finishLabel}</span>
         </span>
       </button>
       {preset.source === 'custom' && (
