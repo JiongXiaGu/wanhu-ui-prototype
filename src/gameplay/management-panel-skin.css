@@ -117,7 +117,7 @@
 .management-metric+.management-metric{border-left-color:var(--management-rule)}
 .management-metric small{color:var(--management-faint);font-size:var(--wanhu-type-caption,10px)}
 .management-metric strong{color:var(--management-paper);font-size:21px;font-weight:590}
-.management-metric em{color:var(--management-topic-accent);font-size:8.5px}
+.management-metric em{color:var(--management-topic-accent);font-size:var(--wanhu-type-micro,9.5px)}
 
 .management-overview-grid,.management-finance-layout{height:calc(100% - 102px)}
 .management-section{border-top-color:var(--management-rule-strong);background:transparent}
@@ -128,7 +128,7 @@
 }
 .management-section__title b{color:#c5c1b8;font-size:11px;font-weight:560}
 .management-section__title>i{background:linear-gradient(90deg,var(--management-rule-strong),transparent 88%)}
-.management-section__title>span{color:#7f8481;font-size:8.5px}
+.management-section__title>span{color:#7f8481;font-size:var(--wanhu-type-micro,9.5px)}
 
 .management-task-list{padding:2px 12px 12px}
 .management-task-row{min-height:80px;border-bottom-color:var(--management-rule);border-radius:8px;padding:10px 8px}
