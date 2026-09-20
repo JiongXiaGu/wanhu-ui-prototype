@@ -15,7 +15,8 @@
 7. `Documentation/UI Motion System设计规范.md`
 8. `Documentation/Unity UI Toolkit迁移准备清单.md`
 9. `Documentation/UI图标资产管线.md`
-10. 当前任务相关规范、开发记录与代码
+10. `Documentation/UI Typography与Icon尺寸规范.md`
+11. 当前任务相关规范、开发记录与代码
 
 不要只根据截图或当前对话直接改代码；先确认已有状态边界、样式所有权和 Unity 映射。
 
@@ -63,7 +64,8 @@ Web 可以继续高效使用 React / TypeScript，但不得新增会绑死 Web �
 - 有语义的状态线、Pager Marker、Overlay 等优先使用真实元素，不新增结构性 `::before / ::after`；
 - UI Icon 正式规则见 `Documentation/UI图标资产管线.md`：SVG 只作为 Source Master，64×64 PNG 是 Web / Unity 共用 Runtime Asset；
 - UI Icon Runtime 已完成 PNG 化：`src/` 禁止直接依赖 `lucide-react`，也禁止重新引入 `LucideIcon`；Lucide 仅允许存在于 `scripts/icons/` Source Generator；
-- 新图标先加入 Source List，执行 `npm run icons:build`，并通过 `npm run icons:check`；重要图标变化必须走 UI Review。
+- 新图标先加入 Source List，执行 `npm run icons:build`，并通过 `npm run icons:check`；重要图标变化必须走 UI Review；
+- Typography / Icon Size 正式规则见 `Documentation/UI Typography与Icon尺寸规范.md`：1080p 可读文字下限为 9.5px，常规交互文字优先 10–11px；普通 Icon 使用 14/16/18/20/24px 语义档位。
 
 `npm run audit:unity` 会阻止新的高风险模式，并输出仍待迁移的 Grid / Pseudo / Blur / Browser API 债务。
 
