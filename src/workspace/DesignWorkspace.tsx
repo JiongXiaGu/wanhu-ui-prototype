@@ -389,7 +389,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                       return (
                         <button
                           type="button"
-                          className={`design-item-card ${buildingCompatibilityCardClass}`.trim()}
+                          className={`workspace-item-card design-item-card ${buildingCompatibilityCardClass}`.trim()}
                           key={item.id}
                           data-item-id={item.id}
                           aria-describedby={inspectorOpenForItem ? 'design-asset-inspector' : undefined}
@@ -402,10 +402,11 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                           onBlur={(event) => inspector.hideFocus(event.currentTarget)}
                           onClick={() => selectItem(item)}
                         >
-                          <div className={`card-thumb card-thumb--${item.tone}`} aria-hidden="true" />
-                          <div className={`design-item-card__copy ${definition.id === 'building' ? 'building-card__copy' : ''}`}>
-                            <b>{item.name}</b>
-                            <span>{item.meta}</span>
+                          <i className="workspace-item-card__state-line" aria-hidden="true" />
+                          <div className={`workspace-item-card__preview card-thumb card-thumb--${item.tone}`} aria-hidden="true" />
+                          <div className={`workspace-item-card__copy design-item-card__copy ${definition.id === 'building' ? 'building-card__copy' : ''}`}>
+                            <b className="workspace-item-card__title">{item.name}</b>
+                            <span className="workspace-item-card__meta">{item.meta}</span>
                           </div>
                         </button>
                       );
