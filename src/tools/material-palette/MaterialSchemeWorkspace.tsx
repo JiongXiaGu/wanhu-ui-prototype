@@ -27,7 +27,7 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 8;
 
 const SYSTEM_CATEGORIES: readonly {
   id: MaterialSchemeWorkspaceCategory;
@@ -80,23 +80,24 @@ function SchemeCard({
     >
       <button
         type="button"
-        className="material-scheme-workspace__card-apply"
+        className="workspace-item-card material-scheme-workspace__card-apply"
         aria-label={'应用材质方案 ' + preset.type + ' · ' + preset.name}
+        aria-pressed={preset.selected}
         onClick={() => onApply(preset.id)}
       >
-        <span
-          className={'material-scheme-workspace__card-preview ' + materialPreviewClass(preset.type)}
+        <i className="workspace-item-card__state-line" aria-hidden="true" />
+        <div
+          className={'workspace-item-card__preview material-scheme-workspace__card-preview ' + materialPreviewClass(preset.type)}
           style={{ backgroundColor: preset.colors[0] }}
           aria-hidden="true"
         >
           <i className="material-scheme-workspace__card-preview-texture" />
           <i className="material-scheme-workspace__card-preview-light" style={{ opacity: previewLightOpacity }} />
-        </span>
-        <span className="material-scheme-workspace__card-copy">
-          <span className="material-scheme-workspace__card-meta">{preset.type}</span>
-          <b>{preset.name}</b>
-          <span className="material-scheme-workspace__card-detail">{finishLabel}</span>
-        </span>
+        </div>
+        <div className="workspace-item-card__copy material-scheme-workspace__card-copy">
+          <b className="workspace-item-card__title">{preset.name}</b>
+          <span className="workspace-item-card__meta">{preset.type} · {finishLabel}</span>
+        </div>
       </button>
       {preset.source === 'custom' && (
         <button
@@ -166,7 +167,7 @@ export function MaterialSchemeWorkspace({
   const pageCount = Math.max(1, Math.ceil(activeItems.length / PAGE_SIZE));
   const safePage = Math.min(activePage, pageCount - 1);
   const visibleItems = pageItems(activeItems, safePage);
-  const rows = [visibleItems.slice(0, 3), visibleItems.slice(3, 6)].filter((row) => row.length > 0);
+  const rows = [visibleItems.slice(0, 4), visibleItems.slice(4, 8)].filter((row) => row.length > 0);
 
   function selectWorkspacePage(next: MaterialSchemeWorkspacePage) {
     setWorkspacePage(next);
@@ -231,40 +232,39 @@ export function MaterialSchemeWorkspace({
 
       <div className="workspace-body material-scheme-workspace__body">
         <aside className="workspace-primary-rail material-scheme-workspace__rail" aria-label="材质方案分类">
-          {workspacePage === 'system' ? (
-            <div className="material-scheme-workspace__rail-list">
-              {SYSTEM_CATEGORIES.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  className={category === id ? 'is-active' : ''}
-                  onClick={() => selectCategory(id)}
-                >
-                  <Icon aria-hidden="true" />
-                  <span>{label}</span>
-                </button>
-              ))}
+          <div className="workspace-primary-rail__content">
+            <span className="workspace-rail-pager-marker" aria-hidden="true" />
+            <div className="workspace-primary-rail__page material-scheme-workspace__rail-list">
+              {workspacePage === 'system' ? (
+                SYSTEM_CATEGORIES.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={category === id ? 'is-active' : ''}
+                    aria-pressed={category === id}
+                    onClick={() => selectCategory(id)}
+                  >
+                    <Icon aria-hidden="true" />
+                    <span>{label}</span>
+                  </button>
+                ))
+              ) : (
+                <>
+                  <button type="button" className="is-active" aria-pressed="true">
+                    <Bookmark aria-hidden="true" />
+                    <span>已保存</span>
+                  </button>
+                  <button type="button" className="material-scheme-workspace__save" onClick={saveCurrent}>
+                    <Save aria-hidden="true" />
+                    <span>保存当前</span>
+                  </button>
+                </>
+              )}
             </div>
-          ) : (
-            <div className="material-scheme-workspace__rail-list">
-              <button type="button" className="is-active">
-                <Bookmark aria-hidden="true" />
-                <span>已保存</span>
-              </button>
-              <button type="button" className="material-scheme-workspace__save" onClick={saveCurrent}>
-                <Save aria-hidden="true" />
-                <span>保存当前</span>
-              </button>
-            </div>
-          )}
+          </div>
         </aside>
 
         <div className="workspace-catalog material-scheme-workspace__catalog">
-          <div className="material-scheme-workspace__summary">
-            <span>{workspacePage === 'system' ? category : '我的方案'}</span>
-            <b>{activeItems.length} 个方案</b>
-          </div>
-
           <div className="workspace-content-stage material-scheme-workspace__stage">
             {visibleItems.length > 0 ? (
               <div className="workspace-content-rows material-scheme-workspace__rows">
