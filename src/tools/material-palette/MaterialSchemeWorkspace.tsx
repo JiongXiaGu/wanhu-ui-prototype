@@ -480,7 +480,7 @@ export function MaterialSchemeWorkspace({
 
   return (
     <section
-      className={'workspace workspace--design workspace--material-scheme material-scheme-workspace motion-bottom-surface is-' + motionPhase + (draggingPreset ? ' is-dragging-preset' : '')}
+      className={'workspace workspace--catalog workspace--material-scheme material-scheme-workspace motion-bottom-surface is-' + motionPhase + (draggingPreset ? ' is-dragging-preset' : '')}
       aria-label="材质方案工作区"
       aria-busy={motionPhase !== 'steady'}
       data-material-scheme-source={source}
