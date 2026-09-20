@@ -7,8 +7,9 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
-import { Check, ChevronDown, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useDialogSystem } from './dialog/DialogSystem';
+import { UiIcon } from './icons/UiIcon';
 
 export function SegmentedControl({ items, active, onChange }: { items: string[]; active: string; onChange?: (value: string) => void }) {
   return (
@@ -225,7 +226,7 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
         onClick={() => open ? setOpen(false) : openMenu()}
         onKeyDown={handleKeyDown}
       >
-        <span>{value}</span><ChevronDown size={14} />
+        <span>{value}</span><UiIcon icon="chevron-down" size={14} className="ui-select__chevron-icon" />
       </button>
       {open && (
         <div className="ui-select__menu" role="listbox" aria-label={ariaLabel}>
@@ -239,7 +240,7 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
               onMouseEnter={() => setHighlighted(index)}
               onClick={() => choose(option)}
             >
-              <span>{option}</span>{option === value && <Check size={13} />}
+              <span>{option}</span>{option === value && <UiIcon icon="check" size={13} className="ui-select__check-icon" />}
             </button>
           ))}
         </div>
