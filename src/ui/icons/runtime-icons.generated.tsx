@@ -2,7 +2,7 @@
 import { createUiIconComponent } from './UiIcon';
 import type { UiIconComponent } from './icon-types';
 
-export type { UiIconComponent as LucideIcon } from './icon-types';
+export type { UiIconComponent } from './icon-types';
 
 export const ArrowLeft: UiIconComponent = createUiIconComponent('arrow-left');
 export const ArrowLeftRight: UiIconComponent = createUiIconComponent('arrow-left-right');
