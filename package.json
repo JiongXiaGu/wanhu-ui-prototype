@@ -10,7 +10,8 @@
     "audit:unity": "node scripts/audit-unity-migration.mjs",
     "check": "npm run icons:check && npm run audit:unity && npm run build",
     "icons:build": "node scripts/icons/build-icon-assets.mjs",
-    "icons:check": "node scripts/icons/check-icon-assets.mjs"
+    "icons:check": "node scripts/icons/check-icon-assets.mjs",
+    "audit:scale": "node scripts/audit-ui-scale.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
