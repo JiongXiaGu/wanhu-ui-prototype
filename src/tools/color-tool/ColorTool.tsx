@@ -26,6 +26,8 @@ interface Props {
  *
  * GameplayScreen owns only Tool presence. This shell owns which internal mode
  * is mounted and guarantees the same bottom dock persists across mode changes.
+ * Shared panels, controls and catalog contracts stay data-agnostic; Mode
+ * controllers bind business identifiers and draft data at the feature boundary.
  */
 export function ColorTool({
   state,
