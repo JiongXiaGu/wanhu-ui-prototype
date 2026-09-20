@@ -7,7 +7,6 @@ import {
   ChevronRight,
   ClipboardPaste,
   Copy,
-  Palette,
   RotateCcw,
 } from 'lucide-react';
 import { RuntimeParameterRow } from '../../../../ui/Controls';
@@ -732,7 +731,7 @@ export function SurfaceModeOverlay({
     <>
     <PlacementContextPanel
       ariaLabel={activeColorTarget ? `调整${currentDefinition?.label ?? '颜色'}` : '配色工具表面模式参数'}
-      icon={Palette}
+      icon="palette"
       title={headerTitle}
       subtitle={headerSubtitle}
       closeLabel="退出配色工具"
