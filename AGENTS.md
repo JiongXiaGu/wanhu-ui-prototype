@@ -14,7 +14,8 @@
 6. `Documentation/UI Toolkit落地规范.md`
 7. `Documentation/UI Motion System设计规范.md`
 8. `Documentation/Unity UI Toolkit迁移准备清单.md`
-9. 当前任务相关规范、开发记录与代码
+9. `Documentation/UI图标资产管线.md`
+10. 当前任务相关规范、开发记录与代码
 
 不要只根据截图或当前对话直接改代码；先确认已有状态边界、样式所有权和 Unity 映射。
 
@@ -60,7 +61,8 @@ Web 可以继续高效使用 React / TypeScript，但不得新增会绑死 Web �
 - UI 结构不能依赖 DOM 查询结果来推断业务状态；
 - 新复杂 Grid 必须能够明确拆成 UXML/Flex 行列；优先直接使用 Flex-friendly DOM；
 - 有语义的状态线、Pager Marker、Overlay 等优先使用真实元素，不新增结构性 `::before / ::after`；
-- Lucide 只作为 Web Source Icon Library；Unity 不依赖 `lucide-react` Runtime。
+- UI Icon 正式规则见 `Documentation/UI图标资产管线.md`：SVG 只作为 Source Master，64×64 PNG 是 Web / Unity 共用 Runtime Asset；
+- 现阶段 Lucide 只作为图标源和过渡期 Runtime；PNG Pilot 通过后，Shared / Business Contract 改用 `UiIconId`，最终 Runtime 禁止直接依赖 `lucide-react`。
 
 `npm run audit:unity` 会阻止新的高风险模式，并输出仍待迁移的 Grid / Pseudo / Blur / Browser API 债务。
 
