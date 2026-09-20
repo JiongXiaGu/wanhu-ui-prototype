@@ -834,6 +834,22 @@ for (const category of ['全部', '木头', '瓦片', '墙面']) {
 if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 6) {
   throw new Error('System Scheme first page should use the 2x3 Workspace card pool.');
 }
+if ((await schemeWorkspace.locator('.material-scheme-workspace__card-preview').count()) !== 6) {
+  throw new Error('Each Scheme Card should expose one dominant material preview sample.');
+}
+if (await schemeWorkspace.locator('.material-scheme-workspace__card-swatches').count()) {
+  throw new Error('Scheme Cards must not regress to the four-color swatch strip.');
+}
+const firstPageDetails = schemeWorkspace.locator('.material-scheme-workspace__card-detail');
+if ((await firstPageDetails.count()) !== 6) {
+  throw new Error('Each Scheme Card should expose one concise finish label.');
+}
+for (let index = 0; index < await firstPageDetails.count(); index += 1) {
+  const detail = (await firstPageDetails.nth(index).textContent()) ?? '';
+  if (/\d/.test(detail) || /铺贴|纹理/.test(detail)) {
+    throw new Error('Scheme Card detail must stay player-facing and free of numeric/texture-density metadata: ' + detail);
+  }
+}
 if ((await schemeWorkspace.locator('.material-scheme-workspace__pager button').count()) !== 2) {
   throw new Error('Nine system presets should produce a two-page Workspace pager.');
 }
