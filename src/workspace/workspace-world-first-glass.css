@@ -1,6 +1,7 @@
-/* Design Workspace component skin.
-   Material/elevation belong to wanhu-surface-system.css.
-   This file owns Workspace geometry, foreground hierarchy and local interaction states. */
+/* Shared Catalog Workspace foreground skin.
+   Design and Material Scheme both consume .workspace--catalog; business-specific
+   cards/actions stay in their own stylesheets. Surface material remains owned by
+   wanhu-surface-system.css. */
 
 .gameplay-screen .workspace--catalog{
   --workspace-paper:var(--wanhu-color-paper-primary,#eee9df);
