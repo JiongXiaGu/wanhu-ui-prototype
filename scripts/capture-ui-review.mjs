@@ -1305,6 +1305,31 @@ for (const label of ['亮度', '范围']) {
 if ((await lightPanel.getByRole('button', { name: '调整灯光颜色', exact: true }).count()) !== 1) {
   throw new Error('Selected Light panel should expose HDR color editing.');
 }
+const lightColorField = lightPanel.locator('.ui-color-parameter-field[data-color-parameter-hdr="true"]');
+if ((await lightColorField.count()) !== 1) {
+  throw new Error('Light parameters should consume the shared HDR ColorParameterField.');
+}
+if (await lightPanel.locator('.light-adjustment-color-row').count()) {
+  throw new Error('Light Adjustment must not keep its retired private color-row implementation.');
+}
+const lightColorControl = lightColorField.locator('.ui-color-parameter-field__control');
+const lightHdrBadge = lightColorControl.locator('.ui-color-parameter-field__hdr');
+if ((await lightHdrBadge.getByText('HDR', { exact: true }).count()) !== 1) {
+  throw new Error('HDR status must render inside the shared color bar.');
+}
+const lightColorControlBox = await lightColorControl.boundingBox();
+const firstLightNumericField = lightPanel.locator('.ui-numeric-slider-field').first();
+const firstLightNumericBox = await firstLightNumericField.boundingBox();
+const lightHdrBadgeBox = await lightHdrBadge.boundingBox();
+if (!lightColorControlBox || !firstLightNumericBox || !lightHdrBadgeBox
+  || Math.abs(lightColorControlBox.x - firstLightNumericBox.x) > 1
+  || Math.abs(lightColorControlBox.width - firstLightNumericBox.width) > 1) {
+  throw new Error('Shared ColorParameterField must align with the NumericSliderField control column. color=' + JSON.stringify(lightColorControlBox) + ' slider=' + JSON.stringify(firstLightNumericBox));
+}
+if (lightHdrBadgeBox.x < lightColorControlBox.x
+  || lightHdrBadgeBox.x + lightHdrBadgeBox.width > lightColorControlBox.x + lightColorControlBox.width) {
+  throw new Error('HDR badge must stay inside the color preview bar.');
+}
 await page.screenshot({ path: outDir + '/light-adjustment-02-selected-parameters.png' });
 
 await lightPanel.getByRole('button', { name: '调整灯光颜色', exact: true }).click();
