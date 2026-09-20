@@ -271,7 +271,7 @@ export function ToggleSwitch({ label, value, disabled = false, className = '', o
 }
 
 export function InputBindingField({ ariaLabel, value, disabled = false, className = '', onClick }: { ariaLabel: string; value: string; disabled?: boolean; className?: string; onClick: () => void }) {
-  return <button type="button" className={`ui-binding-field ${!value ? 'is-empty' : ''} ${className}`.trim()} aria-label={ariaLabel} disabled={disabled} onClick={onClick}>{value ? <kbd>{value}</kbd> : <span className="ui-binding-field__empty"><Plus size={12} />添加</span>}</button>;
+  return <button type="button" className={`ui-binding-field ${!value ? 'is-empty' : ''} ${className}`.trim()} aria-label={ariaLabel} disabled={disabled} onClick={onClick}>{value ? <kbd>{value}</kbd> : <span className="ui-binding-field__empty"><Plus size={14} />添加</span>}</button>;
 }
 
 export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function TextInput({ className = '', ...props }, ref) {
