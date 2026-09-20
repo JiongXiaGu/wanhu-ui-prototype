@@ -435,12 +435,25 @@
 }
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__content{
-  padding-left:14px;
+  /* Pager width is 8px; keep a real 14px gutter before the Rail Item lane.
+     The previous 14px padding left only ~4–6px visible separation once the
+     5px active page dot expanded, so page state visually collided with the
+     selected item's 2px state line. */
+  padding-left:22px;
 }
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__page{
   gap:2px;
 }
+
+.gameplay-screen .workspace--catalog .workspace-rail-pager{
+  width:8px;
+}
+
+.gameplay-screen .workspace--catalog .workspace-rail-pager button{
+  width:8px;
+}
+
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__page>button{
   height:29px;
