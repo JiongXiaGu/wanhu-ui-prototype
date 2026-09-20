@@ -260,3 +260,27 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - 删除使用共享 Confirm Dialog；
 - Dialog System 新增通用 ChoiceInput Dialog，用于“文本 + 单选分类”表单；
 - Toast System 增加可选 Action，用于撤销等短生命周期操作。
+
+
+## Material Family 分类体系定型
+
+材质方案分类从“木头 / 瓦片 / 墙面”升级为真正的 Material Family：
+
+- wood / stone / metal / masonry / plaster-earth / fabric / glass / lacquer / other；
+- 中文显示：木材 / 石材 / 金属 / 砖瓦 / 灰泥 / 土 / 布料 / 玻璃 / 漆饰 / 其他；
+- “全部”只作为 Filter；
+- 左 Rail 使用两页分类 Pager；
+- 原木头方案迁到 wood，瓦片迁到 masonry，墙面迁到 plaster-earth；
+- MaterialPreset 数据字段由 type 改为 family；
+- CurrentCategory 改为 CurrentFamily；
+- 左侧当前方案显示 Family 中文名。
+
+Card 信息架构同步调整：
+
+- 来源 Badge 从第二行移到第一行右上；
+- 第二行只保留 BaseColor 细线 + Family · Finish；
+- 我的方案菜单的分类按钮从一级菜单移除；
+- 一级菜单改为“重命名 / 移动分类… / 复制参数 / 删除”；
+- “移动分类…”进入独立二级可滚动 Family Picker；
+- Save Dialog 的分类从横向 Radio 改为 Dropdown；
+- Drag Drop 只处理当前 Rail 页可见 Family，跨页移动使用 Picker。
