@@ -7,7 +7,7 @@
 .road-placement-summary p{
   margin:2px 0 0;
   color:#7f8780;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   line-height:1.7;
 }
 .road-placement-summary__metrics{
@@ -16,7 +16,7 @@
   align-items:center;
   gap:14px;
   color:#858c84;
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   font-variant-numeric:tabular-nums;
 }
 .road-placement-summary__metrics b{
