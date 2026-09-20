@@ -301,3 +301,22 @@ Card 信息架构同步调整：
 - 使用局部 Card Reveal Highlight 作为完成反馈；
 - 保存新方案同样自动进入我的方案 + 新 Family，并定位新 Card；
 - Source Filter 在 Edit / Drag Move 时保持不变。
+
+
+## Catalog Rail USS/CSS 共享与状态语义清理
+
+对建筑 Workspace 与 MaterialSchemeWorkspace 的 Primary Rail 做结构审查后，确认问题不是 Pager 必须换左右 Lane，而是 Selected 与 Rail Page 曾同时使用熟铜长线，材质分类位于中段时容易误读为两条 Selected Indicator。
+
+本轮调整：
+
+- 新增共享 `workspace--catalog` Contract；
+- DesignWorkspace = `workspace--catalog workspace--design`；
+- MaterialSchemeWorkspace = `workspace--catalog workspace--material-scheme`，不再伪装成 `workspace--design`；
+- Design 原先的 compact Header / Rail / Filter / 4×2 Content / Pager 几何迁回 `workspace.css` 共享所有权；
+- `design-workspace.css` 只保留 Design Host 宽度特例；
+- `wanhu-surface-system.css` 与 `workspace-world-first-glass.css` 的共享 Surface / Rail / Filter 皮肤改由 `workspace--catalog` 消费；
+- Category Selected 继续使用熟铜短竖线；
+- Rail Pager Active 从熟铜长竖线改为中性亮灰圆点，普通页为暗灰小点；
+- 单页 Rail Marker 同样改为中性灰圆点；
+- Content Pager 仍可使用熟铜 Current Page，不与 Rail Selection 竞争；
+- UI Review 同时检查 Building / Material Rail 几何一致性，并验证“楼阁 / 金属”等中段 Selected 与 Pager Tone 不相同。
