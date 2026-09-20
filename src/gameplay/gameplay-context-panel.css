@@ -39,7 +39,7 @@
 }
 .left-context-panel__heading-copy>span{
   color:#888d8a;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   line-height:1;
   letter-spacing:.035em;
   white-space:nowrap;
