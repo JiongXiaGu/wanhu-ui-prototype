@@ -243,7 +243,7 @@
   z-index:20;
   top:4px;
   right:4px;
-  width:166px;
+  width:146px;
   padding:4px;
   overflow:hidden;
   border:1px solid rgba(238,233,223,.085);
@@ -278,43 +278,6 @@
 .material-scheme-workspace__card-menu>button.is-danger{color:#bd867c}
 .material-scheme-workspace__card-menu>button.is-danger:hover{background:rgba(152,84,71,.075);color:#dda096}
 .material-scheme-workspace__card-menu>button svg{width:12px;height:12px;stroke-width:1.7}
-
-.material-scheme-workspace__move-back{
-  border-bottom:1px solid rgba(238,233,223,.050)!important;
-  border-radius:5px 5px 0 0!important;
-  color:#c0bcb3!important;
-}
-.material-scheme-workspace__move-list{
-  max-height:78px;
-  padding:3px 0 1px;
-  overflow-y:auto;
-}
-.material-scheme-workspace__move-list>button{
-  width:100%;
-  height:25px;
-  padding:0 8px;
-  display:flex;
-  align-items:center;
-  border:0;
-  border-radius:5px;
-  background:transparent;
-  color:#969b95;
-  font:inherit;
-  font-size:8.5px;
-  text-align:left;
-  cursor:pointer;
-}
-.material-scheme-workspace__move-list>button:hover:not(:disabled){
-  background:rgba(255,255,255,.040);
-  color:#d0ccc3;
-}
-.material-scheme-workspace__move-list>button.is-current,
-.material-scheme-workspace__move-list>button:disabled{
-  background:rgba(169,132,75,.050);
-  color:#a99570;
-  opacity:.62;
-  cursor:default;
-}
 
 .material-scheme-workspace.is-dragging-preset .material-scheme-workspace__rail-list>button{
   transition-property:background,color,opacity,box-shadow;
@@ -358,6 +321,10 @@
 }
 .material-scheme-workspace__card.is-selected .workspace-item-card__state-line{
   opacity:.82;
+}
+.material-scheme-workspace__card.is-revealed .workspace-item-card{
+  background:rgba(169,132,75,.080);
+  box-shadow:inset 0 0 0 1px rgba(189,153,89,.14);
 }
 .material-scheme-workspace__card-copy{
   gap:6px;
