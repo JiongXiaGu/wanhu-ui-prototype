@@ -31,7 +31,7 @@ import './tools/city-wall-gate/city-wall-gate.css';
 import './tools/city-wall-access-stair/city-wall-access-stair.css';
 import './tools/city-wall-transition-stair/city-wall-transition-stair.css';
 import './tools/color-tool/modes/surface/surface-mode.css';
-import './tools/color-tool/modes/surface/material-scheme-workspace.css';
+import './tools/color-tool/modes/surface/material-preset-workspace.css';
 import './tools/color-tool/modes/lighting/lighting-mode.css';
 import './tools/color-tool/modes/scheme/scheme-mode.css';
 import './tools/color-tool/modes/scheme/building-scheme-workspace.css';
