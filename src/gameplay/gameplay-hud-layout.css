@@ -105,7 +105,7 @@
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-connected"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-access-stair"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-transition-stair"]{width:var(--hud-tool-tools-width)}
-.gameplay-screen > .context-utility-toolbar[data-utility-context="material-palette"]{width:108px}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="color-tool"]{width:108px}
 
 .gameplay-screen .gameplay-operation-hints{
   right:var(--hud-edge);
