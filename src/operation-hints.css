@@ -83,7 +83,7 @@
 
 .operation-hints__binding i{
   color:#606860;
-  font-size:8px;
+  font-size:var(--wanhu-type-micro,9.5px);
   font-style:normal;
 }
 
@@ -97,7 +97,7 @@
   min-width:0;
   overflow:hidden;
   color:#8f968e;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   text-overflow:ellipsis;
   white-space:nowrap;
 }
