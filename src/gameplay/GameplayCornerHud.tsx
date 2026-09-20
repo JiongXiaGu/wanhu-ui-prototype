@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { Menu } from 'lucide-react';
+import { Menu } from '../ui/icons/runtime-icons.generated';
 
 interface CompassHudProps {
   headingDegrees?: number;

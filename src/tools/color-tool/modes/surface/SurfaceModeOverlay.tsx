@@ -8,7 +8,7 @@ import {
   ClipboardPaste,
   Copy,
   RotateCcw,
-} from 'lucide-react';
+} from '../../../../ui/icons/runtime-icons.generated';
 import { RuntimeParameterRow } from '../../../../ui/Controls';
 import { LeftContextSection } from '../../../../ui/LeftContextPanel';
 import { ColorEditorPage, type ColorEditorDefinition } from '../../../../ui/color/ColorEditorPage';

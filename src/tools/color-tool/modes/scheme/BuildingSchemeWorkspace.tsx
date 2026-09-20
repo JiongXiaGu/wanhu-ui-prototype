@@ -9,7 +9,7 @@ import {
   Sun,
   X,
   type LucideIcon,
-} from 'lucide-react';
+} from '../../../../ui/icons/runtime-icons.generated';
 import { useMemo, useState } from 'react';
 import type { MotionPhase } from '../../../../ui/motion';
 

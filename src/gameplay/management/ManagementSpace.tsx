@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X } from '../../ui/icons/runtime-icons.generated';
 import { FinanceManagementView, type TaxRates } from './FinanceManagementView';
 import { InventoryManagementView } from './InventoryManagementView';
 import { MANAGEMENT_PANELS, type ManagementSection } from './management-registry';

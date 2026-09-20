@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MousePointer2 } from 'lucide-react';
+import { MousePointer2 } from '../../../../ui/icons/runtime-icons.generated';
 import { RuntimeParameterRow } from '../../../../ui/Controls';
 import { LeftContextSection } from '../../../../ui/LeftContextPanel';
 import { ColorEditorPage } from '../../../../ui/color/ColorEditorPage';

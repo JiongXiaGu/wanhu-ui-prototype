@@ -1,4 +1,4 @@
-import { FolderOpen, LogOut, Play, Plus, Settings } from 'lucide-react';
+import { FolderOpen, LogOut, Play, Plus, Settings } from '../ui/icons/runtime-icons.generated';
 
 const menuItems = [
   { key: 'continue', title: '继续游戏', meta: '昭平城 · 第十二年秋', detail: '继续最近一次昭平城存档。', icon: Play },

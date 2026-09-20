@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Castle } from 'lucide-react';
+import { Castle } from '../../ui/icons/runtime-icons.generated';
 import type { CityWallConstructionMode, CityWallFacingSide } from '../../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';

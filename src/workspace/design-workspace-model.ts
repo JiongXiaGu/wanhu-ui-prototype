@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
 import {
   Bridge,
   Building2,
@@ -20,7 +20,7 @@ import {
   Store,
   Trees,
   Waves,
-} from 'lucide-react';
+} from '../ui/icons/runtime-icons.generated';
 import type { DesignDockCategory } from '../app/ui-state';
 
 export type DesignWorkspaceTone =

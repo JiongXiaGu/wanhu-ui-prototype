@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react';
+import { Check, X } from '../ui/icons/runtime-icons.generated';
 import { UiIconGlyph } from '../ui/icons/UiIcon';
 import type { UiIconSource } from '../ui/icons/icon-types';
 

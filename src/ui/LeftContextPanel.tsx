@@ -1,4 +1,4 @@
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw } from './icons/runtime-icons.generated';
 import type { ReactNode } from 'react';
 import { UiIcon, UiIconGlyph, type UiIconSource } from './icons/UiIcon';
 

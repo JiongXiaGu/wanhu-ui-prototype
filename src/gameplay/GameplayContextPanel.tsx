@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Camera, Cloud, CloudFog, CloudRain, CloudSnow, CloudSun, Sun } from 'lucide-react';
+import { Camera, Cloud, CloudFog, CloudRain, CloudSnow, CloudSun, Sun } from '../ui/icons/runtime-icons.generated';
 import type { ContextPanel } from '../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../ui/Controls';
 import { LeftContextModeFooter, LeftContextPanel, LeftContextSection } from '../ui/LeftContextPanel';

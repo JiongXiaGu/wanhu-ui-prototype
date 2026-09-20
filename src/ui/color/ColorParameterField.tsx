@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '../icons/runtime-icons.generated';
 
 export interface ColorParameterFieldProps {
   label: string;

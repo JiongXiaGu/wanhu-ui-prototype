@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
 import {
   Camera,
   ChevronsRight,
@@ -14,7 +14,7 @@ import {
   ShieldCheck,
   Store,
   Users,
-} from 'lucide-react';
+} from '../ui/icons/runtime-icons.generated';
 import type { ContextPanel, ManagementView, MapView, Speed } from '../app/ui-state';
 import { usePresence } from '../ui/motion';
 import { MANAGEMENT_PRIMARY_NAV, MANAGEMENT_STATUS_QUICK_ENTRIES } from './management/management-navigation';

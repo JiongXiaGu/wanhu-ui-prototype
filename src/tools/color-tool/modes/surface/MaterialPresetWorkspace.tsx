@@ -7,7 +7,7 @@ import {
   Pencil,
   Save,
   Trash2,
-} from 'lucide-react';
+} from '../../../../ui/icons/runtime-icons.generated';
 import { useDialogSystem } from '../../../../ui/dialog/DialogSystem';
 import { UiIcon, type UiIconId } from '../../../../ui/icons/UiIcon';
 import type { MotionPhase } from '../../../../ui/motion';

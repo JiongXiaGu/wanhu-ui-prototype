@@ -7,7 +7,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus } from './icons/runtime-icons.generated';
 import { useDialogSystem } from './dialog/DialogSystem';
 import { UiIcon } from './icons/UiIcon';
 

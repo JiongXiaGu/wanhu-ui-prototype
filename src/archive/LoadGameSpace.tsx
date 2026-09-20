@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, FolderOpen, Pencil, Trash2 } from 'lucide-react';
+import { ChevronLeft, FolderOpen, Pencil, Trash2 } from '../ui/icons/runtime-icons.generated';
 import { ToggleSwitch } from '../ui/Controls';
 import { useDialogSystem } from '../ui/dialog/DialogSystem';
 import { SaveEntryCard, type SaveCompatibility, type SaveEntryCardData, type SaveKind } from './SaveEntryCard';

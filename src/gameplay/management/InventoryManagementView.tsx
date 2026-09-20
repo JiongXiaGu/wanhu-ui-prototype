@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, Truck, Warehouse } from 'lucide-react';
+import { MapPin, Truck, Warehouse } from '../../ui/icons/runtime-icons.generated';
 import { CITY_WAREHOUSES, INVENTORY_RESOURCES, VILLAGE_STOCKS, type InventoryTab } from './prototype-data';
 
 export function InventoryManagementView() {

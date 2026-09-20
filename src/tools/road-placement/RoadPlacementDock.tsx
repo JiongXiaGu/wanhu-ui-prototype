@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react';
-import { ArrowLeftRight, Minus, Route, Sparkles } from 'lucide-react';
+import { ArrowLeftRight, Minus, Route, Sparkles } from '../../ui/icons/runtime-icons.generated';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import { PlacementActionBar, type PlacementModeGroup, type PlacementQuickAction } from '../placement/PlacementActionBar';
 import type { MotionPhase } from '../../ui/motion';

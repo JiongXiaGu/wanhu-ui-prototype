@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react';
-import { ArrowUpDown, RotateCcw, RotateCw } from 'lucide-react';
+import { ArrowUpDown, RotateCcw, RotateCw } from '../../ui/icons/runtime-icons.generated';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import type { MotionPhase } from '../../ui/motion';
 import { PlacementActionBar, type PlacementQuickAction } from '../placement/PlacementActionBar';

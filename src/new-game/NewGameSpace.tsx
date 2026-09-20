@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronLeft, Dices } from 'lucide-react';
+import { ChevronLeft, Dices } from '../ui/icons/runtime-icons.generated';
 import { useDialogSystem } from '../ui/dialog/DialogSystem';
 import './new-game-space.css';
 

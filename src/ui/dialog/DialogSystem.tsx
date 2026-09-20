@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Check, CircleX, Info, Trash2, TriangleAlert } from 'lucide-react';
+import { Check, CircleX, Info, Trash2, TriangleAlert } from '../icons/runtime-icons.generated';
 import { TextInput } from '../Controls';
 import { UiIcon } from '../icons/UiIcon';
 import { usePresence, type MotionPhase } from '../motion';

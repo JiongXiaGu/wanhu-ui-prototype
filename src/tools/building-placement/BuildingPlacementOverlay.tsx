@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2 } from 'lucide-react';
+import { Building2 } from '../../ui/icons/runtime-icons.generated';
 import type { AdjustmentMode, BuildingTerrainMode } from '../../app/ui-state';
 import { RuntimeParameterRow, SegmentedControl } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';

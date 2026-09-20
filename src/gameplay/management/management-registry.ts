@@ -1,5 +1,5 @@
-import type { LucideIcon } from 'lucide-react';
-import { Building2, Coins, Scale, ScrollText, Shield, Store, Users, Warehouse } from 'lucide-react';
+import type { LucideIcon } from '../../ui/icons/runtime-icons.generated';
+import { Building2, Coins, Scale, ScrollText, Shield, Store, Users, Warehouse } from '../../ui/icons/runtime-icons.generated';
 import type { ManagementView } from '../../app/ui-state';
 
 export type ManagementSection = Exclude<ManagementView, 'none'>;

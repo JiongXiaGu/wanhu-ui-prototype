@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Route } from 'lucide-react';
+import { Route } from '../../ui/icons/runtime-icons.generated';
 import type { RoadDrawMode } from '../../app/ui-state';
 import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';

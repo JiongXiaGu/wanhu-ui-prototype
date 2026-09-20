@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '../../ui/icons/runtime-icons.generated';
 import { MANAGEMENT_PANELS, type ManagementSection } from './management-registry';
 
 export function OverviewManagementView({ view }: { view: ManagementSection }) {

@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from 'react';
-import { DoorOpen } from 'lucide-react';
+import { DoorOpen } from '../../ui/icons/runtime-icons.generated';
 import type { CityWallGatePlacementMode } from '../../app/ui-state';
 import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';

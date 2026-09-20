@@ -1,5 +1,5 @@
 import { useState, type CSSProperties } from 'react';
-import { Route } from 'lucide-react';
+import { Route } from '../../ui/icons/runtime-icons.generated';
 import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import type { MotionPhase } from '../../ui/motion';

@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react';
-import { ArrowLeftRight, BoxSelect, CornerDownRight } from 'lucide-react';
+import { ArrowLeftRight, BoxSelect, CornerDownRight } from '../../ui/icons/runtime-icons.generated';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import type { MotionPhase } from '../../ui/motion';
 import { PlacementActionBar, type PlacementModeGroup, type PlacementQuickAction } from '../placement/PlacementActionBar';

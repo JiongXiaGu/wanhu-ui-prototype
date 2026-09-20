@@ -10,7 +10,7 @@ import {
   RotateCw,
   Ruler,
   Square,
-} from 'lucide-react';
+} from '../../ui/icons/runtime-icons.generated';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import { PlacementActionBar, type PlacementModeGroup, type PlacementQuickAction } from '../placement/PlacementActionBar';
 import type { MotionPhase } from '../../ui/motion';

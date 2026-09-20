@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
 import {
   Building2,
   Copy,
@@ -16,7 +16,7 @@ import {
   ShieldCheck,
   ScanLine,
   Undo2,
-} from 'lucide-react';
+} from '../ui/icons/runtime-icons.generated';
 import type { CityWallGatePlacementMode, Tool } from '../app/ui-state';
 
 export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';

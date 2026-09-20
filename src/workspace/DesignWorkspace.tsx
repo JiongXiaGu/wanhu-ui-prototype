@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type WheelEvent } from 'react';
-import { X } from 'lucide-react';
+import { X } from '../ui/icons/runtime-icons.generated';
 import {
   AssetInspectorPopover,
   useAssetInspector,

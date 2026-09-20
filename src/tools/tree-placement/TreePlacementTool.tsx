@@ -1,5 +1,5 @@
 import { useState, type Dispatch } from 'react';
-import { Brush, MousePointer2, Move, RotateCcw, RotateCw, Shuffle, Trash2, Trees } from 'lucide-react';
+import { Brush, MousePointer2, Move, RotateCcw, RotateCw, Shuffle, Trash2, Trees } from '../../ui/icons/runtime-icons.generated';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextPanel, LeftContextSection } from '../../ui/LeftContextPanel';

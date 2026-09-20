@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2, ChevronRight, MousePointer2 } from 'lucide-react';
+import { Building2, ChevronRight, MousePointer2 } from '../../../../ui/icons/runtime-icons.generated';
 import { RuntimeParameterRow } from '../../../../ui/Controls';
 import { LeftContextSection } from '../../../../ui/LeftContextPanel';
 import { usePresence, type MotionPhase } from '../../../../ui/motion';

@@ -9,7 +9,7 @@ import {
   Settings2,
   SlidersHorizontal,
   Speaker,
-} from 'lucide-react';
+} from '../ui/icons/runtime-icons.generated';
 import { InputBindingField, NumericSliderField, SelectControl, ToggleSwitch } from '../ui/Controls';
 import { useDialogSystem } from '../ui/dialog/DialogSystem';
 

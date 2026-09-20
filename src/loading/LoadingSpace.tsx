@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from '../ui/icons/runtime-icons.generated';
 import './loading-space.css';
 
 interface LoadingSpaceProps {

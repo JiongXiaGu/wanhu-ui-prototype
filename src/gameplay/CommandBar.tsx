@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
 import {
   Blocks,
   BookOpen,
@@ -9,7 +9,7 @@ import {
   Landmark,
   Layers3,  Palette,  Route,  Shield,
   Store,
-  Trees,} from 'lucide-react';
+  Trees,} from '../ui/icons/runtime-icons.generated';
 import type { DockCategory, DockMode } from '../app/ui-state';
 import type { MotionPhase } from '../ui/motion';
 

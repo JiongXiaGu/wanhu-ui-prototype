@@ -1,5 +1,5 @@
 import type { Dispatch } from 'react';
-import { ArrowLeftRight, Link2, MousePointer2, RotateCcw, RotateCw } from 'lucide-react';
+import { ArrowLeftRight, Link2, MousePointer2, RotateCcw, RotateCw } from '../../ui/icons/runtime-icons.generated';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import type { MotionPhase } from '../../ui/motion';
 import { PlacementActionBar, type PlacementModeGroup, type PlacementQuickAction } from '../placement/PlacementActionBar';

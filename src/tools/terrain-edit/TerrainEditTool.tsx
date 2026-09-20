@@ -1,5 +1,5 @@
 import { useState, type Dispatch } from 'react';
-import { ChevronDown, Minus, Mountain, Route, Waves } from 'lucide-react';
+import { ChevronDown, Minus, Mountain, Route, Waves } from '../../ui/icons/runtime-icons.generated';
 import type { GameplayUiAction, GameplayUiState, TerrainEditMode } from '../../app/ui-state';
 import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextPanel, LeftContextSection } from '../../ui/LeftContextPanel';
