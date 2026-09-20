@@ -86,7 +86,7 @@
   border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
   border-radius:9px;
   box-shadow:0 8px 24px rgba(4,7,6,.28);
-  font-size:9px;
+  font-size:var(--wanhu-type-tooltip,10px);
   font-weight:450;
   letter-spacing:.025em;
   transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
