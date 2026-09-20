@@ -254,8 +254,8 @@
 }
 .material-color-editor__sv-cursor{
   position:absolute;
-  width:13px;
-  height:13px;
+  width:var(--wanhu-icon-xs,14px);
+  height:var(--wanhu-icon-xs,14px);
   translate:-50% -50%;
   border:2px solid rgba(255,255,255,.92);
   border-radius:50%;
