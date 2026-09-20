@@ -232,3 +232,24 @@ Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最�
 - `src/gameplay/GameplayScreen.tsx`：把当前 Definition 接入 Gameplay 空间。
 
 不要重新创建 `RoadWorkspace / BridgeWorkspace / CityWallWorkspace` 等只复制相同壳层的组件；也不要为每种资产复制独立 Inspector 外壳。只有某一类别出现真正不同的稳定交互结构时，才抽取类别专用子组件。
+
+
+## Shared WorkspaceItemCard
+
+Design Workspace 的资产卡现在是共享 Workspace Card 母版，不再由建筑 / 材质各自复制视觉样式。
+
+Web Prototype：
+
+- .workspace-item-card：共享 Card Surface / Hover / Focus / Pressed；
+- .workspace-item-card__preview：固定 64×64 / 1:1；
+- .workspace-item-card__copy：共享文本布局；
+- .workspace-item-card__title / __meta：共享 Typography；
+- .workspace-item-card__state-line：真实元素，供 Focus / Current 等语义状态使用；
+- design-item-card 只保留业务识别与兼容选择器，不再拥有独立 Card 皮肤；
+- MaterialSchemeWorkspace 同样消费这一母版。
+
+Unity UI Toolkit：
+
+- 建议建立共享 WorkspaceItemCard UXML / USS；
+- Building / Road / Wall / Material Scheme 等目录通过 Modifier 或绑定数据表达业务差异；
+- 不复制一套“看起来类似”的 USS。
