@@ -14,7 +14,7 @@ import { RuntimeParameterRow } from '../../../../ui/Controls';
 import { LeftContextSection } from '../../../../ui/LeftContextPanel';
 import { ColorEditorPage, type ColorEditorDefinition } from '../../../../ui/color/ColorEditorPage';
 import { MOTION_MS, useKeyedTransition, usePresence, type MotionPhase } from '../../../../ui/motion';
-import { MATERIAL_FAMILY_LABELS, MaterialSchemeWorkspace, type MaterialFamily, type MaterialSchemeWorkspacePreset } from './MaterialSchemeWorkspace';
+import { MATERIAL_FAMILY_LABELS, MaterialPresetWorkspace, type MaterialFamily, type MaterialPresetWorkspaceItem } from './MaterialPresetWorkspace';
 import { PlacementContextPanel } from '../../../placement/PlacementContextPanel';
 
 type MaterialWorkflow = '金属' | '高光';
@@ -60,7 +60,7 @@ interface MaterialPreset {
   draft: MaterialSurfaceDraft;
 }
 
-interface MaterialSchemeState {
+interface MaterialPresetSelectionState {
   id?: string;
   family?: MaterialFamily;
   name: string;
@@ -287,16 +287,16 @@ function SchemeSelector({
   scheme,
   onOpen,
 }: {
-  scheme: MaterialSchemeState;
+  scheme: MaterialPresetSelectionState;
   onOpen: () => void;
 }) {
   return (
-    <button className="material-scheme-selector" type="button" onClick={onOpen} aria-label="打开材质方案库">
-      <span className="material-scheme-selector__label">方案</span>
-      <span className="material-scheme-selector__type">{scheme.family ? MATERIAL_FAMILY_LABELS[scheme.family] : '自定义'}</span>
-      <i className="material-scheme-selector__separator" aria-hidden="true">·</i>
-      <b className="material-scheme-selector__name">{scheme.name}</b>
-      <ChevronRight className="material-scheme-selector__chevron" aria-hidden="true" />
+    <button className="material-preset-selector" type="button" onClick={onOpen} aria-label="打开材质方案库">
+      <span className="material-preset-selector__label">方案</span>
+      <span className="material-preset-selector__type">{scheme.family ? MATERIAL_FAMILY_LABELS[scheme.family] : '自定义'}</span>
+      <i className="material-preset-selector__separator" aria-hidden="true">·</i>
+      <b className="material-preset-selector__name">{scheme.name}</b>
+      <ChevronRight className="material-preset-selector__chevron" aria-hidden="true" />
     </button>
   );
 }
@@ -359,7 +359,7 @@ function SurfacePage({
   onOpenPresetLibrary,
 }: {
   draft: MaterialSurfaceDraft;
-  scheme: MaterialSchemeState;
+  scheme: MaterialPresetSelectionState;
   onUpdate: <K extends keyof MaterialSurfaceDraft>(key: K, value: MaterialSurfaceDraft[K]) => void;
   onOpenColor: (target: MaterialColorTarget) => void;
   onOpenPresetLibrary: () => void;
@@ -470,9 +470,9 @@ export function SurfaceModeOverlay({
   const [surfaceClipboard, setSurfaceClipboard] = useState<MaterialSurfaceDraft | null>(null);
   const [colorClipboard, setColorClipboard] = useState<ColorClipboardPayload | null>(null);
   const [customPresets, setCustomPresets] = useState<MaterialPreset[]>([]);
-  const [schemeWorkspaceOpen, setSchemeWorkspaceOpen] = useState(false);
+  const [presetWorkspaceOpen, setPresetWorkspaceOpen] = useState(false);
   const [currentFamily, setCurrentFamily] = useState<MaterialFamily>(INITIAL_PRESET.family);
-  const [currentScheme, setCurrentScheme] = useState<MaterialSchemeState>({
+  const [currentPreset, setCurrentPreset] = useState<MaterialPresetSelectionState>({
     id: INITIAL_PRESET.id,
     family: INITIAL_PRESET.family,
     name: INITIAL_PRESET.name,
@@ -480,14 +480,14 @@ export function SurfaceModeOverlay({
   });
 
   const pageTransition = useKeyedTransition<MaterialPageKey>(requestedPage, MOTION_MS.surface);
-  const schemeWorkspacePresence = usePresence(schemeWorkspaceOpen);
+  const presetWorkspacePresence = usePresence(presetWorkspaceOpen);
   const pageDirection = requestedPage === 'surface' ? 'back' : 'forward';
   const activeColorTarget = pageTarget(requestedPage);
   const currentDefinition = activeColorTarget ? COLOR_TARGETS[activeColorTarget] : null;
   const surfaceModified = !draftsEqual(draft, DEFAULT_SURFACE_DRAFT);
 
   function markCustom() {
-    setCurrentScheme((current) => (
+    setCurrentPreset((current) => (
       current.family === undefined && current.source === 'custom'
         ? current
         : { name: '未保存', source: 'custom' }
@@ -501,9 +501,9 @@ export function SurfaceModeOverlay({
     onDirty();
   }
 
-  function replaceDraft(next: MaterialSurfaceDraft, scheme?: MaterialSchemeState) {
+  function replaceDraft(next: MaterialSurfaceDraft, scheme?: MaterialPresetSelectionState) {
     setDraft(cloneDraft(next));
-    setCurrentScheme(scheme ?? { name: '未保存', source: 'custom' });
+    setCurrentPreset(scheme ?? { name: '未保存', source: 'custom' });
     onDirty();
   }
 
@@ -599,7 +599,7 @@ export function SurfaceModeOverlay({
     };
     setCurrentFamily(family);
     setCustomPresets((current) => [...current, preset]);
-    setCurrentScheme({ id: preset.id, family, name, source: 'saved' });
+    setCurrentPreset({ id: preset.id, family, name, source: 'saved' });
     return preset.id;
   }
 
@@ -614,9 +614,9 @@ export function SurfaceModeOverlay({
         : preset
     )));
 
-    if (currentScheme.id === id) {
+    if (currentPreset.id === id) {
       if (patch.family) setCurrentFamily(patch.family);
-      setCurrentScheme((current) => ({
+      setCurrentPreset((current) => ({
         ...current,
         name: patch.name ?? current.name,
         family: patch.family ?? current.family,
@@ -631,18 +631,18 @@ export function SurfaceModeOverlay({
 
   function deleteCustomPreset(preset: MaterialPreset) {
     setCustomPresets((current) => current.filter((entry) => entry.id !== preset.id));
-    if (currentScheme.id === preset.id) {
-      setCurrentScheme({ name: '未保存', source: 'custom' });
+    if (currentPreset.id === preset.id) {
+      setCurrentPreset({ name: '未保存', source: 'custom' });
     }
   }
 
-  function toWorkspacePreset(preset: MaterialPreset): MaterialSchemeWorkspacePreset {
+  function toWorkspaceItem(preset: MaterialPreset): MaterialPresetWorkspaceItem {
     return {
       id: preset.id,
       family: preset.family,
       name: preset.name,
       source: preset.source,
-      selected: currentScheme.id === preset.id,
+      selected: currentPreset.id === preset.id,
       colors: [preset.draft.baseColor, preset.draft.emissionColor, preset.draft.nightEmissionColor, preset.draft.specularColor],
       workflow: preset.draft.workflow,
       smoothness: preset.draft.smoothness,
@@ -650,11 +650,11 @@ export function SurfaceModeOverlay({
     };
   }
 
-  const systemWorkspacePresets = BUILTIN_PRESETS.map(toWorkspacePreset);
-  const workshopWorkspacePresets = WORKSHOP_PRESETS.map(toWorkspacePreset);
-  const customWorkspacePresets = customPresets.map(toWorkspacePreset);
-  const saveInitialName = currentScheme.name !== '未保存' && currentScheme.name !== '自定义'
-    ? `${currentScheme.name} 副本`
+  const systemWorkspacePresets = BUILTIN_PRESETS.map(toWorkspaceItem);
+  const workshopWorkspacePresets = WORKSHOP_PRESETS.map(toWorkspaceItem);
+  const customWorkspacePresets = customPresets.map(toWorkspaceItem);
+  const saveInitialName = currentPreset.name !== '未保存' && currentPreset.name !== '自定义'
+    ? `${currentPreset.name} 副本`
     : `我的配色 ${String(nextCustomIndex()).padStart(2, '0')}`;
 
   function renderPage(page: MaterialPageKey, phase: MotionPhase, outgoing = false) {
@@ -672,13 +672,13 @@ export function SurfaceModeOverlay({
         <div className={pageClass} key={page}>
           <SurfacePage
             draft={draft}
-            scheme={currentScheme}
+            scheme={currentPreset}
             onUpdate={update}
             onOpenColor={(target) => {
-              setSchemeWorkspaceOpen(false);
+              setPresetWorkspaceOpen(false);
               setRequestedPage(`color:${target}`);
             }}
-            onOpenPresetLibrary={() => setSchemeWorkspaceOpen((open) => !open)}
+            onOpenPresetLibrary={() => setPresetWorkspaceOpen((open) => !open)}
           />
         </div>
       );
@@ -748,12 +748,12 @@ export function SurfaceModeOverlay({
         'data-material-page': requestedPage === 'surface' ? 'surface' : 'color-editor',
         'data-material-color-target': activeColorTarget ?? undefined,
         'data-material-workflow': draft.workflow === '高光' ? 'specular' : 'metallic',
-        'data-material-scheme-type': currentScheme.family ? MATERIAL_FAMILY_LABELS[currentScheme.family] : '自定义',
-        'data-material-scheme-family': currentScheme.family ?? 'custom',
-        'data-material-scheme-name': currentScheme.name,
+        'data-material-preset-type': currentPreset.family ? MATERIAL_FAMILY_LABELS[currentPreset.family] : '自定义',
+        'data-material-preset-family': currentPreset.family ?? 'custom',
+        'data-material-preset-name': currentPreset.name,
         'data-material-surface-clipboard': surfaceClipboard ? 'ready' : 'empty',
         'data-material-color-clipboard': colorClipboard ? 'ready' : 'empty',
-        'data-material-scheme-workspace': schemeWorkspaceOpen ? 'open' : 'closed',
+        'data-material-preset-workspace': presetWorkspaceOpen ? 'open' : 'closed',
       }}
     >
       <div className="color-tool-surface-page-host">
@@ -762,16 +762,16 @@ export function SurfaceModeOverlay({
       </div>
     </PlacementContextPanel>
 
-    {schemeWorkspacePresence.mounted && (
-      <MaterialSchemeWorkspace
-        motionPhase={schemeWorkspacePresence.phase}
+    {presetWorkspacePresence.mounted && (
+      <MaterialPresetWorkspace
+        motionPhase={presetWorkspacePresence.phase}
         systemPresets={systemWorkspacePresets}
         workshopPresets={workshopWorkspacePresets}
         customPresets={customWorkspacePresets}
         canPasteCurrent={surfaceClipboard !== null}
         currentFamily={currentFamily}
         saveInitialName={saveInitialName}
-        onClose={() => setSchemeWorkspaceOpen(false)}
+        onClose={() => setPresetWorkspaceOpen(false)}
         onApply={(id) => {
           const preset = [...BUILTIN_PRESETS, ...WORKSHOP_PRESETS, ...customPresets].find((entry) => entry.id === id);
           if (preset) applyPreset(preset);
