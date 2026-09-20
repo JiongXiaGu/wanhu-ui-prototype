@@ -54,9 +54,9 @@ src/tools/color-tool/
 └ modes/
    ├ surface/
    │  ├ SurfaceModeOverlay.tsx
-   │  ├ MaterialSchemeWorkspace.tsx
+   │  ├ MaterialPresetWorkspace.tsx
    │  ├ surface-mode.css
-   │  └ material-scheme-workspace.css
+   │  └ material-preset-workspace.css
    │
    ├ lighting/
    │  ├ LightingModeOverlay.tsx
@@ -308,7 +308,7 @@ Runtime/UI/
    ├ ColorTool.uss
    └ Modes/
       ├ SurfaceMode.uss
-      ├ MaterialSchemeWorkspace.uss
+      ├ MaterialPresetWorkspace.uss
       ├ LightingMode.uss
       ├ SchemeMode.uss
       └ BuildingSchemeWorkspace.uss
@@ -321,14 +321,15 @@ Runtime/UI/
 | Web 当前 Owner | Unity 目标 Owner | 职责 |
 |---|---|---|
 | `wanhu-theme-tokens.css` | `WanhuThemeTokens.uss` | 颜色、Radius、透明度、Tone Token |
-| `ui-control-system.css` | `UIControls.uss` | Button、Slider、Value Field、Color Field |
+| `ui-control-system.css` | `UIControls.uss` | Button、Slider、Value Field、Parameter Row |
+| `ui/color/color-parameter-field.css` | `ColorParameterField.uss` | 共享颜色参数入口；Mode 不得覆盖 |
 | `wanhu-surface-system.css` | `UISurface.uss` + Blur Service | Surface Tint / Border / Depth |
 | `ui-motion-system.css` | `UIMotion.uss` + Transition Controller | Opacity / Translate / Presence |
 | `workspace.css` | `WorkspaceBase.uss` | 通用 Workspace Shell |
 | `workspace/workspace-catalog.css` | `WorkspaceCatalog.uss` | Rail / Filter / 4×2 / Pager 几何 |
 | `workspace-world-first-glass.css` | Shared Workspace Skin | Catalog 前景视觉 |
 | `surface-mode.css` | `SurfaceMode.uss` | Surface Mode 专属排版 |
-| `material-scheme-workspace.css` | `MaterialSchemeWorkspace.uss` | Material Preset Card / Drag Modifier |
+| `material-preset-workspace.css` | `MaterialPresetWorkspace.uss` | Material Preset Card / Drag Modifier |
 | `lighting-mode.css` | `LightingMode.uss` | Light Selection / Mode Modifier |
 | `scheme-mode.css` | `SchemeMode.uss` | Building Selection / Appearance Panel |
 | `building-scheme-workspace.css` | `BuildingSchemeWorkspace.uss` | Building Scheme Card Modifier |
@@ -806,7 +807,46 @@ UI Controller 只引用稳定接口 / DTO / Request，不持有渲染实现。
 
 ---
 
-## 21. 最终设计原则
+## 21. Unity Migration Readiness Review（2026-09-20）
+
+### 已准备完成
+
+- 顶层只保留一个 `ColorTool`，Runtime Tool Id 为 `color-tool`；内部 Mode 固定为 `surface / lighting / scheme`；
+- `ColorToolDock` 在三个 Mode 间保持挂载，不再恢复独立 `light-adjustment / building-scheme` Tool；
+- Surface 方案浏览正式使用 `MaterialPresetWorkspace`；旧 `MaterialSchemeWorkspace` Web 重命名残留已退出 Runtime；
+- `LeftContextPanel / NumericSliderField / ColorParameterField / SharedColorEditor / Catalog Workspace / PrimaryRail / WorkspaceItemCard / Pager` 的共享层不持有 BuildingId、LightId、MaterialPresetId、SchemeId、ECS Entity 或 GameContent 业务来源；
+- Catalog 基础几何归 `WorkspaceCatalog`，Surface/Control/Color Field 分别有独立共享 Owner，Mode CSS 只保留业务 Modifier；
+- Migration Audit 会阻止旧 Color Tool 目录、旧 State Identifier、Catalog 几何回流、Mode CSS 重写共享 Numeric/Color/LeftContext Surface，以及 ColorParameterField 样式未进入 Runtime cascade。
+
+### 仍需迁移时处理
+
+- CSS Grid：迁为 UXML + Flex Row/Column；固定容量 Catalog 继续使用显式 Row Pool；
+- pseudo-element：纯装饰可用真实子 Element / Sprite；有状态语义的 Marker 必须是真实 VisualElement；
+- `backdrop-filter`：替换为共享 URP Blur Service + USS Tint；
+- CSS `filter`：替换为 Image Tint / Overlay / Material；
+- Web Pointer / Drag / Wheel 行为：用 UI Toolkit PointerEvent / NavigationEvent 与 New Input System 重新绑定；
+- Lucide Source Icon：生成实际使用清单后导入 Sprite Atlas 或 VectorImage。
+
+### Web-only 可丢弃
+
+- React lifecycle / Hook 组织方式；
+- HTML DragEvent 与 PointerCapture 细节；
+- `window / document / getBoundingClientRect`；
+- 固定百分比 Scene Handle 与浏览器定位代码；
+- Lucide React Runtime；
+- Playwright selector、Review `data-*` 与 GitHub Artifact 生成逻辑。
+
+### 尚未解决的风险
+
+- 正式 Unity 的 `ColorToolTransaction` 仍需接入项目 Undo/Redo，明确 Begin / Preview / Commit / Cancel；
+- Surface / Light / Building Selection 仍需由 Unity World Picking / ECS Adapter 实现，不能照搬 Web Scene Handle；
+- Blur、VectorImage 与大量图标的最终性能需要在 Unity Vertical Slice 实测；
+- 全仓仍存在可追踪的 Grid / pseudo-element / filter / Browser API 债务；它们已有替代路径，不作为 Color Tool 开始迁移的阻塞项。
+
+**Readiness：结构已达到可以开始正式 Unity UI Toolkit 迁移的标准。** 下一阶段应按 Shared Foundation → Catalog → Color Tool Shell → 三 Mode → Real Data 顺序实现，而不是继续扩展 Web 功能。
+
+---
+## 22. 最终设计原则
 
 迁移时判断一段样式 / 代码应该放在哪里，只问三个问题：
 
