@@ -202,6 +202,143 @@
   cursor:default;
 }
 
+.material-scheme-workspace__stage{overflow:visible}
+.material-scheme-workspace__card.is-menu-open{z-index:12}
+.material-scheme-workspace__card.is-dragging{opacity:.42}
+
+.material-scheme-workspace__menu-trigger{
+  position:absolute;
+  z-index:5;
+  top:18px;
+  right:5px;
+  width:26px;
+  height:26px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#7f8580;
+  opacity:0;
+  pointer-events:none;
+  cursor:pointer;
+  transition-property:background,color,opacity;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.material-scheme-workspace__card.is-editable:hover .material-scheme-workspace__menu-trigger,
+.material-scheme-workspace__card.is-editable:focus-within .material-scheme-workspace__menu-trigger,
+.material-scheme-workspace__card.is-menu-open .material-scheme-workspace__menu-trigger{
+  opacity:1;
+  pointer-events:auto;
+}
+.material-scheme-workspace__menu-trigger:hover{
+  background:rgba(255,255,255,.045);
+  color:#d1ccc2;
+}
+.material-scheme-workspace__menu-trigger svg{width:14px;height:14px;stroke-width:1.8}
+
+.material-scheme-workspace__card-menu{
+  position:absolute;
+  z-index:20;
+  top:48px;
+  right:4px;
+  width:154px;
+  padding:5px;
+  border:1px solid rgba(238,233,223,.085);
+  border-radius:9px;
+  background:rgba(33,38,35,.98);
+  box-shadow:0 14px 32px rgba(5,8,7,.38),inset 0 1px 0 rgba(255,255,255,.018);
+}
+.material-scheme-workspace__card-menu>button{
+  width:100%;
+  height:30px;
+  padding:0 8px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:#a3a7a1;
+  font:inherit;
+  font-size:9px;
+  text-align:left;
+  cursor:pointer;
+}
+.material-scheme-workspace__card-menu>button:hover{
+  background:rgba(255,255,255,.035);
+  color:#d3cfc6;
+}
+.material-scheme-workspace__card-menu>button.is-danger{color:#bd867c}
+.material-scheme-workspace__card-menu>button.is-danger:hover{background:rgba(152,84,71,.075);color:#dda096}
+.material-scheme-workspace__card-menu>button svg{width:12px;height:12px;stroke-width:1.7}
+
+.material-scheme-workspace__card-menu-section{
+  margin:3px 2px;
+  padding:6px 6px 7px;
+  border-top:1px solid rgba(238,233,223,.050);
+  border-bottom:1px solid rgba(238,233,223,.050);
+}
+.material-scheme-workspace__card-menu-section>span{
+  display:block;
+  margin-bottom:5px;
+  color:#747a75;
+  font-size:7.5px;
+}
+.material-scheme-workspace__card-menu-section>div{
+  display:flex;
+  gap:3px;
+}
+.material-scheme-workspace__card-menu-section button{
+  flex:1 1 0;
+  height:24px;
+  padding:0;
+  border:0;
+  border-radius:5px;
+  background:rgba(255,255,255,.018);
+  color:#969b95;
+  font:inherit;
+  font-size:8px;
+  cursor:pointer;
+}
+.material-scheme-workspace__card-menu-section button:hover:not(:disabled){
+  background:rgba(255,255,255,.045);
+  color:#d0ccc3;
+}
+.material-scheme-workspace__card-menu-section button.is-current,
+.material-scheme-workspace__card-menu-section button:disabled{
+  background:rgba(169,132,75,.050);
+  color:#a99570;
+  opacity:.60;
+  cursor:default;
+}
+
+.material-scheme-workspace.is-dragging-preset .material-scheme-workspace__rail-list>button{
+  transition-property:background,color,opacity,box-shadow;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.material-scheme-workspace.is-dragging-preset .material-scheme-workspace__rail-list>button small{
+  margin-left:auto;
+  color:#777d78;
+  font-size:7px;
+  font-weight:500;
+}
+.material-scheme-workspace.is-dragging-preset .material-scheme-workspace__rail-list>button.is-drop-disabled{
+  opacity:.32;
+}
+.material-scheme-workspace.is-dragging-preset .material-scheme-workspace__rail-list>button:not(.is-drop-disabled){
+  background:rgba(255,255,255,.018);
+}
+.material-scheme-workspace.is-dragging-preset .material-scheme-workspace__rail-list>button.is-drop-target{
+  background:rgba(169,132,75,.085);
+  color:#d7bd7d;
+  box-shadow:inset 2px 0 0 rgba(189,153,89,.78);
+}
+.material-scheme-workspace.is-dragging-preset .material-scheme-workspace__rail-list>button.is-drop-target small{
+  color:#b7a479;
+}
+
 .material-scheme-workspace__card{
   position:relative;
   height:64px;
@@ -265,32 +402,6 @@
   color:#a9aaa4;
   white-space:nowrap;
   text-overflow:ellipsis;
-}
-
-.material-scheme-workspace__card-delete{
-  position:absolute;
-  z-index:5;
-  top:20px;
-  right:5px;
-  width:24px;
-  height:24px;
-  padding:0;
-  display:grid;
-  place-items:center;
-  border:0;
-  border-radius:6px;
-  background:rgba(24,28,26,.76);
-  color:#7f8580;
-  cursor:pointer;
-}
-.material-scheme-workspace__card-delete:hover{
-  background:rgba(255,255,255,.055);
-  color:#d1ccc2;
-}
-.material-scheme-workspace__card-delete svg{
-  width:12px;
-  height:12px;
-  stroke-width:1.7;
 }
 
 .material-scheme-workspace__empty{
