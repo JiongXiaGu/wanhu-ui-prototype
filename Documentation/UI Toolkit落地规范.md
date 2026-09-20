@@ -375,6 +375,8 @@ Workspace 已确认：
 - `IconButton`
 - `SegmentedControl`
 - `ParameterSlider`
+- `ColorParameterField`
+- `SharedColorEditor`
 - `RuntimeTooltipController`
 - `KeycapDisplay`
 - `PagedContentView<T>`
@@ -387,6 +389,25 @@ Workspace 已确认：
 这些共享状态类名、Input 行为、Tooltip、Disabled / Hover / Selected 规则和视觉 Token。
 
 不要把整个 UI 抽象成万能组件。
+
+### Shared Color Parameter
+
+颜色参数入口与颜色编辑器分成两个层级：
+
+```text
+ColorParameterField.uxml
+├ Label
+└ Button
+   ├ ColorFill
+   ├ ContrastOverlay
+   ├ HdrBadge (optional)
+   └ Chevron
+
+SharedColorEditor.uxml
+└ SV / Hue / HEX / RGB-HSV / HDR Intensity
+```
+
+`ColorParameterField` 应与 `NumericSliderField` 共用 Parameter Row 两列几何；HDR Badge 通过真实 Label / VisualElement 条件显示，不能依赖 pseudo-element。
 
 ## 14. 后续 Web 设计规则
 
