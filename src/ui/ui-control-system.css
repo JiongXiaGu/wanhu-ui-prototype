@@ -151,8 +151,10 @@
 .ui-select__trigger:hover:not(:disabled){color:#ddd8cd;border-color:var(--ui-field-border-hover);background:var(--ui-field-surface-hover)}
 .ui-select__trigger:focus-visible{outline:0;border-color:var(--ui-field-border-focus);background:var(--ui-field-surface-focus);box-shadow:0 0 0 3px rgba(201,165,95,.045)}
 .ui-select__trigger svg{color:#747b74;stroke-width:1.6;transition:transform .14s ease,color .12s ease}
+.ui-select__trigger .ui-select__chevron-icon{color:#747b74;transition:transform .14s ease,color .12s ease}
 .ui-select.is-open .ui-select__trigger{color:#ded9cf;border-color:rgba(201,165,95,.38);background:var(--ui-field-surface-focus)}
 .ui-select.is-open .ui-select__trigger svg{color:#c2a968;transform:rotate(180deg)}
+.ui-select.is-open .ui-select__trigger .ui-select__chevron-icon{color:#c2a968;transform:rotate(180deg)}
 .ui-select__trigger:disabled{opacity:var(--ui-field-disabled);cursor:default}
 .ui-select__menu{
   position:absolute;
@@ -190,6 +192,7 @@
 .ui-select__menu button:hover,.ui-select__menu button.is-highlighted{background:rgba(255,255,255,.035);color:#d8d4ca}
 .ui-select__menu button.is-selected{color:#d6b973;background:rgba(201,165,95,.07)}
 .ui-select__menu button svg{color:var(--wanhu-color-brass,#a9844b);stroke-width:1.8}
+.ui-select__menu button .ui-select__check-icon{color:var(--wanhu-color-brass,#a9844b)}
 
 /* Toggle ------------------------------------------------------------
    Plain shared On / Off switch.
