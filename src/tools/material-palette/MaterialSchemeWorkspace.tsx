@@ -1,25 +1,30 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type DragEvent as ReactDragEvent } from 'react';
 import {
   Bookmark,
   ClipboardPaste,
+  Copy,
   Grid3X3,
   House,
+  MoreHorizontal,
   Palette,
+  Pencil,
   Save,
   Trash2,
   Trees,
   X,
   type LucideIcon,
 } from 'lucide-react';
+import { useDialogSystem } from '../../ui/dialog/DialogSystem';
 import type { MotionPhase } from '../../ui/motion';
 
 export type MaterialSchemeWorkspaceCategory = '全部' | '木头' | '瓦片' | '墙面';
+export type MaterialSchemeCategory = Exclude<MaterialSchemeWorkspaceCategory, '全部'>;
 export type MaterialSchemeWorkspaceSource = 'all' | 'builtin' | 'workshop' | 'mine';
 export type MaterialSchemePresetSource = Exclude<MaterialSchemeWorkspaceSource, 'all'>;
 
 export interface MaterialSchemeWorkspacePreset {
   id: string;
-  type: '木头' | '瓦片' | '墙面';
+  type: MaterialSchemeCategory;
   name: string;
   source: MaterialSchemePresetSource;
   selected: boolean;
@@ -35,14 +40,20 @@ interface Props {
   workshopPresets: readonly MaterialSchemeWorkspacePreset[];
   customPresets: readonly MaterialSchemeWorkspacePreset[];
   canPasteCurrent: boolean;
+  currentCategory: MaterialSchemeCategory;
+  saveInitialName: string;
   onClose: () => void;
   onApply: (id: string) => void;
-  onSaveCurrent: () => void;
+  onSaveCurrent: (name: string, category: MaterialSchemeCategory) => void;
   onPasteCurrent: () => void;
+  onRename: (id: string, name: string) => void;
+  onMove: (id: string, category: MaterialSchemeCategory) => void;
+  onCopy: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
 const PAGE_SIZE = 8;
+const MATERIAL_CATEGORIES: readonly MaterialSchemeCategory[] = ['木头', '瓦片', '墙面'];
 
 const SYSTEM_CATEGORIES: readonly {
   id: MaterialSchemeWorkspaceCategory;
@@ -84,29 +95,52 @@ function materialFinishLabel(smoothness: number) {
 
 function SchemeCard({
   preset,
+  menuOpen,
+  dragging,
   onApply,
+  onMenuToggle,
+  onRename,
+  onMove,
+  onCopy,
   onDelete,
+  onDragStart,
+  onDragEnd,
 }: {
   preset: MaterialSchemeWorkspacePreset;
+  menuOpen: boolean;
+  dragging: boolean;
   onApply: (id: string) => void;
-  onDelete: (id: string) => void;
+  onMenuToggle: (id: string) => void;
+  onRename: (preset: MaterialSchemeWorkspacePreset) => void;
+  onMove: (preset: MaterialSchemeWorkspacePreset, category: MaterialSchemeCategory) => void;
+  onCopy: (preset: MaterialSchemeWorkspacePreset) => void;
+  onDelete: (preset: MaterialSchemeWorkspacePreset) => void;
+  onDragStart: (preset: MaterialSchemeWorkspacePreset, event: ReactDragEvent<HTMLButtonElement>) => void;
+  onDragEnd: () => void;
 }) {
   const finishLabel = materialFinishLabel(preset.smoothness);
   const sourceLabel = SOURCE_LABELS[preset.source];
+  const editable = preset.source === 'mine';
 
   return (
     <article
       className={[
         'material-scheme-workspace__card',
         preset.selected ? 'is-selected' : '',
-        preset.source === 'mine' ? 'has-delete' : '',
+        editable ? 'is-editable' : '',
+        menuOpen ? 'is-menu-open' : '',
+        dragging ? 'is-dragging' : '',
       ].filter(Boolean).join(' ')}
+      onPointerLeave={() => menuOpen && onMenuToggle('')}
     >
       <button
         type="button"
         className="workspace-item-card material-scheme-workspace__card-apply"
         aria-label={'应用材质方案 ' + preset.type + ' · ' + preset.name}
         aria-pressed={preset.selected}
+        draggable={editable}
+        onDragStart={(event) => onDragStart(preset, event)}
+        onDragEnd={onDragEnd}
         onClick={() => onApply(preset.id)}
       >
         <i className="workspace-item-card__state-line" aria-hidden="true" />
@@ -124,15 +158,48 @@ function SchemeCard({
         </div>
       </button>
 
-      {preset.source === 'mine' && (
-        <button
-          type="button"
-          className="material-scheme-workspace__card-delete"
-          aria-label={'删除我的方案 ' + preset.name}
-          onClick={() => onDelete(preset.id)}
-        >
-          <Trash2 aria-hidden="true" />
-        </button>
+      {editable && (
+        <>
+          <button
+            type="button"
+            className="material-scheme-workspace__menu-trigger"
+            aria-label={'管理我的方案 ' + preset.name}
+            aria-expanded={menuOpen}
+            onClick={() => onMenuToggle(menuOpen ? '' : preset.id)}
+          >
+            <MoreHorizontal aria-hidden="true" />
+          </button>
+
+          {menuOpen && (
+            <div className="material-scheme-workspace__card-menu" role="menu" aria-label={preset.name + ' 方案操作'}>
+              <button type="button" role="menuitem" onClick={() => onRename(preset)}>
+                <Pencil aria-hidden="true" /><span>重命名</span>
+              </button>
+              <div className="material-scheme-workspace__card-menu-section">
+                <span>移动到</span>
+                <div>
+                  {MATERIAL_CATEGORIES.map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      className={preset.type === category ? 'is-current' : ''}
+                      disabled={preset.type === category}
+                      onClick={() => onMove(preset, category)}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button type="button" role="menuitem" onClick={() => onCopy(preset)}>
+                <Copy aria-hidden="true" /><span>复制参数</span>
+              </button>
+              <button type="button" role="menuitem" className="is-danger" onClick={() => onDelete(preset)}>
+                <Trash2 aria-hidden="true" /><span>删除</span>
+              </button>
+            </div>
+          )}
+        </>
       )}
     </article>
   );
@@ -174,15 +241,24 @@ export function MaterialSchemeWorkspace({
   workshopPresets,
   customPresets,
   canPasteCurrent,
+  currentCategory,
+  saveInitialName,
   onClose,
   onApply,
   onSaveCurrent,
   onPasteCurrent,
+  onRename,
+  onMove,
+  onCopy,
   onDelete,
 }: Props) {
+  const dialogs = useDialogSystem();
   const [category, setCategory] = useState<MaterialSchemeWorkspaceCategory>('全部');
   const [source, setSource] = useState<MaterialSchemeWorkspaceSource>('all');
   const [page, setPage] = useState(0);
+  const [menuPresetId, setMenuPresetId] = useState('');
+  const [draggingPresetId, setDraggingPresetId] = useState('');
+  const [dragTargetCategory, setDragTargetCategory] = useState<MaterialSchemeCategory | null>(null);
 
   const allPresets = useMemo(
     () => [...systemPresets, ...workshopPresets, ...customPresets],
@@ -202,22 +278,129 @@ export function MaterialSchemeWorkspace({
   const safePage = Math.min(page, pageCount - 1);
   const visibleItems = pageItems(activeItems, safePage);
   const rows = [visibleItems.slice(0, 4), visibleItems.slice(4, 8)].filter((row) => row.length > 0);
+  const draggingPreset = customPresets.find((preset) => preset.id === draggingPresetId) ?? null;
+
+  function validateName(value: string, excludeId?: string) {
+    const normalized = value.trim().toLocaleLowerCase();
+    if (customPresets.some((preset) => preset.id !== excludeId && preset.name.trim().toLocaleLowerCase() === normalized)) {
+      return '“我的方案”中已存在同名配色。';
+    }
+    return undefined;
+  }
 
   function selectCategory(next: MaterialSchemeWorkspaceCategory) {
     setCategory(next);
     setPage(0);
+    setMenuPresetId('');
   }
 
   function selectSource(next: MaterialSchemeWorkspaceSource) {
     setSource(next);
     setPage(0);
+    setMenuPresetId('');
   }
 
-  function saveCurrent() {
-    onSaveCurrent();
-    setCategory('全部');
-    setSource('mine');
-    setPage(0);
+  function openSaveDialog() {
+    dialogs.choiceInput({
+      title: '保存配色',
+      label: '方案名称',
+      initialValue: saveInitialName,
+      choiceLabel: '分类',
+      choices: [...MATERIAL_CATEGORIES],
+      initialChoice: currentCategory,
+      maxLength: 40,
+      helperText: '保存到“我的方案”，之后可重命名或移动分类。',
+      validate: (value) => validateName(value),
+      confirmText: '保存',
+      onConfirm: (name, choice) => {
+        onSaveCurrent(name, choice as MaterialSchemeCategory);
+        setCategory('全部');
+        setSource('mine');
+        setPage(0);
+        dialogs.toast('已保存到“我的方案”', 'success');
+      },
+    });
+  }
+
+  function renamePreset(preset: MaterialSchemeWorkspacePreset) {
+    setMenuPresetId('');
+    dialogs.input({
+      title: '重命名方案',
+      label: '方案名称',
+      initialValue: preset.name,
+      maxLength: 40,
+      helperText: '名称只影响“我的方案”中的显示，不修改材质参数。',
+      validate: (value) => validateName(value, preset.id),
+      confirmText: '确定',
+      onConfirm: (name) => {
+        onRename(preset.id, name);
+        dialogs.toast('方案已重命名', 'success');
+      },
+    });
+  }
+
+  function movePreset(preset: MaterialSchemeWorkspacePreset, nextCategory: MaterialSchemeCategory) {
+    setMenuPresetId('');
+    if (preset.type === nextCategory) return;
+    const previousCategory = preset.type;
+    onMove(preset.id, nextCategory);
+    dialogs.toast(
+      '已将“' + preset.name + '”移动到“' + nextCategory + '”',
+      'success',
+      3200,
+      '撤销',
+      () => onMove(preset.id, previousCategory),
+    );
+  }
+
+  function copyPreset(preset: MaterialSchemeWorkspacePreset) {
+    setMenuPresetId('');
+    onCopy(preset.id);
+    dialogs.toast('已复制“' + preset.name + '”的参数', 'success');
+  }
+
+  function deletePreset(preset: MaterialSchemeWorkspacePreset) {
+    setMenuPresetId('');
+    dialogs.confirm({
+      title: '删除这个配色方案？',
+      message: '将从“我的方案”中删除“' + preset.name + '”。',
+      confirmText: '删除',
+      tone: 'danger',
+      onConfirm: () => {
+        onDelete(preset.id);
+        dialogs.toast('已删除“' + preset.name + '”', 'neutral');
+      },
+    });
+  }
+
+  function beginDrag(preset: MaterialSchemeWorkspacePreset, event: ReactDragEvent<HTMLButtonElement>) {
+    if (preset.source !== 'mine') {
+      event.preventDefault();
+      return;
+    }
+    setMenuPresetId('');
+    setDraggingPresetId(preset.id);
+    setDragTargetCategory(null);
+    event.dataTransfer.effectAllowed = 'move';
+  }
+
+  function endDrag() {
+    setDraggingPresetId('');
+    setDragTargetCategory(null);
+  }
+
+  function allowCategoryDrop(event: ReactDragEvent<HTMLButtonElement>, target: MaterialSchemeWorkspaceCategory) {
+    if (!draggingPreset || target === '全部') return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    setDragTargetCategory(target);
+  }
+
+  function dropOnCategory(event: ReactDragEvent<HTMLButtonElement>, target: MaterialSchemeWorkspaceCategory) {
+    if (!draggingPreset || target === '全部') return;
+    event.preventDefault();
+    movePreset(draggingPreset, target);
+    endDrag();
   }
 
   const emptyTitle = source === 'mine'
@@ -232,11 +415,12 @@ export function MaterialSchemeWorkspace({
 
   return (
     <section
-      className={'workspace workspace--design workspace--material-scheme material-scheme-workspace motion-bottom-surface is-' + motionPhase}
+      className={'workspace workspace--design workspace--material-scheme material-scheme-workspace motion-bottom-surface is-' + motionPhase + (draggingPreset ? ' is-dragging-preset' : '')}
       aria-label="材质方案工作区"
       aria-busy={motionPhase !== 'steady'}
       data-material-scheme-source={source}
       data-material-scheme-category={category}
+      data-material-dragging={draggingPreset ? 'true' : 'false'}
     >
       <header className="workspace-header material-scheme-workspace__header">
         <div className="workspace-title">
@@ -254,18 +438,32 @@ export function MaterialSchemeWorkspace({
           <div className="workspace-primary-rail__content">
             <span className="workspace-rail-pager-marker" aria-hidden="true" />
             <div className="workspace-primary-rail__page material-scheme-workspace__rail-list">
-              {SYSTEM_CATEGORIES.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  className={category === id ? 'is-active' : ''}
-                  aria-pressed={category === id}
-                  onClick={() => selectCategory(id)}
-                >
-                  <Icon aria-hidden="true" />
-                  <span>{label}</span>
-                </button>
-              ))}
+              {SYSTEM_CATEGORIES.map(({ id, label, icon: Icon }) => {
+                const dropTarget = dragTargetCategory === id;
+                const dropDisabled = Boolean(draggingPreset) && id === '全部';
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    className={[
+                      category === id ? 'is-active' : '',
+                      dropTarget ? 'is-drop-target' : '',
+                      dropDisabled ? 'is-drop-disabled' : '',
+                    ].filter(Boolean).join(' ')}
+                    aria-pressed={category === id}
+                    aria-disabled={dropDisabled || undefined}
+                    onClick={() => selectCategory(id)}
+                    onDragEnter={(event) => allowCategoryDrop(event, id)}
+                    onDragOver={(event) => allowCategoryDrop(event, id)}
+                    onDragLeave={() => dropTarget && setDragTargetCategory(null)}
+                    onDrop={(event) => dropOnCategory(event, id)}
+                  >
+                    <Icon aria-hidden="true" />
+                    <span>{label}</span>
+                    {draggingPreset && id !== '全部' && <small>移动到这里</small>}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </aside>
@@ -290,7 +488,7 @@ export function MaterialSchemeWorkspace({
               <button
                 type="button"
                 className="material-scheme-workspace__action is-primary"
-                onClick={saveCurrent}
+                onClick={openSaveDialog}
                 aria-label="保存配色"
               >
                 <Save aria-hidden="true" />
@@ -315,7 +513,20 @@ export function MaterialSchemeWorkspace({
                 {rows.map((row, rowIndex) => (
                   <div className="workspace-content-row material-scheme-workspace__row" key={rowIndex}>
                     {row.map((preset) => (
-                      <SchemeCard key={preset.id} preset={preset} onApply={onApply} onDelete={onDelete} />
+                      <SchemeCard
+                        key={preset.id}
+                        preset={preset}
+                        menuOpen={menuPresetId === preset.id}
+                        dragging={draggingPresetId === preset.id}
+                        onApply={onApply}
+                        onMenuToggle={setMenuPresetId}
+                        onRename={renamePreset}
+                        onMove={movePreset}
+                        onCopy={copyPreset}
+                        onDelete={deletePreset}
+                        onDragStart={beginDrag}
+                        onDragEnd={endDrag}
+                      />
                     ))}
                   </div>
                 ))}
