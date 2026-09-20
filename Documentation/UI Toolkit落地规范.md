@@ -304,7 +304,7 @@ PNG Mask         Sprite + Tint
 - Shared / Business 配置最终只持有 `UiIconId`，不持有 `LucideIcon` / React Component；
 - Pager、Selected Line、Divider、Toggle / Slider Track 等结构元素继续使用真实 Element，不烘焙成 Icon PNG。
 
-当前 Web 仍处于 Lucide Runtime 过渡期。先完成 64×64 PNG Pilot，再逐步迁移 Shared Contract 和全部 Runtime Icon，不做一次性替换。
+当前 Web Runtime 已完成 PNG 化：`src/` 不再直接依赖 Lucide，`UiIcon` / 本地 Generated Adapter 统一读取 committed PNG；64×64 / stroke 1.7 已通过 Pilot 并冻结。
 
 ## 9. Bottom Command Visual System
 
@@ -470,7 +470,7 @@ Web Prototype 继续服务快速验证，但从现在起遵守迁移护栏：
 - 结构性状态线 / Pager Marker 优先真实节点；
 - Motion 必须消费共享 Motion Token；
 - Browser API 只能停留在 Web Adapter 层，不拥有业务状态；
-- 图标过渡期允许 Lucide Runtime；正式目标是 `UiIconId → 64×64 PNG`，SVG 只保留 Source Master，详见 `Documentation/UI图标资产管线.md`。
+- 普通 UI Icon Runtime 已固定为 `UiIconId → 64×64 PNG`；`src/` 禁止 Lucide Runtime，SVG 只保留 Source Master，详见 `Documentation/UI图标资产管线.md`。
 
 GitHub Build 在 TypeScript / Vite Build 前执行 `npm run audit:unity`。高风险模式会直接阻止 CI；其它可迁移但需换实现的 CSS 能力作为 Migration Debt 输出，不要求为了 Web 原型全部提前删除。
 
