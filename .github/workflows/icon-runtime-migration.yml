@@ -1,0 +1,39 @@
+name: Migrate UI Icon Runtime
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/icons/migrate-runtime-icons.mjs'
+      - '.github/workflows/icon-runtime-migration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-icon-runtime-migration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Replace Lucide Runtime imports with PNG adapter
+        run: node scripts/icons/migrate-runtime-icons.mjs
+      - name: Commit Runtime migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src
+          if git diff --cached --quiet; then
+            echo "Runtime icon imports are already migrated."
+            exit 0
+          fi
+          git commit -m "refactor(ui): migrate Runtime icons to PNG adapter"
+          git push
