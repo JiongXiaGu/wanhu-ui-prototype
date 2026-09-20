@@ -60,7 +60,7 @@
 .city-wall-access-stair-preview__high{
   position:absolute;
   color:rgba(220,213,199,.68);
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   letter-spacing:.08em;
 }
 .city-wall-access-stair-preview__low{left:79px;top:225px}
@@ -75,7 +75,7 @@
   padding:4px 8px;
   border:1px dashed rgba(189,153,89,.46);
   color:rgba(215,208,194,.60);
-  font-size:8px;
+  font-size:var(--wanhu-type-micro,9.5px);
   text-align:center;
 }
 .city-wall-access-stair-preview__width-label,
@@ -83,7 +83,7 @@
 .city-wall-access-stair-preview__length-label{
   position:absolute;
   color:rgba(189,153,89,.72);
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   white-space:nowrap;
 }
 .city-wall-access-stair-preview__width-label{left:119px;top:248px}
