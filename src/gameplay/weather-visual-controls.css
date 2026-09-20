@@ -86,7 +86,7 @@
   align-items:center;
   margin-top:4px;
   color:#bbb9b3;
-  font-size:7.8px;
+  font-size:var(--wanhu-type-micro,9.5px);
   font-weight:500;
   line-height:1;
 }
