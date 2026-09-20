@@ -77,14 +77,14 @@
 .management-metric small{font-size:var(--wanhu-type-caption,10px);color:#7d847c;letter-spacing:.025em}
 .management-metric>div{display:flex;align-items:baseline;gap:10px}
 .management-metric strong{color:#e0dbd0;font-size:20px;font-weight:520;font-variant-numeric:tabular-nums}
-.management-metric em{font-style:normal;color:#aa9562;font-size:8.5px;font-variant-numeric:tabular-nums}
+.management-metric em{font-style:normal;color:#aa9562;font-size:var(--wanhu-type-micro,9.5px);font-variant-numeric:tabular-nums}
 
 .management-overview-grid{height:calc(100% - 108px);display:grid;grid-template-columns:minmax(0,1.65fr) minmax(330px,.75fr);gap:22px}
 .management-section{min-width:0;min-height:0;border-top:1px solid rgba(239,233,221,.075);background:rgba(255,255,255,.006)}
 .management-section__title{height:48px;padding:0 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(239,233,221,.055)}
 .management-section__title b{font-size:11px;font-weight:530;color:#c7c4bb;white-space:nowrap}
 .management-section__title>i{height:1px;flex:1;background:linear-gradient(90deg,rgba(239,233,221,.065),transparent 88%)}
-.management-section__title>span{margin-left:auto;color:#737b73;font-size:8.5px;letter-spacing:.02em}
+.management-section__title>span{margin-left:auto;color:#737b73;font-size:var(--wanhu-type-micro,9.5px);letter-spacing:.02em}
 .management-task-list{padding:2px 14px 14px}
 .management-task-row{
   width:100%;
@@ -134,7 +134,7 @@
 .finance-chart__bars i{width:18px;display:block;min-height:12px;transition:height .2s ease}
 .finance-chart__bars .is-income{background:linear-gradient(180deg,rgba(207,178,107,.72),rgba(155,130,78,.38));border-top:1px solid rgba(224,196,128,.55)}
 .finance-chart__bars .is-expense{background:linear-gradient(180deg,rgba(105,128,113,.65),rgba(73,91,80,.34));border-top:1px solid rgba(128,151,136,.45)}
-.finance-chart__month small{font-size:8.5px;color:#747c74}
+.finance-chart__month small{font-size:var(--wanhu-type-micro,9.5px);color:#747c74}
 .finance-breakdown-list{padding:7px 16px 12px;display:flex;flex-direction:column;gap:2px}
 .finance-breakdown-row{min-height:49px;padding:8px 0;border-bottom:1px solid rgba(239,233,221,.045)}
 .finance-breakdown-row>div{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
@@ -146,7 +146,7 @@
 .finance-tax-row{min-height:58px;padding:4px 16px;display:grid;grid-template-columns:170px minmax(180px,1fr) 54px;align-items:center;gap:18px;border-bottom:1px solid rgba(239,233,221,.045)}
 .finance-tax-row>span{display:flex;flex-direction:column;gap:5px}
 .finance-tax-row b{font-size:10px;font-weight:520;color:#bbb8af}
-.finance-tax-row small{font-size:8.5px;color:#727a72}
+.finance-tax-row small{font-size:var(--wanhu-type-micro,9.5px);color:#727a72}
 .finance-tax-row input{width:100%;accent-color:#b99a5f;cursor:pointer}
 .finance-tax-row output{height:30px;border:1px solid rgba(239,233,221,.075);display:grid;place-items:center;color:#cdb273;background:rgba(255,255,255,.008);font-size:var(--wanhu-type-caption,10px);font-variant-numeric:tabular-nums}
 .management-finance-notes .management-note-list{padding-top:7px}
