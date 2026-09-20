@@ -228,7 +228,12 @@
   stroke-width:1.7;
   transition:transform var(--wanhu-motion-control,120ms) ease;
 }
-.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger svg{transform:rotate(180deg)}
+.ui-dialog-choice-trigger .ui-dialog-choice-chevron{
+  color:#7f8580;
+  transition:transform var(--wanhu-motion-control,120ms) ease;
+}
+.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger svg,
+.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger .ui-dialog-choice-chevron{transform:rotate(180deg)}
 .ui-dialog-choice-menu{
   max-height:150px;
   margin-top:5px;
@@ -270,6 +275,7 @@
   color:#bd9959;
   stroke-width:1.8;
 }
+.ui-dialog-choice-menu>button .ui-dialog-choice-check{color:#bd9959}
 
 .ui-dialog-change{
   min-height:48px;
