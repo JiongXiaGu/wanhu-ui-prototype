@@ -679,7 +679,7 @@ UiIconId.Close
 
 Color Tool Controller / UXML 不依赖 Lucide 名称、React Component 或 Web SVG DOM。
 
-当前 Web 仍是 Lucide Runtime 过渡期；只有完成 PNG Pilot 后才开始把 ColorToolDock / LeftContextPanel 等代表场景迁为共享 `UiIcon`。
+当前 Web 已完成 PNG Pilot 与 Runtime 迁移：ColorToolDock / LeftContextPanel / Material Workspace 等均由共享 `UiIcon` / PNG Adapter 消费 committed PNG；Unity 可直接复用同一批资产。
 
 ---
 
@@ -845,7 +845,7 @@ UI Controller 只引用稳定接口 / DTO / Request，不持有渲染实现。
 - `backdrop-filter`：替换为共享 URP Blur Service + USS Tint；
 - CSS `filter`：替换为 Image Tint / Overlay / Material；
 - Web Pointer / Drag / Wheel 行为：用 UI Toolkit PointerEvent / NavigationEvent 与 New Input System 重新绑定；
-- Lucide Source Icon：生成实际使用清单后导入 Sprite Atlas 或 VectorImage。
+- PNG Icon：直接复制 `public/assets/ui/icons/*.png`，建立 Unity IconId → Sprite / Sprite Atlas 映射；SVG 仅保留 Source Master。
 
 ### Web-only 可丢弃
 
