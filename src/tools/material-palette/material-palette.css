@@ -133,62 +133,73 @@
 }
 
 /* Material Scheme Workspace --------------------------------------------------
-   Geometry, rail and item-card skin are inherited from the shared Design
-   Workspace / WorkspaceItemCard system. This section owns only material-specific
-   page tabs, current-state semantics, the subtle BaseColor accent line and delete/save. */
+   Rail, source filter, pager and item-card skin follow the shared Design
+   Workspace language. Material owns only source actions/badges, Current state,
+   the subtle BaseColor accent line and My Scheme delete behavior. */
 .gameplay-screen .workspace--material-scheme{
   width:1040px;
   z-index:23;
 }
 
-.gameplay-screen .workspace--material-scheme .material-scheme-workspace__page-tabs{
-  position:absolute;
-  left:50%;
-  top:50%;
+.material-scheme-workspace__source-filter{
+  gap:10px;
+}
+.material-scheme-workspace__source-filter .workspace-context-filter__scroll{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.material-scheme-workspace__actions{
+  flex:0 0 auto;
   display:flex;
   align-items:center;
-  gap:18px;
-  transform:translate(-50%,-50%);
+  gap:4px;
+  padding-left:8px;
 }
-
-.material-scheme-workspace__page-tabs>button{
-  position:relative;
-  height:30px;
-  padding:0 4px;
+.material-scheme-workspace__action{
+  height:28px;
+  min-height:28px;
+  padding:0 9px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
   border:0;
+  border-radius:7px;
   background:transparent;
-  color:#858b85;
+  color:#969b95;
   font:inherit;
-  font-size:9.5px;
+  font-size:9px;
+  font-weight:560;
+  white-space:nowrap;
   cursor:pointer;
-  transition-property:color,background;
-  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+  transition-property:background,color,opacity;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
-.material-scheme-workspace__page-tabs>button:hover{color:#c7c3ba}
-.material-scheme-workspace__page-tabs>button.is-active{color:#ddd7cb}
-.material-scheme-workspace__tab-indicator{
-  position:absolute;
-  left:50%;
-  bottom:1px;
-  width:28px;
-  height:2px;
-  border-radius:2px;
-  background:rgba(189,153,89,.82);
-  opacity:0;
-  translate:-50% 0;
-  transition-property:opacity;
-  transition-duration:var(--wanhu-motion-control,120ms);
+.material-scheme-workspace__action svg{
+  width:12px;
+  height:12px;
+  stroke-width:1.7;
 }
-.material-scheme-workspace__page-tabs>button.is-active .material-scheme-workspace__tab-indicator{opacity:1}
-
-.material-scheme-workspace__save{
-  margin-top:7px;
-  color:#a79b82!important;
-  background:rgba(169,132,75,.025)!important;
+.material-scheme-workspace__action:hover:not(:disabled){
+  background:rgba(255,255,255,.032);
+  color:#d0ccc3;
 }
-.material-scheme-workspace__save:hover{
-  color:#d7c8a9!important;
-  background:rgba(169,132,75,.060)!important;
+.material-scheme-workspace__action.is-primary{
+  background:rgba(169,132,75,.050);
+  color:#c8b995;
+}
+.material-scheme-workspace__action.is-primary:hover:not(:disabled){
+  background:rgba(169,132,75,.085);
+  color:#e0cfaa;
+}
+.material-scheme-workspace__action:focus-visible{
+  outline:1px solid rgba(189,153,89,.36);
+  outline-offset:1px;
+}
+.material-scheme-workspace__action:disabled{
+  opacity:.30;
+  cursor:default;
 }
 
 .material-scheme-workspace__card{
@@ -215,18 +226,45 @@
   gap:7px;
 }
 .material-scheme-workspace__card-meta{
+  width:100%;
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:6px;
+}
+.material-scheme-workspace__source{
+  flex:0 0 auto;
+  padding:2px 5px;
+  border-radius:5px;
+  background:rgba(255,255,255,.025);
+  color:#858b85;
+  font-size:7.5px;
+  line-height:1.1;
+  font-weight:560;
+  white-space:nowrap;
+}
+.material-scheme-workspace__source.is-workshop{
+  background:rgba(116,137,145,.050);
+  color:#96a7aa;
+}
+.material-scheme-workspace__source.is-mine{
+  background:rgba(169,132,75,.055);
+  color:#b8a47d;
 }
 .material-scheme-workspace__color-line{
-  width:38px;
+  width:28px;
   height:3px;
-  flex:0 0 38px;
+  flex:0 0 28px;
   display:block;
   border-radius:2px;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.045);
-  opacity:.82;
+  opacity:.78;
+}
+.material-scheme-workspace__card-detail{
+  min-width:0;
+  overflow:hidden;
+  color:#a9aaa4;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
 
 .material-scheme-workspace__card-delete{
