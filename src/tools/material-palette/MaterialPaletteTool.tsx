@@ -2,7 +2,7 @@ import type { Dispatch } from 'react';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import type { MotionPhase } from '../../ui/motion';
 import { BuildingSchemeModeOverlay } from '../building-scheme/BuildingSchemeModeOverlay';
-import { LightAdjustmentOverlay } from '../light-adjustment/LightAdjustmentOverlay';
+import { LightingModeOverlay } from './modes/lighting/LightingModeOverlay';
 import { MaterialPaletteDock } from './MaterialPaletteDock';
 import { SurfaceModeOverlay } from './modes/surface/SurfaceModeOverlay';
 
@@ -46,7 +46,7 @@ export function MaterialPaletteTool({
       )}
 
       {state.materialPaletteMode === 'lighting' && (
-        <LightAdjustmentOverlay
+        <LightingModeOverlay
           key="lighting"
           motionPhase={motionPhase}
           onClose={onClose}
