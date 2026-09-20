@@ -13,6 +13,7 @@ import {
   Route,
   Ruler,
   Layers3,
+  Lightbulb,
   ShieldCheck,
   ScanLine,
   Undo2,
@@ -26,6 +27,7 @@ export type UtilityItemId =
   | 'region'
   | 'terrain'
   | 'palette'
+  | 'light'
   | 'grid-snap'
   | 'grid-visible'
   | 'copy'
@@ -97,6 +99,7 @@ const WORLD_GROUPS: readonly (readonly UtilityItem[])[] = [
     { id: 'region', label: '编辑区域', icon: ScanLine, kind: 'action' },
     { id: 'terrain', label: '地形编辑', icon: Mountain, kind: 'action' },
     { id: 'palette', label: '配色工具', icon: Palette, kind: 'action' },
+    { id: 'light', label: '灯光调整', icon: Lightbulb, kind: 'action' },
   ],
   [
     { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
