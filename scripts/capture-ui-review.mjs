@@ -1221,9 +1221,6 @@ const baseEditor = materialPanel.locator('.material-color-editor[data-color-edit
 if ((await materialPanel.locator('.left-context-panel__back-button .ui-icon[data-ui-icon="arrow-left"]').count()) !== 1) {
   throw new Error('LeftContextPanel back action must use the PNG UiIcon pilot asset.');
 }
-if ((await materialPanel.getAttribute('data-color-numeric-mode')) === 'invalid-never') {
-  throw new Error('unreachable');
-}
 if ((await baseEditor.getAttribute('data-color-numeric-mode')) !== 'rgb') {
   throw new Error('Color Editor should default to RGB numeric mode.');
 }
