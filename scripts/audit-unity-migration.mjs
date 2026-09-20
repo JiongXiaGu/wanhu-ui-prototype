@@ -59,6 +59,7 @@ const metrics={
 const backdropFiles=new Set();
 const gridFiles=new Set();
 const lucideIcons=new Set();
+const lucideRuntimeFiles=new Set();
 
 for(const file of files){
   const text=await readFile(file,'utf8');
@@ -169,14 +170,21 @@ for(const file of files){
   }else{
     metrics.browserApis+=count(/\b(?:window|document)\./g,text);
     for(const match of text.matchAll(/import\s*{([^}]*)}\s*from\s*['"]lucide-react['"]/g)){
+      lucideRuntimeFiles.add(file);
       for(const raw of match[1].split(',')){
-        const name=raw.trim().split(/\s+as\s+/)[0]?.trim();
-        if(name)lucideIcons.add(name);
+        const token=raw.trim();
+        if(!token || /^type\s+/.test(token))continue;
+        const name=token.split(/\s+as\s+/)[0]?.trim();
+        if(name && name!=='LucideIcon')lucideIcons.add(name);
       }
     }
+    if(/from\s*['"]lucide-react['"]/.test(text))lucideRuntimeFiles.add(file);
   }
 }
 
+if(lucideRuntimeFiles.size){
+  warnings.push(`Lucide runtime migration debt: ${lucideRuntimeFiles.size} files still import lucide-react. Keep this transitional until PNG Pilot passes, then replace Shared/Business contracts with UiIconId.`);
+}
 if(metrics.cssGrid){
   warnings.push(`CSS Grid migration debt: ${metrics.cssGrid} declarations across ${gridFiles.size} files. Keep every layout expressible as nested Flex/UXML rows and columns.`);
 }
@@ -197,6 +205,7 @@ console.log('Unity UI Toolkit migration audit');
 console.log('--------------------------------');
 console.log(`Runtime files scanned: ${files.length}`);
 console.log(`Lucide source icons in use: ${lucideIcons.size}`);
+console.log(`Lucide runtime files: ${lucideRuntimeFiles.size}`);
 console.log(`CSS Grid declarations: ${metrics.cssGrid}`);
 console.log(`Pseudo-element selectors: ${metrics.pseudoElements}`);
 console.log(`Backdrop filter declarations: ${metrics.backdropFilters}`);
