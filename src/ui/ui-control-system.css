@@ -207,11 +207,11 @@
   flex-basis:16px;
 }
 .ui-color-parameter-field__hdr{
-  color:#aaa69c;
-  font-size:9px;
+  color:#b8b3a8;
+  font-size:10px;
   font-weight:600;
   line-height:1;
-  letter-spacing:.04em;
+  letter-spacing:.035em;
 }
 .ui-color-parameter-field__meta>svg{
   width:12px;
@@ -221,7 +221,7 @@
   stroke-width:1.7;
 }
 .ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__hdr{
-  color:#c9c3b7;
+  color:#d1cbbf;
 }
 .ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__meta>svg{
   color:#a3a8a2;
