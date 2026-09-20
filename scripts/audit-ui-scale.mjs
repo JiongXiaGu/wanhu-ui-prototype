@@ -34,11 +34,12 @@ for(const file of files){
   const lines=text.split('\n');
 
   if(file.endsWith('.css')){
-    for(const match of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
+    const cssForRules=text.replace(/\/\*[\s\S]*?\*\//g,(comment)=>comment.replace(/[^\n]/g,' '));
+    for(const match of cssForRules.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
       const selector=match[1].trim();
       const body=match[2];
       if(/\bsvg\b/.test(selector)){
-        const line=text.slice(0,match.index).split('\n').length;
+        const line=cssForRules.slice(0,match.index).split('\n').length;
         svgSelectors.push({file,line,selector,body:body.trim().replace(/\s+/g,' ')});
       }
       for(const sizeMatch of body.matchAll(/font-size\s*:\s*([^;}]*)/g)){
