@@ -145,7 +145,7 @@
   background:var(--command-tooltip-bg,rgba(25,26,24,.985));
   box-shadow:var(--command-tooltip-shadow,0 8px 22px rgba(6,8,7,.26));
   color:#b9b5ab;
-  font-size:9px;
+  font-size:var(--wanhu-type-tooltip,10px);
   font-weight:400;
   letter-spacing:.02em;
   white-space:nowrap;
