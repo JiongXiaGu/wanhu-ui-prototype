@@ -1,5 +1,6 @@
 import { Check, X } from 'lucide-react';
-import { UiIconGlyph, type UiIconSource } from '../ui/icons/UiIcon';
+import { UiIconGlyph } from '../ui/icons/UiIcon';
+import type { UiIconSource } from '../ui/icons/icon-types';
 
 export interface ToolModeItem {
   id: string;
