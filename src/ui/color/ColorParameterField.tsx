@@ -44,11 +44,10 @@ export function ColorParameterField({
             className="ui-color-parameter-field__fill"
             style={{ backgroundColor: color }}
           />
-          <i className="ui-color-parameter-field__contrast" />
-          <span className="ui-color-parameter-field__meta">
-            {hdr && <small className="ui-color-parameter-field__hdr">HDR</small>}
-            <ChevronRight />
-          </span>
+        </span>
+        <span className="ui-color-parameter-field__meta">
+          {hdr && <small className="ui-color-parameter-field__hdr">HDR</small>}
+          <ChevronRight aria-hidden="true" />
         </span>
       </button>
     </div>
