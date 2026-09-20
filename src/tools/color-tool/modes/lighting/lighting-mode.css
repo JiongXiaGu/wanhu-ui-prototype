@@ -1,6 +1,7 @@
-/* Light Adjustment Tool -------------------------------------------------------
-   Light selection is a lightweight Tool: world selection handles + one shared
-   Left Context Panel. No Workspace, catalog, preset library or bottom dock. */
+/* Color Tool — Lighting Mode --------------------------------------------------
+   Light selection is a lightweight mode: Web world-selection handles + one
+   shared Left Context Panel. It creates no central Workspace; ColorToolDock
+   remains mounted by ColorTool for the whole tool session. */
 
 .gameplay-screen .light-adjustment-panel{
   width:380px;
