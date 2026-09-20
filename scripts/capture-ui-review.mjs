@@ -831,23 +831,39 @@ for (const category of ['全部', '木头', '瓦片', '墙面']) {
     throw new Error('System Scheme category missing: ' + category);
   }
 }
-if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 6) {
-  throw new Error('System Scheme first page should use the 2x3 Workspace card pool.');
+if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 8) {
+  throw new Error('System Scheme first page should use the shared 4x2 Workspace card pool.');
 }
-if ((await schemeWorkspace.locator('.material-scheme-workspace__card-preview').count()) !== 6) {
+if ((await schemeWorkspace.locator('.workspace-item-card').count()) !== 8) {
+  throw new Error('Every Material Scheme Card should consume the shared WorkspaceItemCard primitive.');
+}
+const materialPreviews = schemeWorkspace.locator('.material-scheme-workspace__card-preview');
+if ((await materialPreviews.count()) !== 8) {
   throw new Error('Each Scheme Card should expose one dominant material preview sample.');
+}
+const previewBox = await materialPreviews.first().boundingBox();
+if (!previewBox || Math.abs(previewBox.width - previewBox.height) > 1 || Math.abs(previewBox.width - 64) > 1) {
+  throw new Error('Material Scheme preview must match Design Workspace 64x64 / 1:1 thumbnail geometry. box=' + JSON.stringify(previewBox));
+}
+const firstMaterialCardBox = await schemeWorkspace.locator('.workspace-item-card').first().boundingBox();
+if (!firstMaterialCardBox || Math.abs(firstMaterialCardBox.height - 64) > 1) {
+  throw new Error('Material Scheme Card must match shared WorkspaceItemCard 64px height. box=' + JSON.stringify(firstMaterialCardBox));
+}
+const firstMaterialCardStyle = await schemeWorkspace.locator('.workspace-item-card').first().evaluate((node) => getComputedStyle(node));
+if (firstMaterialCardStyle.borderTopWidth !== '0px') {
+  throw new Error('Shared WorkspaceItemCard must remain borderless by default.');
 }
 if (await schemeWorkspace.locator('.material-scheme-workspace__card-swatches').count()) {
   throw new Error('Scheme Cards must not regress to the four-color swatch strip.');
 }
-const firstPageDetails = schemeWorkspace.locator('.material-scheme-workspace__card-detail');
-if ((await firstPageDetails.count()) !== 6) {
-  throw new Error('Each Scheme Card should expose one concise finish label.');
+const materialMeta = schemeWorkspace.locator('.workspace-item-card__meta');
+if ((await materialMeta.count()) !== 8) {
+  throw new Error('Each Scheme Card should expose one shared meta line.');
 }
-for (let index = 0; index < await firstPageDetails.count(); index += 1) {
-  const detail = (await firstPageDetails.nth(index).textContent()) ?? '';
+for (let index = 0; index < await materialMeta.count(); index += 1) {
+  const detail = (await materialMeta.nth(index).textContent()) ?? '';
   if (/\d/.test(detail) || /铺贴|纹理/.test(detail)) {
-    throw new Error('Scheme Card detail must stay player-facing and free of numeric/texture-density metadata: ' + detail);
+    throw new Error('Scheme Card meta must stay player-facing and free of numeric/texture-density metadata: ' + detail);
   }
 }
 if ((await schemeWorkspace.locator('.material-scheme-workspace__pager button').count()) !== 2) {
@@ -857,8 +873,8 @@ await page.screenshot({ path: outDir + '/material-palette-29-scheme-workspace-sy
 
 await schemeWorkspace.getByRole('button', { name: '材质方案第 2 页', exact: true }).click();
 await page.waitForTimeout(100);
-if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 3) {
-  throw new Error('System Scheme second page should expose the remaining three presets.');
+if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 1) {
+  throw new Error('System Scheme second page should expose the remaining one preset after the shared 8-item page.');
 }
 await schemeWorkspace.getByRole('button', { name: '木头', exact: true }).click();
 await page.waitForTimeout(100);
