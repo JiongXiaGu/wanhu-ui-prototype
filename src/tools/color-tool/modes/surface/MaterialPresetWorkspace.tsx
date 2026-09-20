@@ -3,25 +3,13 @@ import {
   Bookmark,
   ClipboardPaste,
   Copy,
-  Grid3X3,
-  Hammer,
-  House,
-  Layers,
   MoreHorizontal,
-  Mountain,
-  Palette,
-  Paintbrush,
   Pencil,
   Save,
-  Shapes,
-  Shirt,
-  Square,
   Trash2,
-  Trees,
-  X,
-  type LucideIcon,
 } from 'lucide-react';
 import { useDialogSystem } from '../../../../ui/dialog/DialogSystem';
+import { UiIcon, type UiIconId } from '../../../../ui/icons/UiIcon';
 import type { MotionPhase } from '../../../../ui/motion';
 
 export type MaterialFamily =
@@ -87,18 +75,18 @@ const MATERIAL_FAMILIES = Object.keys(MATERIAL_FAMILY_LABELS) as MaterialFamily[
 const MATERIAL_CATEGORIES: readonly {
   id: MaterialPresetWorkspaceCategory;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconId;
 }[] = [
-  { id: 'all', label: '全部', icon: Grid3X3 },
-  { id: 'wood', label: '木材', icon: Trees },
-  { id: 'stone', label: '石材', icon: Mountain },
-  { id: 'metal', label: '金属', icon: Hammer },
-  { id: 'masonry', label: '砖瓦', icon: House },
-  { id: 'plaster-earth', label: '灰泥 / 土', icon: Layers },
-  { id: 'fabric', label: '布料', icon: Shirt },
-  { id: 'glass', label: '玻璃', icon: Square },
-  { id: 'lacquer', label: '漆饰', icon: Paintbrush },
-  { id: 'other', label: '其他', icon: Shapes },
+  { id: 'all', label: '全部', icon: 'grid-3-x-3' },
+  { id: 'wood', label: '木材', icon: 'trees' },
+  { id: 'stone', label: '石材', icon: 'mountain' },
+  { id: 'metal', label: '金属', icon: 'hammer' },
+  { id: 'masonry', label: '砖瓦', icon: 'house' },
+  { id: 'plaster-earth', label: '灰泥 / 土', icon: 'layers' },
+  { id: 'fabric', label: '布料', icon: 'shirt' },
+  { id: 'glass', label: '玻璃', icon: 'square' },
+  { id: 'lacquer', label: '漆饰', icon: 'paintbrush' },
+  { id: 'other', label: '其他', icon: 'shapes' },
 ];
 
 const SOURCE_FILTERS: readonly {
@@ -493,12 +481,12 @@ export function MaterialPresetWorkspace({
     >
       <header className="workspace-header material-preset-workspace__header">
         <div className="workspace-title">
-          <Palette aria-hidden="true" />
+          <UiIcon icon="palette" size={18} />
           <b>材质方案</b>
         </div>
 
         <button className="icon-button" type="button" onClick={onClose} aria-label="关闭材质方案工作区">
-          <X />
+          <UiIcon icon="x" size={16} />
         </button>
       </header>
 
@@ -528,7 +516,7 @@ export function MaterialPresetWorkspace({
             )}
 
             <div className="workspace-primary-rail__page material-preset-workspace__rail-list" key={categoryPage}>
-              {visibleCategories.map(({ id, label, icon: Icon }) => {
+              {visibleCategories.map(({ id, label, icon }) => {
                 const dropTarget = dragTargetFamily === id;
                 const dropDisabled = Boolean(draggingPreset) && id === 'all';
                 return (
@@ -548,7 +536,7 @@ export function MaterialPresetWorkspace({
                     onDragLeave={() => dropTarget && setDragTargetFamily(null)}
                     onDrop={(event) => dropOnCategory(event, id)}
                   >
-                    <Icon aria-hidden="true" />
+                    <UiIcon icon={icon} size={15} />
                     <span>{label}</span>
                     {draggingPreset && id !== 'all' && <small>移动到这里</small>}
                   </button>
