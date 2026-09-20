@@ -17,7 +17,7 @@ import { CityWallAccessStairOverlay } from '../tools/city-wall-access-stair/City
 import { CityWallAccessStairDock } from '../tools/city-wall-access-stair/CityWallAccessStairDock';
 import { CityWallTransitionStairOverlay } from '../tools/city-wall-transition-stair/CityWallTransitionStairOverlay';
 import { CityWallTransitionStairDock } from '../tools/city-wall-transition-stair/CityWallTransitionStairDock';
-import { MaterialPaletteTool } from '../tools/material-palette/MaterialPaletteTool';
+import { ColorTool } from '../tools/color-tool/ColorTool';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -193,7 +193,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleCityWallTransitionStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
-            else if (id === 'palette') dispatch({ type: 'ENTER_MATERIAL_PALETTE' });
+            else if (id === 'palette') dispatch({ type: 'ENTER_COLOR_TOOL' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
           }}
         />
@@ -341,8 +341,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         </>
       )}
 
-      {toolPresence.mounted && renderedTool === 'material-palette' && (
-        <MaterialPaletteTool
+      {toolPresence.mounted && renderedTool === 'color-tool' && (
+        <ColorTool
           state={state}
           dispatch={dispatch}
           motionPhase={toolPresence.phase}
@@ -364,7 +364,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <TreePlacementTool state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onExit={exitTool} />
       )}
 
-      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'material-palette' && (
+      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'color-tool' && (
         <GameplayOperationHints
           tool={state.tool}
           adjustmentMode={state.adjustmentMode}
