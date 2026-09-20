@@ -650,16 +650,36 @@ Color Tool Mode 不拥有独立 Blur Pass。
 
 ## 16. 图标
 
-Web 使用 Lucide 只是 Source Library。
+正式规则见：`Documentation/UI图标资产管线.md`。
 
-迁移时建立：
+Color Tool 不拥有独立图标技术路线，直接消费项目共享 `UiIconId`。
+
+目标：
 
 ```text
-IconId
-→ Sprite / VectorImage
+SVG Source Master
+        ↓
+64×64 white PNG
+        ↓
+UiIconId
+      ↙      ↘
+Web          Unity
+PNG Mask     Sprite + Tint
 ```
 
-C# / UXML 不依赖 Lucide 名称作为业务 ID。
+例如：
+
+```text
+UiIconId.ColorToolSurface
+UiIconId.ColorToolLighting
+UiIconId.ColorToolScheme
+UiIconId.Back
+UiIconId.Close
+```
+
+Color Tool Controller / UXML 不依赖 Lucide 名称、React Component 或 Web SVG DOM。
+
+当前 Web 仍是 Lucide Runtime 过渡期；只有完成 PNG Pilot 后才开始把 ColorToolDock / LeftContextPanel 等代表场景迁为共享 `UiIcon`。
 
 ---
 
