@@ -5,7 +5,7 @@
 .color-tool-surface-section .left-context-panel__section-title{margin-bottom:5px}
 
 /* Surface scheme + color-card composition ----------------------------------- */
-.material-scheme-selector{
+.material-preset-selector{
   width:100%;
   min-height:34px;
   margin:1px 1px 7px;
@@ -22,31 +22,31 @@
   transition-property:background,color,transform;
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
 }
-.material-scheme-selector:hover{
+.material-preset-selector:hover{
   background:rgba(255,255,255,.025);
 }
-.material-scheme-selector:active{transform:translateY(1px)}
-.material-scheme-selector:focus-visible{
+.material-preset-selector:active{transform:translateY(1px)}
+.material-preset-selector:focus-visible{
   outline:1px solid rgba(189,153,89,.36);
   outline-offset:1px;
 }
-.material-scheme-selector__label{
+.material-preset-selector__label{
   flex:0 0 48px;
   color:#7f8580;
   font-size:8px;
   font-weight:520;
 }
-.material-scheme-selector__type{
+.material-preset-selector__type{
   color:#9aa09a;
   font-size:8.5px;
   font-weight:560;
 }
-.material-scheme-selector__separator{
+.material-preset-selector__separator{
   color:#676d68;
   font-size:9px;
   font-style:normal;
 }
-.material-scheme-selector__name{
+.material-preset-selector__name{
   min-width:0;
   flex:1 1 auto;
   color:#d6d1c8;
@@ -56,7 +56,7 @@
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.material-scheme-selector__chevron{
+.material-preset-selector__chevron{
   width:15px;
   height:15px;
   flex:0 0 15px;
