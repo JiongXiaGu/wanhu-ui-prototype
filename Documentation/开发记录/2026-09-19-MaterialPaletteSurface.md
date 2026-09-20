@@ -173,3 +173,18 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - 自定义方案仍只在 Web Tool Session 内保存；
 - 默认 Metallic 下 SpecularColor 完全隐藏；
 - Specular 工作流颜色顺序固定为 Base / Emission / NightEmission / Specular。
+
+
+## 材质方案卡改为结果预览
+
+原中央 MaterialSchemeWorkspace Card 直接展示 Base / Emission / NightEmission / Specular 四色拼条，并常驻“工作流 · 光滑数值 · 铺贴数值”。多数系统方案的发光与夜间发光为黑色，导致卡片的大部分面积没有区分度。
+
+本轮改为：
+
+- 删除四色拼条；
+- Card 左侧使用单个大材质样片，BaseColor 为主色；
+- Web 样片用固定受光 + 极弱木头 / 瓦片 / 墙面类型纹理表达材质感；
+- 右侧只保留类型、名称和粗糙 / 哑光 / 偏哑光 / 光滑；
+- 不显示“中等纹理”等纹理粒度文字；
+- 不常驻显示 Smoothness / TextureTiling 数值；
+- 正式 Unity 可把同一 Preview 槽替换成预生成 MaterialPresetThumbnail，不改变卡片信息架构。
