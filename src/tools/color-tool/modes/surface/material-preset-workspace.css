@@ -8,7 +8,7 @@
    Rail, source filter, pager and item-card skin follow the shared Design
    Workspace language. Material owns only source actions/badges, Current state,
    the subtle BaseColor accent line and My Scheme delete behavior. */
-.gameplay-screen .workspace--material-scheme{
+.gameplay-screen .workspace--material-preset{
   width:1040px;
   z-index:23;
 }
