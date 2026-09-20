@@ -1258,4 +1258,94 @@ await page.waitForSelector('.context-utility-toolbar[data-utility-context="world
 await page.waitForTimeout(180);
 await page.screenshot({ path: outDir + '/material-palette-35-return-gameplay.png' });
 
+// Light Adjustment Tool --------------------------------------------------------
+const worldUtilityForLight = page.locator('.context-utility-toolbar[data-utility-context="world"]');
+if ((await worldUtilityForLight.getByRole('button', { name: '灯光调整', exact: true }).count()) !== 1) {
+  throw new Error('World Utility should expose the Light Adjustment tool entry.');
+}
+await worldUtilityForLight.getByRole('button', { name: '灯光调整', exact: true }).click();
+await page.waitForSelector('.light-adjustment-panel');
+await page.waitForTimeout(180);
+
+const lightPanel = page.locator('.light-adjustment-panel');
+if ((await lightPanel.getAttribute('data-light-adjustment-selected')) !== 'none'
+  || (await lightPanel.getAttribute('data-light-adjustment-page')) !== 'parameters') {
+  throw new Error('Light Adjustment should enter with no selected scene light and no Workspace.');
+}
+if ((await page.locator('.workspace').count()) !== 0) {
+  throw new Error('Light Adjustment must not create a central Workspace.');
+}
+if ((await page.locator('.context-utility-toolbar').count()) !== 0) {
+  throw new Error('Light Adjustment should stay lightweight and hide the bottom Utility toolbar while editing.');
+}
+if ((await lightPanel.locator('.left-context-panel__footer').count()) !== 0) {
+  throw new Error('Light Adjustment should not add a footer or preset actions.');
+}
+if ((await page.locator('.light-adjustment-handle').count()) !== 4) {
+  throw new Error('Light Adjustment prototype should expose four selectable scene light handles.');
+}
+if ((await lightPanel.getByText('选择一盏场景灯光', { exact: true }).count()) !== 1) {
+  throw new Error('Light Adjustment should explain scene selection before a light is selected.');
+}
+await page.screenshot({ path: outDir + '/light-adjustment-01-select-scene-light.png' });
+
+await page.getByRole('button', { name: '选择灯光 城门灯笼 03', exact: true }).click();
+await page.waitForTimeout(120);
+if ((await lightPanel.getAttribute('data-light-adjustment-selected')) !== 'gate-lantern-03') {
+  throw new Error('Clicking a scene light should bind that light to the left panel.');
+}
+if ((await lightPanel.getByText('城门灯笼 03', { exact: true }).count()) !== 1) {
+  throw new Error('Selected scene light name should appear in the panel header.');
+}
+for (const label of ['亮度', '范围']) {
+  if ((await lightPanel.getByText(label, { exact: true }).count()) < 1) {
+    throw new Error('Selected Light panel missing parameter: ' + label);
+  }
+}
+if ((await lightPanel.getByRole('button', { name: '调整灯光颜色', exact: true }).count()) !== 1) {
+  throw new Error('Selected Light panel should expose HDR color editing.');
+}
+await page.screenshot({ path: outDir + '/light-adjustment-02-selected-parameters.png' });
+
+await lightPanel.getByRole('button', { name: '调整灯光颜色', exact: true }).click();
+await page.waitForTimeout(120);
+const lightColorEditor = lightPanel.locator('.shared-color-editor[data-color-editor-target="LightColor"]');
+if ((await lightPanel.getAttribute('data-light-adjustment-page')) !== 'color'
+  || (await lightColorEditor.getAttribute('data-color-editor-hdr')) !== 'true') {
+  throw new Error('Light Color must use the shared HDR Color Editor.');
+}
+if ((await lightColorEditor.locator('[data-color-adapter="LightColor.Intensity"]').count()) !== 1
+  || (await lightColorEditor.getByText('HDR 强度', { exact: true }).count()) !== 1) {
+  throw new Error('Light HDR Color should expose an HDR intensity adapter.');
+}
+await lightColorEditor.getByRole('textbox', { name: '十六进制颜色', exact: true }).fill('#FFD8A8');
+await lightColorEditor.getByRole('textbox', { name: '十六进制颜色', exact: true }).press('Enter');
+await page.screenshot({ path: outDir + '/light-adjustment-03-hdr-color-editor.png' });
+
+await lightPanel.getByRole('button', { name: '返回灯光参数', exact: true }).click();
+await page.waitForTimeout(100);
+const intensityBefore = Number(await lightPanel.getAttribute('data-light-intensity-scale'));
+const rangeBefore = Number(await lightPanel.getAttribute('data-light-range-scale'));
+await lightPanel.getByRole('button', { name: '亮度增大', exact: true }).click();
+await lightPanel.getByRole('button', { name: '范围减小', exact: true }).click();
+await page.waitForTimeout(80);
+const intensityAfter = Number(await lightPanel.getAttribute('data-light-intensity-scale'));
+const rangeAfter = Number(await lightPanel.getAttribute('data-light-range-scale'));
+if (!(intensityAfter > intensityBefore) || !(rangeAfter < rangeBefore)) {
+  throw new Error('Light Intensity/Range Scale should update live through shared NumericSliderField controls.');
+}
+
+await page.getByRole('button', { name: '选择灯光 市集灯笼 07', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await lightPanel.getAttribute('data-light-adjustment-selected')) !== 'market-lantern-07'
+  || (await lightPanel.getByText('市集灯笼 07', { exact: true }).count()) !== 1) {
+  throw new Error('Selecting another scene light should rebind the same panel instead of opening another surface.');
+}
+await page.screenshot({ path: outDir + '/light-adjustment-04-rebind-scene-light.png' });
+
+await lightPanel.getByRole('button', { name: '退出灯光调整', exact: true }).click();
+await page.waitForSelector('.light-adjustment-panel', { state: 'detached' });
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
+await page.waitForTimeout(140);
+
 await browser.close();
