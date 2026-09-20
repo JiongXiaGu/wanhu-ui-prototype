@@ -4,6 +4,7 @@ import App from './App';
 import { DialogProvider } from './ui/dialog/DialogSystem';
 import './styles.css';
 import './workspace.css';
+import './workspace/workspace-catalog.css';
 import './menu-refine.css';
 import './backgrounds.css';
 import './gameplay/bottom-command-system.css';
