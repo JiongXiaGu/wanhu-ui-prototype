@@ -65,29 +65,49 @@
 
 ## 5. Icon Pipeline
 
-Web 当前使用 `lucide-react`，React Component 最终渲染 inline SVG。
+正式规范：`Documentation/UI图标资产管线.md`。
 
-正式 Unity：
+当前 Web 仍直接使用 `lucide-react`，但这只属于迁移过渡状态。
+
+正式管线：
 
 ```text
-Lucide / 自研 SVG Source Master
+Lucide / 自研 SVG
         ↓
-实际使用 Icon Manifest
+固定 SVG Source Master
         ↓
-导出 / 导入
+64×64 white RGBA PNG
         ↓
-Sprite Atlas 或 VectorImage
-        ↓
-USS / Image Tint 表达 Default / Hover / Active / Warning / Danger
+UiIconId + Manifest
+      ↙             ↘
+Web Runtime          Unity Runtime
+PNG Alpha Mask       Sprite + Tint
 ```
 
-规则：
+稳定规则：
 
-- Unity Runtime 不依赖 Lucide React；
-- 不为不同状态保存多份不同颜色 Icon；
-- 单色 Icon 优先通过 Tint；
-- 是否使用 VectorImage 逐类测试，不要求全项目统一使用 SVG Runtime；
-- 复杂插画与缩略图不进入 Icon Pipeline。
+- SVG 是 Source Master，不作为普通 Icon 的正式 Runtime Contract；
+- PNG 是 Web Prototype 与 Unity UI Toolkit 共用的 Runtime Asset；
+- 普通 Icon 统一 64×64 RGBA + Transparent Background；
+- 状态颜色不烘焙进 PNG，通过 Web currentColor / Unity Tint 表达；
+- Shared / Business API 最终使用 `UiIconId`，不暴露 `LucideIcon`；
+- Unity 直接复制已经在 Web UI Review 中验收过的 PNG，不在迁移阶段重新转换；
+- Source SVG 必须提交 Git，避免依赖包升级导致同名图标漂移；
+- 当前 Stroke Pilot 基线为 1.7，必须先经过 ColorTool / LeftContext / Workspace / Dialog 代表场景审查后才能冻结；
+- 复杂插画、缩略图、RenderTexture、Noise、Pager / Selected Line 等不进入 UiIcon Pipeline。
+
+迁移阶段：
+
+1. Icon Contract；
+2. Asset Generator；
+3. PNG Pilot；
+4. Shared Contract 从 `LucideIcon` 改为 `UiIconId`；
+5. Runtime 分批 PNG 化；
+6. CSS `svg` Selector Cleanup；
+7. CI Freeze；
+8. Unity Handoff。
+
+在 PNG Pilot 通过之前，Audit 只把 `lucide-react` 作为 Migration Debt 输出，不直接阻断 Build。
 
 ## 6. 第一批 Unity Vertical Slice
 
