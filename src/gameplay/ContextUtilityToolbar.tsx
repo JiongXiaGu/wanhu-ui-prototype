@@ -16,6 +16,7 @@ import {
   Lightbulb,
   ShieldCheck,
   ScanLine,
+  SwatchBook,
   Undo2,
 } from 'lucide-react';
 import type { CityWallGatePlacementMode, Tool } from '../app/ui-state';
@@ -28,6 +29,7 @@ export type UtilityItemId =
   | 'terrain'
   | 'palette'
   | 'light'
+  | 'scheme'
   | 'grid-snap'
   | 'grid-visible'
   | 'copy'
@@ -100,6 +102,7 @@ const WORLD_GROUPS: readonly (readonly UtilityItem[])[] = [
     { id: 'terrain', label: '地形编辑', icon: Mountain, kind: 'action' },
     { id: 'palette', label: '配色工具', icon: Palette, kind: 'action' },
     { id: 'light', label: '灯光调整', icon: Lightbulb, kind: 'action' },
+    { id: 'scheme', label: '方案模式', icon: SwatchBook, kind: 'action' },
   ],
   [
     { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
