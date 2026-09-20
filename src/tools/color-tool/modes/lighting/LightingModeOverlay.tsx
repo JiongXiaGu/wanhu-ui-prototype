@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Lightbulb, MousePointer2 } from 'lucide-react';
+import { MousePointer2 } from 'lucide-react';
 import { RuntimeParameterRow } from '../../../../ui/Controls';
 import { LeftContextSection } from '../../../../ui/LeftContextPanel';
 import { ColorEditorPage } from '../../../../ui/color/ColorEditorPage';
@@ -88,7 +88,7 @@ export function LightingModeOverlay({
 
       <PlacementContextPanel
         ariaLabel={page === 'color' ? '调整灯光 HDR 颜色' : '灯光调整'}
-        icon={Lightbulb}
+        icon="lightbulb"
         title={page === 'color' ? '灯光颜色' : '灯光'}
         subtitle={page === 'color' ? 'HDR 颜色' : (selected?.name ?? '请选择场景灯光')}
         closeLabel="退出配色工具"
