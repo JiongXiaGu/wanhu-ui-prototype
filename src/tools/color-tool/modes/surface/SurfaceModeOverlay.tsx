@@ -367,10 +367,10 @@ function SurfacePage({
   const specularWorkflow = draft.workflow === '高光';
 
   return (
-    <div className="material-palette-surface">
+    <div className="color-tool-surface">
       <SchemeSelector scheme={scheme} onOpen={onOpenPresetLibrary} />
 
-      <LeftContextSection title="颜色" className="material-palette-section material-palette-colors">
+      <LeftContextSection title="颜色" className="color-tool-surface-section color-tool-surface-colors">
         <div className={'material-color-strip ' + (specularWorkflow ? 'has-specular' : 'is-metallic')}>
           <ColorCard label="主色" value={draft.baseColor} field="BaseColor" onOpen={onOpenColor} />
           <ColorCard label="发光" value={draft.emissionColor} hdr field="EmissionColor" onOpen={onOpenColor} />
@@ -381,7 +381,7 @@ function SurfacePage({
         </div>
       </LeftContextSection>
 
-      <LeftContextSection title="材质属性" className="material-palette-section material-palette-properties">
+      <LeftContextSection title="材质属性" className="color-tool-surface-section color-tool-surface-properties">
         <div className="material-property-group material-property-group--surface">
           {!specularWorkflow && (
             <div data-material-field="Metallic">
@@ -446,7 +446,7 @@ function SurfacePage({
         </div>
       </LeftContextSection>
 
-      <div className="material-palette-workflow-bottom" data-material-field="Flags.SpecularSetup">
+      <div className="color-tool-surface-workflow-bottom" data-material-field="Flags.SpecularSetup">
         <div className="material-workflow-field ui-parameter-row">
           <span>工作流</span>
           <MaterialWorkflowControl value={draft.workflow} onChange={(value) => onUpdate('workflow', value)} />
@@ -660,7 +660,7 @@ export function SurfaceModeOverlay({
   function renderPage(page: MaterialPageKey, phase: MotionPhase, outgoing = false) {
     const target = pageTarget(page);
     const pageClass = [
-      'material-palette-page',
+      'color-tool-surface-page',
       page === 'surface' ? 'is-surface-page' : 'is-color-page',
       `is-${phase}`,
       `is-${pageDirection}`,
@@ -738,10 +738,10 @@ export function SurfaceModeOverlay({
       closeLabel="退出配色工具"
       backLabel="返回表面参数"
       onBack={activeColorTarget ? () => setRequestedPage('surface') : undefined}
-      footerClassName="material-palette-footer"
+      footerClassName="color-tool-surface-footer"
       footer={footer}
-      className={'material-palette-prototype motion-left-surface is-' + motionPhase}
-      bodyClassName="material-palette-prototype__body"
+      className={'color-tool-surface-panel motion-left-surface is-' + motionPhase}
+      bodyClassName="color-tool-surface-panel__body"
       onClose={onClose}
       dataAttributes={{
         'data-material-mode': 'surface',
@@ -756,7 +756,7 @@ export function SurfaceModeOverlay({
         'data-material-scheme-workspace': schemeWorkspaceOpen ? 'open' : 'closed',
       }}
     >
-      <div className="material-palette-page-host">
+      <div className="color-tool-surface-page-host">
         {pageTransition.outgoing && renderPage(pageTransition.outgoing, pageTransition.outgoingPhase, true)}
         {renderPage(pageTransition.active, pageTransition.activePhase)}
       </div>
