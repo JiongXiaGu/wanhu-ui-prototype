@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Check, CircleX, Info, Trash2, TriangleAlert } from 'lucide-react';
+import { Check, ChevronDown, CircleX, Info, Trash2, TriangleAlert } from 'lucide-react';
 import { TextInput } from '../Controls';
 import { usePresence, type MotionPhase } from '../motion';
 
@@ -163,15 +163,24 @@ function InputDialogView({request,onDismiss,interactive,motionPhase}:{request:In
 function ChoiceInputDialogView({request,onDismiss,interactive,motionPhase}:{request:ChoiceInputDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
   const [value,setValue]=useState(request.initialValue);
   const [choice,setChoice]=useState(request.choices.includes(request.initialChoice)?request.initialChoice:(request.choices[0]??''));
+  const [choiceOpen,setChoiceOpen]=useState(false);
   const inputRef=useRef<HTMLInputElement>(null);
   const trimmed=value.trim();
   const error=trimmed.length===0?'请输入内容。':request.validate?.(trimmed)??'';
   const canConfirm=!error&&Boolean(choice);
   useEffect(()=>{if(interactive){inputRef.current?.focus();inputRef.current?.select()}},[request.id,interactive]);
-  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed,choice);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,choice,canConfirm,interactive]);
+  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();if(choiceOpen){setChoiceOpen(false);return}request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm&&!choiceOpen){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed,choice);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,choice,canConfirm,interactive,choiceOpen]);
   return <DialogFrame title={request.title} motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed,choice);onDismiss()}}}>{request.confirmText}</button></>}>
     <label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={value} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label>
-    <div className="ui-dialog-choice-group"><span>{request.choiceLabel}</span><div className="ui-dialog-choice-options" role="radiogroup" aria-label={request.choiceLabel}>{request.choices.map(item=><button key={item} type="button" role="radio" aria-checked={choice===item} className={choice===item?'is-active':''} onClick={()=>setChoice(item)}>{item}</button>)}</div></div>
+    <div className="ui-dialog-choice-group">
+      <span>{request.choiceLabel}</span>
+      <div className={`ui-dialog-choice-select ${choiceOpen?'is-open':''}`}>
+        <button type="button" className="ui-dialog-choice-trigger" aria-label={request.choiceLabel} aria-haspopup="listbox" aria-expanded={choiceOpen} onClick={()=>setChoiceOpen(open=>!open)}>
+          <span>{choice}</span><ChevronDown aria-hidden="true"/>
+        </button>
+        {choiceOpen&&<div className="ui-dialog-choice-menu" role="listbox" aria-label={request.choiceLabel}>{request.choices.map(item=><button key={item} type="button" role="option" aria-selected={choice===item} className={choice===item?'is-selected':''} onClick={()=>{setChoice(item);setChoiceOpen(false)}}><span>{item}</span>{choice===item&&<Check aria-hidden="true"/>}</button>)}</div>}
+      </div>
+    </div>
   </DialogFrame>;
 }
 
