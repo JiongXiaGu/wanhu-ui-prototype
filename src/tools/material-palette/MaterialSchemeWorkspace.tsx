@@ -362,13 +362,15 @@ export function MaterialSchemeWorkspace({
   }
 
   function openSaveDialog() {
+    const defaultFamily = category === 'all' ? currentFamily : category;
+
     dialogs.choiceInput({
       title: '保存配色',
       label: '方案名称',
       initialValue: saveInitialName,
       choiceLabel: '材质分类',
       choices: MATERIAL_FAMILIES.map((family) => MATERIAL_FAMILY_LABELS[family]),
-      initialChoice: MATERIAL_FAMILY_LABELS[currentFamily],
+      initialChoice: MATERIAL_FAMILY_LABELS[defaultFamily],
       choiceLayout: 'grid',
       maxLength: 40,
       helperText: '保存到“我的方案”，名称和分类之后仍可编辑。',
