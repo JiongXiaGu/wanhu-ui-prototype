@@ -28,21 +28,30 @@ let remaining = 0;
 for (const file of await walk(SRC_ROOT)) {
   if (file.endsWith('runtime-icons.generated.tsx')) continue;
   const text = await readFile(file, 'utf8');
-  if (!/from\s*['"]lucide-react['"]/.test(text)) continue;
+  let next = text;
 
-  const replacement = importPathFor(file);
-  const next = text.replace(/from\s*['"]lucide-react['"]/g, "from '" + replacement + "'");
-  await writeFile(file, next, 'utf8');
-  changed += 1;
+  if (/from\s*['"]lucide-react['"]/.test(next)) {
+    next = next.replace(
+      /from\s*['"]lucide-react['"]/g,
+      "from '" + importPathFor(file) + "'",
+    );
+  }
+
+  next = next.replace(/\bLucideIcon\b/g, 'UiIconComponent');
+
+  if (next !== text) {
+    await writeFile(file, next, 'utf8');
+    changed += 1;
+  }
 }
 
 for (const file of await walk(SRC_ROOT)) {
   const text = await readFile(file, 'utf8');
-  if (/from\s*['"]lucide-react['"]/.test(text)) {
-    console.error('Remaining lucide-react Runtime import: ' + path.relative(ROOT, file));
+  if (/from\s*['"]lucide-react['"]/.test(text) || /\bLucideIcon\b/.test(text)) {
+    console.error('Remaining Lucide Runtime contract: ' + path.relative(ROOT, file));
     remaining += 1;
   }
 }
 
-console.log('Migrated Runtime icon imports: ' + changed + ' files.');
+console.log('Migrated Runtime icon contracts: ' + changed + ' files.');
 if (remaining) process.exitCode = 1;
