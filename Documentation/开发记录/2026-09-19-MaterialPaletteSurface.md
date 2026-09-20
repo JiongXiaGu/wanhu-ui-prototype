@@ -284,3 +284,20 @@ Card 信息架构同步调整：
 - “移动分类…”进入独立二级可滚动 Family Picker；
 - Save Dialog 的分类从横向 Radio 改为 Dropdown；
 - Drag Drop 只处理当前 Rail 页可见 Family，跨页移动使用 Picker。
+
+
+## 保存 / 编辑 / 拖拽流程收敛
+
+对 Material Family、保存 Dialog、我的方案菜单与 Drag Drop 再次做交互审查后，删除了不必要的操作层级：
+
+- 9 个 Material Family 在 Save / Edit Dialog 中改为 3×3 平铺，不再使用 Dropdown；
+- Save 与 Edit 共用 ChoiceInput Metadata Dialog；
+- 我的方案菜单从“重命名 / 移动分类… / 复制参数 / 删除”收敛为“编辑 / 复制参数 / 删除”；
+- Edit 一次可同时修改 Name + Family；
+- Overlay 的 rename / move 两套回调合并为 UpdatePresetMetadata；
+- Drag Move 继续只改 Family，但成功后自动切换 Rail Page + Family Filter + Content Page；
+- Edit 修改 Family 同样自动导航到目标分类；
+- 移动操作删除 Undo Toast；
+- 使用局部 Card Reveal Highlight 作为完成反馈；
+- 保存新方案同样自动进入我的方案 + 新 Family，并定位新 Card；
+- Source Filter 在 Edit / Drag Move 时保持不变。
