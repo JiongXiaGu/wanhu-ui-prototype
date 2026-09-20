@@ -91,7 +91,7 @@ export function LightAdjustmentOverlay({
         icon={Lightbulb}
         title={page === 'color' ? '灯光颜色' : '灯光'}
         subtitle={page === 'color' ? 'HDR 颜色' : (selected?.name ?? '请选择场景灯光')}
-        closeLabel="退出灯光调整"
+        closeLabel="退出配色工具"
         backLabel="返回灯光参数"
         onBack={page === 'color' ? () => setPage('parameters') : undefined}
         className={'light-adjustment-panel motion-left-surface is-' + motionPhase}
