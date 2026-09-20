@@ -963,6 +963,7 @@ if ((await schemeWorkspace.getByText('我的方案', { exact: true }).count()) <
   throw new Error('Saved card should identify 我的方案 as its source.');
 }
 
+await schemeWorkspace.getByRole('button', { name: '应用材质方案 墙面 · 城墙暖灰', exact: true }).hover();
 await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true }).click();
 await page.waitForSelector('.material-scheme-workspace__card-menu');
 const presetMenu = schemeWorkspace.locator('.material-scheme-workspace__card-menu');
@@ -995,6 +996,7 @@ if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 墙�
   throw new Error('Renamed My Scheme should update its catalog card.');
 }
 
+await schemeWorkspace.getByRole('button', { name: /应用材质方案 .* · 城墙暖灰二号/, exact: true }).hover();
 await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
 await page.waitForSelector('.material-scheme-workspace__card-menu');
 await schemeWorkspace.locator('.material-scheme-workspace__card-menu').getByRole('button', { name: '木头', exact: true }).click();
@@ -1020,6 +1022,7 @@ if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 木�
 }
 await page.screenshot({ path: outDir + '/material-palette-33-mine-renamed-moved.png' });
 
+await schemeWorkspace.getByRole('button', { name: /应用材质方案 .* · 城墙暖灰二号/, exact: true }).hover();
 await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
 await page.waitForSelector('.material-scheme-workspace__card-menu');
 await schemeWorkspace.locator('.material-scheme-workspace__card-menu').getByRole('menuitem', { name: '复制参数', exact: true }).click();
@@ -1033,6 +1036,7 @@ if ((await materialPanel.getAttribute('data-material-scheme-name')) !== '未保�
   throw new Error('Pasting Surface parameters from the Workspace should return CurrentScheme to unsaved custom.');
 }
 
+await schemeWorkspace.getByRole('button', { name: /应用材质方案 .* · 城墙暖灰二号/, exact: true }).hover();
 await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
 await page.waitForSelector('.material-scheme-workspace__card-menu');
 await schemeWorkspace.locator('.material-scheme-workspace__card-menu').getByRole('menuitem', { name: '删除', exact: true }).click();
