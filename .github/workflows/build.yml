@@ -18,5 +18,6 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npm run icons:check
+      - run: npm run audit:scale
       - run: npm run audit:unity
       - run: npm run build
