@@ -1393,4 +1393,120 @@ await page.waitForSelector('.light-adjustment-panel', { state: 'detached' });
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
 await page.waitForTimeout(140);
 
+// Building Scheme Mode ---------------------------------------------------------
+const worldUtilityForScheme = page.locator('.context-utility-toolbar[data-utility-context="world"]');
+if ((await worldUtilityForScheme.getByRole('button', { name: '方案模式', exact: true }).count()) !== 1) {
+  throw new Error('World Utility should expose the Building Scheme Mode entry.');
+}
+await worldUtilityForScheme.getByRole('button', { name: '方案模式', exact: true }).click();
+await page.waitForSelector('.building-scheme-panel');
+await page.waitForTimeout(160);
+
+const buildingSchemePanel = page.locator('.building-scheme-panel');
+if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'none') {
+  throw new Error('Building Scheme Mode should enter without a selected building.');
+}
+if ((await page.locator('.building-scheme-workspace').count()) !== 0) {
+  throw new Error('Building Scheme Workspace must stay closed until the scheme selector is opened.');
+}
+if ((await page.locator('.context-utility-toolbar').count()) !== 0) {
+  throw new Error('Building Scheme Mode should hide the bottom World Utility while editing.');
+}
+if ((await page.locator('.building-scheme-handle').count()) !== 4) {
+  throw new Error('Building Scheme prototype should expose four selectable building handles.');
+}
+if ((await buildingSchemePanel.getByText('选择一栋场景建筑', { exact: true }).count()) !== 1) {
+  throw new Error('Building Scheme Mode should explain building selection before a building is selected.');
+}
+await page.screenshot({ path: outDir + '/building-scheme-01-select-building.png' });
+
+await page.getByRole('button', { name: '选择建筑 重檐楼阁 03', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'tower-03'
+  || (await buildingSchemePanel.getAttribute('data-building-scheme-name')) !== '江南素雅') {
+  throw new Error('Selecting a building should bind its current appearance to the left panel.');
+}
+if ((await buildingSchemePanel.getByRole('button', { name: '打开建筑配色方案', exact: true }).count()) !== 1) {
+  throw new Error('Selected building should expose the scheme selector.');
+}
+if ((await buildingSchemePanel.getByText('做旧程度', { exact: true }).count()) !== 1) {
+  throw new Error('Selected building should expose Weathering.');
+}
+await page.screenshot({ path: outDir + '/building-scheme-02-building-appearance-panel.png' });
+
+await buildingSchemePanel.getByRole('button', { name: '打开建筑配色方案', exact: true }).click();
+await page.waitForSelector('.building-scheme-workspace');
+await page.waitForTimeout(120);
+const buildingSchemeWorkspace = page.locator('.building-scheme-workspace');
+if (!(await buildingSchemeWorkspace.evaluate((node) => node.classList.contains('workspace--catalog')))) {
+  throw new Error('Building Scheme Workspace must consume the shared Catalog Workspace contract.');
+}
+if ((await buildingSchemePanel.count()) !== 1) {
+  throw new Error('Opening the scheme Workspace must keep the selected building panel mounted.');
+}
+const buildingStyleRail = buildingSchemeWorkspace.locator('.building-scheme-workspace__rail');
+for (const styleLabel of ['全部', '素雅', '沉稳', '明快', '华丽', '自然', '其他']) {
+  if ((await buildingStyleRail.getByRole('button', { name: styleLabel, exact: true }).count()) !== 1) {
+    throw new Error('Building Scheme style rail missing: ' + styleLabel);
+  }
+}
+const buildingSourceFilter = buildingSchemeWorkspace.locator('.building-scheme-workspace__source-filter');
+for (const sourceLabel of ['全部', '系统内置', '创意工坊', '玩家方案']) {
+  if ((await buildingSourceFilter.getByRole('button', { name: sourceLabel, exact: true }).count()) !== 1) {
+    throw new Error('Building Scheme source filter missing: ' + sourceLabel);
+  }
+}
+if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 8) {
+  throw new Error('Building Scheme Workspace first page should keep the shared 4×2 card pool.');
+}
+if (await buildingSchemeWorkspace.locator('.workspace-item-card__preview').count()) {
+  throw new Error('Building Scheme framework should not invent placeholder image previews.');
+}
+if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 江南素雅', exact: true }).getAttribute('aria-pressed')) !== 'true') {
+  throw new Error('Current building scheme should be Selected in the Workspace.');
+}
+await page.screenshot({ path: outDir + '/building-scheme-03-scheme-workspace.png' });
+
+await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 皇家朱金', exact: true }).click();
+await page.waitForTimeout(90);
+if ((await buildingSchemePanel.getAttribute('data-building-scheme-name')) !== '皇家朱金'
+  || (await buildingSchemeWorkspace.count()) !== 1) {
+  throw new Error('Applying a building scheme should update the left panel while keeping the Workspace open.');
+}
+if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 皇家朱金', exact: true }).getAttribute('aria-pressed')) !== 'true') {
+  throw new Error('Applied building scheme should become the selected card.');
+}
+await page.screenshot({ path: outDir + '/building-scheme-04-live-apply.png' });
+
+await page.getByRole('button', { name: '选择建筑 临街客栈 07', exact: true }).click();
+await page.waitForTimeout(90);
+if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'inn-07'
+  || (await buildingSchemePanel.getAttribute('data-building-scheme-name')) !== '墨瓦沉木'
+  || (await buildingSchemeWorkspace.count()) !== 1) {
+  throw new Error('Selecting another building should rebind the same panel and keep the Scheme Workspace open.');
+}
+if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 墨瓦沉木', exact: true }).getAttribute('aria-pressed')) !== 'true') {
+  throw new Error('Scheme Workspace selection should rebind to the newly selected building.');
+}
+await page.screenshot({ path: outDir + '/building-scheme-05-rebind-building.png' });
+
+await buildingSourceFilter.getByRole('button', { name: '创意工坊', exact: true }).click();
+await buildingStyleRail.getByRole('button', { name: '自然', exact: true }).click();
+await page.waitForTimeout(80);
+if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 1
+  || (await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 秋庭暖木', exact: true }).count()) !== 1) {
+  throw new Error('Building Scheme source × style filters should combine correctly.');
+}
+await page.screenshot({ path: outDir + '/building-scheme-06-source-style-filter.png' });
+
+await buildingSchemeWorkspace.getByRole('button', { name: '关闭建筑配色方案工作区', exact: true }).click();
+await page.waitForSelector('.building-scheme-workspace', { state: 'detached' });
+if ((await buildingSchemePanel.count()) !== 1) {
+  throw new Error('Closing the Scheme Workspace should leave Building Appearance open.');
+}
+await buildingSchemePanel.getByRole('button', { name: '退出方案模式', exact: true }).click();
+await page.waitForSelector('.building-scheme-panel', { state: 'detached' });
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
+await page.waitForTimeout(120);
+
 await browser.close();
