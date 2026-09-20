@@ -1,44 +1,56 @@
 # UI 图标资产管线
 
-> 目的：冻结 Web Prototype 与 Unity UI Toolkit 共用的正式 UI Icon 资产边界。
+> Web Prototype 与 Unity UI Toolkit 共用的正式 UI Icon 资产规范。
 >
-> 核心原则：**SVG 是 Source Master；PNG 是 Web 与 Unity 共用的 Runtime Asset。**
+> **SVG 是 Source Master；64×64 PNG 是 Web 与 Unity 共用的 Runtime Asset。**
 
----
+## 1. 当前状态
 
-## 1. 当前事实
+图标资产管线已经完成 Web Runtime 落地。
 
-当前 Web Prototype 的功能图标主要来自 `lucide-react`：
+当前仓库固定拥有：
 
-```tsx
-import { Palette, Lightbulb, X } from 'lucide-react';
-```
+- 104 个 Source SVG：`AssetsSource/UI/Icons/svg/`；
+- 104 个 Runtime PNG：`public/assets/ui/icons/`；
+- `public/assets/ui/icons/icon-manifest.json`；
+- `src/ui/icons/icon-manifest.generated.ts`；
+- `src/ui/icons/runtime-icons.generated.tsx`；
+- `src/ui/icons/UiIcon.tsx`；
+- `src/ui/icons/icon-types.ts`；
+- `src/ui/icons/ui-icon.css`；
+- Lucide 第三方许可：`AssetsSource/UI/Icons/LUCIDE_LICENSE.txt`。
 
-浏览器最终渲染为 inline SVG，但仓库当前没有把这些图标保存成正式 `.svg` / `.png` 资产。
-
-迁移前不能继续让业务组件依赖：
-
-```text
-Lucide React Component
-→ SVG DOM
-```
-
-正式目标：
+Source Generator 固定使用：
 
 ```text
-SVG Source Master
-        ↓
-64×64 PNG Runtime Asset
-        ↓
-UiIconId / Manifest
-      ↙          ↘
-Web Prototype    Unity UI Toolkit
-PNG Mask         Sprite + Tint
+lucide-react 1.47.0
+sharp        0.35.4
 ```
 
----
+`src/` Runtime 已禁止直接 import `lucide-react`，也禁止重新出现历史 `LucideIcon` 类型名。
 
-## 2. 正式资产规则
+Lucide 只允许存在于 `scripts/icons/` 的 Source Generator。
+
+## 2. 正式资产链
+
+```text
+Lucide / 自研 SVG
+        ↓
+固定 SVG Source Master
+        ↓
+64×64 white RGBA PNG
+        ↓
+UiIconId + Manifest
+      ↙             ↘
+Web Runtime          Unity Runtime
+PNG Alpha Mask       Sprite + Tint
+```
+
+Unity 不需要再次从 SVG 转换 PNG。
+
+`public/assets/ui/icons/*.png` 就是未来 Unity 直接复制使用的正式 Icon Runtime 资产。
+
+## 3. PNG 规格
 
 普通单色 UI Icon 固定：
 
@@ -47,169 +59,120 @@ Canvas       64 × 64
 Format       PNG RGBA
 Background   Transparent
 Icon Color   #FFFFFF
-Source       SVG
-Runtime      PNG
+Stroke       1.7
+Runtime      Web + Unity 共用同一文件
 ```
 
 规则：
 
-- 普通 Icon 只维护一张 64×64 PNG，不按 12 / 16 / 20 / 24 / 32 px 复制多份；
-- 实际显示尺寸由 UI Component 决定；
-- PNG 不烘焙 Normal / Hover / Selected / Disabled 颜色；
+- 不为 12 / 16 / 20 / 24 / 32px 分别生成多份文件；
+- 显示尺寸属于 Component Geometry；
+- Normal / Hover / Selected / Disabled / Warning / Danger 不烘焙进图片；
 - PNG 不包含背景板、Glow、Shadow；
-- 状态颜色由 Web `currentColor` / Unity Tint 表达；
-- 复杂插画、建筑缩略图、RenderTexture、材质 Preview 不进入 UiIcon 管线；
-- 真正需要 48～64 logical px 以上的大型图形应归 Illustration / Preview Asset，不扩张普通 UiIcon 规格。
+- Web 使用 `currentColor`；
+- Unity 使用 Sprite / Image Tint；
+- 48～64 logical px 以上的大型图形应归 Illustration / Preview Asset，不扩张普通 UiIcon。
 
----
+## 4. Stroke 决策
 
-## 3. Stroke 基线
-
-当前 Web 对 Lucide SVG 存在多种 `stroke-width`：
+历史 Web SVG 曾使用约：
 
 ```text
-约 1.55 / 1.6 / 1.7 / 1.78 / 1.8 / 默认 2.0
+1.55 / 1.6 / 1.7 / 1.78 / 1.8 / 默认 2.0
 ```
 
-PNG 生成后无法再由 CSS 动态修改 stroke。
+PNG Pilot 已完成：
 
-迁移阶段先以：
+- ColorToolDock：20px；
+- LeftContextPanel：17～19px；
+- Material Workspace Header / Rail：15～18px；
+- Select / Dialog Chevron：12～14px。
 
-```text
-Standard UiIcon Stroke = 1.7
-```
+GitHub UI Review 与人工截图审查均通过，因此：
 
-作为 Pilot 基线。
+> **Standard UiIcon Stroke = 1.7 已冻结。**
 
-只有完成 ColorTool / LeftContext / Workspace / Dialog 四类代表场景的 GitHub UI Review 后，才把 1.7 冻结成全量生产规范。
+以后不要按页面重新生成不同 stroke 的同一图标。
 
-禁止在没有视觉审查的情况下直接把全部 Lucide 图标统一 Rasterize。
-
----
-
-## 4. 目录规划
-
-Source 与 Runtime 分离：
+## 5. 目录
 
 ```text
 AssetsSource/
 └ UI/
    └ Icons/
+      ├ LUCIDE_LICENSE.txt
       └ svg/
-         ├ palette.svg
-         ├ lightbulb.svg
-         ├ arrow-left.svg
-         └ ...
+         └ *.svg
 
 public/
 └ assets/
    └ ui/
       └ icons/
-         ├ palette.png
-         ├ lightbulb.png
-         ├ arrow-left.png
-         └ ...
+         ├ *.png
+         └ icon-manifest.json
 
 src/
 └ ui/
    └ icons/
       ├ UiIcon.tsx
-      ├ ui-icon.css
       ├ icon-types.ts
-      └ icon-manifest.generated.ts
+      ├ ui-icon.css
+      ├ icon-manifest.generated.ts
+      └ runtime-icons.generated.tsx
 
 scripts/
 └ icons/
-   ├ collect-icons.mjs
-   ├ export-source-svg.mjs
-   └ build-icon-png.mjs
+   ├ icon-source-list.mjs
+   ├ build-icon-assets.mjs
+   ├ check-icon-assets.mjs
+   └ migrate-runtime-icons.mjs
 ```
 
-约束：
+`runtime-icons.generated.tsx` 是 Web 兼容 Adapter：保留已有 JSX 的命名组件写法，但这些组件内部已经渲染 PNG Mask，不是 Lucide / SVG Runtime。
 
-- `AssetsSource/UI/Icons/svg/` 不进入 Web Runtime；
-- `public/assets/ui/icons/` 是 Web 与 Unity 共用的正式 Runtime 文件集合；
-- Unity 迁移时直接复制 Runtime PNG，不重新从 React / DOM 提取图标；
-- Source SVG 必须提交 Git，避免未来依赖包升级导致同名图标外形漂移。
+## 6. UiIconId 与 Web Adapter
 
----
-
-## 5. UiIconId
-
-共享 UI 不再长期暴露 `LucideIcon`。
-
-目标：
-
-```ts
-type UiIconId =
-  | 'palette'
-  | 'lightbulb'
-  | 'layers-3'
-  | 'arrow-left'
-  | 'close';
-```
-
-业务配置只持有：
+Canonical Asset Contract 是 `UiIconId`：
 
 ```ts
 icon: UiIconId
 ```
 
-禁止最终结构：
+新 Shared / Business API 优先直接使用 `UiIconId`。
 
-```ts
-icon: LucideIcon
+为了避免一次性机械重写所有 JSX，现有页面允许通过：
+
+```text
+runtime-icons.generated.tsx
+→ createUiIconComponent(...)
+→ UiIcon
+→ PNG Mask
 ```
 
-原因：
+继续使用命名组件形式。
 
-- Web 与 Unity 共享语义 ID；
-- 图标美术资源可替换而不改变业务代码；
-- Unity 不依赖 Lucide 命名或 React Component；
-- Manifest 可以直接生成 Unity Icon Library。
+这只是 Web 兼容层，不改变资产所有权。Unity 迁移不复制这个 React Adapter。
 
----
+## 7. Web Runtime
 
-## 6. Web Runtime
-
-Web 正式 Runtime 读取 PNG。
-
-单色 Icon 推荐使用 Alpha Mask：
+Web 的 `UiIcon`：
 
 ```text
 64×64 white PNG
-→ mask-image
-→ background: currentColor
+→ CSS mask-image
+→ background-color: currentColor
 ```
 
-这样保留现有状态语言：
+因此：
 
-```text
-Normal
-Hover
-Selected
-Disabled
-Warning
-Danger
-```
+- 同一 PNG 可复用所有状态色；
+- 不需要 CSS filter 染色；
+- Hover / Selected / Disabled 继续由组件的 `color` 状态控制；
+- Runtime 不产生 Lucide inline SVG。
 
-而不生成多份不同颜色 PNG。
+## 8. Unity Runtime
 
-Web 不推荐通过 CSS `filter` 给 `<img>` 做状态染色。
-
-目标组件：
-
-```tsx
-<UiIcon icon="palette" size={20} />
-```
-
-组件尺寸负责 Layout；PNG 只负责 Alpha Shape。
-
----
-
-## 7. Unity Runtime
-
-Unity 直接复用同一批：
+Unity 直接复制：
 
 ```text
 public/assets/ui/icons/*.png
@@ -221,24 +184,25 @@ public/assets/ui/icons/*.png
 Texture Type          Sprite (2D and UI)
 Alpha Is Transparency On
 Mip Maps              Off
-Compression           以小图标清晰度为优先
+Compression           优先保证小尺寸清晰度
 ```
 
-正式项目再统一进入 UI Icon Sprite Atlas。
+再统一进入 UI Icon Sprite Atlas。
 
-状态颜色使用：
+Unity 业务层建议：
 
 ```text
-Image Tint / USS Tint
+UiIconId / IconId
+→ IconLibrary
+→ Sprite
+→ Image Tint
 ```
 
-不为 Hover / Active / Disabled 复制 Sprite。
+不要让 Unity C# 依赖 Lucide 名称。
 
----
+## 9. 不属于 UiIcon 的内容
 
-## 8. 不属于 UiIcon 的内容
-
-以下继续使用真实 Element / CSS / USS / Sprite 语义，不转换成 PNG Icon：
+以下保持真实 UI Element / Texture / RenderTexture：
 
 - Selected Line；
 - Pager Dot / Pager Bar；
@@ -247,172 +211,74 @@ Image Tint / USS Tint
 - Slider Track / Thumb；
 - Surface Edge；
 - Color Preview；
-- 建筑 / 道路 / 桥梁真实缩略图；
+- 建筑 / 道路 / 桥梁缩略图；
 - 场景截图；
 - RenderTexture；
 - Noise Texture；
 - 大型 Illustration。
 
-不要因为“PNG 化”把结构性 UI Element 烘焙成图片。
+不能因为“PNG 化”把结构性 UI Element 烘焙成图片。
 
----
+## 10. 生成与检查
 
-## 9. 制作阶段
-
-### Phase I — Icon Contract
-
-完成：
-
-1. 统计实际 Lucide 图形 Icon；
-2. 建立 `UiIconId`；
-3. 建立 Manifest；
-4. 修正 Audit 中类型 import 被误计为图标的问题；
-5. 写入正式目录 / 命名 / 资产规格。
-
-本阶段不改变现有 UI。
-
-### Phase II — Asset Generator
-
-完成：
-
-1. 从当前实际使用 Icon 导出 SVG Source；
-2. 固定 Source SVG；
-3. SVG → 64×64 RGBA PNG；
-4. 生成 Manifest；
-5. 校验尺寸、透明通道、缺失资产、重复命名。
-
-本阶段不改变现有 UI。
-
-### Phase III — PNG Pilot
-
-只迁代表性场景：
-
-1. ColorToolDock：20px / Hover / Active；
-2. LeftContextPanel：Heading / Back / Close；
-3. Workspace：Header 18px / Rail 16px / Selected；
-4. Select / Dialog Chevron：12～14px / Rotate。
-
-检查：
-
-- 12～14px 是否发糊；
-- 16～20px 线宽是否稳定；
-- Hover / Selected Tint；
-- Chevron Rotate；
-- 1920×1080 构图是否变化；
-- 白天 / 夜景可读性。
-
-Pilot 通过后才能冻结 Stroke 与全量迁移。
-
-### Phase IV — Shared Contract
-
-把 Shared Component API：
-
-```text
-LucideIcon
-```
-
-迁为：
-
-```text
-UiIconId
-```
-
-优先：
-
-- LeftContextPanel；
-- PlacementContextPanel；
-- Bottom Command / PlacementActionBar；
-- ContextUtilityToolbar；
-- GameplayHUD；
-- Workspace Definition。
-
-### Phase V — Runtime Migration
-
-分批把业务 JSX 的 Lucide Component 替换为 `UiIcon`。
-
-每一批都运行：
+重新生成：
 
 ```bash
-npm run audit:unity
-npm run build
+npm run icons:build
 ```
 
-重要视觉批次必须走 GitHub UI Review。
+资产检查：
 
-### Phase VI — CSS Cleanup
-
-清理：
-
-```css
-button svg
-.workspace-title > svg
-... svg { stroke-width: ... }
+```bash
+npm run icons:check
 ```
 
-改为共享 `.ui-icon` Contract。
+`icons:check` 必须验证：
 
-同时删除已经失效的历史 SVG Selector。
+- Source List / Manifest 数量一致；
+- 104 个 SVG / PNG 均存在；
+- PNG 全部 64×64；
+- PNG 有 Alpha；
+- Stroke / Source Package 元数据正确；
+- Generated TS Manifest 存在；
+- PNG Runtime Component Adapter 存在；
+- 第三方 License 存在。
 
-### Phase VII — Freeze
+GitHub Build 顺序：
 
-全部 Runtime 完成 PNG 化后：
+```text
+icons:check
+→ audit:unity
+→ TypeScript / Vite Build
+```
 
-- `src/` 禁止新的 `lucide-react` Runtime import；
-- Lucide 只允许存在于 Source Export Tool；
-- Runtime 缺少 PNG / Manifest Entry 时 CI Fail；
-- Web UI Review 只审查正式 PNG Runtime 结果。
+## 11. CI Freeze
 
-### Phase VIII — Unity Handoff
+当前已经进入 Freeze：
 
-输出：
+- `src/` 出现 `lucide-react` → Audit Failure；
+- `src/` 出现历史 `LucideIcon` → Audit Failure；
+- PNG / SVG / Manifest 缺失或尺寸不符 → Build Failure；
+- 新图标必须先进入 Source List，再重新生成资产；
+- 重要图标视觉变化必须走 GitHub UI Review。
 
-- Runtime PNG；
-- Manifest；
-- UiIconId 对照；
-- Unity Import 规则；
-- Sprite Atlas 建议；
-- Web → Unity Icon 迁移清单。
+## 12. 当前迁移结论
 
----
+已完成：
 
-## 10. CI / Audit
+- Phase I — Icon Contract；
+- Phase II — Asset Generator；
+- Phase III — PNG Pilot；
+- Phase IV — Shared Contract 基础切换；
+- Phase V — Runtime PNG Migration；
+- Phase VII — CI Freeze。
 
-迁移期间分两阶段：
+Phase VI 的历史 `svg` CSS selector 继续按“确认无命中再删除”的原则清理，不为了代码漂亮冒险破坏非 Icon SVG / Review 结构。
 
-### 过渡期
+下一阶段已经可以进入 Unity Handoff：
 
-允许 Runtime 继续存在 Lucide，但 Audit 必须：
-
-- 正确统计真实图形 Icon；
-- 不把 `type LucideIcon` 算为图形资产；
-- 输出仍有多少 Runtime 文件直接依赖 `lucide-react`。
-
-### Freeze 后
-
-升级为 Error：
-
-- Runtime 新增 `lucide-react`；
-- Manifest 缺项；
-- PNG 缺失；
-- PNG 非 64×64；
-- PNG 没有 Alpha；
-- 业务层直接引用资产路径而绕过 `UiIconId`。
-
----
-
-## 11. 当前阶段结论
-
-当前仓库还处于 **Phase I 前 / Lucide Runtime** 状态。
-
-当前决定已经冻结：
-
-- SVG = Source Master；
-- PNG = Web + Unity Runtime；
-- 普通 Icon = 64×64 RGBA；
-- 白色透明底；
-- 状态颜色运行时 Tint；
-- `UiIconId` 是 Shared / Business Contract；
-- 先 Pilot，再全量替换；
-- 不为迁移一次性重写 100+ 图标。
-
-下一步应先完成 Phase I + Phase II，再进入 PNG Pilot。
+1. 复制 PNG；
+2. 设置 Sprite Import；
+3. 建立 IconId → Sprite Library；
+4. 建 UI Icon Sprite Atlas；
+5. 用 Unity Tint 复现 Web 状态色。
