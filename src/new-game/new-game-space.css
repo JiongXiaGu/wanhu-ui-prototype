@@ -259,7 +259,7 @@
   flex-direction:column;
   gap:6px;
 }
-.new-game-detail__facts span{color:var(--wanhu-color-paper-tertiary);font-size:8.5px}
+.new-game-detail__facts span{color:var(--wanhu-color-paper-tertiary);font-size:var(--wanhu-type-micro,9.5px)}
 .new-game-detail__facts b{
   overflow:hidden;
   color:var(--wanhu-color-paper-secondary);
