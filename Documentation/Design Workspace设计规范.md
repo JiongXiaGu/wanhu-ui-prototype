@@ -241,12 +241,12 @@ Design Workspace 的资产卡现在是共享 Workspace Card 母版，不再由�
 Web Prototype：
 
 - .workspace-item-card：共享 Card Surface / Hover / Focus / Pressed；
-- .workspace-item-card__preview：固定 64×64 / 1:1；
+- .workspace-item-card__preview：可选 Preview 槽；资产目录使用固定 64×64 / 1:1，业务没有真实图像时允许省略；
 - .workspace-item-card__copy：共享文本布局；
 - .workspace-item-card__title / __meta：共享 Typography；
 - .workspace-item-card__state-line：真实元素，供 Focus / Current 等语义状态使用；
 - design-item-card 只保留业务识别与兼容选择器，不再拥有独立 Card 皮肤；
-- MaterialSchemeWorkspace 同样消费这一母版。
+- MaterialSchemeWorkspace 同样消费这一母版，但当前不使用 Preview 槽，只在 Meta 行使用细 BaseColor Accent；
 
 Unity UI Toolkit：
 
