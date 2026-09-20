@@ -3,7 +3,7 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'material-palette' | 'light-adjustment' | 'building-scheme';
+export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'material-palette';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
 export type TreePlacementMode = 'brush' | 'single';
@@ -12,7 +12,7 @@ export type RoadDrawMode = 'smart-curve' | 'curve' | 'straight';
 export type CityWallConstructionMode = 'range' | 'fixed-width';
 export type CityWallFacingSide = 'left' | 'right';
 export type CityWallGatePlacementMode = 'free' | 'wall-connected';
-export type MaterialPaletteMode = 'surface' | 'lighting' | 'palette';
+export type MaterialPaletteMode = 'surface' | 'lighting' | 'scheme';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
 export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 0 | 1 | 2 | 4;
@@ -175,8 +175,6 @@ export type GameplayUiAction =
   | { type: 'ENTER_CITY_WALL_TRANSITION_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_TERRAIN_EDIT' }
   | { type: 'ENTER_MATERIAL_PALETTE' }
-  | { type: 'ENTER_LIGHT_ADJUSTMENT' }
-  | { type: 'ENTER_BUILDING_SCHEME' }
   | { type: 'SET_MATERIAL_PALETTE_MODE'; mode: MaterialPaletteMode }
   | { type: 'EXIT_TOOL' }
   | { type: 'SET_CONTEXT_PANEL'; panel: ContextPanel }
@@ -410,35 +408,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canRedo: false,
       };
     case 'SET_MATERIAL_PALETTE_MODE':
-      return action.mode === 'surface'
-        ? { ...state, materialPaletteMode: action.mode }
-        : state;
-    case 'ENTER_LIGHT_ADJUSTMENT':
-      return {
-        ...state,
-        toolOrigin: captureToolOrigin(state),
-        workspace: 'none',
-        tool: 'light-adjustment',
-        management: 'none',
-        contextPanel: 'none',
-        mapView: 'default',
-        mapPanelOpen: false,
-        canUndo: false,
-        canRedo: false,
-      };
-    case 'ENTER_BUILDING_SCHEME':
-      return {
-        ...state,
-        toolOrigin: captureToolOrigin(state),
-        workspace: 'none',
-        tool: 'building-scheme',
-        management: 'none',
-        contextPanel: 'none',
-        mapView: 'default',
-        mapPanelOpen: false,
-        canUndo: false,
-        canRedo: false,
-      };
+      return { ...state, materialPaletteMode: action.mode };
     case 'ENTER_TERRAIN_EDIT':
       return {
         ...state,
