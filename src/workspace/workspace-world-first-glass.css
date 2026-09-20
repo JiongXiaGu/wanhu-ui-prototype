@@ -2,7 +2,7 @@
    Material/elevation belong to wanhu-surface-system.css.
    This file owns Workspace geometry, foreground hierarchy and local interaction states. */
 
-.gameplay-screen .workspace--design{
+.gameplay-screen .workspace--catalog{
   --workspace-paper:var(--wanhu-color-paper-primary,#eee9df);
   --workspace-text:var(--wanhu-color-text-secondary,#d4cfc6);
   --workspace-muted:#a19f99;
@@ -14,64 +14,64 @@
 }
 
 /* Header / body geometry remains component-owned; material is shared. */
-.gameplay-screen .workspace--design .workspace-header{
+.gameplay-screen .workspace--catalog .workspace-header{
   border-radius:17px 17px 0 0;
 }
-.gameplay-screen .workspace--design .workspace-title>svg{
+.gameplay-screen .workspace--catalog .workspace-title>svg{
   color:var(--workspace-jade);
   filter:none;
 }
-.gameplay-screen .workspace--design .workspace-title b{
+.gameplay-screen .workspace--catalog .workspace-title b{
   color:var(--workspace-paper);
   font-weight:600;
 }
-.gameplay-screen .workspace--design .workspace-header .icon-button{
+.gameplay-screen .workspace--catalog .workspace-header .icon-button{
   border-radius:8px;
   color:#b6b5af;
 }
-.gameplay-screen .workspace--design .workspace-header .icon-button:hover{
+.gameplay-screen .workspace--catalog .workspace-header .icon-button:hover{
   background:rgba(255,255,255,.065);
   color:#fffdf7;
 }
-.gameplay-screen .workspace--design .workspace-body{
+.gameplay-screen .workspace--catalog .workspace-body{
   border-radius:0 0 17px 17px;
 }
 
 /* Primary rail: structure comes from one divider and the active marker. */
-.gameplay-screen .workspace--design .workspace-primary-rail button{
+.gameplay-screen .workspace--catalog .workspace-primary-rail button{
   background:transparent;
   color:#8c918f;
 }
-.gameplay-screen .workspace--design .workspace-primary-rail button:hover{
+.gameplay-screen .workspace--catalog .workspace-primary-rail button:hover{
   background:rgba(255,255,255,.032);
   color:#d5d0c7;
   transform:none;
 }
-.gameplay-screen .workspace--design .workspace-primary-rail button.is-active{
+.gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active{
   background:linear-gradient(90deg,rgba(169,132,75,.095),rgba(169,132,75,.020) 68%,transparent);
   color:#d9d1c2;
 }
-.gameplay-screen .workspace--design .workspace-primary-rail button.is-active::before{
+.gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active::before{
   width:2px;
   background:var(--workspace-gold);
   box-shadow:none;
 }
-.gameplay-screen .workspace--design .workspace-primary-rail button.is-active svg{transform:none}
+.gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active svg{transform:none}
 
 /* Context filters remain lightweight tabs. Character adds only the tenon node. */
-.gameplay-screen .workspace--design .workspace-context-filter__scroll>button{
+.gameplay-screen .workspace--catalog .workspace-context-filter__scroll>button{
   color:#858a88;
 }
-.gameplay-screen .workspace--design .workspace-context-filter__scroll>button:hover{
+.gameplay-screen .workspace--catalog .workspace-context-filter__scroll>button:hover{
   color:#d5d0c7;
   background:rgba(255,255,255,.025);
   transform:none;
 }
-.gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active{
+.gameplay-screen .workspace--catalog .workspace-context-filter__scroll>button.is-active{
   color:#d9d1c2;
   background:rgba(169,132,75,.055);
 }
-.gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after{
+.gameplay-screen .workspace--catalog .workspace-context-filter__scroll>button.is-active::after{
   left:32%;
   right:32%;
   height:2px;
@@ -123,20 +123,26 @@
 }
 
 /* Pager stays a stable anchor even when only one page exists. */
-.gameplay-screen .workspace--design .workspace-content-pager button span,
-.gameplay-screen .workspace--design .workspace-rail-pager button span{
-  background:#a4a49f;
+.gameplay-screen .workspace--catalog .workspace-content-pager button span,
+.gameplay-screen .workspace--catalog .workspace-rail-pager button span{
+  background:#8f948f;
   box-shadow:none;
 }
-.gameplay-screen .workspace--design .workspace-content-pager button:hover span,
-.gameplay-screen .workspace--design .workspace-rail-pager button:hover span{background:#c8c6bf}
-.gameplay-screen .workspace--design .workspace-content-pager button.is-active span,
-.gameplay-screen .workspace--design .workspace-rail-pager button.is-active span{
+.gameplay-screen .workspace--catalog .workspace-content-pager button:hover span,
+.gameplay-screen .workspace--catalog .workspace-rail-pager button:hover span{background:#c8c6bf}
+.gameplay-screen .workspace--catalog .workspace-content-pager button.is-active span{
   background:var(--workspace-gold);
   box-shadow:none;
 }
-.gameplay-screen .workspace--design .workspace-content-pager-marker,
-.gameplay-screen .workspace--design .workspace-rail-pager-marker{
+.gameplay-screen .workspace--catalog .workspace-rail-pager button.is-active span{
+  background:#a8ada8;
+  box-shadow:0 0 0 1px rgba(255,255,255,.025);
+}
+.gameplay-screen .workspace--catalog .workspace-content-pager-marker{
   background:#a1a29d;
   opacity:.64;
+}
+.gameplay-screen .workspace--catalog .workspace-rail-pager-marker{
+  background:#818781;
+  opacity:.60;
 }
