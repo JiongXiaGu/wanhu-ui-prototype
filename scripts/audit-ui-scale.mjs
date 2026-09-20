@@ -3,6 +3,13 @@ import path from 'node:path';
 
 const SRC='src';
 const READABLE_FONT_FLOOR=9.5;
+const ALLOWED_BELOW_FLOOR=[
+  {
+    file:'src/gameplay/gameplay-corner-hud.css',
+    selectors:['.gameplay-compass-hud__cardinal','.gameplay-compass-hud__cardinal--south'],
+    reason:'Compass cardinal glyphs are symbolic orientation markers, not continuous readable text.',
+  },
+];
 
 async function walk(dir){
   const entries=await readdir(dir,{withFileTypes:true});
@@ -21,6 +28,7 @@ const iconSizes=new Map();
 const hardcodedIconCss=[];
 const tinyFonts=[];
 const belowFloorFonts=[];
+const allowedBelowFloorFonts=[];
 const tinyIcons=[];
 const svgSelectors=[];
 let fontSizeTokenUses=0;
@@ -55,7 +63,12 @@ for(const file of files){
         const item={file,line:index+1,text:line.trim()};
         add(fonts,value,item);
         if(value<10) tinyFonts.push({value,...item});
-        if(value<READABLE_FONT_FLOOR) belowFloorFonts.push({value,...item});
+        if(value<READABLE_FONT_FLOOR){
+          const allowed=ALLOWED_BELOW_FLOOR.some((entry)=>
+            entry.file===file && entry.selectors.some((selector)=>line.includes(selector))
+          );
+          (allowed?allowedBelowFloorFonts:belowFloorFonts).push({value,...item});
+        }
       }
       if(/\.ui-icon\b|\bicon\b/i.test(line)){
         for(const match of line.matchAll(/(?:width|height|flex-basis)\s*:\s*([0-9.]+)px/g)){
@@ -114,6 +127,7 @@ for(const [file,stat] of [...fileFontStats.entries()].sort((a,b)=>b[1].below10-a
 }
 
 console.log(`\nTypography floor violations (<${READABLE_FONT_FLOOR}px): ${belowFloorFonts.length}`);
+console.log(`Allowed symbolic text below floor: ${allowedBelowFloorFonts.length}`);
 console.log(`Icon signals below 14px: ${tinyIcons.length}`);
 for(const hit of tinyIcons) console.log(`ICON<14 ${hit.value}px ${hit.file}:${hit.line} ${hit.text}`);
 
