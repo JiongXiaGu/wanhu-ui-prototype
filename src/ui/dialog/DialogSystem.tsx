@@ -186,7 +186,7 @@ function ChoiceInputDialogView({request,onDismiss,interactive,motionPhase}:{requ
           <button type="button" className="ui-dialog-choice-trigger" aria-label={request.choiceLabel} aria-haspopup="listbox" aria-expanded={choiceOpen} onClick={()=>setChoiceOpen(open=>!open)}>
             <span>{choice}</span><UiIcon icon="chevron-down" size={14} className="ui-dialog-choice-chevron" />
           </button>
-          {choiceOpen&&<div className="ui-dialog-choice-menu" role="listbox" aria-label={request.choiceLabel}>{request.choices.map(item=><button key={item} type="button" role="option" aria-selected={choice===item} className={choice===item?'is-selected':''} onClick={()=>{setChoice(item);setChoiceOpen(false)}}><span>{item}</span>{choice===item&&<UiIcon icon="check" size={12} className="ui-dialog-choice-check" />}</button>)}</div>}
+          {choiceOpen&&<div className="ui-dialog-choice-menu" role="listbox" aria-label={request.choiceLabel}>{request.choices.map(item=><button key={item} type="button" role="option" aria-selected={choice===item} className={choice===item?'is-selected':''} onClick={()=>{setChoice(item);setChoiceOpen(false)}}><span>{item}</span>{choice===item&&<UiIcon icon="check" size={14} className="ui-dialog-choice-check" />}</button>)}</div>}
         </div>
       )}
     </div>
