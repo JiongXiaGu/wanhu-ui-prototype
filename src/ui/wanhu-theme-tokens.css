@@ -21,6 +21,25 @@
   --wanhu-color-brass-soft:rgba(169,132,75,.105);
   --wanhu-color-cinnabar:#985447;
 
+  /* Typography scale — 1920×1080 baseline.
+     9.5px is the minimum for intentionally secondary readable metadata.
+     Primary interactive labels should normally use caption / label / body tiers. */
+  --wanhu-type-micro:9.5px;
+  --wanhu-type-caption:10px;
+  --wanhu-type-label:10.5px;
+  --wanhu-type-body:11px;
+  --wanhu-type-body-strong:12px;
+  --wanhu-type-subheading:13px;
+  --wanhu-type-panel-title:16px;
+  --wanhu-type-workspace-title:18px;
+  --wanhu-type-tooltip:10px;
+
+  /* Icon scale — PNG Runtime assets remain 64×64; these tokens define logical UI size. */
+  --wanhu-icon-xs:14px;
+  --wanhu-icon-sm:16px;
+  --wanhu-icon-md:18px;
+  --wanhu-icon-lg:20px;
+  --wanhu-icon-xl:24px;
   /* Shared material assets */
   --wanhu-material-noise:url('/assets/ui/materials/glass-noise-soft.png');
   --wanhu-material-highlight:rgba(255,255,255,.014);
