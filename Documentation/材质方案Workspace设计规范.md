@@ -2,7 +2,7 @@
 
 `MaterialSchemeWorkspace` 是 `material-palette` Tool 内部的中央资源库，用于浏览系统内置、创意工坊与玩家保存的材质方案。它与左侧 Surface 参数面板、底部 Material ToolActionBar 同时存在，不拥有独立 Material Draft。
 
-## 1. 总体空间关系
+## 1. 空间与筛选
 
 ```text
 左下：Material Surface Parameters
@@ -10,58 +10,13 @@
 底部：Material ToolActionBar
 ```
 
-规则：
-
-- 打开方案库时左侧 Surface 保持挂载；
-- Workspace 位于 ToolActionBar 上方；
-- Material Workspace 宽度约 1040px，避免与左侧约 400px Surface Panel 重叠；
-- Rail / Source Filter / Card / Pager 继续复用 Design Workspace 视觉母版；
-- 关闭 Workspace 只关闭方案库，不退出 Material Tool。
-
-## 2. 来源筛选
-
-顶部来源固定为：
+顶部来源：
 
 ```text
 全部 | 系统内置 | 创意工坊 | 我的方案
 ```
 
-来源与左侧材质族组合筛选：
-
-```text
-Source × MaterialFamily
-```
-
-来源数据：
-
-- `builtin` → 系统内置；
-- `workshop` → 创意工坊；
-- `mine` → 我的方案。
-
-系统内置和创意工坊保持只读；只有“我的方案”支持重命名、移动分类、复制参数、删除与拖拽。
-
-## 3. Material Family
-
-左侧不再使用“木头 / 瓦片 / 墙面”这种混合材质与用途的分类，统一改成 Material Family：
-
-```text
-all             → 全部（仅 Filter）
-wood            → 木材
-stone           → 石材
-metal           → 金属
-masonry         → 砖瓦
-plaster-earth   → 灰泥 / 土
-fabric          → 布料
-glass           → 玻璃
-lacquer         → 漆饰
-other           → 其他
-```
-
-`all` 永远不是资源分类，只是 Filter。
-
-左 Rail 每页最多 7 项；当前 10 个入口形成两页：
-
-第一页：
+左侧 Material Family：
 
 ```text
 全部
@@ -71,25 +26,22 @@ other           → 其他
 砖瓦
 灰泥 / 土
 布料
-```
-
-第二页：
-
-```text
 玻璃
 漆饰
 其他
 ```
 
-Rail 分页复用 Design Workspace 的纵向 Pager。
+规则：
 
-拖拽只允许投放到当前可见的真实 Material Family；跨页分类使用 Card 菜单“移动分类…”完成，不做拖动时自动翻页。
+- Source × MaterialFamily 组合筛选；
+- `全部` 只作为 Filter，不是可保存分类；
+- Rail 每页最多 7 项，当前使用两页；
+- Workspace 宽约 1040px，避免与左侧 Surface Panel 重叠；
+- Card / Rail / Filter / Pager 继续复用 Design Workspace 视觉母版。
 
-## 4. Card 信息结构
+## 2. Card
 
-Material Card 继续复用共享 `WorkspaceItemCard`，但在没有真实 `MaterialPresetThumbnail` 时隐藏 Preview 槽。
-
-Card：
+没有真实材质 Thumbnail 时，不显示纯色大图或假材质图。
 
 ```text
 ┌────────────────────────────────┐
@@ -98,144 +50,148 @@ Card：
 └────────────────────────────────┘
 ```
 
-信息优先级：
+信息：
 
-1. 方案名称；
-2. 右上角来源 Badge；
-3. 第二行 Material Family + 粗糙 / 哑光 / 偏哑光 / 光滑；
-4. BaseColor 仅用约 28×3px 细线辅助记忆。
+- 第一行左侧：方案名称；
+- 第一行右侧：来源 Badge；
+- 第二行：BaseColor 细线 + Family · Finish；
+- `···` 只对“我的方案”显示。
 
-来源 Badge 必须位于 Card 第一行右侧：
+来源 Badge：
 
 - 系统内置：中性灰；
 - 创意工坊：冷灰青；
 - 我的方案：暖灰铜。
 
-`···` 只在“我的方案” Hover / Focus 时出现，不与来源 Badge 混为同一信息。
+## 3. 保存配色
 
-## 5. Workspace Actions
+点击右上“保存配色”打开共享方案信息窗口。
 
-Source Filter 右侧：
-
-```text
-保存配色 | 粘贴配色
-```
-
-### 保存配色
-
-使用共享 ChoiceInput Dialog：
+由于 Material Family 目前只有 9 个，分类直接 3×3 平铺，不使用 Dropdown：
 
 ```text
 保存配色
 
 方案名称
-[                 ]
+[ 城墙暖灰 ]
 
 材质分类
-[ 木材          ▾ ]
+[ 木材 ] [ 石材 ] [ 金属 ]
+[ 砖瓦 ] [ 灰泥/土 ] [ 布料 ]
+[ 玻璃 ] [ 漆饰 ] [ 其他 ]
 
-取消             保存
+取消                    保存
 ```
 
 规则：
 
-- 名称支持自定义；
-- 我的方案内禁止完全同名；
-- 分类使用 Dropdown，不横向铺满所有 Material Family；
-- 默认分类继承 CurrentFamily；
-- 默认名称优先为“当前方案名 + 副本”，没有稳定方案名时使用“我的配色 NN”；
-- 保存后来源切到“我的方案”；
-- 保存不会修改 Draft 内的 Material 参数。
+- 名称可编辑；
+- “我的方案”内禁止完全同名；
+- 默认 Family = CurrentFamily；
+- 默认名称优先为“当前方案名 + 副本”，没有稳定名称时使用“我的配色 NN”；
+- 保存后：
+  - Source 自动切到“我的方案”；
+  - Family Filter 自动切到新方案 Family；
+  - Rail 自动切到该 Family 所在页；
+  - Content Pager 定位新 Card；
+  - 新 Card 使用局部短暂 Reveal Highlight；
+- 不使用全局成功 Toast 作为主要反馈。
 
-### 粘贴配色
+## 4. 我的方案管理
 
-- 复用现有 Surface Clipboard；
-- Clipboard 为空时 Disabled；
-- 粘贴后 CurrentScheme → 自定义 · 未保存；
-- 不建立第二套 Clipboard。
-
-## 6. 我的方案管理
-
-Hover / Focus 我的方案 Card 后显示 `···`。
-
-一级菜单固定为：
+“我的方案” Card 的 `···` 菜单固定为：
 
 ```text
-重命名
-移动分类…
+编辑
 复制参数
 删除
 ```
 
-不在一级菜单内横向塞所有分类。
+不再单独提供“重命名”和“移动分类”。
 
-### 重命名
+### 编辑
 
-- 使用共享 Input Dialog；
-- 不做双击编辑；
-- 不在 Card 上常驻 TextField；
-- 只修改资源名称，不修改 Draft。
-
-### 移动分类
-
-点击“移动分类…”后，当前 Card 菜单切换到二级 Material Family Picker：
+“编辑”与“保存配色”复用同一个方案信息窗口：
 
 ```text
-← 移动分类
+编辑方案
 
-木材
-石材
-金属
-砖瓦
-灰泥 / 土
-布料
-玻璃
-漆饰
-其他
+方案名称
+[ 城墙暖灰 ]
+
+材质分类
+[ 木材 ] [ 石材 ] [ 金属 ]
+[ 砖瓦 ] [ 灰泥/土 ] [ 布料 ]
+[ 玻璃 ] [ 漆饰 ] [ 其他 ]
+
+取消                保存修改
 ```
 
-Picker：
+编辑窗口只修改资源元数据：
 
-- 使用窄型内部滚动列表；
-- 当前分类 Disabled；
-- 菜单必须完整留在 Workspace 内；
-- 修改的是 UserMaterialPreset.family，不修改 MaterialSurfaceDraft。
+- name；
+- family。
 
-移动完成后 Toast：
+MaterialSurfaceDraft 的颜色 / PBR / Texture 参数继续只在左侧 Surface Panel 编辑。
+
+如果 Edit 只改名称：
+
+- 保持当前 Source / Family Filter；
+- 更新 Card；
+- Card 产生局部 Reveal Highlight。
+
+如果 Edit 修改 Family：
+
+- Source Filter 保持不变；
+- Rail 自动切到目标 Family 所在页；
+- Family Filter 自动选中目标 Family；
+- Content Pager 定位修改后的 Card；
+- Card 保持可见并产生局部 Reveal Highlight。
+
+## 5. 拖拽移动
+
+只有“我的方案”可以拖拽。
+
+拖到左 Rail 的真实 Material Family 后：
 
 ```text
-已移动到“木材”    撤销
+UpdatePresetMetadataCommand(id, { family })
+→ Rail Page = 目标 Family 所在页
+→ Family Filter = 目标 Family
+→ Content Page = 目标 Card 所在页
+→ Card 保持可见
+→ 局部 Reveal Highlight
 ```
-
-撤销再次调用同一个 Move Command。
-
-### 拖拽
-
-“我的方案” Card 可以直接拖到左 Rail 当前页的 Material Family。
 
 规则：
 
-- 系统内置 / 创意工坊不可拖；
-- “全部”不可 Drop；
-- Drag 时 Rail 进入 Drop Mode；
-- Drop 只修改 Material Family；
-- 不自动改变当前 Filter；
+- `全部` 不接受 Drop；
 - 不做自由排序；
-- Drag 与二级 Picker 共用 `MovePresetCommand`。
+- 不做拖动时自动翻 Rail 页；
+- 拖动成功后自动选择目标分类，不让 Card 因 Filter 不匹配而“凭空消失”；
+- 移动操作不显示“撤销” Toast；
+- 移动结果由目标分类被选中 + Card 保持可见直接反馈。
 
-### 复制参数 / 删除
+## 6. 复制 / 删除 / 粘贴
 
 复制参数：
 
-- 将指定方案完整 Draft 写入 Surface Clipboard；
-- Workspace“粘贴配色”和左侧 Footer“粘贴参数”共用该 Clipboard。
+- 指定“我的方案”的完整 Draft 写入现有 Surface Clipboard；
+- 与左侧 Footer Clipboard 共用。
 
 删除：
 
 - 使用共享 Danger Confirm Dialog；
-- 只对 `mine` 来源提供。
+- 删除后保持当前筛选并刷新列表。
 
-## 7. 数据模型
+粘贴配色：
+
+- 读取现有 Surface Clipboard；
+- Clipboard 为空时 Disabled；
+- 粘贴后 CurrentScheme → 自定义 · 未保存；
+- Workspace 不自动跳转分类。
+
+## 7. 数据与 Command
 
 ```text
 MaterialFamily
@@ -245,28 +201,20 @@ UserMaterialPreset
 ├ family
 ├ source = mine
 └ draft
-
-CurrentFamily
-CurrentScheme
-SurfaceClipboard
 ```
 
-关键边界：
-
-- Material Family 是资源整理元数据；
-- MaterialSurfaceDraft 是渲染参数；
-- 移动分类不能偷偷修改 Draft；
-- 手动修改 Draft 后 CurrentScheme 可以变成“自定义 · 未保存”，但 CurrentFamily 继续保留，用于之后保存时给出合理默认分类。
+元数据与 Draft 分离。
 
 命令：
 
 ```text
 SavePresetCommand(name, family, draft)
-RenamePresetCommand(id, name)
-MovePresetCommand(id, family)
+UpdatePresetMetadataCommand(id, { name?, family? })
 CopyPresetParametersCommand(id)
 DeletePresetCommand(id)
 ```
+
+保存窗口与编辑窗口是同一套 Metadata Editor UI；拖拽只是 `UpdatePresetMetadataCommand` 的另一个输入适配器。
 
 ## 8. Unity UI Toolkit 映射
 
@@ -286,60 +234,41 @@ MaterialPaletteController
    └ ContentPage
 ```
 
-`MaterialSchemeWorkspace.uxml`：
+方案信息 Dialog：
 
 ```text
-Header
-├ Title
-└ Close
-
-Body
-├ Primary Rail
-│  ├ Rail Pager
-│  └ Material Family Page
-└ Catalog
-   ├ Source Filter
-   ├ Actions
-   │  ├ 保存配色
-   │  └ 粘贴配色
-   ├ 4×2 Pooled Cards
-   └ Pager
+MaterialPresetMetadataDialog
+├ Name TextField
+├ FamilyChoiceGrid
+│  ├ 木材
+│  ├ 石材
+│  ├ 金属
+│  ├ 砖瓦
+│  ├ 灰泥 / 土
+│  ├ 布料
+│  ├ 玻璃
+│  ├ 漆饰
+│  └ 其他
+└ Actions
 ```
 
-Card：
-
-```text
-WorkspaceItemCard
-├ StateLine
-└ Copy
-   ├ Head
-   │  ├ Title
-   │  └ SourceBadge
-   └ Meta
-      ├ BaseColorAccent
-      └ FamilyAndFinish
-```
-
-管理菜单与 Drag Adapter 只产生 Command，不直接拥有 UserPresetLibrary。
+FamilyChoiceGrid 使用 Flex Rows / Wrap，可直接映射 UI Toolkit，不依赖 HTML Select。
 
 ## 9. UI Review
 
-必须检查：
+必须验证：
 
-- 左侧 Surface 与中央 Workspace 同时存在且不重叠；
-- 来源筛选为 全部 / 系统内置 / 创意工坊 / 我的方案；
-- Material Family Rail 有两页；
-- 第一页与第二页分类完整；
-- Card 来源 Badge 位于第一行右侧；
-- Material Card 不回归纯色大图 / 四色条；
-- 保存 Dialog 使用 Name + Material Family Dropdown；
-- 我的方案一级菜单不内联所有分类；
-- “移动分类…”进入独立二级 Family Picker；
-- Family Picker 包含全部 9 个真实 Material Family；
-- 菜单与 Picker 不越出 Workspace；
-- Move 支持撤销；
-- Drag 到 Rail 与 Picker Move 得到相同数据结果；
-- CurrentFamily 与 CurrentScheme 同步；
-- Copy 复用 Surface Clipboard；
-- Delete 使用 Confirm Dialog；
-- Metallic / Specular 颜色可见性规则保持不变。
+- Save Dialog 显示 9 个平铺 Material Family；
+- Save Dialog 不回归 Dropdown；
+- 保存后自动进入“我的方案 + 目标 Family”；
+- 我的方案菜单只有 编辑 / 复制参数 / 删除；
+- 不再出现 重命名 / 移动分类；
+- Edit 与 Save 复用相同 Metadata Dialog；
+- Edit 修改 Family 后 Rail 自动切页并选中目标 Family；
+- Drag Move 成功后自动选择目标 Family；
+- Drag Move 后 Card 保持可见；
+- Move 不产生“撤销” Toast；
+- Move / Edit 后使用局部 Card Reveal Highlight；
+- Source Filter 在 Edit / Drag Move 时保持不变；
+- Copy 继续复用 Surface Clipboard；
+- Delete 使用共享 Confirm Dialog。
