@@ -123,3 +123,26 @@ src/ui/color/ColorParameterField.tsx
 - Light 私有 `.light-adjustment-color-row` 已删除。
 
 UI Review 增加 BoundingBox 断言：Color Control 的 x / width 必须与亮度 NumericSliderField 一致，HDR Badge 必须位于 Color Bar 内。
+
+
+## ColorParameterField 视觉权重弱化
+
+共享 ColorParameterField 第一版虽然和 Slider Control Column 对齐，但整块 Control 被当前颜色铺满，导致浅暖色灯光在中性烟墨参数面板中成为最强视觉热点。
+
+本轮保持组件结构与复用边界不变，只调整共享视觉：
+
+- 外层 Control 改回中性烟墨 Surface；
+- 当前颜色改为内部约 14px 高的长条 Preview；
+- Preview 水平仍占据绝大多数 Control 宽度，保留“长颜色条”识别；
+- Color Fill 默认 opacity 约 0.62，Hover 仅轻微提升到约 0.70；
+- HDR Badge 与 Chevron 继续留在 Preview 内部，但降低 Border / Text 对比；
+- 右侧 Contrast Overlay 继续保证浅色与深色都能读取状态；
+- Light Tool 不新增任何私有覆盖，改动属于共享 ColorParameterField。
+
+UI Review 新增断言：
+
+- Outer Color Control 继续和 NumericSliderField x / width 对齐；
+- Preview Height 必须低于 Control Height 的 70%；
+- Preview Width 必须至少占 Control Width 的 90%；
+- Color Fill opacity 不得超过 0.70；
+- HDR Badge 必须完全位于 Preview Strip 内。
