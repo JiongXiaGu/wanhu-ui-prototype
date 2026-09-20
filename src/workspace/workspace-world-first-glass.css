@@ -18,7 +18,6 @@
 .gameplay-screen .workspace--catalog .workspace-header{
   border-radius:17px 17px 0 0;
 }
-.gameplay-screen .workspace--catalog .workspace-title>.ui-icon,
 .gameplay-screen .workspace--catalog .workspace-title>.ui-icon{
   color:var(--workspace-jade);
   filter:none;
@@ -58,7 +57,6 @@
   background:var(--workspace-gold);
   box-shadow:none;
 }
-.gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active .ui-icon,
 .gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active .ui-icon{transform:none}
 
 /* Context filters remain lightweight tabs. Character adds only the tenon node. */
