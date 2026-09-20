@@ -32,7 +32,7 @@ import './tools/city-wall-access-stair/city-wall-access-stair.css';
 import './tools/city-wall-transition-stair/city-wall-transition-stair.css';
 import './tools/material-palette/modes/surface/surface-mode.css';
 import './tools/material-palette/modes/surface/material-scheme-workspace.css';
-import './tools/light-adjustment/light-adjustment.css';
+import './tools/material-palette/modes/lighting/lighting-mode.css';
 import './tools/building-scheme/building-scheme.css';
 import './gameplay/city-management.css';
 import './gameplay/inventory-management.css';
