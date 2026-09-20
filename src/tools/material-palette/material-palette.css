@@ -135,7 +135,7 @@
 /* Material Scheme Workspace --------------------------------------------------
    Geometry, rail and item-card skin are inherited from the shared Design
    Workspace / WorkspaceItemCard system. This section owns only material-specific
-   page tabs, current-state semantics, material preview rendering and delete/save. */
+   page tabs, current-state semantics, the subtle BaseColor accent line and delete/save. */
 .gameplay-screen .workspace--material-scheme{
   width:1040px;
   z-index:23;
@@ -199,6 +199,7 @@
 .material-scheme-workspace__card-apply{
   width:100%;
   height:64px;
+  padding-left:14px;
 }
 .material-scheme-workspace__card.has-delete .material-scheme-workspace__card-apply{
   padding-right:38px;
@@ -210,40 +211,22 @@
 .material-scheme-workspace__card.is-selected .workspace-item-card__state-line{
   opacity:.82;
 }
-
-.material-scheme-workspace__card-preview{
-  background-color:#6f6a62;
+.material-scheme-workspace__card-copy{
+  gap:7px;
 }
-.material-scheme-workspace__card-preview-texture,
-.material-scheme-workspace__card-preview-light{
-  position:absolute;
-  inset:0;
+.material-scheme-workspace__card-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.material-scheme-workspace__color-line{
+  width:38px;
+  height:3px;
+  flex:0 0 38px;
   display:block;
-  pointer-events:none;
-}
-.material-scheme-workspace__card-preview-texture{opacity:.14}
-.material-scheme-workspace__card-preview.is-wood .material-scheme-workspace__card-preview-texture{
-  background-image:
-    repeating-linear-gradient(166deg,transparent 0 8px,rgba(255,255,255,.13) 8px 9px,transparent 9px 18px),
-    repeating-linear-gradient(12deg,rgba(0,0,0,.08) 0 1px,transparent 1px 13px);
-}
-.material-scheme-workspace__card-preview.is-tile .material-scheme-workspace__card-preview-texture{
-  background-image:
-    linear-gradient(90deg,transparent 0 48%,rgba(0,0,0,.18) 49% 51%,transparent 52% 100%),
-    repeating-linear-gradient(0deg,transparent 0 14px,rgba(255,255,255,.10) 14px 15px);
-}
-.material-scheme-workspace__card-preview.is-wall .material-scheme-workspace__card-preview-texture{
-  background-image:
-    radial-gradient(circle at 18% 26%,rgba(255,255,255,.18) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 72% 64%,rgba(0,0,0,.16) 0 1px,transparent 1.6px),
-    radial-gradient(circle at 48% 38%,rgba(255,255,255,.10) 0 1px,transparent 1.4px);
-  background-size:15px 13px,18px 16px,21px 17px;
-}
-.material-scheme-workspace__card-preview.is-custom .material-scheme-workspace__card-preview-texture{
-  background-image:linear-gradient(135deg,rgba(255,255,255,.10),transparent 44%,rgba(0,0,0,.10));
-}
-.material-scheme-workspace__card-preview-light{
-  background:linear-gradient(136deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.10) 33%,rgba(255,255,255,0) 54%,rgba(0,0,0,.30) 100%);
+  border-radius:2px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.045);
+  opacity:.82;
 }
 
 .material-scheme-workspace__card-delete{
