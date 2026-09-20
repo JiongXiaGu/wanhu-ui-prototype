@@ -671,6 +671,36 @@ await page.screenshot({ path: outDir + '/city-wall-transition-stair-27-return-wo
 
 
 
+// Shared Catalog Rail review: Design and Material must consume the same compact
+// rail geometry while selection and pagination keep different visual semantics.
+await open('workspace-building', '.workspace[data-design-category="building"]');
+const buildingCatalogWorkspace = page.locator('.workspace[data-design-category="building"]');
+if (!(await buildingCatalogWorkspace.evaluate((node) => node.classList.contains('workspace--catalog')))) {
+  throw new Error('Design Workspace must consume the shared workspace--catalog contract.');
+}
+const buildingCatalogRail = buildingCatalogWorkspace.locator('.workspace-primary-rail');
+if ((await buildingCatalogRail.locator('.workspace-rail-pager button').count()) !== 2) {
+  throw new Error('Building Workspace should expose the shared two-page Rail Pager.');
+}
+await buildingCatalogRail.getByRole('button', { name: '楼阁', exact: true }).click();
+await page.waitForTimeout(100);
+const buildingSelectedRailItem = buildingCatalogRail.getByRole('button', { name: '楼阁', exact: true });
+const buildingRailItemBox = await buildingSelectedRailItem.boundingBox();
+const buildingActiveRailPager = buildingCatalogRail.locator('.workspace-rail-pager button.is-active span');
+const buildingRailPagerBox = await buildingActiveRailPager.boundingBox();
+if (!buildingRailItemBox || !buildingRailPagerBox
+  || Math.abs(buildingRailItemBox.height - 29) > 1
+  || buildingRailPagerBox.width > 6
+  || buildingRailPagerBox.height > 6) {
+  throw new Error('Building shared Rail geometry regressed. item=' + JSON.stringify(buildingRailItemBox) + ' pager=' + JSON.stringify(buildingRailPagerBox));
+}
+const buildingSelectionColor = await buildingSelectedRailItem.evaluate((node) => getComputedStyle(node, '::before').backgroundColor);
+const buildingPagerColor = await buildingActiveRailPager.evaluate((node) => getComputedStyle(node).backgroundColor);
+if (!buildingSelectionColor || !buildingPagerColor || buildingSelectionColor === buildingPagerColor) {
+  throw new Error('Rail selection and pagination must use different visual tones in Design Workspace.');
+}
+await page.screenshot({ path: outDir + '/workspace-building-rail-selection-vs-page.png' });
+
 await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
 const worldUtilityForMaterial = page.locator('.context-utility-toolbar[data-utility-context="world"]');
 await worldUtilityForMaterial.getByRole('button', { name: '配色工具', exact: true }).click();
@@ -854,6 +884,33 @@ for (const category of ['玻璃', '漆饰', '其他']) {
 }
 await schemeRail.getByRole('button', { name: '切换到第 1 组材质分类', exact: true }).click();
 await page.waitForTimeout(100);
+
+if (!(await schemeWorkspace.evaluate((node) => node.classList.contains('workspace--catalog')))
+  || (await schemeWorkspace.evaluate((node) => node.classList.contains('workspace--design')))) {
+  throw new Error('Material Scheme must consume workspace--catalog directly instead of inheriting workspace--design.');
+}
+const materialRailItemBox = await schemeRail.getByRole('button', { name: '金属', exact: true }).boundingBox();
+const materialActiveRailPager = schemeRail.locator('.workspace-rail-pager button.is-active span');
+const materialRailPagerBox = await materialActiveRailPager.boundingBox();
+if (!materialRailItemBox || !materialRailPagerBox
+  || Math.abs(materialRailItemBox.height - buildingRailItemBox.height) > 1
+  || Math.abs(materialRailPagerBox.width - buildingRailPagerBox.width) > 1
+  || Math.abs(materialRailPagerBox.height - buildingRailPagerBox.height) > 1) {
+  throw new Error('Design and Material Rail geometry must come from the same catalog contract. materialItem=' + JSON.stringify(materialRailItemBox));
+}
+await schemeRail.getByRole('button', { name: '金属', exact: true }).click();
+await page.waitForTimeout(100);
+const materialSelectedRailItem = schemeRail.getByRole('button', { name: '金属', exact: true });
+const materialSelectionColor = await materialSelectedRailItem.evaluate((node) => getComputedStyle(node, '::before').backgroundColor);
+const materialPagerColor = await materialActiveRailPager.evaluate((node) => getComputedStyle(node).backgroundColor);
+if (!materialSelectionColor || !materialPagerColor
+  || materialSelectionColor === materialPagerColor
+  || materialPagerColor !== buildingPagerColor) {
+  throw new Error('Material Rail Pager must use the same neutral page tone as Design and remain distinct from warm selection.');
+}
+await page.screenshot({ path: outDir + '/material-palette-29a-rail-neutral-pagination.png' });
+await schemeRail.getByRole('button', { name: '全部', exact: true }).click();
+await page.waitForTimeout(80);
 
 for (const action of ['保存配色', '粘贴配色']) {
   if ((await schemeWorkspace.getByRole('button', { name: action, exact: true }).count()) !== 1) {
