@@ -77,6 +77,22 @@ for(const row of summary(iconSizes)) console.log(`${row.value}: ${row.count} sig
 console.log(`\nFonts below 10px: ${tinyFonts.length}`);
 for(const hit of tinyFonts) console.log(`FONT<10 ${hit.value}px ${hit.file}:${hit.line} ${hit.text}`);
 
+
+const fileFontStats=new Map();
+for(const hit of tinyFonts){
+  const stat=fileFontStats.get(hit.file)??{below10:0,below9:0,below8:0,min:Infinity};
+  stat.below10+=1;
+  if(hit.value<9) stat.below9+=1;
+  if(hit.value<8) stat.below8+=1;
+  stat.min=Math.min(stat.min,hit.value);
+  fileFontStats.set(hit.file,stat);
+}
+
+console.log('\nSmall-font hotspots:');
+for(const [file,stat] of [...fileFontStats.entries()].sort((a,b)=>b[1].below10-a[1].below10 || a[0].localeCompare(b[0]))){
+  console.log('HOTSPOT ' + file + ' <10=' + stat.below10 + ' <9=' + stat.below9 + ' <8=' + stat.below8 + ' min=' + stat.min + 'px');
+}
+
 console.log(`\nIcon signals below 14px: ${tinyIcons.length}`);
 for(const hit of tinyIcons) console.log(`ICON<14 ${hit.value}px ${hit.file}:${hit.line} ${hit.text}`);
 
