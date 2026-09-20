@@ -937,18 +937,95 @@ if ((await schemeWorkspace.getAttribute('data-material-scheme-source')) !== 'min
 if ((await schemeWorkspace.getByText('还没有保存的我的方案', { exact: true }).count()) !== 1) {
   throw new Error('My Schemes should show an empty state before the first save.');
 }
+
 await schemeWorkspace.getByRole('button', { name: '保存配色', exact: true }).click();
-await page.waitForTimeout(100);
-if ((await materialPanel.getAttribute('data-material-scheme-name')) !== '我的配色 01') {
-  throw new Error('Saving current parameters should create and select My Scheme.');
+await page.waitForSelector('.ui-dialog');
+const saveDialog = page.locator('.ui-dialog');
+if ((await saveDialog.getByRole('heading', { name: '保存配色', exact: true }).count()) !== 1) {
+  throw new Error('Save Material Scheme should use the shared named-choice dialog.');
 }
-if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 木头 · 我的配色 01', exact: true }).count()) !== 1) {
-  throw new Error('Saved scheme should appear immediately with its retained material category.');
+const saveName = saveDialog.getByRole('textbox');
+await saveName.fill('城墙暖灰');
+await saveDialog.getByRole('radio', { name: '墙面', exact: true }).click();
+await page.screenshot({ path: outDir + '/material-palette-31-save-dialog.png' });
+await saveDialog.getByRole('button', { name: '保存', exact: true }).click();
+await page.waitForSelector('.ui-dialog', { state: 'detached' });
+await page.waitForTimeout(120);
+
+if ((await materialPanel.getAttribute('data-material-scheme-name')) !== '城墙暖灰'
+  || (await materialPanel.getAttribute('data-material-scheme-type')) !== '墙面') {
+  throw new Error('Save dialog should persist the custom name and chosen material category.');
+}
+if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 墙面 · 城墙暖灰', exact: true }).count()) !== 1) {
+  throw new Error('Saved scheme should appear immediately with the category chosen in the save dialog.');
 }
 if ((await schemeWorkspace.getByText('我的方案', { exact: true }).count()) < 2) {
   throw new Error('Saved card should identify 我的方案 as its source.');
 }
-await page.screenshot({ path: outDir + '/material-palette-31-scheme-workspace-mine.png' });
+
+await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true }).click();
+await page.waitForSelector('.material-scheme-workspace__card-menu');
+const presetMenu = schemeWorkspace.locator('.material-scheme-workspace__card-menu');
+for (const menuAction of ['重命名', '复制参数', '删除']) {
+  if ((await presetMenu.getByRole('menuitem', { name: menuAction, exact: true }).count()) !== 1) {
+    throw new Error('My Scheme menu missing action: ' + menuAction);
+  }
+}
+for (const categoryName of ['木头', '瓦片', '墙面']) {
+  if ((await presetMenu.getByRole('button', { name: categoryName, exact: true }).count()) !== 1) {
+    throw new Error('My Scheme Move To menu missing category: ' + categoryName);
+  }
+}
+await page.screenshot({ path: outDir + '/material-palette-32-mine-menu.png' });
+
+await presetMenu.getByRole('menuitem', { name: '重命名', exact: true }).click();
+await page.waitForSelector('.ui-dialog');
+const renameDialog = page.locator('.ui-dialog');
+if ((await renameDialog.getByRole('heading', { name: '重命名方案', exact: true }).count()) !== 1) {
+  throw new Error('Rename should use the shared Input Dialog.');
+}
+await renameDialog.getByRole('textbox').fill('城墙暖灰二号');
+await renameDialog.getByRole('button', { name: '确定', exact: true }).click();
+await page.waitForSelector('.ui-dialog', { state: 'detached' });
+await page.waitForTimeout(100);
+if ((await materialPanel.getAttribute('data-material-scheme-name')) !== '城墙暖灰二号') {
+  throw new Error('Renaming the selected My Scheme should update CurrentScheme.');
+}
+if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 墙面 · 城墙暖灰二号', exact: true }).count()) !== 1) {
+  throw new Error('Renamed My Scheme should update its catalog card.');
+}
+
+await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
+await page.waitForSelector('.material-scheme-workspace__card-menu');
+await schemeWorkspace.locator('.material-scheme-workspace__card-menu').getByRole('button', { name: '木头', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 木头 · 城墙暖灰二号', exact: true }).count()) !== 1) {
+  throw new Error('Move To menu should change the My Scheme category.');
+}
+if ((await page.getByRole('button', { name: '撤销', exact: true }).count()) !== 1) {
+  throw new Error('Moving a My Scheme should expose an Undo toast action.');
+}
+await page.getByRole('button', { name: '撤销', exact: true }).click();
+await page.waitForTimeout(100);
+if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 墙面 · 城墙暖灰二号', exact: true }).count()) !== 1) {
+  throw new Error('Undo should restore the previous My Scheme category.');
+}
+
+const draggableScheme = schemeWorkspace.getByRole('button', { name: '应用材质方案 墙面 · 城墙暖灰二号', exact: true });
+const woodDropTarget = schemeRail.getByRole('button', { name: '木头', exact: true });
+await draggableScheme.dragTo(woodDropTarget);
+await page.waitForTimeout(140);
+if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 木头 · 城墙暖灰二号', exact: true }).count()) !== 1) {
+  throw new Error('Dragging My Scheme onto the Wood rail should move its category.');
+}
+await page.screenshot({ path: outDir + '/material-palette-33-mine-renamed-moved.png' });
+
+await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
+await page.waitForSelector('.material-scheme-workspace__card-menu');
+await schemeWorkspace.locator('.material-scheme-workspace__card-menu').getByRole('menuitem', { name: '复制参数', exact: true }).click();
+if ((await materialPanel.getAttribute('data-material-surface-clipboard')) !== 'ready') {
+  throw new Error('Copy Parameters from My Scheme should populate the shared Surface clipboard.');
+}
 
 await schemeWorkspace.getByRole('button', { name: '粘贴配色', exact: true }).click();
 await page.waitForTimeout(80);
@@ -956,9 +1033,15 @@ if ((await materialPanel.getAttribute('data-material-scheme-name')) !== '未保�
   throw new Error('Pasting Surface parameters from the Workspace should return CurrentScheme to unsaved custom.');
 }
 
-await schemeWorkspace.getByRole('button', { name: '删除我的方案 我的配色 01', exact: true }).click();
+await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
+await page.waitForSelector('.material-scheme-workspace__card-menu');
+await schemeWorkspace.locator('.material-scheme-workspace__card-menu').getByRole('menuitem', { name: '删除', exact: true }).click();
+await page.waitForSelector('.ui-dialog');
+const deleteDialog = page.locator('.ui-dialog');
+await deleteDialog.getByRole('button', { name: '删除', exact: true }).click();
+await page.waitForSelector('.ui-dialog', { state: 'detached' });
 await page.waitForTimeout(80);
-if (await schemeWorkspace.getByRole('button', { name: '应用材质方案 木头 · 我的配色 01', exact: true }).count()) {
+if (await schemeWorkspace.getByRole('button', { name: /城墙暖灰二号/ }).count()) {
   throw new Error('Deleted My Scheme should disappear from the catalog.');
 }
 
