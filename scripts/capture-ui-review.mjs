@@ -712,11 +712,11 @@ if (await worldUtilityForMaterial.getByRole('button', { name: '灯光调整', ex
   throw new Error('World Utility must expose one 配色工具 entry; Light and Scheme are internal color-tool modes.');
 }
 await worldUtilityForMaterial.getByRole('button', { name: '配色工具', exact: true }).click();
-await page.waitForSelector('.material-palette-prototype');
-await page.waitForSelector('.context-utility-toolbar[data-utility-context="material-palette"]');
+await page.waitForSelector('.color-tool-surface-panel');
+await page.waitForSelector('.context-utility-toolbar[data-utility-context="color-tool"]');
 await page.waitForTimeout(260);
 
-const materialPanel = page.locator('.material-palette-prototype');
+const materialPanel = page.locator('.color-tool-surface-panel');
 const materialPanelBox = await materialPanel.boundingBox();
 if (!materialPanelBox || materialPanelBox.width < 392 || materialPanelBox.width > 408) {
   throw new Error('Material palette panel should stay near 400px wide. width=' + materialPanelBox?.width);
@@ -822,7 +822,7 @@ if ((await workflowControl.locator('.material-workflow-control__indicator').coun
   throw new Error('Workflow should expose two explicit state dots.');
 }
 
-const surfaceFooter = materialPanel.locator('.material-palette-footer');
+const surfaceFooter = materialPanel.locator('.color-tool-surface-footer');
 for (const action of ['恢复默认', '复制参数', '粘贴参数']) {
   if ((await surfaceFooter.getByRole('button', { name: action, exact: true }).count()) !== 1) {
     throw new Error('Surface footer action missing: ' + action);
@@ -844,7 +844,7 @@ if ((await materialPanel.getAttribute('data-material-page')) !== 'surface'
 
 const schemeWorkspace = page.locator('.material-scheme-workspace');
 const schemeWorkspaceBox = await schemeWorkspace.boundingBox();
-const materialToolbar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
+const materialToolbar = page.locator('.color-tool-toolbar-cluster .tool-action-bar');
 const materialToolbarBox = await materialToolbar.boundingBox();
 if (!schemeWorkspaceBox || !materialToolbarBox) {
   throw new Error('Scheme Workspace and Material toolbar geometry must be measurable.');
@@ -1224,7 +1224,7 @@ for (const channel of ['H', 'S', 'V']) {
     throw new Error('HSV mode missing channel ' + channel);
   }
 }
-const colorFooter = materialPanel.locator('.material-palette-footer');
+const colorFooter = materialPanel.locator('.color-tool-surface-footer');
 await colorFooter.getByRole('button', { name: '复制颜色', exact: true }).click();
 if ((await materialPanel.getAttribute('data-material-color-clipboard')) !== 'ready') {
   throw new Error('Color copy should populate structured color clipboard.');
@@ -1255,7 +1255,7 @@ await page.screenshot({ path: outDir + '/material-palette-34-night-emission-hdr.
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
-const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
+const materialBar = page.locator('.color-tool-toolbar-cluster .tool-action-bar');
 for (const modeLabel of ['表面模式', '灯光模式', '方案模式']) {
   if ((await materialBar.getByRole('button', { name: modeLabel, exact: true }).count()) !== 1) {
     throw new Error('配色工具 should expose internal mode: ' + modeLabel);
@@ -1265,12 +1265,12 @@ for (const modeLabel of ['表面模式', '灯光模式', '方案模式']) {
 // Lighting is an internal mode of the same Material Palette Tool.
 await materialBar.getByRole('button', { name: '灯光模式', exact: true }).click();
 await page.waitForSelector('.light-adjustment-panel');
-await page.waitForSelector('.material-palette-prototype', { state: 'detached' });
+await page.waitForSelector('.color-tool-surface-panel', { state: 'detached' });
 await page.waitForTimeout(160);
 
 const lightPanel = page.locator('.light-adjustment-panel');
-if ((await page.locator('.material-palette-toolbar-cluster').count()) !== 1
-  || (await page.locator('.context-utility-toolbar[data-utility-context="material-palette"]').count()) !== 1) {
+if ((await page.locator('.color-tool-toolbar-cluster').count()) !== 1
+  || (await page.locator('.context-utility-toolbar[data-utility-context="color-tool"]').count()) !== 1) {
   throw new Error('Switching to Lighting must keep the same color-tool dock and utility context.');
 }
 if ((await lightPanel.getAttribute('data-light-adjustment-selected')) !== 'none'
@@ -1364,8 +1364,8 @@ await page.waitForSelector('.light-adjustment-panel', { state: 'detached' });
 await page.waitForTimeout(160);
 
 const buildingSchemePanel = page.locator('.building-scheme-panel');
-if ((await page.locator('.material-palette-toolbar-cluster').count()) !== 1
-  || (await page.locator('.context-utility-toolbar[data-utility-context="material-palette"]').count()) !== 1) {
+if ((await page.locator('.color-tool-toolbar-cluster').count()) !== 1
+  || (await page.locator('.context-utility-toolbar[data-utility-context="color-tool"]').count()) !== 1) {
   throw new Error('Scheme mode must remain inside the same color-tool shell.');
 }
 if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'none') {
@@ -1452,15 +1452,15 @@ await page.waitForSelector('.building-scheme-workspace', { state: 'detached' });
 
 // Switching modes does not leave the color tool.
 await materialBar.getByRole('button', { name: '表面模式', exact: true }).click();
-await page.waitForSelector('.material-palette-prototype');
+await page.waitForSelector('.color-tool-surface-panel');
 await page.waitForSelector('.building-scheme-panel', { state: 'detached' });
-if ((await page.locator('.material-palette-toolbar-cluster').count()) !== 1) {
+if ((await page.locator('.color-tool-toolbar-cluster').count()) !== 1) {
   throw new Error('Returning to Surface should keep the same color-tool dock.');
 }
 await page.screenshot({ path: outDir + '/material-palette-43-return-surface-mode.png' });
 
 await materialBar.getByRole('button', { name: '完成配色', exact: true }).click();
-await page.waitForSelector('.material-palette-toolbar-cluster', { state: 'detached' });
+await page.waitForSelector('.color-tool-toolbar-cluster', { state: 'detached' });
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
 await page.waitForTimeout(160);
 await page.screenshot({ path: outDir + '/material-palette-44-return-gameplay.png' });
