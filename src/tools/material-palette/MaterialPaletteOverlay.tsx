@@ -22,7 +22,8 @@ type MaterialWorkflow = '金属' | '高光';
 type MaterialColorTarget = 'BaseColor' | 'EmissionColor' | 'NightEmissionColor' | 'SpecularColor';
 type MaterialPageKey = 'surface' | `color:${MaterialColorTarget}`;
 type ColorNumericMode = 'RGB' | 'HSV';
-type MaterialSchemeType = '木头' | '瓦片' | '墙面' | '自定义';
+type MaterialCategory = '木头' | '瓦片' | '墙面';
+type MaterialSchemeType = MaterialCategory | '自定义';
 
 interface MaterialSurfaceDraft {
   baseColor: string;
@@ -59,9 +60,9 @@ interface ColorClipboardPayload {
 
 interface MaterialPreset {
   id: string;
-  type: MaterialSchemeType;
+  type: MaterialCategory;
   name: string;
-  source: 'builtin' | 'custom';
+  source: 'builtin' | 'workshop' | 'mine';
   draft: MaterialSurfaceDraft;
 }
 
@@ -69,7 +70,7 @@ interface MaterialSchemeState {
   id?: string;
   type: MaterialSchemeType;
   name: string;
-  source: 'builtin' | 'saved' | 'custom';
+  source: 'builtin' | 'workshop' | 'saved' | 'custom';
 }
 
 interface Props {
@@ -157,6 +158,30 @@ const BUILTIN_PRESETS: MaterialPreset[] = [
     name: '夯土墙',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#aa8464', specularColor: '#2a211c', smoothness: 0.12, occlusion: 0.93, textureTiling: 0.9, textureBlendSharpness: 1.3 },
+  },
+];
+
+const WORKSHOP_PRESETS: MaterialPreset[] = [
+  {
+    id: 'workshop-wood-smoked',
+    type: '木头',
+    name: '烟熏旧木',
+    source: 'workshop',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#5a4638', specularColor: '#312923', smoothness: 0.29, occlusion: 0.91, textureTiling: 1.25, textureBlendSharpness: 1.7 },
+  },
+  {
+    id: 'workshop-tile-rain',
+    type: '瓦片',
+    name: '雨青瓦',
+    source: 'workshop',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#46565b', specularColor: '#1e2527', smoothness: 0.38, occlusion: 0.90, textureTiling: 1.9, textureBlendSharpness: 2.1 },
+  },
+  {
+    id: 'workshop-wall-warm',
+    type: '墙面',
+    name: '暖灰粉墙',
+    source: 'workshop',
+    draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#c7beb0', specularColor: '#181614', smoothness: 0.17, occlusion: 0.95, textureTiling: 0.82, textureBlendSharpness: 1.15 },
   },
 ];
 
@@ -699,6 +724,7 @@ export function MaterialPaletteOverlay({
   const [colorClipboard, setColorClipboard] = useState<ColorClipboardPayload | null>(null);
   const [customPresets, setCustomPresets] = useState<MaterialPreset[]>([]);
   const [schemeWorkspaceOpen, setSchemeWorkspaceOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState<MaterialCategory>(INITIAL_PRESET.type);
   const [currentScheme, setCurrentScheme] = useState<MaterialSchemeState>({
     id: INITIAL_PRESET.id,
     type: INITIAL_PRESET.type,
@@ -799,11 +825,12 @@ export function MaterialPaletteOverlay({
   }
 
   function applyPreset(preset: MaterialPreset) {
+    setCurrentCategory(preset.type);
     replaceDraft(preset.draft, {
       id: preset.id,
       type: preset.type,
       name: preset.name,
-      source: preset.source === 'custom' ? 'saved' : 'builtin',
+      source: preset.source === 'mine' ? 'saved' : preset.source,
     });
   }
 
@@ -815,13 +842,13 @@ export function MaterialPaletteOverlay({
     const name = `我的配色 ${String(index).padStart(2, '0')}`;
     const preset: MaterialPreset = {
       id: `custom-${index}`,
-      type: '自定义',
+      type: currentCategory,
       name,
-      source: 'custom',
+      source: 'mine',
       draft: cloneDraft(draft),
     };
     setCustomPresets((current) => [...current, preset]);
-    setCurrentScheme({ id: preset.id, type: '自定义', name, source: 'saved' });
+    setCurrentScheme({ id: preset.id, type: currentCategory, name, source: 'saved' });
   }
 
   function deleteCustomPreset(preset: MaterialPreset) {
@@ -846,6 +873,7 @@ export function MaterialPaletteOverlay({
   }
 
   const systemWorkspacePresets = BUILTIN_PRESETS.map(toWorkspacePreset);
+  const workshopWorkspacePresets = WORKSHOP_PRESETS.map(toWorkspacePreset);
   const customWorkspacePresets = customPresets.map(toWorkspacePreset);
 
   function renderPage(page: MaterialPageKey, phase: MotionPhase, outgoing = false) {
@@ -956,13 +984,18 @@ export function MaterialPaletteOverlay({
       <MaterialSchemeWorkspace
         motionPhase={schemeWorkspacePresence.phase}
         systemPresets={systemWorkspacePresets}
+        workshopPresets={workshopWorkspacePresets}
         customPresets={customWorkspacePresets}
+        canPasteCurrent={surfaceClipboard !== null}
         onClose={() => setSchemeWorkspaceOpen(false)}
         onApply={(id) => {
-          const preset = [...BUILTIN_PRESETS, ...customPresets].find((entry) => entry.id === id);
+          const preset = [...BUILTIN_PRESETS, ...WORKSHOP_PRESETS, ...customPresets].find((entry) => entry.id === id);
           if (preset) applyPreset(preset);
         }}
         onSaveCurrent={saveCurrentAsCustom}
+        onPasteCurrent={() => {
+          if (surfaceClipboard) replaceDraft(surfaceClipboard);
+        }}
         onDelete={(id) => {
           const preset = customPresets.find((entry) => entry.id === id);
           if (preset) deleteCustomPreset(preset);
