@@ -8,11 +8,12 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "audit:unity": "node scripts/audit-unity-migration.mjs",
-    "check": "npm run audit:unity && npm run build"
+    "check": "npm run audit:unity && npm run build",
+    "icons:build": "node scripts/icons/build-icon-assets.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "lucide-react": "latest",
+    "lucide-react": "1.47.0",
     "vite": "latest",
     "typescript": "latest",
     "react": "latest",
@@ -21,6 +22,6 @@
   "devDependencies": {
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "sharp": "latest"
+    "sharp": "0.35.4"
   }
 }
