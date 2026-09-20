@@ -1,10 +1,10 @@
-import type { LucideIcon } from 'lucide-react';
 import { Check, X } from 'lucide-react';
+import { UiIconGlyph, type UiIconSource } from '../ui/icons/UiIcon';
 
 export interface ToolModeItem {
   id: string;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconSource;
   active: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -19,7 +19,7 @@ export interface ToolModeGroup {
 export interface ToolQuickAction {
   id: string;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconSource;
   disabled?: boolean;
   onClick: () => void;
 }
@@ -53,7 +53,7 @@ export function ToolActionBar({
         <div className="placement-action-bar__section" key={group.id}>
           {groupIndex > 0 && <i className="placement-action-bar__divider" aria-hidden="true" />}
           <div className="placement-action-bar__mode-group" role="group" aria-label={group.label}>
-            {group.items.map(({ id, label, icon: Icon, active, disabled, onClick }) => (
+            {group.items.map(({ id, label, icon, active, disabled, onClick }) => (
               <button
                 key={id}
                 type="button"
@@ -64,7 +64,7 @@ export function ToolActionBar({
                 disabled={disabled}
                 onClick={onClick}
               >
-                <Icon aria-hidden="true" />
+                <UiIconGlyph icon={icon} size={20} />
               </button>
             ))}
           </div>
@@ -75,7 +75,7 @@ export function ToolActionBar({
         <div className="placement-action-bar__section">
           <i className="placement-action-bar__divider" aria-hidden="true" />
           <div className="placement-action-bar__quick-group" role="group" aria-label="快速操作">
-            {quickActions.map(({ id, label, icon: Icon, disabled, onClick }) => (
+            {quickActions.map(({ id, label, icon, disabled, onClick }) => (
               <button
                 key={id}
                 type="button"
@@ -85,7 +85,7 @@ export function ToolActionBar({
                 disabled={disabled}
                 onClick={onClick}
               >
-                <Icon aria-hidden="true" />
+                <UiIconGlyph icon={icon} size={20} />
               </button>
             ))}
           </div>
