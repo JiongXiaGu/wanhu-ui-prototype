@@ -37,7 +37,9 @@
 - `全部` 只作为 Filter，不是可保存分类；
 - Rail 每页最多 7 项，当前使用两页；
 - Workspace 宽约 1040px，避免与左侧 Surface Panel 重叠；
-- Card / Rail / Filter / Pager 继续复用 Design Workspace 视觉母版。
+- Material Scheme 与 Design Workspace 都直接消费共享 `workspace--catalog`，Material 不再通过挂 `workspace--design` 间接继承；
+- Rail / Filter / 4×2 Content / Pager 的基础几何与状态视觉统一由共享 Catalog USS/CSS 持有；
+- Category Selected = 熟铜短竖线；Rail Pager = 中性灰圆点，二者保持原有位置但不再使用相同强调色。
 
 ## 2. Card
 
@@ -270,5 +272,8 @@ FamilyChoiceGrid 使用 Flex Rows / Wrap，可直接映射 UI Toolkit，不依�
 - Move 不产生“撤销” Toast；
 - Move / Edit 后使用局部 Card Reveal Highlight；
 - Source Filter 在 Edit / Drag Move 时保持不变；
+- Material 与 Design 的 Rail Item 高度 / Pager Marker 尺寸必须来自同一 `workspace--catalog` Contract；
+- 选中“金属”等中段 Rail Item 时，熟铜 Selection Line 与中性灰 Rail Page Dot 必须视觉可区分；
+- Material Root 不得重新挂 `workspace--design`；
 - Copy 继续复用 Surface Clipboard；
 - Delete 使用共享 Confirm Dialog。
