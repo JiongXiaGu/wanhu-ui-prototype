@@ -1,5 +1,4 @@
 import type { Dispatch } from 'react';
-import { Layers3, Lightbulb, Palette } from 'lucide-react';
 import type { GameplayUiAction, GameplayUiState } from '../../app/ui-state';
 import type { MotionPhase } from '../../ui/motion';
 import { PlacementActionBar, type PlacementModeGroup } from '../placement/PlacementActionBar';
@@ -20,21 +19,21 @@ export function ColorToolDock({ state, motionPhase = 'steady', dispatch, onCompl
       {
         id: 'surface',
         label: '表面模式',
-        icon: Layers3,
+        icon: 'layers-3',
         active: state.colorToolMode === 'surface',
         onClick: () => dispatch({ type: 'SET_COLOR_TOOL_MODE', mode: 'surface' }),
       },
       {
         id: 'lighting',
         label: '灯光模式',
-        icon: Lightbulb,
+        icon: 'lightbulb',
         active: state.colorToolMode === 'lighting',
         onClick: () => dispatch({ type: 'SET_COLOR_TOOL_MODE', mode: 'lighting' }),
       },
       {
         id: 'scheme',
         label: '方案模式',
-        icon: Palette,
+        icon: 'palette',
         active: state.colorToolMode === 'scheme',
         onClick: () => dispatch({ type: 'SET_COLOR_TOOL_MODE', mode: 'scheme' }),
       },
