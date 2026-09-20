@@ -320,3 +320,36 @@ Card 信息架构同步调整：
 - 单页 Rail Marker 同样改为中性灰圆点；
 - Content Pager 仍可使用熟铜 Current Page，不与 Rail Selection 竞争；
 - UI Review 同时检查 Building / Material Rail 几何一致性，并验证“楼阁 / 金属”等中段 Selected 与 Pager Tone 不相同。
+
+
+## Rail Pager 过近问题根因修复
+
+上一轮虽然已经把 Rail Pager 从熟铜长线改成中性灰圆点，但 Material Scheme 截图中 Pager 仍然贴近“金属”的 Selected Line。进一步用 GitHub Actions 做几何断言后确认：
+
+- Building 的 Pager → Selected 可见间隔约 15.5px；
+- Material 的同一间隔只有约 7.5px；
+- 因此问题并不是视觉错觉，也不是应该把 Pager 搬到另一侧。
+
+根因来自历史 `src/styles.css`：
+
+```css
+.workspace-body aside button {
+  flex: 1;
+  padding-left: 12px;
+}
+```
+
+这条旧 Generic Workspace 规则 specificity 高于早期 Pager 基础规则，会把 Material Rail Pager Button 的 padding / flex 污染掉，使灰色 Page Dot 向 Selected Lane 偏移。Design 因历史覆盖链不同，看起来相对正常，因此之前只改 Tone 没有真正消除根因。
+
+最终修复：
+
+- 删除 `styles.css` 中退役的 Generic Workspace Rail `aside/button` 规则；
+- `workspace--catalog` 显式重置 Rail Item：`flex:0 0 29px`；
+- 显式重置 Pager Button：`flex:0 0 14px; width:8px; padding:0`；
+- Catalog Rail Content 左侧 Padding 从 14px 调整为 22px；
+- UI Review 新增真实 BoundingBox 断言：
+  - Building / Material Pager → Selected gap 都必须 ≥ 12px；
+  - 两者差异 ≤ 1px；
+  - Pager Marker 尺寸与 Rail Item 高度继续共用同一 Contract。
+
+最终 Actions 已验证 Material 与 Building 使用相同 Rail Gutter，且“金属”等中段分类不再与 Pager 点贴在一起。
