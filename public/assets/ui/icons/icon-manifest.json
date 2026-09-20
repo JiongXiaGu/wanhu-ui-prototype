@@ -1,0 +1,747 @@
+{
+  "schemaVersion": 1,
+  "canvasSize": 64,
+  "strokeWidth": 1.7,
+  "sourcePackage": {
+    "name": "lucide-react",
+    "version": "1.47.0"
+  },
+  "runtime": {
+    "format": "png",
+    "color": "#ffffff",
+    "background": "transparent",
+    "web": "alpha-mask-currentColor",
+    "unity": "sprite-tint"
+  },
+  "iconCount": 104,
+  "icons": [
+    {
+      "id": "arrow-left",
+      "sourceName": "ArrowLeft",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/arrow-left.svg",
+      "runtimePath": "/assets/ui/icons/arrow-left.png",
+      "png": "public/assets/ui/icons/arrow-left.png"
+    },
+    {
+      "id": "arrow-left-right",
+      "sourceName": "ArrowLeftRight",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/arrow-left-right.svg",
+      "runtimePath": "/assets/ui/icons/arrow-left-right.png",
+      "png": "public/assets/ui/icons/arrow-left-right.png"
+    },
+    {
+      "id": "arrow-up",
+      "sourceName": "ArrowUp",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/arrow-up.svg",
+      "runtimePath": "/assets/ui/icons/arrow-up.png",
+      "png": "public/assets/ui/icons/arrow-up.png"
+    },
+    {
+      "id": "arrow-up-down",
+      "sourceName": "ArrowUpDown",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/arrow-up-down.svg",
+      "runtimePath": "/assets/ui/icons/arrow-up-down.png",
+      "png": "public/assets/ui/icons/arrow-up-down.png"
+    },
+    {
+      "id": "blocks",
+      "sourceName": "Blocks",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/blocks.svg",
+      "runtimePath": "/assets/ui/icons/blocks.png",
+      "png": "public/assets/ui/icons/blocks.png"
+    },
+    {
+      "id": "book-open",
+      "sourceName": "BookOpen",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/book-open.svg",
+      "runtimePath": "/assets/ui/icons/book-open.png",
+      "png": "public/assets/ui/icons/book-open.png"
+    },
+    {
+      "id": "bookmark",
+      "sourceName": "Bookmark",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/bookmark.svg",
+      "runtimePath": "/assets/ui/icons/bookmark.png",
+      "png": "public/assets/ui/icons/bookmark.png"
+    },
+    {
+      "id": "box-select",
+      "sourceName": "BoxSelect",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/box-select.svg",
+      "runtimePath": "/assets/ui/icons/box-select.png",
+      "png": "public/assets/ui/icons/box-select.png"
+    },
+    {
+      "id": "bridge",
+      "sourceName": "Bridge",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/bridge.svg",
+      "runtimePath": "/assets/ui/icons/bridge.png",
+      "png": "public/assets/ui/icons/bridge.png"
+    },
+    {
+      "id": "brush",
+      "sourceName": "Brush",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/brush.svg",
+      "runtimePath": "/assets/ui/icons/brush.png",
+      "png": "public/assets/ui/icons/brush.png"
+    },
+    {
+      "id": "building-2",
+      "sourceName": "Building2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/building-2.svg",
+      "runtimePath": "/assets/ui/icons/building-2.png",
+      "png": "public/assets/ui/icons/building-2.png"
+    },
+    {
+      "id": "camera",
+      "sourceName": "Camera",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/camera.svg",
+      "runtimePath": "/assets/ui/icons/camera.png",
+      "png": "public/assets/ui/icons/camera.png"
+    },
+    {
+      "id": "castle",
+      "sourceName": "Castle",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/castle.svg",
+      "runtimePath": "/assets/ui/icons/castle.png",
+      "png": "public/assets/ui/icons/castle.png"
+    },
+    {
+      "id": "check",
+      "sourceName": "Check",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/check.svg",
+      "runtimePath": "/assets/ui/icons/check.png",
+      "png": "public/assets/ui/icons/check.png"
+    },
+    {
+      "id": "chevron-down",
+      "sourceName": "ChevronDown",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/chevron-down.svg",
+      "runtimePath": "/assets/ui/icons/chevron-down.png",
+      "png": "public/assets/ui/icons/chevron-down.png"
+    },
+    {
+      "id": "chevron-left",
+      "sourceName": "ChevronLeft",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/chevron-left.svg",
+      "runtimePath": "/assets/ui/icons/chevron-left.png",
+      "png": "public/assets/ui/icons/chevron-left.png"
+    },
+    {
+      "id": "chevron-right",
+      "sourceName": "ChevronRight",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/chevron-right.svg",
+      "runtimePath": "/assets/ui/icons/chevron-right.png",
+      "png": "public/assets/ui/icons/chevron-right.png"
+    },
+    {
+      "id": "chevrons-right",
+      "sourceName": "ChevronsRight",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/chevrons-right.svg",
+      "runtimePath": "/assets/ui/icons/chevrons-right.png",
+      "png": "public/assets/ui/icons/chevrons-right.png"
+    },
+    {
+      "id": "circle-x",
+      "sourceName": "CircleX",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/circle-x.svg",
+      "runtimePath": "/assets/ui/icons/circle-x.png",
+      "png": "public/assets/ui/icons/circle-x.png"
+    },
+    {
+      "id": "clipboard-paste",
+      "sourceName": "ClipboardPaste",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/clipboard-paste.svg",
+      "runtimePath": "/assets/ui/icons/clipboard-paste.png",
+      "png": "public/assets/ui/icons/clipboard-paste.png"
+    },
+    {
+      "id": "cloud",
+      "sourceName": "Cloud",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/cloud.svg",
+      "runtimePath": "/assets/ui/icons/cloud.png",
+      "png": "public/assets/ui/icons/cloud.png"
+    },
+    {
+      "id": "cloud-fog",
+      "sourceName": "CloudFog",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/cloud-fog.svg",
+      "runtimePath": "/assets/ui/icons/cloud-fog.png",
+      "png": "public/assets/ui/icons/cloud-fog.png"
+    },
+    {
+      "id": "cloud-rain",
+      "sourceName": "CloudRain",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/cloud-rain.svg",
+      "runtimePath": "/assets/ui/icons/cloud-rain.png",
+      "png": "public/assets/ui/icons/cloud-rain.png"
+    },
+    {
+      "id": "cloud-snow",
+      "sourceName": "CloudSnow",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/cloud-snow.svg",
+      "runtimePath": "/assets/ui/icons/cloud-snow.png",
+      "png": "public/assets/ui/icons/cloud-snow.png"
+    },
+    {
+      "id": "cloud-sun",
+      "sourceName": "CloudSun",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/cloud-sun.svg",
+      "runtimePath": "/assets/ui/icons/cloud-sun.png",
+      "png": "public/assets/ui/icons/cloud-sun.png"
+    },
+    {
+      "id": "coins",
+      "sourceName": "Coins",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/coins.svg",
+      "runtimePath": "/assets/ui/icons/coins.png",
+      "png": "public/assets/ui/icons/coins.png"
+    },
+    {
+      "id": "columns-3",
+      "sourceName": "Columns3",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/columns-3.svg",
+      "runtimePath": "/assets/ui/icons/columns-3.png",
+      "png": "public/assets/ui/icons/columns-3.png"
+    },
+    {
+      "id": "copy",
+      "sourceName": "Copy",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/copy.svg",
+      "runtimePath": "/assets/ui/icons/copy.png",
+      "png": "public/assets/ui/icons/copy.png"
+    },
+    {
+      "id": "corner-down-right",
+      "sourceName": "CornerDownRight",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/corner-down-right.svg",
+      "runtimePath": "/assets/ui/icons/corner-down-right.png",
+      "png": "public/assets/ui/icons/corner-down-right.png"
+    },
+    {
+      "id": "crown",
+      "sourceName": "Crown",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/crown.svg",
+      "runtimePath": "/assets/ui/icons/crown.png",
+      "png": "public/assets/ui/icons/crown.png"
+    },
+    {
+      "id": "dices",
+      "sourceName": "Dices",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/dices.svg",
+      "runtimePath": "/assets/ui/icons/dices.png",
+      "png": "public/assets/ui/icons/dices.png"
+    },
+    {
+      "id": "door-open",
+      "sourceName": "DoorOpen",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/door-open.svg",
+      "runtimePath": "/assets/ui/icons/door-open.png",
+      "png": "public/assets/ui/icons/door-open.png"
+    },
+    {
+      "id": "droplets",
+      "sourceName": "Droplets",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/droplets.svg",
+      "runtimePath": "/assets/ui/icons/droplets.png",
+      "png": "public/assets/ui/icons/droplets.png"
+    },
+    {
+      "id": "eye",
+      "sourceName": "Eye",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/eye.svg",
+      "runtimePath": "/assets/ui/icons/eye.png",
+      "png": "public/assets/ui/icons/eye.png"
+    },
+    {
+      "id": "fast-forward",
+      "sourceName": "FastForward",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/fast-forward.svg",
+      "runtimePath": "/assets/ui/icons/fast-forward.png",
+      "png": "public/assets/ui/icons/fast-forward.png"
+    },
+    {
+      "id": "feather",
+      "sourceName": "Feather",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/feather.svg",
+      "runtimePath": "/assets/ui/icons/feather.png",
+      "png": "public/assets/ui/icons/feather.png"
+    },
+    {
+      "id": "fence",
+      "sourceName": "Fence",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/fence.svg",
+      "runtimePath": "/assets/ui/icons/fence.png",
+      "png": "public/assets/ui/icons/fence.png"
+    },
+    {
+      "id": "flag",
+      "sourceName": "Flag",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/flag.svg",
+      "runtimePath": "/assets/ui/icons/flag.png",
+      "png": "public/assets/ui/icons/flag.png"
+    },
+    {
+      "id": "flower-2",
+      "sourceName": "Flower2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/flower-2.svg",
+      "runtimePath": "/assets/ui/icons/flower-2.png",
+      "png": "public/assets/ui/icons/flower-2.png"
+    },
+    {
+      "id": "folder-open",
+      "sourceName": "FolderOpen",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/folder-open.svg",
+      "runtimePath": "/assets/ui/icons/folder-open.png",
+      "png": "public/assets/ui/icons/folder-open.png"
+    },
+    {
+      "id": "gamepad-2",
+      "sourceName": "Gamepad2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/gamepad-2.svg",
+      "runtimePath": "/assets/ui/icons/gamepad-2.png",
+      "png": "public/assets/ui/icons/gamepad-2.png"
+    },
+    {
+      "id": "grid-2-x-2",
+      "sourceName": "Grid2X2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/grid-2-x-2.svg",
+      "runtimePath": "/assets/ui/icons/grid-2-x-2.png",
+      "png": "public/assets/ui/icons/grid-2-x-2.png"
+    },
+    {
+      "id": "grid-3-x-3",
+      "sourceName": "Grid3X3",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/grid-3-x-3.svg",
+      "runtimePath": "/assets/ui/icons/grid-3-x-3.png",
+      "png": "public/assets/ui/icons/grid-3-x-3.png"
+    },
+    {
+      "id": "hammer",
+      "sourceName": "Hammer",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/hammer.svg",
+      "runtimePath": "/assets/ui/icons/hammer.png",
+      "png": "public/assets/ui/icons/hammer.png"
+    },
+    {
+      "id": "home",
+      "sourceName": "Home",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/home.svg",
+      "runtimePath": "/assets/ui/icons/home.png",
+      "png": "public/assets/ui/icons/home.png"
+    },
+    {
+      "id": "house",
+      "sourceName": "House",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/house.svg",
+      "runtimePath": "/assets/ui/icons/house.png",
+      "png": "public/assets/ui/icons/house.png"
+    },
+    {
+      "id": "info",
+      "sourceName": "Info",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/info.svg",
+      "runtimePath": "/assets/ui/icons/info.png",
+      "png": "public/assets/ui/icons/info.png"
+    },
+    {
+      "id": "lamp",
+      "sourceName": "Lamp",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/lamp.svg",
+      "runtimePath": "/assets/ui/icons/lamp.png",
+      "png": "public/assets/ui/icons/lamp.png"
+    },
+    {
+      "id": "landmark",
+      "sourceName": "Landmark",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/landmark.svg",
+      "runtimePath": "/assets/ui/icons/landmark.png",
+      "png": "public/assets/ui/icons/landmark.png"
+    },
+    {
+      "id": "layers",
+      "sourceName": "Layers",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/layers.svg",
+      "runtimePath": "/assets/ui/icons/layers.png",
+      "png": "public/assets/ui/icons/layers.png"
+    },
+    {
+      "id": "layers-3",
+      "sourceName": "Layers3",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/layers-3.svg",
+      "runtimePath": "/assets/ui/icons/layers-3.png",
+      "png": "public/assets/ui/icons/layers-3.png"
+    },
+    {
+      "id": "leaf",
+      "sourceName": "Leaf",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/leaf.svg",
+      "runtimePath": "/assets/ui/icons/leaf.png",
+      "png": "public/assets/ui/icons/leaf.png"
+    },
+    {
+      "id": "lightbulb",
+      "sourceName": "Lightbulb",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/lightbulb.svg",
+      "runtimePath": "/assets/ui/icons/lightbulb.png",
+      "png": "public/assets/ui/icons/lightbulb.png"
+    },
+    {
+      "id": "link-2",
+      "sourceName": "Link2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/link-2.svg",
+      "runtimePath": "/assets/ui/icons/link-2.png",
+      "png": "public/assets/ui/icons/link-2.png"
+    },
+    {
+      "id": "log-out",
+      "sourceName": "LogOut",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/log-out.svg",
+      "runtimePath": "/assets/ui/icons/log-out.png",
+      "png": "public/assets/ui/icons/log-out.png"
+    },
+    {
+      "id": "magnet",
+      "sourceName": "Magnet",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/magnet.svg",
+      "runtimePath": "/assets/ui/icons/magnet.png",
+      "png": "public/assets/ui/icons/magnet.png"
+    },
+    {
+      "id": "map-pin",
+      "sourceName": "MapPin",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/map-pin.svg",
+      "runtimePath": "/assets/ui/icons/map-pin.png",
+      "png": "public/assets/ui/icons/map-pin.png"
+    },
+    {
+      "id": "menu",
+      "sourceName": "Menu",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/menu.svg",
+      "runtimePath": "/assets/ui/icons/menu.png",
+      "png": "public/assets/ui/icons/menu.png"
+    },
+    {
+      "id": "minus",
+      "sourceName": "Minus",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/minus.svg",
+      "runtimePath": "/assets/ui/icons/minus.png",
+      "png": "public/assets/ui/icons/minus.png"
+    },
+    {
+      "id": "monitor",
+      "sourceName": "Monitor",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/monitor.svg",
+      "runtimePath": "/assets/ui/icons/monitor.png",
+      "png": "public/assets/ui/icons/monitor.png"
+    },
+    {
+      "id": "more-horizontal",
+      "sourceName": "MoreHorizontal",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/more-horizontal.svg",
+      "runtimePath": "/assets/ui/icons/more-horizontal.png",
+      "png": "public/assets/ui/icons/more-horizontal.png"
+    },
+    {
+      "id": "mountain",
+      "sourceName": "Mountain",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/mountain.svg",
+      "runtimePath": "/assets/ui/icons/mountain.png",
+      "png": "public/assets/ui/icons/mountain.png"
+    },
+    {
+      "id": "mouse-pointer-2",
+      "sourceName": "MousePointer2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/mouse-pointer-2.svg",
+      "runtimePath": "/assets/ui/icons/mouse-pointer-2.png",
+      "png": "public/assets/ui/icons/mouse-pointer-2.png"
+    },
+    {
+      "id": "move",
+      "sourceName": "Move",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/move.svg",
+      "runtimePath": "/assets/ui/icons/move.png",
+      "png": "public/assets/ui/icons/move.png"
+    },
+    {
+      "id": "paintbrush",
+      "sourceName": "Paintbrush",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/paintbrush.svg",
+      "runtimePath": "/assets/ui/icons/paintbrush.png",
+      "png": "public/assets/ui/icons/paintbrush.png"
+    },
+    {
+      "id": "palette",
+      "sourceName": "Palette",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/palette.svg",
+      "runtimePath": "/assets/ui/icons/palette.png",
+      "png": "public/assets/ui/icons/palette.png"
+    },
+    {
+      "id": "panels-top-left",
+      "sourceName": "PanelsTopLeft",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/panels-top-left.svg",
+      "runtimePath": "/assets/ui/icons/panels-top-left.png",
+      "png": "public/assets/ui/icons/panels-top-left.png"
+    },
+    {
+      "id": "pause",
+      "sourceName": "Pause",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/pause.svg",
+      "runtimePath": "/assets/ui/icons/pause.png",
+      "png": "public/assets/ui/icons/pause.png"
+    },
+    {
+      "id": "pencil",
+      "sourceName": "Pencil",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/pencil.svg",
+      "runtimePath": "/assets/ui/icons/pencil.png",
+      "png": "public/assets/ui/icons/pencil.png"
+    },
+    {
+      "id": "play",
+      "sourceName": "Play",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/play.svg",
+      "runtimePath": "/assets/ui/icons/play.png",
+      "png": "public/assets/ui/icons/play.png"
+    },
+    {
+      "id": "plus",
+      "sourceName": "Plus",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/plus.svg",
+      "runtimePath": "/assets/ui/icons/plus.png",
+      "png": "public/assets/ui/icons/plus.png"
+    },
+    {
+      "id": "redo-2",
+      "sourceName": "Redo2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/redo-2.svg",
+      "runtimePath": "/assets/ui/icons/redo-2.png",
+      "png": "public/assets/ui/icons/redo-2.png"
+    },
+    {
+      "id": "refresh-cw",
+      "sourceName": "RefreshCw",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/refresh-cw.svg",
+      "runtimePath": "/assets/ui/icons/refresh-cw.png",
+      "png": "public/assets/ui/icons/refresh-cw.png"
+    },
+    {
+      "id": "rotate-ccw",
+      "sourceName": "RotateCcw",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/rotate-ccw.svg",
+      "runtimePath": "/assets/ui/icons/rotate-ccw.png",
+      "png": "public/assets/ui/icons/rotate-ccw.png"
+    },
+    {
+      "id": "rotate-cw",
+      "sourceName": "RotateCw",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/rotate-cw.svg",
+      "runtimePath": "/assets/ui/icons/rotate-cw.png",
+      "png": "public/assets/ui/icons/rotate-cw.png"
+    },
+    {
+      "id": "route",
+      "sourceName": "Route",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/route.svg",
+      "runtimePath": "/assets/ui/icons/route.png",
+      "png": "public/assets/ui/icons/route.png"
+    },
+    {
+      "id": "ruler",
+      "sourceName": "Ruler",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/ruler.svg",
+      "runtimePath": "/assets/ui/icons/ruler.png",
+      "png": "public/assets/ui/icons/ruler.png"
+    },
+    {
+      "id": "save",
+      "sourceName": "Save",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/save.svg",
+      "runtimePath": "/assets/ui/icons/save.png",
+      "png": "public/assets/ui/icons/save.png"
+    },
+    {
+      "id": "scale",
+      "sourceName": "Scale",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/scale.svg",
+      "runtimePath": "/assets/ui/icons/scale.png",
+      "png": "public/assets/ui/icons/scale.png"
+    },
+    {
+      "id": "scan-line",
+      "sourceName": "ScanLine",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/scan-line.svg",
+      "runtimePath": "/assets/ui/icons/scan-line.png",
+      "png": "public/assets/ui/icons/scan-line.png"
+    },
+    {
+      "id": "scroll-text",
+      "sourceName": "ScrollText",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/scroll-text.svg",
+      "runtimePath": "/assets/ui/icons/scroll-text.png",
+      "png": "public/assets/ui/icons/scroll-text.png"
+    },
+    {
+      "id": "settings",
+      "sourceName": "Settings",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/settings.svg",
+      "runtimePath": "/assets/ui/icons/settings.png",
+      "png": "public/assets/ui/icons/settings.png"
+    },
+    {
+      "id": "settings-2",
+      "sourceName": "Settings2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/settings-2.svg",
+      "runtimePath": "/assets/ui/icons/settings-2.png",
+      "png": "public/assets/ui/icons/settings-2.png"
+    },
+    {
+      "id": "shapes",
+      "sourceName": "Shapes",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/shapes.svg",
+      "runtimePath": "/assets/ui/icons/shapes.png",
+      "png": "public/assets/ui/icons/shapes.png"
+    },
+    {
+      "id": "shield",
+      "sourceName": "Shield",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/shield.svg",
+      "runtimePath": "/assets/ui/icons/shield.png",
+      "png": "public/assets/ui/icons/shield.png"
+    },
+    {
+      "id": "shield-check",
+      "sourceName": "ShieldCheck",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/shield-check.svg",
+      "runtimePath": "/assets/ui/icons/shield-check.png",
+      "png": "public/assets/ui/icons/shield-check.png"
+    },
+    {
+      "id": "shirt",
+      "sourceName": "Shirt",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/shirt.svg",
+      "runtimePath": "/assets/ui/icons/shirt.png",
+      "png": "public/assets/ui/icons/shirt.png"
+    },
+    {
+      "id": "shuffle",
+      "sourceName": "Shuffle",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/shuffle.svg",
+      "runtimePath": "/assets/ui/icons/shuffle.png",
+      "png": "public/assets/ui/icons/shuffle.png"
+    },
+    {
+      "id": "sliders-horizontal",
+      "sourceName": "SlidersHorizontal",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/sliders-horizontal.svg",
+      "runtimePath": "/assets/ui/icons/sliders-horizontal.png",
+      "png": "public/assets/ui/icons/sliders-horizontal.png"
+    },
+    {
+      "id": "sparkles",
+      "sourceName": "Sparkles",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/sparkles.svg",
+      "runtimePath": "/assets/ui/icons/sparkles.png",
+      "png": "public/assets/ui/icons/sparkles.png"
+    },
+    {
+      "id": "speaker",
+      "sourceName": "Speaker",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/speaker.svg",
+      "runtimePath": "/assets/ui/icons/speaker.png",
+      "png": "public/assets/ui/icons/speaker.png"
+    },
+    {
+      "id": "square",
+      "sourceName": "Square",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/square.svg",
+      "runtimePath": "/assets/ui/icons/square.png",
+      "png": "public/assets/ui/icons/square.png"
+    },
+    {
+      "id": "store",
+      "sourceName": "Store",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/store.svg",
+      "runtimePath": "/assets/ui/icons/store.png",
+      "png": "public/assets/ui/icons/store.png"
+    },
+    {
+      "id": "sun",
+      "sourceName": "Sun",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/sun.svg",
+      "runtimePath": "/assets/ui/icons/sun.png",
+      "png": "public/assets/ui/icons/sun.png"
+    },
+    {
+      "id": "trash-2",
+      "sourceName": "Trash2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/trash-2.svg",
+      "runtimePath": "/assets/ui/icons/trash-2.png",
+      "png": "public/assets/ui/icons/trash-2.png"
+    },
+    {
+      "id": "trees",
+      "sourceName": "Trees",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/trees.svg",
+      "runtimePath": "/assets/ui/icons/trees.png",
+      "png": "public/assets/ui/icons/trees.png"
+    },
+    {
+      "id": "triangle-alert",
+      "sourceName": "TriangleAlert",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/triangle-alert.svg",
+      "runtimePath": "/assets/ui/icons/triangle-alert.png",
+      "png": "public/assets/ui/icons/triangle-alert.png"
+    },
+    {
+      "id": "truck",
+      "sourceName": "Truck",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/truck.svg",
+      "runtimePath": "/assets/ui/icons/truck.png",
+      "png": "public/assets/ui/icons/truck.png"
+    },
+    {
+      "id": "undo-2",
+      "sourceName": "Undo2",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/undo-2.svg",
+      "runtimePath": "/assets/ui/icons/undo-2.png",
+      "png": "public/assets/ui/icons/undo-2.png"
+    },
+    {
+      "id": "users",
+      "sourceName": "Users",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/users.svg",
+      "runtimePath": "/assets/ui/icons/users.png",
+      "png": "public/assets/ui/icons/users.png"
+    },
+    {
+      "id": "warehouse",
+      "sourceName": "Warehouse",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/warehouse.svg",
+      "runtimePath": "/assets/ui/icons/warehouse.png",
+      "png": "public/assets/ui/icons/warehouse.png"
+    },
+    {
+      "id": "waves",
+      "sourceName": "Waves",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/waves.svg",
+      "runtimePath": "/assets/ui/icons/waves.png",
+      "png": "public/assets/ui/icons/waves.png"
+    },
+    {
+      "id": "x",
+      "sourceName": "X",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/x.svg",
+      "runtimePath": "/assets/ui/icons/x.png",
+      "png": "public/assets/ui/icons/x.png"
+    },
+    {
+      "id": "zap",
+      "sourceName": "Zap",
+      "sourceSvg": "AssetsSource/UI/Icons/svg/zap.svg",
+      "runtimePath": "/assets/ui/icons/zap.png",
+      "png": "public/assets/ui/icons/zap.png"
+    }
+  ]
+}
