@@ -1313,22 +1313,33 @@ if (await lightPanel.locator('.light-adjustment-color-row').count()) {
   throw new Error('Light Adjustment must not keep its retired private color-row implementation.');
 }
 const lightColorControl = lightColorField.locator('.ui-color-parameter-field__control');
+const lightColorPreview = lightColorControl.locator('.ui-color-parameter-field__preview');
+const lightColorFill = lightColorControl.locator('.ui-color-parameter-field__fill');
 const lightHdrBadge = lightColorControl.locator('.ui-color-parameter-field__hdr');
 if ((await lightHdrBadge.getByText('HDR', { exact: true }).count()) !== 1) {
   throw new Error('HDR status must render inside the shared color bar.');
 }
 const lightColorControlBox = await lightColorControl.boundingBox();
+const lightColorPreviewBox = await lightColorPreview.boundingBox();
 const firstLightNumericField = lightPanel.locator('.ui-numeric-slider-field').first();
 const firstLightNumericBox = await firstLightNumericField.boundingBox();
 const lightHdrBadgeBox = await lightHdrBadge.boundingBox();
-if (!lightColorControlBox || !firstLightNumericBox || !lightHdrBadgeBox
+const lightColorFillOpacity = Number(await lightColorFill.evaluate((node) => getComputedStyle(node).opacity));
+if (!lightColorControlBox || !lightColorPreviewBox || !firstLightNumericBox || !lightHdrBadgeBox
   || Math.abs(lightColorControlBox.x - firstLightNumericBox.x) > 1
   || Math.abs(lightColorControlBox.width - firstLightNumericBox.width) > 1) {
   throw new Error('Shared ColorParameterField must align with the NumericSliderField control column. color=' + JSON.stringify(lightColorControlBox) + ' slider=' + JSON.stringify(firstLightNumericBox));
 }
-if (lightHdrBadgeBox.x < lightColorControlBox.x
-  || lightHdrBadgeBox.x + lightHdrBadgeBox.width > lightColorControlBox.x + lightColorControlBox.width) {
-  throw new Error('HDR badge must stay inside the color preview bar.');
+if (lightColorPreviewBox.height >= lightColorControlBox.height * 0.7
+  || lightColorPreviewBox.width < lightColorControlBox.width * 0.9
+  || lightColorFillOpacity > 0.7) {
+  throw new Error('Color preview must stay a restrained inset strip rather than a dominant full-color block. preview=' + JSON.stringify(lightColorPreviewBox) + ' control=' + JSON.stringify(lightColorControlBox) + ' opacity=' + lightColorFillOpacity);
+}
+if (lightHdrBadgeBox.x < lightColorPreviewBox.x
+  || lightHdrBadgeBox.x + lightHdrBadgeBox.width > lightColorPreviewBox.x + lightColorPreviewBox.width
+  || lightHdrBadgeBox.y < lightColorPreviewBox.y
+  || lightHdrBadgeBox.y + lightHdrBadgeBox.height > lightColorPreviewBox.y + lightColorPreviewBox.height) {
+  throw new Error('HDR badge must stay inside the inset color preview strip.');
 }
 await page.screenshot({ path: outDir + '/light-adjustment-02-selected-parameters.png' });
 
