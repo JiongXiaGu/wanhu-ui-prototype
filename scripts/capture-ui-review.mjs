@@ -694,6 +694,10 @@ if (!buildingRailItemBox || !buildingRailPagerBox
   || buildingRailPagerBox.height > 6) {
   throw new Error('Building shared Rail geometry regressed. item=' + JSON.stringify(buildingRailItemBox) + ' pager=' + JSON.stringify(buildingRailPagerBox));
 }
+const buildingRailPagerGap = buildingRailItemBox.x - (buildingRailPagerBox.x + buildingRailPagerBox.width);
+if (buildingRailPagerGap < 12) {
+  throw new Error('Building Rail Pager must keep a readable gutter before the Selected lane. gap=' + buildingRailPagerGap);
+}
 const buildingSelectionColor = await buildingSelectedRailItem.evaluate((node) => getComputedStyle(node, '::before').backgroundColor);
 const buildingPagerColor = await buildingActiveRailPager.evaluate((node) => getComputedStyle(node).backgroundColor);
 if (!buildingSelectionColor || !buildingPagerColor || buildingSelectionColor === buildingPagerColor) {
@@ -897,6 +901,10 @@ if (!materialRailItemBox || !materialRailPagerBox
   || Math.abs(materialRailPagerBox.width - buildingRailPagerBox.width) > 1
   || Math.abs(materialRailPagerBox.height - buildingRailPagerBox.height) > 1) {
   throw new Error('Design and Material Rail geometry must come from the same catalog contract. materialItem=' + JSON.stringify(materialRailItemBox));
+}
+const materialRailPagerGap = materialRailItemBox.x - (materialRailPagerBox.x + materialRailPagerBox.width);
+if (materialRailPagerGap < 12 || Math.abs(materialRailPagerGap - buildingRailPagerGap) > 1) {
+  throw new Error('Material Rail must share the widened Pager→Selected gutter with Design. materialGap=' + materialRailPagerGap + ' buildingGap=' + buildingRailPagerGap);
 }
 await schemeRail.getByRole('button', { name: '金属', exact: true }).click();
 await page.waitForTimeout(100);
