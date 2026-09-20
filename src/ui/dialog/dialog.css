@@ -143,6 +143,51 @@
   background:rgba(152,84,71,.035);
 }
 
+.ui-dialog-choice-group{
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.ui-dialog-choice-group>span{
+  color:var(--wanhu-color-paper-tertiary,#8c8f89);
+  font-size:10px;
+}
+.ui-dialog-choice-options{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.ui-dialog-choice-options>button{
+  min-width:92px;
+  height:34px;
+  padding:0 13px;
+  border:1px solid var(--ui-control-border,rgba(239,233,221,.10));
+  border-radius:8px;
+  background:var(--ui-field-surface,rgba(255,255,255,.014));
+  color:var(--wanhu-color-paper-tertiary,#8c8f89);
+  font:inherit;
+  font-size:9.5px;
+  cursor:pointer;
+  transition-property:background,border-color,color;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.ui-dialog-choice-options>button:hover{
+  border-color:var(--ui-control-border-hover,rgba(239,233,221,.16));
+  background:var(--ui-field-surface-hover,rgba(255,255,255,.030));
+  color:var(--wanhu-color-paper-secondary,#b9b5ab);
+}
+.ui-dialog-choice-options>button.is-active{
+  border-color:rgba(189,153,89,.26);
+  background:rgba(169,132,75,.060);
+  color:var(--wanhu-color-brass-high,#bd9959);
+}
+.ui-dialog-choice-options>button:focus-visible{
+  outline:0;
+  border-color:var(--ui-field-border-focus,rgba(201,165,95,.38));
+  box-shadow:0 0 0 3px rgba(169,132,75,.055);
+}
+
 .ui-dialog-change{
   min-height:48px;
   padding:0 13px;
@@ -260,6 +305,21 @@
   animation:ui-toast-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }
 .ui-toast__surface svg{flex:0 0 auto;color:var(--wanhu-color-paper-tertiary,#8c8f89)}
+
+.ui-toast__action{
+  margin-left:5px;
+  padding:3px 7px;
+  border:0;
+  border-radius:5px;
+  background:rgba(169,132,75,.060);
+  color:var(--wanhu-color-brass-high,#bd9959);
+  font:inherit;
+  font-size:9px;
+  cursor:pointer;
+}
+.ui-toast__action:hover{background:rgba(169,132,75,.105);color:#d9ba72}
+.ui-toast__action:focus-visible{outline:1px solid rgba(189,153,89,.42);outline-offset:1px}
+.ui-toast__surface:has(.ui-toast__action){pointer-events:auto}
 .ui-toast.is-success .ui-toast__surface svg{color:#a8b68f}
 .ui-toast.is-warning .ui-toast__surface svg{color:var(--wanhu-color-brass-high,#bd9959)}
 .ui-toast.is-error .ui-toast__surface svg{color:#cf8e82}
