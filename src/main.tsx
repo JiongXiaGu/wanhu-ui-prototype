@@ -31,6 +31,7 @@ import './tools/city-wall-gate/city-wall-gate.css';
 import './tools/city-wall-access-stair/city-wall-access-stair.css';
 import './tools/city-wall-transition-stair/city-wall-transition-stair.css';
 import './tools/material-palette/material-palette.css';
+import './tools/material-palette/material-scheme-workspace.css';
 import './tools/light-adjustment/light-adjustment.css';
 import './tools/building-scheme/building-scheme.css';
 import './gameplay/city-management.css';
