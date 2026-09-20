@@ -19,6 +19,7 @@ import { CityWallTransitionStairOverlay } from '../tools/city-wall-transition-st
 import { CityWallTransitionStairDock } from '../tools/city-wall-transition-stair/CityWallTransitionStairDock';
 import { MaterialPaletteOverlay } from '../tools/material-palette/MaterialPaletteOverlay';
 import { MaterialPaletteDock } from '../tools/material-palette/MaterialPaletteDock';
+import { LightAdjustmentOverlay } from '../tools/light-adjustment/LightAdjustmentOverlay';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -42,7 +43,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const space = selectGameplaySpace(state);
   const toolOpen = state.tool !== 'none';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
-  const showContextUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
+  const showContextUtilityToolbar = (space === 'gameplay' || space === 'workspace' || space === 'tool')
+    && state.tool !== 'light-adjustment';
   const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const isNight = dayTime >= 18 || dayTime < 6;
@@ -195,6 +197,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
             else if (id === 'palette') dispatch({ type: 'ENTER_MATERIAL_PALETTE' });
+            else if (id === 'light') dispatch({ type: 'ENTER_LIGHT_ADJUSTMENT' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
           }}
         />
@@ -353,6 +356,14 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         </>
       )}
 
+      {toolPresence.mounted && renderedTool === 'light-adjustment' && (
+        <LightAdjustmentOverlay
+          motionPhase={toolPresence.phase}
+          onClose={exitTool}
+          onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+        />
+      )}
+
       {toolPresence.mounted && renderedTool === 'terrain-edit' && (
         <TerrainEditTool
           state={state}
@@ -366,7 +377,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <TreePlacementTool state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onExit={exitTool} />
       )}
 
-      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'material-palette' && (
+      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'material-palette' && state.tool !== 'light-adjustment' && (
         <GameplayOperationHints
           tool={state.tool}
           adjustmentMode={state.adjustmentMode}
