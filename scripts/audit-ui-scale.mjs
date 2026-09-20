@@ -20,6 +20,9 @@ const iconSizes=new Map();
 const hardcodedIconCss=[];
 const tinyFonts=[];
 const tinyIcons=[];
+const svgSelectors=[];
+let fontSizeTokenUses=0;
+let fontSizeHardcodedUses=0;
 
 function add(map,key,item){
   if(!map.has(key)) map.set(key,[]);
@@ -31,6 +34,18 @@ for(const file of files){
   const lines=text.split('\n');
 
   if(file.endsWith('.css')){
+    for(const match of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
+      const selector=match[1].trim();
+      const body=match[2];
+      if(/\bsvg\b/.test(selector)){
+        const line=text.slice(0,match.index).split('\n').length;
+        svgSelectors.push({file,line,selector,body:body.trim().replace(/\s+/g,' ')});
+      }
+      for(const sizeMatch of body.matchAll(/font-size\s*:\s*([^;}]*)/g)){
+        if(/var\(/.test(sizeMatch[1])) fontSizeTokenUses+=1;
+        else if(/px\b/.test(sizeMatch[1])) fontSizeHardcodedUses+=1;
+      }
+    }
     lines.forEach((line,index)=>{
       for(const match of line.matchAll(/font-size\s*:\s*([0-9.]+)px/g)){
         const value=Number(match[1]);
@@ -95,5 +110,14 @@ for(const [file,stat] of [...fileFontStats.entries()].sort((a,b)=>b[1].below10-a
 
 console.log(`\nIcon signals below 14px: ${tinyIcons.length}`);
 for(const hit of tinyIcons) console.log(`ICON<14 ${hit.value}px ${hit.file}:${hit.line} ${hit.text}`);
+
+console.log('\nTypography ownership:');
+console.log('Hardcoded px font-size declarations:',fontSizeHardcodedUses);
+console.log('Token-backed font-size declarations:',fontSizeTokenUses);
+
+console.log('\nRuntime CSS selectors still targeting svg:',svgSelectors.length);
+for(const hit of svgSelectors){
+  console.log('SVGSELECTOR ' + hit.file + ':' + hit.line + ' ' + hit.selector + ' {' + hit.body + '}');
+}
 
 console.log('\nAudit note: raw size alone is not an automatic failure; classify each hit by semantic role before changing UI.');
