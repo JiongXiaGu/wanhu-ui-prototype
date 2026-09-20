@@ -137,6 +137,7 @@
    Workspace / WorkspaceItemCard system. This section owns only material-specific
    page tabs, current-state semantics, material preview rendering and delete/save. */
 .gameplay-screen .workspace--material-scheme{
+  width:1040px;
   z-index:23;
 }
 
