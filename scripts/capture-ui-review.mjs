@@ -832,7 +832,7 @@ await surfaceFooter.getByRole('button', { name: '复制参数', exact: true }).c
 if ((await materialPanel.getAttribute('data-material-surface-clipboard')) !== 'ready') {
   throw new Error('Surface copy should populate structured tool clipboard.');
 }
-await page.screenshot({ path: outDir + '/material-palette-28-surface-parameters.png' });
+await page.screenshot({ path: outDir + '/color-tool-28-surface-parameters.png' });
 
 await schemeSelector.click();
 await page.waitForSelector('.material-scheme-workspace');
@@ -920,7 +920,7 @@ if (!materialSelectionColor || !materialPagerColor
   || materialPagerColor !== buildingPagerColor) {
   throw new Error('Material Rail Pager must use the same neutral page tone as Design and remain distinct from warm selection.');
 }
-await page.screenshot({ path: outDir + '/material-palette-29a-rail-neutral-pagination.png' });
+await page.screenshot({ path: outDir + '/color-tool-29a-rail-neutral-pagination.png' });
 await schemeRail.getByRole('button', { name: '全部', exact: true }).click();
 await page.waitForTimeout(80);
 
@@ -973,7 +973,7 @@ if (firstMaterialCardStyle.borderTopWidth !== '0px') {
 if ((await schemeWorkspace.locator('.material-scheme-workspace__pager button').count()) !== 2) {
   throw new Error('All source presets should produce a two-page Workspace pager.');
 }
-await page.screenshot({ path: outDir + '/material-palette-29-scheme-workspace-families.png' });
+await page.screenshot({ path: outDir + '/color-tool-29-scheme-workspace-families.png' });
 
 await sourceFilter.getByRole('button', { name: '创意工坊', exact: true }).click();
 await page.waitForTimeout(100);
@@ -983,7 +983,7 @@ if ((await schemeWorkspace.getAttribute('data-material-scheme-source')) !== 'wor
 if ((await schemeWorkspace.locator('.material-scheme-workspace__card').count()) !== 3) {
   throw new Error('Workshop filter should expose the three demo workshop schemes.');
 }
-await page.screenshot({ path: outDir + '/material-palette-29b-scheme-workshop.png' });
+await page.screenshot({ path: outDir + '/color-tool-29b-scheme-workshop.png' });
 
 await sourceFilter.getByRole('button', { name: '系统内置', exact: true }).click();
 await schemeRail.getByRole('button', { name: '木材', exact: true }).click();
@@ -1001,7 +1001,7 @@ if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '木材'
 if ((await schemeWorkspace.count()) !== 1) {
   throw new Error('Applying a scheme should keep the central Workspace open for comparison.');
 }
-await page.screenshot({ path: outDir + '/material-palette-30-scheme-live-apply.png' });
+await page.screenshot({ path: outDir + '/color-tool-30-scheme-live-apply.png' });
 
 await materialPanel.getByRole('button', { name: '光滑度增大', exact: true }).click();
 await page.waitForTimeout(80);
@@ -1046,7 +1046,7 @@ for (const familyName of ['木材', '石材', '金属', '砖瓦', '灰泥 / 土'
 const saveName = saveDialog.getByRole('textbox');
 await saveName.fill('城墙暖灰');
 await saveFamilyGrid.getByRole('radio', { name: '石材', exact: true }).click();
-await page.screenshot({ path: outDir + '/material-palette-31-save-family-grid.png' });
+await page.screenshot({ path: outDir + '/color-tool-31-save-family-grid.png' });
 await saveDialog.getByRole('button', { name: '保存', exact: true }).click();
 await page.waitForSelector('.ui-dialog', { state: 'detached' });
 await page.waitForTimeout(120);
@@ -1081,7 +1081,7 @@ for (const retiredAction of ['重命名', '移动分类…']) {
 if (await presetMenu.getByRole('option').count()) {
   throw new Error('My Scheme main menu must not inline Material Family choices.');
 }
-await page.screenshot({ path: outDir + '/material-palette-32-mine-edit-menu.png' });
+await page.screenshot({ path: outDir + '/color-tool-32-mine-edit-menu.png' });
 
 await presetMenu.getByRole('menuitem', { name: '编辑', exact: true }).click();
 await page.waitForSelector('.ui-dialog');
@@ -1095,7 +1095,7 @@ if ((await editFamilyGrid.getByRole('radio').count()) !== 9) {
 }
 await editDialog.getByRole('textbox').fill('城墙暖灰二号');
 await editFamilyGrid.getByRole('radio', { name: '玻璃', exact: true }).click();
-await page.screenshot({ path: outDir + '/material-palette-32b-edit-family-grid.png' });
+await page.screenshot({ path: outDir + '/color-tool-32b-edit-family-grid.png' });
 await editDialog.getByRole('button', { name: '保存修改', exact: true }).click();
 await page.waitForSelector('.ui-dialog', { state: 'detached' });
 await page.waitForTimeout(120);
@@ -1142,7 +1142,7 @@ if (await page.getByRole('button', { name: '撤销', exact: true }).count()) {
 if ((await schemeWorkspace.getAttribute('data-material-highlight-preset')) !== 'custom-1') {
   throw new Error('Drag Move should use local Card reveal feedback.');
 }
-await page.screenshot({ path: outDir + '/material-palette-33-drag-move-selects-family.png' });
+await page.screenshot({ path: outDir + '/color-tool-33-drag-move-selects-family.png' });
 
 await schemeWorkspace.getByRole('button', { name: '应用材质方案 木材 · 城墙暖灰二号', exact: true }).hover();
 await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
@@ -1229,7 +1229,7 @@ await colorFooter.getByRole('button', { name: '复制颜色', exact: true }).cli
 if ((await materialPanel.getAttribute('data-material-color-clipboard')) !== 'ready') {
   throw new Error('Color copy should populate structured color clipboard.');
 }
-await page.screenshot({ path: outDir + '/material-palette-32-base-color-hsv.png' });
+await page.screenshot({ path: outDir + '/color-tool-32-base-color-hsv.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -1240,7 +1240,7 @@ if ((await emissionEditor.getAttribute('data-color-editor-hdr')) !== 'true'
   || (await emissionEditor.locator('[data-color-adapter="EmissionColor.Intensity"]').count()) !== 1) {
   throw new Error('EmissionColor must use HDR editor with intensity.');
 }
-await page.screenshot({ path: outDir + '/material-palette-33-emission-hdr-rgb.png' });
+await page.screenshot({ path: outDir + '/color-tool-33-emission-hdr-rgb.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -1251,7 +1251,7 @@ if ((await nightEditor.getAttribute('data-color-editor-hdr')) !== 'true'
   || (await nightEditor.locator('[data-color-adapter="NightEmissionColor.Intensity"]').count()) !== 1) {
   throw new Error('NightEmissionColor must use HDR editor with intensity.');
 }
-await page.screenshot({ path: outDir + '/material-palette-34-night-emission-hdr.png' });
+await page.screenshot({ path: outDir + '/color-tool-34-night-emission-hdr.png' });
 
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
@@ -1289,7 +1289,7 @@ if ((await page.locator('.light-adjustment-handle').count()) !== 4) {
 if ((await lightPanel.getByText('选择一盏场景灯光', { exact: true }).count()) !== 1) {
   throw new Error('Lighting mode should explain scene selection before a light is selected.');
 }
-await page.screenshot({ path: outDir + '/material-palette-35-lighting-mode-empty.png' });
+await page.screenshot({ path: outDir + '/color-tool-35-lighting-mode-empty.png' });
 
 await page.getByRole('button', { name: '选择灯光 城门灯笼 03', exact: true }).click();
 await page.waitForTimeout(120);
@@ -1345,7 +1345,7 @@ if (lightHdrBadgeBox.x < lightColorMetaBox.x
   || lightHdrBadgeBox.x + lightHdrBadgeBox.width > lightColorMetaBox.x + lightColorMetaBox.width) {
   throw new Error('HDR label must stay in the neutral meta area.');
 }
-await page.screenshot({ path: outDir + '/material-palette-36-lighting-selected.png' });
+await page.screenshot({ path: outDir + '/color-tool-36-lighting-selected.png' });
 
 await lightPanel.getByRole('button', { name: '调整灯光颜色', exact: true }).click();
 await page.waitForTimeout(120);
@@ -1355,7 +1355,7 @@ if ((await lightPanel.getAttribute('data-light-adjustment-page')) !== 'color'
   || (await lightColorEditor.locator('[data-color-adapter="LightColor.Intensity"]').count()) !== 1) {
   throw new Error('Lighting mode must retain the shared HDR Color Editor.');
 }
-await page.screenshot({ path: outDir + '/material-palette-37-lighting-hdr-editor.png' });
+await page.screenshot({ path: outDir + '/color-tool-37-lighting-hdr-editor.png' });
 
 // Scheme is the third mode in the same color tool.
 await materialBar.getByRole('button', { name: '方案模式', exact: true }).click();
@@ -1380,7 +1380,7 @@ if ((await page.locator('.building-scheme-handle').count()) !== 4) {
 if ((await buildingSchemePanel.getByText('选择一栋场景建筑', { exact: true }).count()) !== 1) {
   throw new Error('Scheme mode should explain building selection before a building is selected.');
 }
-await page.screenshot({ path: outDir + '/material-palette-38-scheme-mode-empty.png' });
+await page.screenshot({ path: outDir + '/color-tool-38-scheme-mode-empty.png' });
 
 await page.getByRole('button', { name: '选择建筑 重檐楼阁 03', exact: true }).click();
 await page.waitForTimeout(100);
@@ -1392,7 +1392,7 @@ if ((await buildingSchemePanel.getByRole('button', { name: '打开建筑配色�
   || (await buildingSchemePanel.getByText('做旧程度', { exact: true }).count()) !== 1) {
   throw new Error('Selected building should expose Scheme and Weathering.');
 }
-await page.screenshot({ path: outDir + '/material-palette-39-scheme-building-panel.png' });
+await page.screenshot({ path: outDir + '/color-tool-39-scheme-building-panel.png' });
 
 await buildingSchemePanel.getByRole('button', { name: '打开建筑配色方案', exact: true }).click();
 await page.waitForSelector('.building-scheme-workspace');
@@ -1421,7 +1421,7 @@ if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 
 if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 江南素雅', exact: true }).getAttribute('aria-pressed')) !== 'true') {
   throw new Error('Current building scheme should be selected.');
 }
-await page.screenshot({ path: outDir + '/material-palette-40-scheme-workspace.png' });
+await page.screenshot({ path: outDir + '/color-tool-40-scheme-workspace.png' });
 
 await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 皇家朱金', exact: true }).click();
 await page.waitForTimeout(90);
@@ -1436,7 +1436,7 @@ if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'inn-
   || (await buildingSchemeWorkspace.count()) !== 1) {
   throw new Error('Selecting another building should rebind Panel and Workspace without leaving Scheme mode.');
 }
-await page.screenshot({ path: outDir + '/material-palette-41-scheme-rebind.png' });
+await page.screenshot({ path: outDir + '/color-tool-41-scheme-rebind.png' });
 
 await buildingSourceFilter.getByRole('button', { name: '创意工坊', exact: true }).click();
 await buildingStyleRail.getByRole('button', { name: '自然', exact: true }).click();
@@ -1445,7 +1445,7 @@ if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 
   || (await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 秋庭暖木', exact: true }).count()) !== 1) {
   throw new Error('Scheme mode source × style filters should combine correctly.');
 }
-await page.screenshot({ path: outDir + '/material-palette-42-scheme-filter.png' });
+await page.screenshot({ path: outDir + '/color-tool-42-scheme-filter.png' });
 
 await buildingSchemeWorkspace.getByRole('button', { name: '关闭建筑配色方案工作区', exact: true }).click();
 await page.waitForSelector('.building-scheme-workspace', { state: 'detached' });
@@ -1457,12 +1457,12 @@ await page.waitForSelector('.building-scheme-panel', { state: 'detached' });
 if ((await page.locator('.color-tool-toolbar-cluster').count()) !== 1) {
   throw new Error('Returning to Surface should keep the same color-tool dock.');
 }
-await page.screenshot({ path: outDir + '/material-palette-43-return-surface-mode.png' });
+await page.screenshot({ path: outDir + '/color-tool-43-return-surface-mode.png' });
 
 await materialBar.getByRole('button', { name: '完成配色', exact: true }).click();
 await page.waitForSelector('.color-tool-toolbar-cluster', { state: 'detached' });
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
 await page.waitForTimeout(160);
-await page.screenshot({ path: outDir + '/material-palette-44-return-gameplay.png' });
+await page.screenshot({ path: outDir + '/color-tool-44-return-gameplay.png' });
 
 await browser.close();
