@@ -49,8 +49,8 @@
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
 .material-preset-workspace__action .ui-icon{
-  width:12px;
-  height:12px;
+  width:var(--wanhu-icon-xs,14px);
+  height:var(--wanhu-icon-xs,14px);
 }
 .material-preset-workspace__action:hover:not(:disabled){
   background:rgba(255,255,255,.032);
@@ -149,7 +149,7 @@
 }
 .material-preset-workspace__card-menu>button.is-danger{color:#bd867c}
 .material-preset-workspace__card-menu>button.is-danger:hover{background:rgba(152,84,71,.075);color:#dda096}
-.material-preset-workspace__card-menu>button .ui-icon{width:12px;height:12px;}
+.material-preset-workspace__card-menu>button .ui-icon{width:var(--wanhu-icon-xs,14px);height:var(--wanhu-icon-xs,14px);}
 
 .material-preset-workspace.is-dragging-preset .material-preset-workspace__rail-list>button{
   transition-property:background,color,opacity,box-shadow;
