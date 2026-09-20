@@ -112,3 +112,19 @@ BuildingSchemeWorkspaceController
 Web Handle 坐标与本地 React State 不迁移。
 
 完整规范：`Documentation/建筑配色方案模式设计规范.md`。
+
+
+## 架构修正：并入 Material Palette
+
+初版将 Building Scheme Mode 实现为独立 World Tool，这是对产品信息架构的误读。
+
+修正后：
+
+- 顶层 Tool 只有 `material-palette`；
+- Building Scheme 是 `materialPaletteMode=scheme`；
+- Light Adjustment 是 `materialPaletteMode=lighting`；
+- Surface 是 `materialPaletteMode=surface`；
+- 三者共用 MaterialPaletteDock；
+- World Utility 只保留“配色工具”。
+
+BuildingSchemeModeOverlay / LightAdjustmentOverlay 保留为子模式内容组件，它们不再拥有独立 Tool State。
