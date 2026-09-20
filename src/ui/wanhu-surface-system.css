@@ -56,7 +56,7 @@
 /* ---------------------------------------------------------------------
    Work Surface — Design Workspace
    --------------------------------------------------------------------- */
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog{
   --workspace-glass-surface:var(--wanhu-surface-work-sheet-bg);
   --workspace-glass-body:var(--wanhu-surface-work-body-overlay);
   --workspace-glass-rail:transparent;
@@ -84,27 +84,27 @@
   -webkit-backdrop-filter:var(--wanhu-surface-work-filter);
 }
 
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-header{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-header{
   background:rgba(255,255,255,.006);
   border-bottom-color:var(--wanhu-surface-work-rule);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
 }
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-body{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-body{
   background:var(--wanhu-surface-work-body-overlay);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.006);
 }
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-primary-rail{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-primary-rail{
   background:transparent;
   border-right-color:rgba(238,233,223,.045);
 }
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-primary-rail__divider{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-primary-rail__divider{
   background:rgba(238,233,223,.038);
 }
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-catalog,
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-content-stage{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-catalog,
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-content-stage{
   background:transparent;
 }
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .workspace-context-filter{
+.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-context-filter{
   border-bottom-color:rgba(238,233,223,.060);
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .design-item-card{
