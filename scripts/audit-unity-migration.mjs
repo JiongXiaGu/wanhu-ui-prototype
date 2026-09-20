@@ -71,6 +71,17 @@ for(const file of files){
     errors.push(`${file}: retired color-tool path. Surface / Lighting / Scheme must live under src/tools/color-tool/.`);
   }
 
+  if (
+    file === 'src/tools/color-tool/modes/surface/MaterialSchemeWorkspace.tsx'
+    || file === 'src/tools/color-tool/modes/surface/material-scheme-workspace.css'
+  ) {
+    errors.push(`${file}: retired MaterialSchemeWorkspace rename residue. Surface preset browsing is owned by MaterialPresetWorkspace.`);
+  }
+
+  if (file === 'src/main.tsx' && !text.includes("import './ui/color/color-parameter-field.css';")) {
+    errors.push(`${file}: shared ColorParameterField stylesheet must be part of the canonical runtime cascade.`);
+  }
+
   if (!file.endsWith('.css')) {
     const legacyColorIdentifiers = [
       'MaterialPaletteMode',
@@ -79,6 +90,7 @@ for(const file of files){
       'SET_MATERIAL_PALETTE_MODE',
       'MaterialPaletteTool',
       'MaterialPaletteDock',
+      'MaterialSchemeWorkspace',
     ];
     for (const marker of legacyColorIdentifiers) {
       if (text.includes(marker)) {
@@ -93,6 +105,26 @@ for(const file of files){
     && /\.workspace--catalog\s+\.workspace-(?:primary-rail|catalog|context-filter|content-stage|content-row|content-pager)\b/.test(text)
   ) {
     errors.push(`${file}: mode CSS must not own shared Catalog geometry. Move layout to src/workspace/workspace-catalog.css and keep only feature modifiers here.`);
+  }
+
+  if (
+    file.startsWith('src/tools/color-tool/modes/')
+    && file.endsWith('.css')
+    && /\.(?:ui-numeric-slider-field|ui-color-parameter-field|gameplay-left-context-surface)\b/.test(text)
+  ) {
+    errors.push(`${file}: mode CSS must not restyle shared NumericSliderField / ColorParameterField / LeftContextPanel Surface ownership.`);
+  }
+
+  const retiredColorCssMarkers = [
+    'material-palette-prototype',
+    'material-palette-surface',
+    'material-palette-section',
+    'material-palette-workflow-bottom',
+  ];
+  for (const marker of retiredColorCssMarkers) {
+    if (text.includes(marker)) {
+      errors.push(`${file}: retired Color Tool CSS hook "${marker}" must not remain in runtime ownership.`);
+    }
   }
 
   const legacyMarkers = ['tool-overlay', 'tool-body'];
