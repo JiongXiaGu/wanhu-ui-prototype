@@ -134,7 +134,7 @@
 .gameplay-screen .city-wall-gate-prototype,
 .gameplay-screen .city-wall-access-stair-prototype,
 .gameplay-screen .city-wall-transition-stair-prototype,
-.gameplay-screen .material-palette-prototype{
+.gameplay-screen .color-tool-surface-panel{
   left:var(--hud-edge);
   bottom:var(--hud-edge);
 }
@@ -148,6 +148,6 @@
 .gameplay-screen .city-wall-gate-toolbar-cluster,
 .gameplay-screen .city-wall-access-stair-toolbar-cluster,
 .gameplay-screen .city-wall-transition-stair-toolbar-cluster,
-.gameplay-screen .material-palette-toolbar-cluster{
+.gameplay-screen .color-tool-toolbar-cluster{
   bottom:var(--hud-edge);
 }
