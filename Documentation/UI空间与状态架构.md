@@ -399,9 +399,7 @@ Tool 高于 Workspace / Management，打开后：
 - Building Placement；
 - Road Placement；
 - Terrain Edit World Tool；
-- Material Palette；
-- Light Adjustment；
-- Building Scheme Mode。
+- Material Palette（内部含 Surface / Lighting / Scheme 三模式）。
 
 ### 11.1 ToolOrigin
 
@@ -424,25 +422,31 @@ UI 只负责参数与状态；真实 Terrain Raycast / Brush / Height Modify / U
 
 详细规范：`Documentation/地形编辑工具设计规范.md`。
 
-### 11.3 Building Scheme Mode
+### 11.3 Material Palette 三模式
 
-方案模式属于 Tool Space，但允许“左侧 Building Appearance Panel + 中央 BuildingSchemeWorkspace”共存：
+右下 World Utility 的“配色工具”只进入一个顶层 Tool：
 
 ```text
-进入方案模式
-→ 选择场景建筑
-→ 左侧显示 Building Appearance
-→ 点击配色方案
-→ 中央打开 Catalog Workspace
+Tool = material-palette
 ```
+
+底部 MaterialPaletteDock 在整个配色流程中保持挂载，并切换：
+
+```text
+surface  → 表面模式
+lighting → 灯光模式
+scheme   → 方案模式
+```
+
+其中 Scheme 模式允许“左侧 Building Appearance Panel + 中央 BuildingSchemeWorkspace”共存；Lighting 模式只显示 Scene Light Selection + 左侧 Light Panel，不创建 Workspace。
 
 稳定规则：
 
-- Building Selection 不属于 Gameplay ContextPanel State，而属于 Tool Controller；
-- 中央 Scheme Workspace 是 Tool 内部 Work Surface，不写入顶层 `Workspace=design`；
-- 切换建筑时左 Panel 与中央 Workspace Rebind，不退出 Tool；
-- 关闭 Scheme Workspace 只关闭浏览器，不退出方案模式；
-- 正式设计见 `Documentation/建筑配色方案模式设计规范.md`。
+- Lighting / Scheme 不是独立 World Tool；
+- World Utility 不增加“灯光调整 / 方案模式”两个入口；
+- 切换三个模式不退出 `material-palette`；
+- 中央 Scheme Workspace 是配色工具内部 Work Surface，不写入顶层 `Workspace=design`；
+- 正式设计见 `Documentation/灯光调整工具设计规范.md` 与 `Documentation/建筑配色方案模式设计规范.md`。
 
 ## 12. World Utility
 
@@ -452,8 +456,6 @@ UI 只负责参数与状态；真实 Terrain Raycast / Brush / Height Modify / U
 - 区域编辑；
 - 地形编辑；
 - 配色工具；
-- 灯光调整；
-- 方案模式；
 - 网格吸附；
 - 网格显示；
 - 范围复制；
