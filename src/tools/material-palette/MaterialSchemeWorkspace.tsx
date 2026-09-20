@@ -1,8 +1,6 @@
-import { useMemo, useState, type DragEvent as ReactDragEvent } from 'react';
+import { useEffect, useMemo, useState, type DragEvent as ReactDragEvent } from 'react';
 import {
-  ArrowLeft,
   Bookmark,
-  Box,
   ClipboardPaste,
   Copy,
   Grid3X3,
@@ -75,10 +73,9 @@ interface Props {
   saveInitialName: string;
   onClose: () => void;
   onApply: (id: string) => void;
-  onSaveCurrent: (name: string, family: MaterialFamily) => void;
+  onSaveCurrent: (name: string, family: MaterialFamily) => string;
   onPasteCurrent: () => void;
-  onRename: (id: string, name: string) => void;
-  onMove: (id: string, family: MaterialFamily) => void;
+  onUpdateMetadata: (id: string, patch: { name?: string; family?: MaterialFamily }) => void;
   onCopy: (id: string) => void;
   onDelete: (id: string) => void;
 }
@@ -135,18 +132,19 @@ function familyFromLabel(label: string) {
   return MATERIAL_FAMILIES.find((family) => MATERIAL_FAMILY_LABELS[family] === label) ?? null;
 }
 
-type CardMenuMode = 'main' | 'move';
+function familyRailPage(family: MaterialFamily) {
+  const index = MATERIAL_CATEGORIES.findIndex((entry) => entry.id === family);
+  return Math.max(0, Math.floor(index / CATEGORY_PAGE_SIZE));
+}
 
 function SchemeCard({
   preset,
   menuOpen,
-  menuMode,
   dragging,
+  highlighted,
   onApply,
   onMenuToggle,
-  onMenuMode,
-  onRename,
-  onMove,
+  onEdit,
   onCopy,
   onDelete,
   onDragStart,
@@ -154,13 +152,11 @@ function SchemeCard({
 }: {
   preset: MaterialSchemeWorkspacePreset;
   menuOpen: boolean;
-  menuMode: CardMenuMode;
   dragging: boolean;
+  highlighted: boolean;
   onApply: (id: string) => void;
   onMenuToggle: (id: string) => void;
-  onMenuMode: (mode: CardMenuMode) => void;
-  onRename: (preset: MaterialSchemeWorkspacePreset) => void;
-  onMove: (preset: MaterialSchemeWorkspacePreset, family: MaterialFamily) => void;
+  onEdit: (preset: MaterialSchemeWorkspacePreset) => void;
   onCopy: (preset: MaterialSchemeWorkspacePreset) => void;
   onDelete: (preset: MaterialSchemeWorkspacePreset) => void;
   onDragStart: (preset: MaterialSchemeWorkspacePreset, event: ReactDragEvent<HTMLButtonElement>) => void;
@@ -179,6 +175,7 @@ function SchemeCard({
         editable ? 'is-editable' : '',
         menuOpen ? 'is-menu-open' : '',
         dragging ? 'is-dragging' : '',
+        highlighted ? 'is-revealed' : '',
       ].filter(Boolean).join(' ')}
       onPointerLeave={() => menuOpen && onMenuToggle('')}
     >
@@ -216,58 +213,26 @@ function SchemeCard({
             className="material-scheme-workspace__menu-trigger"
             aria-label={'管理我的方案 ' + preset.name}
             aria-expanded={menuOpen}
-            onClick={() => {
-              onMenuMode('main');
-              onMenuToggle(menuOpen ? '' : preset.id);
-            }}
+            onClick={() => onMenuToggle(menuOpen ? '' : preset.id)}
           >
             <MoreHorizontal aria-hidden="true" />
           </button>
 
           {menuOpen && (
             <div
-              className={'material-scheme-workspace__card-menu is-' + menuMode}
+              className="material-scheme-workspace__card-menu"
               role="menu"
               aria-label={preset.name + ' 方案操作'}
-              onPointerEnter={() => undefined}
             >
-              {menuMode === 'main' ? (
-                <>
-                  <button type="button" role="menuitem" onClick={() => onRename(preset)}>
-                    <Pencil aria-hidden="true" /><span>重命名</span>
-                  </button>
-                  <button type="button" role="menuitem" onClick={() => onMenuMode('move')}>
-                    <Box aria-hidden="true" /><span>移动分类…</span>
-                  </button>
-                  <button type="button" role="menuitem" onClick={() => onCopy(preset)}>
-                    <Copy aria-hidden="true" /><span>复制参数</span>
-                  </button>
-                  <button type="button" role="menuitem" className="is-danger" onClick={() => onDelete(preset)}>
-                    <Trash2 aria-hidden="true" /><span>删除</span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button type="button" className="material-scheme-workspace__move-back" onClick={() => onMenuMode('main')}>
-                    <ArrowLeft aria-hidden="true" /><span>移动分类</span>
-                  </button>
-                  <div className="material-scheme-workspace__move-list" role="listbox" aria-label="选择材质分类">
-                    {MATERIAL_FAMILIES.map((family) => (
-                      <button
-                        key={family}
-                        type="button"
-                        role="option"
-                        aria-selected={preset.family === family}
-                        className={preset.family === family ? 'is-current' : ''}
-                        disabled={preset.family === family}
-                        onClick={() => onMove(preset, family)}
-                      >
-                        {MATERIAL_FAMILY_LABELS[family]}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
+              <button type="button" role="menuitem" onClick={() => onEdit(preset)}>
+                <Pencil aria-hidden="true" /><span>编辑</span>
+              </button>
+              <button type="button" role="menuitem" onClick={() => onCopy(preset)}>
+                <Copy aria-hidden="true" /><span>复制参数</span>
+              </button>
+              <button type="button" role="menuitem" className="is-danger" onClick={() => onDelete(preset)}>
+                <Trash2 aria-hidden="true" /><span>删除</span>
+              </button>
             </div>
           )}
         </>
@@ -318,8 +283,7 @@ export function MaterialSchemeWorkspace({
   onApply,
   onSaveCurrent,
   onPasteCurrent,
-  onRename,
-  onMove,
+  onUpdateMetadata,
   onCopy,
   onDelete,
 }: Props) {
@@ -329,9 +293,15 @@ export function MaterialSchemeWorkspace({
   const [source, setSource] = useState<MaterialSchemeWorkspaceSource>('all');
   const [page, setPage] = useState(0);
   const [menuPresetId, setMenuPresetId] = useState('');
-  const [menuMode, setMenuMode] = useState<CardMenuMode>('main');
   const [draggingPresetId, setDraggingPresetId] = useState('');
   const [dragTargetFamily, setDragTargetFamily] = useState<MaterialFamily | null>(null);
+  const [highlightPresetId, setHighlightPresetId] = useState('');
+
+  useEffect(() => {
+    if (!highlightPresetId) return;
+    const timer = window.setTimeout(() => setHighlightPresetId(''), 650);
+    return () => window.clearTimeout(timer);
+  }, [highlightPresetId]);
 
   const allPresets = useMemo(
     () => [...systemPresets, ...workshopPresets, ...customPresets],
@@ -375,6 +345,20 @@ export function MaterialSchemeWorkspace({
     setMenuPresetId('');
   }
 
+  function revealMovedPreset(presetId: string, nextFamily: MaterialFamily) {
+    const moved = allPresets.map((preset) => preset.id === presetId ? { ...preset, family: nextFamily } : preset);
+    const targetItems = moved.filter((preset) => {
+      const matchesSource = source === 'all' || preset.source === source;
+      return matchesSource && preset.family === nextFamily;
+    });
+    const targetIndex = Math.max(0, targetItems.findIndex((preset) => preset.id === presetId));
+
+    setCategoryPage(familyRailPage(nextFamily));
+    setCategory(nextFamily);
+    setPage(Math.floor(targetIndex / PAGE_SIZE));
+    setHighlightPresetId(presetId);
+  }
+
   function openSaveDialog() {
     dialogs.choiceInput({
       title: '保存配色',
@@ -383,52 +367,52 @@ export function MaterialSchemeWorkspace({
       choiceLabel: '材质分类',
       choices: MATERIAL_FAMILIES.map((family) => MATERIAL_FAMILY_LABELS[family]),
       initialChoice: MATERIAL_FAMILY_LABELS[currentFamily],
+      choiceLayout: 'grid',
       maxLength: 40,
-      helperText: '保存到“我的方案”，之后可重命名或移动分类。',
+      helperText: '保存到“我的方案”，名称和分类之后仍可编辑。',
       validate: (value) => validateName(value),
       confirmText: '保存',
       onConfirm: (name, choice) => {
         const family = familyFromLabel(choice);
         if (!family) return;
-        onSaveCurrent(name, family);
-        setCategory('all');
+        const existingInFamily = customPresets.filter((preset) => preset.family === family).length;
+        const newId = onSaveCurrent(name, family);
+
         setSource('mine');
-        setPage(0);
-        dialogs.toast('已保存到“我的方案”', 'success');
+        setCategoryPage(familyRailPage(family));
+        setCategory(family);
+        setPage(Math.floor(existingInFamily / PAGE_SIZE));
+        setHighlightPresetId(newId);
       },
     });
   }
 
-  function renamePreset(preset: MaterialSchemeWorkspacePreset) {
+  function editPreset(preset: MaterialSchemeWorkspacePreset) {
     setMenuPresetId('');
-    dialogs.input({
-      title: '重命名方案',
+    dialogs.choiceInput({
+      title: '编辑方案',
       label: '方案名称',
       initialValue: preset.name,
+      choiceLabel: '材质分类',
+      choices: MATERIAL_FAMILIES.map((family) => MATERIAL_FAMILY_LABELS[family]),
+      initialChoice: MATERIAL_FAMILY_LABELS[preset.family],
+      choiceLayout: 'grid',
       maxLength: 40,
-      helperText: '名称只影响“我的方案”中的显示，不修改材质参数。',
+      helperText: '这里仅编辑方案名称与分类；材质参数继续在左侧调整。',
       validate: (value) => validateName(value, preset.id),
-      confirmText: '确定',
-      onConfirm: (name) => {
-        onRename(preset.id, name);
-        dialogs.toast('方案已重命名', 'success');
+      confirmText: '保存修改',
+      onConfirm: (name, choice) => {
+        const family = familyFromLabel(choice);
+        if (!family) return;
+        onUpdateMetadata(preset.id, { name, family });
+
+        if (family !== preset.family) {
+          revealMovedPreset(preset.id, family);
+        } else {
+          setHighlightPresetId(preset.id);
+        }
       },
     });
-  }
-
-  function movePreset(preset: MaterialSchemeWorkspacePreset, nextFamily: MaterialFamily) {
-    setMenuPresetId('');
-    setMenuMode('main');
-    if (preset.family === nextFamily) return;
-    const previousFamily = preset.family;
-    onMove(preset.id, nextFamily);
-    dialogs.toast(
-      '已将“' + preset.name + '”移动到“' + MATERIAL_FAMILY_LABELS[nextFamily] + '”',
-      'success',
-      3200,
-      '撤销',
-      () => onMove(preset.id, previousFamily),
-    );
   }
 
   function copyPreset(preset: MaterialSchemeWorkspacePreset) {
@@ -444,10 +428,7 @@ export function MaterialSchemeWorkspace({
       message: '将从“我的方案”中删除“' + preset.name + '”。',
       confirmText: '删除',
       tone: 'danger',
-      onConfirm: () => {
-        onDelete(preset.id);
-        dialogs.toast('已删除“' + preset.name + '”', 'neutral');
-      },
+      onConfirm: () => onDelete(preset.id),
     });
   }
 
@@ -477,7 +458,9 @@ export function MaterialSchemeWorkspace({
   function dropOnCategory(event: ReactDragEvent<HTMLButtonElement>, target: MaterialSchemeWorkspaceCategory) {
     if (!draggingPreset || target === 'all') return;
     event.preventDefault();
-    movePreset(draggingPreset, target);
+    const presetId = draggingPreset.id;
+    onUpdateMetadata(presetId, { family: target });
+    revealMovedPreset(presetId, target);
     endDrag();
   }
 
@@ -500,6 +483,7 @@ export function MaterialSchemeWorkspace({
       data-material-scheme-category={category}
       data-material-category-page={categoryPage + 1}
       data-material-dragging={draggingPreset ? 'true' : 'false'}
+      data-material-highlight-preset={highlightPresetId || undefined}
     >
       <header className="workspace-header material-scheme-workspace__header">
         <div className="workspace-title">
@@ -617,16 +601,11 @@ export function MaterialSchemeWorkspace({
                         key={preset.id}
                         preset={preset}
                         menuOpen={menuPresetId === preset.id}
-                        menuMode={menuPresetId === preset.id ? menuMode : 'main'}
                         dragging={draggingPresetId === preset.id}
+                        highlighted={highlightPresetId === preset.id}
                         onApply={onApply}
-                        onMenuToggle={(id) => {
-                          setMenuPresetId(id);
-                          if (!id) setMenuMode('main');
-                        }}
-                        onMenuMode={setMenuMode}
-                        onRename={renamePreset}
-                        onMove={movePreset}
+                        onMenuToggle={setMenuPresetId}
+                        onEdit={editPreset}
                         onCopy={copyPreset}
                         onDelete={deletePreset}
                         onDragStart={beginDrag}
