@@ -977,6 +977,13 @@ for (const categoryName of ['木头', '瓦片', '墙面']) {
     throw new Error('My Scheme Move To menu missing category: ' + categoryName);
   }
 }
+const presetMenuBox = await presetMenu.boundingBox();
+const schemeWorkspaceMenuBox = await schemeWorkspace.boundingBox();
+if (!presetMenuBox || !schemeWorkspaceMenuBox
+  || presetMenuBox.y < schemeWorkspaceMenuBox.y
+  || presetMenuBox.y + presetMenuBox.height > schemeWorkspaceMenuBox.y + schemeWorkspaceMenuBox.height - 3) {
+  throw new Error('My Scheme management menu must stay fully visible inside the Workspace. menu=' + JSON.stringify(presetMenuBox));
+}
 await page.screenshot({ path: outDir + '/material-palette-32-mine-menu.png' });
 
 await presetMenu.getByRole('menuitem', { name: '重命名', exact: true }).click();
