@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ChevronRight, Lightbulb, MousePointer2 } from 'lucide-react';
+import { Lightbulb, MousePointer2 } from 'lucide-react';
 import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { ColorEditorPage } from '../../ui/color/ColorEditorPage';
+import { ColorParameterField } from '../../ui/color/ColorParameterField';
 import type { MotionPhase } from '../../ui/motion';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 
@@ -119,19 +120,13 @@ export function LightAdjustmentOverlay({
         ) : selected ? (
           <div className="light-adjustment-parameters">
             <LeftContextSection title="灯光参数">
-              <button
-                type="button"
-                className="light-adjustment-color-row"
-                aria-label="调整灯光颜色"
+              <ColorParameterField
+                label="颜色"
+                color={selected.color}
+                hdr
+                ariaLabel="调整灯光颜色"
                 onClick={() => setPage('color')}
-              >
-                <span>颜色</span>
-                <span className="light-adjustment-color-row__value">
-                  <i style={{ background: selected.color }} aria-hidden="true" />
-                  <small>HDR</small>
-                  <ChevronRight aria-hidden="true" />
-                </span>
-              </button>
+              />
 
               <RuntimeParameterRow
                 label="亮度"
