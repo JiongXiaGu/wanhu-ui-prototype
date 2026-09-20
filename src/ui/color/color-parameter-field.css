@@ -91,9 +91,9 @@
   letter-spacing:.035em;
 }
 .ui-color-parameter-field__meta>.ui-icon{
-  width:12px;
-  height:12px;
-  flex:0 0 12px;
+  width:var(--wanhu-icon-xs,14px);
+  height:var(--wanhu-icon-xs,14px);
+  flex:0 0 var(--wanhu-icon-xs,14px);
   color:#747b75;
 }
 .ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__hdr{
