@@ -118,7 +118,7 @@
   background:rgba(255,255,255,.012);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
   color:var(--wanhu-color-paper-secondary);
-  font-size:9.5px;
+  font-size:var(--wanhu-type-label,10.5px);
   font-weight:500;
   letter-spacing:.018em;
   cursor:pointer;
