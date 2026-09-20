@@ -278,3 +278,96 @@ WorkspaceItemCard
 - Apply 后 Workspace 不关闭，左侧参数实时更新；
 - Metallic 下 SpecularColor 不存在；
 - Specular 下 SpecularColor 出现在颜色序列最后。
+
+
+## 8. 我的方案管理
+
+“我的方案”是玩家可编辑资源；系统内置与创意工坊方案保持只读身份。
+
+### 保存配色
+
+点击 Workspace 右上“保存配色”必须打开共享命名 + 分类 Dialog：
+
+- 名称可编辑；
+- 分类必须在 木头 / 瓦片 / 墙面 中选择；
+- 默认名称优先使用“当前方案名 + 副本”，没有稳定方案名时使用“我的配色 NN”；
+- 默认分类继承 CurrentCategory；
+- 我的方案内名称不能完全重复；
+- 保存后自动切到“我的方案”，并显示新 Card。
+
+“全部”只是 Filter，永远不是可保存分类。
+
+### 重命名
+
+“我的方案” Card Hover / Focus 后显示管理入口。
+
+管理菜单固定包含：
+
+- 重命名；
+- 移动到：木头 / 瓦片 / 墙面；
+- 复制参数；
+- 删除。
+
+重命名使用共享 Input Dialog，不在 Card 内常驻 TextField，也不使用双击编辑。
+
+### 移动分类
+
+移动分类只修改方案资源元数据，不修改 MaterialSurfaceDraft。
+
+两条入口必须调用同一个 MovePreset Command：
+
+1. Card 菜单“移动到”；
+2. 鼠标拖动 Card 到左侧 木头 / 瓦片 / 墙面 Rail。
+
+拖动时：
+
+- 只有“我的方案”可拖；
+- “全部”不可作为 Drop Target；
+- 木头 / 瓦片 / 墙面进入临时 Drop Mode；
+- 当前 Drop Target 使用克制熟铜 Tone；
+- 放下后如果当前 Filter 不再匹配，Card 可以立即从当前列表消失；
+- 不自动切换左侧 Filter。
+
+移动完成后显示带“撤销”的 Toast；撤销调用同一个 MovePreset Command 回到原分类。
+
+第一阶段拖拽只负责改变分类，不承担自定义排序。
+
+### 复制 / 删除
+
+复制参数：
+
+- 把指定“我的方案”的完整 Draft 写入现有 Surface Clipboard；
+- 不新建 Workspace Clipboard；
+- 之后右上“粘贴配色”和左侧 Footer“粘贴参数”都读取同一个 Clipboard。
+
+删除：
+
+- 使用共享 Confirm Dialog；
+- 只允许删除“我的方案”；
+- 系统内置 / 创意工坊不提供 Rename / Move / Delete。
+
+## 9. 数据与 Command 边界
+
+```text
+UserMaterialPreset
+├ Id
+├ Name
+├ Category
+├ Source = mine
+└ Draft
+
+RenamePresetCommand(id, name)
+MovePresetCommand(id, category)
+DeletePresetCommand(id)
+CopyPresetParametersCommand(id)
+SavePresetCommand(name, category, draft)
+```
+
+Drag / Menu 都只是不同输入适配器，不直接拥有数据修改逻辑。
+
+正式 Unity UI Toolkit：
+
+- Card Drag Adapter 只产生 MovePresetCommand；
+- Drop Target 映射左 Rail 的 Category VisualElement；
+- Rename / Save 继续使用共享 Modal Dialog；
+- Toast Undo 保留 Command 级回滚，不依赖 Web DOM。
