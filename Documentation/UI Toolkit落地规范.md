@@ -273,6 +273,39 @@ UI Toolkit Panel
 
 Design Workspace 当前每页 8 个可见 Asset，很适合有限预览池。
 
+### 8.1 UI Icon 资产
+
+正式规则：`Documentation/UI图标资产管线.md`。
+
+普通单色 UI Icon 不再以 Web inline SVG 作为长期 Runtime Contract。
+
+目标资产链：
+
+```text
+SVG Source Master
+        ↓
+64×64 white RGBA PNG
+        ↓
+UiIconId / Manifest
+      ↙          ↘
+Web Prototype    Unity UI Toolkit
+PNG Mask         Sprite + Tint
+```
+
+约束：
+
+- SVG 只保存源形状，不作为 Web / Unity 的默认 Runtime 资产；
+- PNG 是 Web 与 Unity 共用的正式 Runtime Icon；
+- 普通 Icon 统一 64×64，不为 12 / 16 / 20 / 24 / 32 px 分别输出多份；
+- 实际显示尺寸属于 Component Geometry；
+- Normal / Hover / Selected / Disabled / Warning / Danger 颜色由 Runtime Tint 表达；
+- Web 通过共享 `UiIcon` + PNG Alpha Mask 消费资产，不通过 CSS filter 给 `<img>` 染色；
+- Unity 直接复制同一 PNG，导入 Sprite 并通过 Image / USS Tint 表达状态；
+- Shared / Business 配置最终只持有 `UiIconId`，不持有 `LucideIcon` / React Component；
+- Pager、Selected Line、Divider、Toggle / Slider Track 等结构元素继续使用真实 Element，不烘焙成 Icon PNG。
+
+当前 Web 仍处于 Lucide Runtime 过渡期。先完成 64×64 PNG Pilot，再逐步迁移 Shared Contract 和全部 Runtime Icon，不做一次性替换。
+
 ## 9. Bottom Command Visual System
 
 正式规则：`Documentation/Bottom Command Visual System设计规范.md`。
@@ -437,7 +470,7 @@ Web Prototype 继续服务快速验证，但从现在起遵守迁移护栏：
 - 结构性状态线 / Pager Marker 优先真实节点；
 - Motion 必须消费共享 Motion Token；
 - Browser API 只能停留在 Web Adapter 层，不拥有业务状态；
-- Lucide SVG Component 只是 Source Icon，不是 Unity Runtime 依赖。
+- 图标过渡期允许 Lucide Runtime；正式目标是 `UiIconId → 64×64 PNG`，SVG 只保留 Source Master，详见 `Documentation/UI图标资产管线.md`。
 
 GitHub Build 在 TypeScript / Vite Build 前执行 `npm run audit:unity`。高风险模式会直接阻止 CI；其它可迁移但需换实现的 CSS 能力作为 Migration Debt 输出，不要求为了 Web 原型全部提前删除。
 
@@ -449,7 +482,7 @@ GitHub Build 在 TypeScript / Vite Build 前执行 `npm run audit:unity`。高�
 - USS 支持 `opacity / translate / scale / transition-*`，因此当前 Motion Grammar 可直接映射；
 - Runtime 输入可配合 Input System Package 与 UI Toolkit Event System；
 - 大数据列表使用 `ListView` 的 make/bind/unbind 与虚拟化；
-- `VectorImage` 可作为 UI Toolkit 矢量资产类型，SVG 需要 Vector Graphics SVG Importer；项目仍将按实际性能和美术流程决定 Sprite Atlas 与 VectorImage 的使用比例。
+- `VectorImage` 仍可用于特殊矢量需求，但普通单色 UI Icon 的项目规范已经收敛为 64×64 PNG Sprite + Tint；SVG 只保留为 Source Master。
 
 详细 Migration Gate 见 `Documentation/Unity UI Toolkit迁移准备清单.md`。
 
