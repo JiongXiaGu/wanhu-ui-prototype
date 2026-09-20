@@ -482,11 +482,11 @@ export function MaterialPresetWorkspace({
 
   return (
     <section
-      className={'workspace workspace--catalog workspace--material-scheme material-preset-workspace motion-bottom-surface is-' + motionPhase + (draggingPreset ? ' is-dragging-preset' : '')}
+      className={'workspace workspace--catalog workspace--material-preset material-preset-workspace motion-bottom-surface is-' + motionPhase + (draggingPreset ? ' is-dragging-preset' : '')}
       aria-label="材质方案工作区"
       aria-busy={motionPhase !== 'steady'}
-      data-material-scheme-source={source}
-      data-material-scheme-category={category}
+      data-material-preset-source={source}
+      data-material-preset-category={category}
       data-material-category-page={categoryPage + 1}
       data-material-dragging={draggingPreset ? 'true' : 'false'}
       data-material-highlight-preset={highlightPresetId || undefined}
