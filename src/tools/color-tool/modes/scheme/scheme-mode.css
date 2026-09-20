@@ -59,7 +59,7 @@
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
-  font-size:9.5px;
+  font-size:var(--wanhu-type-caption,10px);
 }
 .building-scheme-selector>svg{
   width:13px;
@@ -91,7 +91,7 @@
 }
 .building-scheme-panel__empty>span{
   color:#747a75;
-  font-size:8.5px;
+  font-size:var(--wanhu-type-caption,10px);
 }
 
 /* Web-only world picking adapter. */
@@ -134,7 +134,7 @@
   border-radius:5px;
   background:rgba(24,29,27,.84);
   color:#9fa49e;
-  font-size:8px;
+  font-size:var(--wanhu-type-micro,9.5px);
   line-height:1.2;
   opacity:0;
   transform:translateX(-50%);
