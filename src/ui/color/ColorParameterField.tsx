@@ -39,15 +39,16 @@ export function ColorParameterField({
         aria-label={ariaLabel ?? `调整${label}`}
         onClick={onClick}
       >
-        <i
-          className="ui-color-parameter-field__fill"
-          style={{ backgroundColor: color }}
-          aria-hidden="true"
-        />
-        <i className="ui-color-parameter-field__contrast" aria-hidden="true" />
-        <span className="ui-color-parameter-field__meta">
-          {hdr && <small className="ui-color-parameter-field__hdr">HDR</small>}
-          <ChevronRight aria-hidden="true" />
+        <span className="ui-color-parameter-field__preview" aria-hidden="true">
+          <i
+            className="ui-color-parameter-field__fill"
+            style={{ backgroundColor: color }}
+          />
+          <i className="ui-color-parameter-field__contrast" />
+          <span className="ui-color-parameter-field__meta">
+            {hdr && <small className="ui-color-parameter-field__hdr">HDR</small>}
+            <ChevronRight />
+          </span>
         </span>
       </button>
     </div>
