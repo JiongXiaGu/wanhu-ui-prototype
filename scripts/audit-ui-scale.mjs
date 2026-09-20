@@ -48,8 +48,8 @@ for(const file of files){
     for(const match of cssForRules.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
       const selector=match[1].trim();
       const body=match[2];
+      const line=cssForRules.slice(0,match.index).split('\n').length;
       if(/\bsvg\b/.test(selector)){
-        const line=cssForRules.slice(0,match.index).split('\n').length;
         svgSelectors.push({file,line,selector,body:body.trim().replace(/\s+/g,' ')});
       }
       for(const sizeMatch of body.matchAll(/font-size\s*:\s*([^;}]*)/g)){
