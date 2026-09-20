@@ -71,6 +71,7 @@ Workspace 不是：
 - 默认前景 Muted；
 - Hover 使用极弱 Smoke Tone；
 - Active 使用熟铜文字 / Icon + 左侧短状态线 + 极弱暖金 Tone；
+- Rail Page Indicator 只使用中性灰点，不能与 Active 的熟铜线共享强调色；
 - 不整块填金；
 - Icon 不因 Active 大幅移动 / 放大。
 
@@ -116,10 +117,13 @@ Pressed：
 
 ## 7. Pager
 
-- 默认低对比；
-- Hover 提亮；
-- Current Page 使用熟铜；
-- 不 Glow。
+Content Pager 与 Rail Pager 不使用完全相同的 Active 语义：
+
+- Content Pager：当前内容页可以继续使用熟铜，因为它不与同一区域的 Selection Line竞争；
+- Rail Pager：默认暗灰小点，当前页使用中性亮灰圆点，Hover 只进一步提亮；
+- Primary Rail 的熟铜短竖线只表示 Category Selected；
+- 单页 Rail Marker 同样使用低对比灰色小圆点，不再显示类似 Selected 的竖线；
+- Pager 不 Glow，不通过位移规避 Selected；依靠形状与 Tone 区分状态。
 
 ## 8. Inspector 关系
 
