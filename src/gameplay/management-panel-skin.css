@@ -115,7 +115,7 @@
 }
 .management-metric{padding:13px 20px 12px;gap:8px}
 .management-metric+.management-metric{border-left-color:var(--management-rule)}
-.management-metric small{color:var(--management-faint);font-size:9px}
+.management-metric small{color:var(--management-faint);font-size:var(--wanhu-type-caption,10px)}
 .management-metric strong{color:var(--management-paper);font-size:21px;font-weight:590}
 .management-metric em{color:var(--management-topic-accent);font-size:8.5px}
 
