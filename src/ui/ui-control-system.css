@@ -119,14 +119,14 @@
 .game-canvas .ui-numeric-slider-field>.ui-stepper-button:active:not(:disabled){transform:translateY(1px)}
 .game-canvas .ui-numeric-slider-field>.ui-stepper-button:focus-visible{outline:1px solid var(--ui-field-border-focus);outline-offset:2px}
 .game-canvas .ui-numeric-slider-field>.ui-stepper-button:disabled{opacity:var(--ui-field-disabled);cursor:default}
-.game-canvas .ui-numeric-slider-field>.ui-value-button{min-width:0;height:var(--ui-parameter-step-size);padding:0 6px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ui-field-border);border-radius:var(--ui-field-radius-inner);background:var(--ui-field-surface);color:var(--ui-field-text);font:inherit;font-size:9px;font-variant-numeric:tabular-nums;white-space:nowrap;cursor:pointer;transition:color .12s ease,border-color .12s ease,background .12s ease,box-shadow .12s ease}
+.game-canvas .ui-numeric-slider-field>.ui-value-button{min-width:0;height:var(--ui-parameter-step-size);padding:0 6px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ui-field-border);border-radius:var(--ui-field-radius-inner);background:var(--ui-field-surface);color:var(--ui-field-text);font:inherit;font-size:var(--wanhu-type-caption,10px);font-variant-numeric:tabular-nums;white-space:nowrap;cursor:pointer;transition:color .12s ease,border-color .12s ease,background .12s ease,box-shadow .12s ease}
 .game-canvas .ui-numeric-slider-field>.ui-value-button:hover:not(:disabled){color:var(--wanhu-color-paper-primary,#eee9df);border-color:var(--ui-field-border-hover);background:var(--ui-field-surface-hover)}
 .game-canvas .ui-numeric-slider-field>.ui-value-button:focus-visible{outline:0;border-color:var(--ui-field-border-focus);background:var(--ui-field-surface-focus);box-shadow:0 0 0 3px rgba(201,165,95,.045)}
 .game-canvas .ui-numeric-slider-field>.ui-value-button:active:not(:disabled){transform:translateY(1px)}
 .game-canvas .ui-numeric-slider-field>.ui-value-button:disabled{cursor:default}
 .ui-numeric-slider-field.is-disabled{opacity:.72}
 .ui-parameter-row{--ui-parameter-label-width:78px;--ui-parameter-step-size:28px;--ui-parameter-value-width:58px;min-height:42px;display:grid;grid-template-columns:var(--ui-parameter-label-width) minmax(0,1fr);align-items:center;gap:6px}
-.ui-parameter-row>span{color:var(--ui-field-muted);font-size:9px}.ui-parameter-row.is-disabled>span{opacity:.72}
+.ui-parameter-row>span{color:var(--ui-field-muted);font-size:var(--wanhu-type-caption,10px)}.ui-parameter-row.is-disabled>span{opacity:.72}
 
 /* Select ------------------------------------------------------------ */
 .ui-select{position:relative;width:100%;z-index:2}
@@ -265,8 +265,8 @@
 .ui-binding-field{width:100%;height:34px;padding:0 10px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--ui-field-border);border-radius:var(--ui-field-radius-inner);background:var(--ui-field-surface);color:var(--ui-field-text);font:inherit;cursor:pointer;transition:border-color .12s ease,background .12s ease,color .12s ease,box-shadow .12s ease}
 .ui-binding-field:hover:not(:disabled){border-color:var(--ui-field-border-hover);background:var(--ui-field-surface-hover);color:var(--wanhu-color-text-secondary,#d4cfc6)}
 .ui-binding-field:focus-visible{outline:0;border-color:var(--ui-field-border-focus);background:var(--ui-field-surface-focus);box-shadow:0 0 0 3px rgba(201,165,95,.045)}
-.ui-binding-field kbd{max-width:100%;overflow:hidden;border:0;background:transparent;color:inherit;font:inherit;font-size:9.5px;white-space:nowrap;text-overflow:ellipsis}
-.ui-binding-field.is-empty{border-style:dashed;color:var(--ui-field-muted)}.ui-binding-field__empty{display:flex;align-items:center;gap:5px;font-size:9px}
+.ui-binding-field kbd{max-width:100%;overflow:hidden;border:0;background:transparent;color:inherit;font:inherit;font-size:var(--wanhu-type-caption,10px);white-space:nowrap;text-overflow:ellipsis}
+.ui-binding-field.is-empty{border-style:dashed;color:var(--ui-field-muted)}.ui-binding-field__empty{display:flex;align-items:center;gap:5px;font-size:var(--wanhu-type-caption,10px)}
 .ui-binding-field:disabled{opacity:var(--ui-field-disabled);cursor:default}
 
 /* Text input -------------------------------------------------------- */
