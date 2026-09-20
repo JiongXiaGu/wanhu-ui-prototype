@@ -205,3 +205,19 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - 卡片信息收成“名称 / 类型 · 质感”两层；
 - Material 只保留 Current、材质样片纹理、删除自定义方案等业务差异；
 - Workspace Rail / Card Grid 继续消费 Design Workspace 共享几何，不再维护独立 920px / 3 列布局。
+
+
+## 材质方案缩略图进一步收束为细色线
+
+对 1:1 材质样片进行实际截图复核后，确认当前 Web Demo 没有真实材质贴图 / Thumbnail 时，纯色方块和 CSS 模拟纹理都会制造低质量占位视觉，反而削弱方案名称的识别。
+
+本轮继续收束：
+
+- 删除 Material Scheme Card 的 64×64 Preview；
+- 删除 CSS 模拟木纹 / 瓦纹 / 墙面纹理与固定受光；
+- WorkspaceItemCard 保持共享，但 Preview 槽对 Material 为空；
+- Card 第一行只保留方案名；
+- 第二行改为 38×3px BaseColor 细线 + “类型 · 质感”；
+- BaseColor 只作为低权重辅助信息，不再作为主视觉；
+- Current 状态继续使用左侧熟铜状态线，避免和 BaseColor 语义冲突；
+- UI Review 增加断言：Material Card 不得出现 Preview / 四色条，色彩表达必须保持细线级别。
