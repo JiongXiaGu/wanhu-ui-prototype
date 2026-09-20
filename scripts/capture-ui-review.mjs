@@ -1008,10 +1008,11 @@ if ((await materialPanel.getAttribute('data-material-scheme-type')) !== '自定�
 }
 
 await sourceFilter.getByRole('button', { name: '我的方案', exact: true }).click();
-await schemeRail.getByRole('button', { name: '全部', exact: true }).click();
+await schemeRail.getByRole('button', { name: '金属', exact: true }).click();
 await page.waitForTimeout(100);
-if ((await schemeWorkspace.getAttribute('data-material-scheme-source')) !== 'mine') {
-  throw new Error('My Schemes source filter should expose mine state.');
+if ((await schemeWorkspace.getAttribute('data-material-scheme-source')) !== 'mine'
+  || (await schemeWorkspace.getAttribute('data-material-scheme-category')) !== 'metal') {
+  throw new Error('My Schemes should preserve the selected Material Family filter before saving.');
 }
 if ((await schemeWorkspace.getByText('还没有保存的我的方案', { exact: true }).count()) !== 1) {
   throw new Error('My Schemes should show an empty state before the first save.');
@@ -1029,6 +1030,9 @@ if ((await saveFamilyGrid.getByRole('radio').count()) !== 9) {
 }
 if (await saveDialog.locator('.ui-dialog-choice-trigger').count()) {
   throw new Error('Material Family selection should not use a dropdown when all families fit in the dialog.');
+}
+if ((await saveFamilyGrid.getByRole('radio', { name: '金属', exact: true }).getAttribute('aria-checked')) !== 'true') {
+  throw new Error('Save Material Scheme should default to the currently selected Rail family instead of CurrentFamily.');
 }
 for (const familyName of ['木材', '石材', '金属', '砖瓦', '灰泥 / 土', '布料', '玻璃', '漆饰', '其他']) {
   if ((await saveFamilyGrid.getByRole('radio', { name: familyName, exact: true }).count()) !== 1) {
