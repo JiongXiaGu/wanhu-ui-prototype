@@ -71,6 +71,7 @@ Material ToolActionBar
 - Card 高度 64px；
 - Preview 固定 64×64、1:1；
 - 4 列 × 2 行，每页 8 项；
+- Material Scheme Host 宽度约 1040px；它与左侧 400px Surface Panel 共存，因此不直接继承建筑 Workspace 的 1240px Host 宽度，但 Card / Rail / Typography / Hover 仍共用同一母版；
 - Card 默认无常驻边框；
 - Hover / Focus、Typography、Copy 间距和缩略图几何与 Design Workspace 共用；
 - Card 两层信息：方案名 + “类型 · 质感”，例如“深胡桃 / 木头 · 偏哑光”；
