@@ -27,26 +27,29 @@
 - 默认直接修改并提交 `main`；
 - 不需要建立临时分支；
 - 不需要部署 / 推送 Vercel；
-- GitHub Actions 保留 Build 与 UI Review；
-- 重要 UI 修改必须由 GitHub Actions UI Review 生成固定 1920×1080 截图 Artifact；
-- Agent 必须下载 Artifact、实际打开关键截图并完成视觉复核后才能交付；
-- 每次 UI 任务应更新 `scripts/capture-ui-review.mjs`，覆盖本次受影响的关键状态；不能只依赖旧截图矩阵；
+- GitHub Actions 保留 Build 与 UI Review，作为完整页面／交互和阶段交付的正式回归；
+- 局部 Control / Surface 的高频视觉微调可以先做“源码级组件 Review”：读取当前 TSX/CSS，用等价 DOM + 当前 CSS Token/Selector 渲染 Off/On/Hover/Disabled 等状态并截图实际检查；这种中间短循环不要求每次等待 Actions；
+- 源码级组件 Review 只适合 Slider、Toggle、Button、ColorParameterField、单个 Surface 材质等局部视觉，不得用来冒充完整 React 页面、正式 PNG Icon、世界背景、Workspace/HUD 布局或真实交互已经通过；
+- 重要 UI 修改准备交付时仍必须由 GitHub Actions UI Review 生成固定 1920×1080 截图 Artifact；Agent 下载 Artifact、实际打开关键截图并完成视觉复核后才能交付；
+- 只有当正式重要 UI 任务的现有截图矩阵未覆盖受影响状态时，才在同轮更新 `scripts/capture-ui-review.mjs` / Scenario；纯局部中间视觉试验不为了截图数量机械扩张正式矩阵；
 - Vercel 不属于日常复核链路。
 
 ## 完成门槛
 
-重要修改至少：
+重要修改的**正式交付**至少：
 
 1. 先阅读相关文档和代码；
-2. 修改代码；
+2. 修改代码；局部 Control / Surface 可在此阶段反复做源码级组件截图 Review，尽早发现视觉问题；
 3. 同步正式 Documentation；
 4. 执行 `npm run audit:unity`；
 5. GitHub Actions Build 必须成功；
 6. GitHub Actions UI Review 必须成功并上传截图 Artifact；
-7. Agent 下载 Artifact，并实际打开本轮关键截图检查：构图、层级、留白、尺寸、遮挡、状态、日夜/世界背景干扰；
-8. 如果截图发现问题，继续修改并重新跑 Build + UI Review，直到通过；
-9. 最终交付时给用户提供本轮关键截图，不允许只报告“Action 成功”；
+7. Agent 下载 Artifact，并实际打开本轮关键完整页面截图检查：构图、层级、留白、尺寸、遮挡、状态、正式图标、日夜/世界背景干扰；
+8. 如果完整页面截图发现问题，继续修改；局部问题可先源码级快速复查，完成后重新跑 Build + UI Review；
+9. 最终交付时给用户提供本轮关键正式截图，不允许只报告“Action 成功”；
 10. 检查状态所有权、输入、Motion、Surface 和 Unity UI Toolkit 映射，不交付半成品。
+
+纯文档修改不需要为了制造绿色状态而重跑 UI Review。
 
 ## Unity Migration Guard
 
