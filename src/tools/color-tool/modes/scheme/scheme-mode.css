@@ -62,9 +62,9 @@
   font-size:var(--wanhu-type-caption,10px);
 }
 .building-scheme-selector>.ui-icon{
-  width:13px;
-  height:13px;
-  flex:0 0 13px;
+  width:var(--wanhu-icon-xs,14px);
+  height:var(--wanhu-icon-xs,14px);
+  flex:0 0 var(--wanhu-icon-xs,14px);
   color:#747b75;
 }
 
