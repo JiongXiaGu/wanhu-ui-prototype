@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Building2, ChevronRight, MousePointer2, Palette } from 'lucide-react';
+import { Building2, ChevronRight, MousePointer2 } from 'lucide-react';
 import { RuntimeParameterRow } from '../../../../ui/Controls';
 import { LeftContextSection } from '../../../../ui/LeftContextPanel';
 import { usePresence, type MotionPhase } from '../../../../ui/motion';
@@ -97,7 +97,7 @@ export function SchemeModeOverlay({
 
       <PlacementContextPanel
         ariaLabel="建筑配色方案模式"
-        icon={Palette}
+        icon="palette"
         title="建筑外观"
         subtitle={selected?.name ?? '请选择场景建筑'}
         closeLabel="退出配色工具"
