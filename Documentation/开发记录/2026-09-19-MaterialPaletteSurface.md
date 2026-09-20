@@ -240,3 +240,23 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - Card 第二行增加来源 Badge，并继续保留极弱 BaseColor 细线和“类型 · 质感”；
 - 我的方案仍支持删除；
 - UI Review 增加来源筛选、组合筛选、Workspace Action、来源 Badge、保存 / 粘贴 / 删除完整流程。
+
+
+## 我的方案命名、重命名与分类整理
+
+本轮完成材质资源库的玩家方案管理闭环：
+
+- 保存配色不再自动落名，改用共享“名称 + 分类”Dialog；
+- 保存时可选择木头 / 瓦片 / 墙面，默认继承 CurrentCategory；
+- 增加我的方案名称去重验证；
+- 我的方案 Card 增加 Hover / Focus 管理菜单；
+- 管理菜单支持重命名、移动到、复制参数、删除；
+- 移动分类同时支持菜单和拖到左侧 Rail；
+- 全部只作为 Filter，不允许成为 Drop Target；
+- 系统内置 / 创意工坊保持只读，不出现编辑菜单；
+- Move 统一由 Overlay Command 更新数据，Drag 与 Menu 不各写一套状态；
+- 移动后 Toast 提供“撤销”动作；
+- 复制参数复用现有 Surface Clipboard；
+- 删除使用共享 Confirm Dialog；
+- Dialog System 新增通用 ChoiceInput Dialog，用于“文本 + 单选分类”表单；
+- Toast System 增加可选 Action，用于撤销等短生命周期操作。
