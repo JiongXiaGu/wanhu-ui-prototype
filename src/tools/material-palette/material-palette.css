@@ -362,6 +362,7 @@
 .material-scheme-workspace__card-copy{
   gap:7px;
 }
+.material-scheme-workspace__card-apply .workspace-item-card__copy{pointer-events:none}
 .material-scheme-workspace__card-meta{
   width:100%;
   display:flex;
