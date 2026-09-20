@@ -85,7 +85,7 @@
 .weather-preset-card.is-active .weather-preset-card__icon{color:var(--weather-gold-focus)}
 .weather-preset-card>span{
   min-width:0;
-  font-size:9.6px;
+  font-size:var(--wanhu-type-caption,10px);
   font-weight:580;
   line-height:1;
   white-space:nowrap;
@@ -115,7 +115,7 @@
   border:0;
   background:transparent;
   color:#b1aea7;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   line-height:1.5;
 }
 
