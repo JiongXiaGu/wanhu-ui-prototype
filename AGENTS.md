@@ -62,7 +62,8 @@ Web 可以继续高效使用 React / TypeScript，但不得新增会绑死 Web �
 - 新复杂 Grid 必须能够明确拆成 UXML/Flex 行列；优先直接使用 Flex-friendly DOM；
 - 有语义的状态线、Pager Marker、Overlay 等优先使用真实元素，不新增结构性 `::before / ::after`；
 - UI Icon 正式规则见 `Documentation/UI图标资产管线.md`：SVG 只作为 Source Master，64×64 PNG 是 Web / Unity 共用 Runtime Asset；
-- 现阶段 Lucide 只作为图标源和过渡期 Runtime；PNG Pilot 通过后，Shared / Business Contract 改用 `UiIconId`，最终 Runtime 禁止直接依赖 `lucide-react`。
+- UI Icon Runtime 已完成 PNG 化：`src/` 禁止直接依赖 `lucide-react`，也禁止重新引入 `LucideIcon`；Lucide 仅允许存在于 `scripts/icons/` Source Generator；
+- 新图标先加入 Source List，执行 `npm run icons:build`，并通过 `npm run icons:check`；重要图标变化必须走 UI Review。
 
 `npm run audit:unity` 会阻止新的高风险模式，并输出仍待迁移的 Grid / Pseudo / Blur / Browser API 债务。
 
