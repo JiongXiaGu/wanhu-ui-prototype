@@ -173,7 +173,7 @@
   backdrop-filter:blur(6px);
 }
 .new-game-map-card__badge .ui-icon{color:var(--wanhu-color-icon)}
-.new-game-map-card__badge em{font-size:8px;font-style:normal;letter-spacing:.035em;white-space:nowrap}
+.new-game-map-card__badge em{font-size:var(--wanhu-type-micro,9.5px);font-style:normal;letter-spacing:.035em;white-space:nowrap}
 
 .new-game-map-card__copy{
   min-width:0;
@@ -198,7 +198,7 @@
 .new-game-map-card__size{
   flex:0 0 auto;
   color:var(--wanhu-color-paper-tertiary);
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   line-height:1;
   font-variant-numeric:tabular-nums;
   letter-spacing:.02em;
@@ -229,7 +229,7 @@
   border-radius:8px;
   background:var(--ui-field-surface);
   color:var(--wanhu-color-paper-tertiary);
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
 }
 .new-game-detail__header h2{
   margin:0 0 11px;
@@ -289,7 +289,7 @@
   display:block;
   margin-bottom:9px;
   color:var(--wanhu-color-text-muted);
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
 }
 
 .new-game-segmented{
@@ -306,7 +306,7 @@
   background:var(--ui-field-surface);
   color:var(--wanhu-color-paper-tertiary);
   font:inherit;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   cursor:pointer;
   transition:color var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease;
 }
