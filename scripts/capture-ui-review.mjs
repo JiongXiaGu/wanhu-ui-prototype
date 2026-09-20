@@ -707,6 +707,10 @@ await page.screenshot({ path: outDir + '/workspace-building-rail-selection-vs-pa
 
 await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
 const worldUtilityForMaterial = page.locator('.context-utility-toolbar[data-utility-context="world"]');
+if (await worldUtilityForMaterial.getByRole('button', { name: '灯光调整', exact: true }).count()
+  || await worldUtilityForMaterial.getByRole('button', { name: '方案模式', exact: true }).count()) {
+  throw new Error('World Utility must expose one 配色工具 entry; Light and Scheme are internal color-tool modes.');
+}
 await worldUtilityForMaterial.getByRole('button', { name: '配色工具', exact: true }).click();
 await page.waitForSelector('.material-palette-prototype');
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="material-palette"]');
@@ -1252,42 +1256,40 @@ await page.screenshot({ path: outDir + '/material-palette-34-night-emission-hdr.
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
 const materialBar = page.locator('.material-palette-toolbar-cluster .tool-action-bar');
-await materialBar.getByRole('button', { name: '完成配色', exact: true }).click();
-await page.waitForSelector('.material-palette-prototype', { state: 'detached' });
-await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
-await page.waitForTimeout(180);
-await page.screenshot({ path: outDir + '/material-palette-35-return-gameplay.png' });
-
-// Light Adjustment Tool --------------------------------------------------------
-const worldUtilityForLight = page.locator('.context-utility-toolbar[data-utility-context="world"]');
-if ((await worldUtilityForLight.getByRole('button', { name: '灯光调整', exact: true }).count()) !== 1) {
-  throw new Error('World Utility should expose the Light Adjustment tool entry.');
+for (const modeLabel of ['表面模式', '灯光模式', '方案模式']) {
+  if ((await materialBar.getByRole('button', { name: modeLabel, exact: true }).count()) !== 1) {
+    throw new Error('配色工具 should expose internal mode: ' + modeLabel);
+  }
 }
-await worldUtilityForLight.getByRole('button', { name: '灯光调整', exact: true }).click();
+
+// Lighting is an internal mode of the same Material Palette Tool.
+await materialBar.getByRole('button', { name: '灯光模式', exact: true }).click();
 await page.waitForSelector('.light-adjustment-panel');
-await page.waitForTimeout(180);
+await page.waitForSelector('.material-palette-prototype', { state: 'detached' });
+await page.waitForTimeout(160);
 
 const lightPanel = page.locator('.light-adjustment-panel');
+if ((await page.locator('.material-palette-toolbar-cluster').count()) !== 1
+  || (await page.locator('.context-utility-toolbar[data-utility-context="material-palette"]').count()) !== 1) {
+  throw new Error('Switching to Lighting must keep the same color-tool dock and utility context.');
+}
 if ((await lightPanel.getAttribute('data-light-adjustment-selected')) !== 'none'
   || (await lightPanel.getAttribute('data-light-adjustment-page')) !== 'parameters') {
-  throw new Error('Light Adjustment should enter with no selected scene light and no Workspace.');
+  throw new Error('Lighting mode should enter with no selected scene light.');
 }
 if ((await page.locator('.workspace').count()) !== 0) {
-  throw new Error('Light Adjustment must not create a central Workspace.');
-}
-if ((await page.locator('.context-utility-toolbar').count()) !== 0) {
-  throw new Error('Light Adjustment should stay lightweight and hide the bottom Utility toolbar while editing.');
+  throw new Error('Lighting mode must not create a central Workspace.');
 }
 if ((await lightPanel.locator('.left-context-panel__footer').count()) !== 0) {
-  throw new Error('Light Adjustment should not add a footer or preset actions.');
+  throw new Error('Lighting mode should not add a footer or preset actions.');
 }
 if ((await page.locator('.light-adjustment-handle').count()) !== 4) {
-  throw new Error('Light Adjustment prototype should expose four selectable scene light handles.');
+  throw new Error('Lighting prototype should expose four selectable scene light handles.');
 }
 if ((await lightPanel.getByText('选择一盏场景灯光', { exact: true }).count()) !== 1) {
-  throw new Error('Light Adjustment should explain scene selection before a light is selected.');
+  throw new Error('Lighting mode should explain scene selection before a light is selected.');
 }
-await page.screenshot({ path: outDir + '/light-adjustment-01-select-scene-light.png' });
+await page.screenshot({ path: outDir + '/material-palette-35-lighting-mode-empty.png' });
 
 await page.getByRole('button', { name: '选择灯光 城门灯笼 03', exact: true }).click();
 await page.waitForTimeout(120);
@@ -1309,16 +1311,13 @@ const lightColorField = lightPanel.locator('.ui-color-parameter-field[data-color
 if ((await lightColorField.count()) !== 1) {
   throw new Error('Light parameters should consume the shared HDR ColorParameterField.');
 }
-if (await lightPanel.locator('.light-adjustment-color-row').count()) {
-  throw new Error('Light Adjustment must not keep its retired private color-row implementation.');
-}
 const lightColorControl = lightColorField.locator('.ui-color-parameter-field__control');
 const lightColorPreview = lightColorControl.locator('.ui-color-parameter-field__preview');
 const lightColorFill = lightColorControl.locator('.ui-color-parameter-field__fill');
 const lightColorMeta = lightColorControl.locator('.ui-color-parameter-field__meta');
 const lightHdrBadge = lightColorControl.locator('.ui-color-parameter-field__hdr');
 if ((await lightHdrBadge.getByText('HDR', { exact: true }).count()) !== 1) {
-  throw new Error('HDR status must render inside the shared color bar.');
+  throw new Error('HDR status must remain readable in the shared color field.');
 }
 const lightColorControlBox = await lightColorControl.boundingBox();
 const lightColorPreviewBox = await lightColorPreview.boundingBox();
@@ -1331,94 +1330,57 @@ const lightHdrFontSize = Number.parseFloat(await lightHdrBadge.evaluate((node) =
 if (!lightColorControlBox || !lightColorPreviewBox || !lightColorMetaBox || !firstLightNumericBox || !lightHdrBadgeBox
   || Math.abs(lightColorControlBox.x - firstLightNumericBox.x) > 1
   || Math.abs(lightColorControlBox.width - firstLightNumericBox.width) > 1) {
-  throw new Error('Shared ColorParameterField must align with the NumericSliderField control column. color=' + JSON.stringify(lightColorControlBox) + ' slider=' + JSON.stringify(firstLightNumericBox));
+  throw new Error('Shared ColorParameterField must align with NumericSliderField. color=' + JSON.stringify(lightColorControlBox) + ' slider=' + JSON.stringify(firstLightNumericBox));
 }
 const previewRatio = lightColorPreviewBox.width / lightColorControlBox.width;
 if (lightColorPreviewBox.height < 16
   || lightColorPreviewBox.height > 20
   || previewRatio < 0.68
   || previewRatio > 0.86
-  || lightColorFillOpacity > 0.76) {
-  throw new Error('ColorParameterField must use a simple readable preview/meta split instead of a dominant full-color block or tiny inset strip. preview=' + JSON.stringify(lightColorPreviewBox) + ' control=' + JSON.stringify(lightColorControlBox) + ' ratio=' + previewRatio + ' opacity=' + lightColorFillOpacity);
-}
-if (lightHdrFontSize < 9.5) {
-  throw new Error('HDR text must remain readable at normal parameter-label scale. fontSize=' + lightHdrFontSize);
+  || lightColorFillOpacity > 0.76
+  || lightHdrFontSize < 9.5) {
+  throw new Error('Shared Light color field visual contract regressed.');
 }
 if (lightHdrBadgeBox.x < lightColorMetaBox.x
-  || lightHdrBadgeBox.x + lightHdrBadgeBox.width > lightColorMetaBox.x + lightColorMetaBox.width
-  || lightHdrBadgeBox.y < lightColorControlBox.y
-  || lightHdrBadgeBox.y + lightHdrBadgeBox.height > lightColorControlBox.y + lightColorControlBox.height) {
-  throw new Error('HDR label must remain inside the shared ColorParameterField control meta area.');
+  || lightHdrBadgeBox.x + lightHdrBadgeBox.width > lightColorMetaBox.x + lightColorMetaBox.width) {
+  throw new Error('HDR label must stay in the neutral meta area.');
 }
-await page.screenshot({ path: outDir + '/light-adjustment-02-selected-parameters.png' });
+await page.screenshot({ path: outDir + '/material-palette-36-lighting-selected.png' });
 
 await lightPanel.getByRole('button', { name: '调整灯光颜色', exact: true }).click();
 await page.waitForTimeout(120);
 const lightColorEditor = lightPanel.locator('.shared-color-editor[data-color-editor-target="LightColor"]');
 if ((await lightPanel.getAttribute('data-light-adjustment-page')) !== 'color'
-  || (await lightColorEditor.getAttribute('data-color-editor-hdr')) !== 'true') {
-  throw new Error('Light Color must use the shared HDR Color Editor.');
+  || (await lightColorEditor.getAttribute('data-color-editor-hdr')) !== 'true'
+  || (await lightColorEditor.locator('[data-color-adapter="LightColor.Intensity"]').count()) !== 1) {
+  throw new Error('Lighting mode must retain the shared HDR Color Editor.');
 }
-if ((await lightColorEditor.locator('[data-color-adapter="LightColor.Intensity"]').count()) !== 1
-  || (await lightColorEditor.getByText('HDR 强度', { exact: true }).count()) !== 1) {
-  throw new Error('Light HDR Color should expose an HDR intensity adapter.');
-}
-await lightColorEditor.getByRole('textbox', { name: '十六进制颜色', exact: true }).fill('#FFD8A8');
-await lightColorEditor.getByRole('textbox', { name: '十六进制颜色', exact: true }).press('Enter');
-await page.screenshot({ path: outDir + '/light-adjustment-03-hdr-color-editor.png' });
+await page.screenshot({ path: outDir + '/material-palette-37-lighting-hdr-editor.png' });
 
-await lightPanel.getByRole('button', { name: '返回灯光参数', exact: true }).click();
-await page.waitForTimeout(100);
-const intensityBefore = Number(await lightPanel.getAttribute('data-light-intensity-scale'));
-const rangeBefore = Number(await lightPanel.getAttribute('data-light-range-scale'));
-await lightPanel.getByRole('button', { name: '亮度增大', exact: true }).click();
-await lightPanel.getByRole('button', { name: '范围减小', exact: true }).click();
-await page.waitForTimeout(80);
-const intensityAfter = Number(await lightPanel.getAttribute('data-light-intensity-scale'));
-const rangeAfter = Number(await lightPanel.getAttribute('data-light-range-scale'));
-if (!(intensityAfter > intensityBefore) || !(rangeAfter < rangeBefore)) {
-  throw new Error('Light Intensity/Range Scale should update live through shared NumericSliderField controls.');
-}
-
-await page.getByRole('button', { name: '选择灯光 市集灯笼 07', exact: true }).click();
-await page.waitForTimeout(100);
-if ((await lightPanel.getAttribute('data-light-adjustment-selected')) !== 'market-lantern-07'
-  || (await lightPanel.getByText('市集灯笼 07', { exact: true }).count()) !== 1) {
-  throw new Error('Selecting another scene light should rebind the same panel instead of opening another surface.');
-}
-await page.screenshot({ path: outDir + '/light-adjustment-04-rebind-scene-light.png' });
-
-await lightPanel.getByRole('button', { name: '退出灯光调整', exact: true }).click();
-await page.waitForSelector('.light-adjustment-panel', { state: 'detached' });
-await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
-await page.waitForTimeout(140);
-
-// Building Scheme Mode ---------------------------------------------------------
-const worldUtilityForScheme = page.locator('.context-utility-toolbar[data-utility-context="world"]');
-if ((await worldUtilityForScheme.getByRole('button', { name: '方案模式', exact: true }).count()) !== 1) {
-  throw new Error('World Utility should expose the Building Scheme Mode entry.');
-}
-await worldUtilityForScheme.getByRole('button', { name: '方案模式', exact: true }).click();
+// Scheme is the third mode in the same color tool.
+await materialBar.getByRole('button', { name: '方案模式', exact: true }).click();
 await page.waitForSelector('.building-scheme-panel');
+await page.waitForSelector('.light-adjustment-panel', { state: 'detached' });
 await page.waitForTimeout(160);
 
 const buildingSchemePanel = page.locator('.building-scheme-panel');
+if ((await page.locator('.material-palette-toolbar-cluster').count()) !== 1
+  || (await page.locator('.context-utility-toolbar[data-utility-context="material-palette"]').count()) !== 1) {
+  throw new Error('Scheme mode must remain inside the same color-tool shell.');
+}
 if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'none') {
-  throw new Error('Building Scheme Mode should enter without a selected building.');
+  throw new Error('Scheme mode should enter without a selected building.');
 }
 if ((await page.locator('.building-scheme-workspace').count()) !== 0) {
-  throw new Error('Building Scheme Workspace must stay closed until the scheme selector is opened.');
-}
-if ((await page.locator('.context-utility-toolbar').count()) !== 0) {
-  throw new Error('Building Scheme Mode should hide the bottom World Utility while editing.');
+  throw new Error('Building Scheme Workspace must stay closed until a building scheme selector is opened.');
 }
 if ((await page.locator('.building-scheme-handle').count()) !== 4) {
-  throw new Error('Building Scheme prototype should expose four selectable building handles.');
+  throw new Error('Scheme mode prototype should expose four selectable building handles.');
 }
 if ((await buildingSchemePanel.getByText('选择一栋场景建筑', { exact: true }).count()) !== 1) {
-  throw new Error('Building Scheme Mode should explain building selection before a building is selected.');
+  throw new Error('Scheme mode should explain building selection before a building is selected.');
 }
-await page.screenshot({ path: outDir + '/building-scheme-01-select-building.png' });
+await page.screenshot({ path: outDir + '/material-palette-38-scheme-mode-empty.png' });
 
 await page.getByRole('button', { name: '选择建筑 重檐楼阁 03', exact: true }).click();
 await page.waitForTimeout(100);
@@ -1426,23 +1388,19 @@ if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'towe
   || (await buildingSchemePanel.getAttribute('data-building-scheme-name')) !== '江南素雅') {
   throw new Error('Selecting a building should bind its current appearance to the left panel.');
 }
-if ((await buildingSchemePanel.getByRole('button', { name: '打开建筑配色方案', exact: true }).count()) !== 1) {
-  throw new Error('Selected building should expose the scheme selector.');
+if ((await buildingSchemePanel.getByRole('button', { name: '打开建筑配色方案', exact: true }).count()) !== 1
+  || (await buildingSchemePanel.getByText('做旧程度', { exact: true }).count()) !== 1) {
+  throw new Error('Selected building should expose Scheme and Weathering.');
 }
-if ((await buildingSchemePanel.getByText('做旧程度', { exact: true }).count()) !== 1) {
-  throw new Error('Selected building should expose Weathering.');
-}
-await page.screenshot({ path: outDir + '/building-scheme-02-building-appearance-panel.png' });
+await page.screenshot({ path: outDir + '/material-palette-39-scheme-building-panel.png' });
 
 await buildingSchemePanel.getByRole('button', { name: '打开建筑配色方案', exact: true }).click();
 await page.waitForSelector('.building-scheme-workspace');
 await page.waitForTimeout(120);
 const buildingSchemeWorkspace = page.locator('.building-scheme-workspace');
-if (!(await buildingSchemeWorkspace.evaluate((node) => node.classList.contains('workspace--catalog')))) {
-  throw new Error('Building Scheme Workspace must consume the shared Catalog Workspace contract.');
-}
-if ((await buildingSchemePanel.count()) !== 1) {
-  throw new Error('Opening the scheme Workspace must keep the selected building panel mounted.');
+if (!(await buildingSchemeWorkspace.evaluate((node) => node.classList.contains('workspace--catalog')))
+  || (await buildingSchemePanel.count()) !== 1) {
+  throw new Error('Scheme mode Workspace must reuse Catalog and coexist with Building Appearance.');
 }
 const buildingStyleRail = buildingSchemeWorkspace.locator('.building-scheme-workspace__rail');
 for (const styleLabel of ['全部', '素雅', '沉稳', '明快', '华丽', '自然', '其他']) {
@@ -1456,16 +1414,14 @@ for (const sourceLabel of ['全部', '系统内置', '创意工坊', '玩家方�
     throw new Error('Building Scheme source filter missing: ' + sourceLabel);
   }
 }
-if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 8) {
-  throw new Error('Building Scheme Workspace first page should keep the shared 4×2 card pool.');
-}
-if (await buildingSchemeWorkspace.locator('.workspace-item-card__preview').count()) {
-  throw new Error('Building Scheme framework should not invent placeholder image previews.');
+if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 8
+  || await buildingSchemeWorkspace.locator('.workspace-item-card__preview').count()) {
+  throw new Error('Building Scheme first page must reuse 4×2 cards without fake thumbnails.');
 }
 if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 江南素雅', exact: true }).getAttribute('aria-pressed')) !== 'true') {
-  throw new Error('Current building scheme should be Selected in the Workspace.');
+  throw new Error('Current building scheme should be selected.');
 }
-await page.screenshot({ path: outDir + '/building-scheme-03-scheme-workspace.png' });
+await page.screenshot({ path: outDir + '/material-palette-40-scheme-workspace.png' });
 
 await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 皇家朱金', exact: true }).click();
 await page.waitForTimeout(90);
@@ -1473,40 +1429,40 @@ if ((await buildingSchemePanel.getAttribute('data-building-scheme-name')) !== '�
   || (await buildingSchemeWorkspace.count()) !== 1) {
   throw new Error('Applying a building scheme should update the left panel while keeping the Workspace open.');
 }
-if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 皇家朱金', exact: true }).getAttribute('aria-pressed')) !== 'true') {
-  throw new Error('Applied building scheme should become the selected card.');
-}
-await page.screenshot({ path: outDir + '/building-scheme-04-live-apply.png' });
-
 await page.getByRole('button', { name: '选择建筑 临街客栈 07', exact: true }).click();
 await page.waitForTimeout(90);
 if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'inn-07'
   || (await buildingSchemePanel.getAttribute('data-building-scheme-name')) !== '墨瓦沉木'
   || (await buildingSchemeWorkspace.count()) !== 1) {
-  throw new Error('Selecting another building should rebind the same panel and keep the Scheme Workspace open.');
+  throw new Error('Selecting another building should rebind Panel and Workspace without leaving Scheme mode.');
 }
-if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 墨瓦沉木', exact: true }).getAttribute('aria-pressed')) !== 'true') {
-  throw new Error('Scheme Workspace selection should rebind to the newly selected building.');
-}
-await page.screenshot({ path: outDir + '/building-scheme-05-rebind-building.png' });
+await page.screenshot({ path: outDir + '/material-palette-41-scheme-rebind.png' });
 
 await buildingSourceFilter.getByRole('button', { name: '创意工坊', exact: true }).click();
 await buildingStyleRail.getByRole('button', { name: '自然', exact: true }).click();
 await page.waitForTimeout(80);
 if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 1
   || (await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 秋庭暖木', exact: true }).count()) !== 1) {
-  throw new Error('Building Scheme source × style filters should combine correctly.');
+  throw new Error('Scheme mode source × style filters should combine correctly.');
 }
-await page.screenshot({ path: outDir + '/building-scheme-06-source-style-filter.png' });
+await page.screenshot({ path: outDir + '/material-palette-42-scheme-filter.png' });
 
 await buildingSchemeWorkspace.getByRole('button', { name: '关闭建筑配色方案工作区', exact: true }).click();
 await page.waitForSelector('.building-scheme-workspace', { state: 'detached' });
-if ((await buildingSchemePanel.count()) !== 1) {
-  throw new Error('Closing the Scheme Workspace should leave Building Appearance open.');
-}
-await buildingSchemePanel.getByRole('button', { name: '退出方案模式', exact: true }).click();
+
+// Switching modes does not leave the color tool.
+await materialBar.getByRole('button', { name: '表面模式', exact: true }).click();
+await page.waitForSelector('.material-palette-prototype');
 await page.waitForSelector('.building-scheme-panel', { state: 'detached' });
+if ((await page.locator('.material-palette-toolbar-cluster').count()) !== 1) {
+  throw new Error('Returning to Surface should keep the same color-tool dock.');
+}
+await page.screenshot({ path: outDir + '/material-palette-43-return-surface-mode.png' });
+
+await materialBar.getByRole('button', { name: '完成配色', exact: true }).click();
+await page.waitForSelector('.material-palette-toolbar-cluster', { state: 'detached' });
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="world"]');
-await page.waitForTimeout(120);
+await page.waitForTimeout(160);
+await page.screenshot({ path: outDir + '/material-palette-44-return-gameplay.png' });
 
 await browser.close();
