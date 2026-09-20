@@ -146,3 +146,35 @@ UI Review 新增断言：
 - Preview Width 必须至少占 Control Width 的 90%；
 - Color Fill opacity 不得超过 0.70；
 - HDR Badge 必须完全位于 Preview Strip 内。
+
+
+## ColorParameterField 简化重做
+
+上一版继续弱化整块颜色后，虽然视觉焦点下降，但把 HDR 做成了过小的内部状态，实际 1080p Review 中可读性不足；同时“中性外壳 + 内嵌细条 + Contrast Overlay + 微型 Badge”层级过多。
+
+本轮直接推翻该内部设计，保留共享组件 API，视觉重做为最简单的两段式：
+
+```text
+颜色   [ 长 Color Preview            ][ HDR  › ]
+```
+
+实现：
+
+- 整个 ColorParameterField 仍与 NumericSliderField 的 Control Column 对齐；
+- 外层是普通中性 Control；
+- 左侧 Color Preview 高约 18px，承担颜色识别；
+- 右侧 Meta 永远是中性背景，承担 HDR + Chevron；
+- HDR 改为 10px 普通文字，不做微型 Badge；
+- HDR=false 时只隐藏 HDR Text，不显示 SDR；
+- 删除 Contrast Overlay；
+- Color Fill 约 0.74 opacity + 轻降饱和，避免亮色抢戏。
+
+实际下载 Actions 截图后再次人工检查：颜色仍清楚，但不再是面板第一视觉焦点；HDR 在 1080p 裁切视图中可直接读出。
+
+UI Review 进一步约束：
+
+- Preview 高度 16–20px；
+- Preview 占 Control Width 约 68%–86%；
+- Color Fill opacity ≤ 0.76；
+- HDR font-size ≥ 9.5px；
+- HDR 必须位于同一个 Control 的 Meta 区。
