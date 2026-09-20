@@ -67,16 +67,12 @@
 
 正式规范：`Documentation/UI图标资产管线.md`。
 
-当前 Web 仍直接使用 `lucide-react`，但这只属于迁移过渡状态。
-
-正式管线：
+当前已经完成 Web Runtime PNG 化：
 
 ```text
-Lucide / 自研 SVG
-        ↓
 固定 SVG Source Master
         ↓
-64×64 white RGBA PNG
+104 × 64×64 white RGBA PNG
         ↓
 UiIconId + Manifest
       ↙             ↘
@@ -86,28 +82,18 @@ PNG Alpha Mask       Sprite + Tint
 
 稳定规则：
 
-- SVG 是 Source Master，不作为普通 Icon 的正式 Runtime Contract；
-- PNG 是 Web Prototype 与 Unity UI Toolkit 共用的 Runtime Asset；
-- 普通 Icon 统一 64×64 RGBA + Transparent Background；
-- 状态颜色不烘焙进 PNG，通过 Web currentColor / Unity Tint 表达；
-- Shared / Business API 最终使用 `UiIconId`，不暴露 `LucideIcon`；
-- Unity 直接复制已经在 Web UI Review 中验收过的 PNG，不在迁移阶段重新转换；
-- Source SVG 必须提交 Git，避免依赖包升级导致同名图标漂移；
-- 当前 Stroke Pilot 基线为 1.7，必须先经过 ColorTool / LeftContext / Workspace / Dialog 代表场景审查后才能冻结；
-- 复杂插画、缩略图、RenderTexture、Noise、Pager / Selected Line 等不进入 UiIcon Pipeline。
+- 104 个 Source SVG 与 104 个 Runtime PNG 已提交仓库；
+- Source Generator 固定为 `lucide-react@1.47.0` + `sharp@0.35.4`；
+- Standard UiIcon Stroke = 1.7，已通过 PNG Pilot 的 GitHub UI Review 与人工截图审查；
+- Web Runtime 使用 `UiIcon / runtime-icons.generated.tsx`，实际渲染 committed PNG，不再生成 Lucide inline SVG；
+- `src/` 直接 import `lucide-react` 已被 CI 禁止；
+- 历史 `LucideIcon` 类型名已被 CI 禁止；
+- Canonical Asset Contract 是 `UiIconId`；命名 Component 只属于 Web 兼容 Adapter；
+- Unity 直接复制 `public/assets/ui/icons/*.png`，不再重新 Rasterize；
+- 状态颜色使用 Web `currentColor` / Unity Tint；
+- Pager / Selected Line / Divider / Toggle / Slider 等结构元素不进入 UiIcon Pipeline。
 
-迁移阶段：
-
-1. Icon Contract；
-2. Asset Generator；
-3. PNG Pilot；
-4. Shared Contract 从 `LucideIcon` 改为 `UiIconId`；
-5. Runtime 分批 PNG 化；
-6. CSS `svg` Selector Cleanup；
-7. CI Freeze；
-8. Unity Handoff。
-
-在 PNG Pilot 通过之前，Audit 只把 `lucide-react` 作为 Migration Debt 输出，不直接阻断 Build。
+Build 在正式编译前执行 `npm run icons:check`，校验 Manifest、104 对 SVG/PNG、64×64、Alpha、Generated Adapter 与 License。
 
 ## 6. 第一批 Unity Vertical Slice
 
@@ -160,6 +146,8 @@ Vertical Slice 通过后再迁 Settings / Archive / Management。
 默认：
 
 ```text
+npm run icons:check
+        ↓
 npm run audit:unity
         ↓
 npm run build
