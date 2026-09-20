@@ -556,7 +556,7 @@ function BindingRow({ binding, value, onEdit, onReset }: {
     <div className="settings-binding-row" title={binding.detail}>
       <span className="settings-binding-row__label"><b>{binding.label}</b></span>
       {renderBindingButton('primary')}{renderBindingButton('secondary')}
-      <button type="button" className="settings-binding-row__reset" aria-label={`恢复${binding.label}默认按键`} onClick={() => onReset(binding.id)}><RotateCcw size={13} /></button>
+      <button type="button" className="settings-binding-row__reset" aria-label={`恢复${binding.label}默认按键`} onClick={() => onReset(binding.id)}><RotateCcw size={14} /></button>
     </div>
   );
 }
