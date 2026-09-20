@@ -1,10 +1,10 @@
-import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { LeftContextPanel } from '../../ui/LeftContextPanel';
+import type { UiIconSource } from '../../ui/icons/UiIcon';
 
 export interface PlacementContextPanelProps {
   ariaLabel: string;
-  icon: LucideIcon;
+  icon: UiIconSource;
   title: string;
   subtitle?: string;
   closeLabel: string;
