@@ -1,4 +1,4 @@
-import type { LucideIcon } from '../../ui/icons/runtime-icons.generated';
+import type { UiIconComponent } from '../../ui/icons/runtime-icons.generated';
 import { Building2, Coins, Scale, ScrollText, Shield, Store, Users, Warehouse } from '../../ui/icons/runtime-icons.generated';
 import type { ManagementView } from '../../app/ui-state';
 
@@ -9,12 +9,12 @@ export interface ManagementNavItem {
   id: ManagementSection;
   label: string;
   shortLabel: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }
 
 export interface ManagementPanelConfig {
   title: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
   topic: ManagementTopic;
   status: string;
   stats: Array<{ label: string; value: string; delta?: string }>;

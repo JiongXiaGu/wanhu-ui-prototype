@@ -1,4 +1,4 @@
-import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
+import type { UiIconComponent } from '../ui/icons/runtime-icons.generated';
 import {
   Bridge,
   Building2,
@@ -36,7 +36,7 @@ export type DesignWorkspaceTone =
 export interface DesignWorkspaceRailItem {
   key: string;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }
 
 export interface DesignWorkspaceFilter {
@@ -64,7 +64,7 @@ export interface DesignWorkspaceItem {
 export interface DesignWorkspaceDefinition {
   id: DesignDockCategory;
   title: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
   railLabel: string;
   emptyLabel: string;
   primaryCategories: readonly DesignWorkspaceRailItem[];

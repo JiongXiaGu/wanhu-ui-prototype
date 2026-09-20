@@ -1,4 +1,4 @@
-import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
+import type { UiIconComponent } from '../ui/icons/runtime-icons.generated';
 import {
   Camera,
   ChevronsRight,
@@ -22,13 +22,13 @@ import { MANAGEMENT_PRIMARY_NAV, MANAGEMENT_STATUS_QUICK_ENTRIES } from './manag
 interface MapViewItem {
   id: MapView;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }
 
 interface SpeedControlItem {
   value: Speed;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }
 
 interface GameplayHUDProps {

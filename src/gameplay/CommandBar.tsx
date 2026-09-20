@@ -1,4 +1,4 @@
-import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
+import type { UiIconComponent } from '../ui/icons/runtime-icons.generated';
 import {
   Blocks,
   BookOpen,
@@ -16,7 +16,7 @@ import type { MotionPhase } from '../ui/motion';
 interface MainDockItem {
   id: DockCategory;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }
 
 const MAIN_DOCK_ITEMS: Record<DockMode, readonly MainDockItem[]> = {

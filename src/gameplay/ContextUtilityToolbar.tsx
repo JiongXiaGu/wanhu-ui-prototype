@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { LucideIcon } from '../ui/icons/runtime-icons.generated';
+import type { UiIconComponent } from '../ui/icons/runtime-icons.generated';
 import {
   Building2,
   Copy,
@@ -51,7 +51,7 @@ export type UtilityItemId =
 interface UtilityItem {
   id: UtilityItemId;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
   kind: UtilityKind;
 }
 

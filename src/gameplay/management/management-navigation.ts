@@ -1,11 +1,11 @@
-import type { LucideIcon } from '../../ui/icons/runtime-icons.generated';
+import type { UiIconComponent } from '../../ui/icons/runtime-icons.generated';
 import { Building2, Coins, ScrollText, Shield, Users, Warehouse } from '../../ui/icons/runtime-icons.generated';
 import type { ManagementView } from '../../app/ui-state';
 
 export interface ManagementPrimaryNavItem {
   id: Exclude<ManagementView, 'none'>;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }
 
 export interface ManagementStatusQuickEntry {
@@ -13,7 +13,7 @@ export interface ManagementStatusQuickEntry {
   label: string;
   targetLabel: string;
   value: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }
 
 export const MANAGEMENT_PRIMARY_NAV: ManagementPrimaryNavItem[] = [

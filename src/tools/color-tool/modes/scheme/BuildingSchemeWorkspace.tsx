@@ -8,7 +8,7 @@ import {
   Shield,
   Sun,
   X,
-  type LucideIcon,
+  type UiIconComponent,
 } from '../../../../ui/icons/runtime-icons.generated';
 import { useMemo, useState } from 'react';
 import type { MotionPhase } from '../../../../ui/motion';
@@ -61,7 +61,7 @@ const SOURCE_LABELS: Record<BuildingSchemeSource, string> = {
 const STYLE_FILTERS: readonly {
   id: BuildingSchemeStyleFilter;
   label: string;
-  icon: LucideIcon;
+  icon: UiIconComponent;
 }[] = [
   { id: 'all', label: '全部', icon: Grid3X3 },
   { id: 'elegant', label: '素雅', icon: Feather },
