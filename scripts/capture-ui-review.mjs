@@ -872,6 +872,21 @@ for (const sourceLabel of ['全部', '系统内置', '创意工坊', '我的方�
 }
 
 const schemeRail = schemeWorkspace.locator('.material-preset-workspace__rail');
+const materialWorkspaceHeaderPng = schemeWorkspace.locator('.workspace-title .ui-icon[data-ui-icon="palette"]');
+const materialWorkspaceClosePng = schemeWorkspace.locator('.workspace-header .icon-button .ui-icon[data-ui-icon="x"]');
+const materialRailPngIcons = schemeRail.locator('.workspace-primary-rail__page .ui-icon');
+if ((await materialWorkspaceHeaderPng.count()) !== 1
+  || (await materialWorkspaceClosePng.count()) !== 1
+  || (await materialRailPngIcons.count()) !== 7) {
+  throw new Error('Material Workspace PNG pilot must render header, close and visible rail icons through UiIcon.');
+}
+const materialWorkspaceMask = await materialWorkspaceHeaderPng.evaluate((node) => {
+  const style = getComputedStyle(node);
+  return style.maskImage || style.webkitMaskImage || '';
+});
+if (!materialWorkspaceMask.includes('/assets/ui/icons/palette.png')) {
+  throw new Error('Material Workspace UiIcon must consume the committed PNG runtime asset. mask=' + materialWorkspaceMask);
+}
 for (const category of ['全部', '木材', '石材', '金属', '砖瓦', '灰泥 / 土', '布料']) {
   if ((await schemeRail.getByRole('button', { name: category, exact: true }).count()) !== 1) {
     throw new Error('Material family rail first page missing: ' + category);
@@ -1203,6 +1218,12 @@ if ((await materialPanel.locator('[data-material-field="SpecularColor"]').count(
 await materialPanel.getByRole('button', { name: '调整主色', exact: true }).click();
 await page.waitForTimeout(220);
 const baseEditor = materialPanel.locator('.material-color-editor[data-color-editor-target="BaseColor"]');
+if ((await materialPanel.locator('.left-context-panel__back-button .ui-icon[data-ui-icon="arrow-left"]').count()) !== 1) {
+  throw new Error('LeftContextPanel back action must use the PNG UiIcon pilot asset.');
+}
+if ((await materialPanel.getAttribute('data-color-numeric-mode')) === 'invalid-never') {
+  throw new Error('unreachable');
+}
 if ((await baseEditor.getAttribute('data-color-numeric-mode')) !== 'rgb') {
   throw new Error('Color Editor should default to RGB numeric mode.');
 }
@@ -1256,6 +1277,15 @@ await page.screenshot({ path: outDir + '/color-tool-34-night-emission-hdr.png' }
 await materialPanel.getByRole('button', { name: '返回表面参数', exact: true }).click();
 await page.waitForTimeout(220);
 const materialBar = page.locator('.color-tool-toolbar-cluster .tool-action-bar');
+const colorToolPngModeIcons = materialBar.locator('.placement-action-bar__button--mode .ui-icon');
+if ((await colorToolPngModeIcons.count()) !== 3
+  || (await materialBar.locator('.placement-action-bar__button--mode svg').count()) !== 0) {
+  throw new Error('ColorToolDock mode icons must use PNG UiIcon assets during the pilot.');
+}
+const colorToolModeIconIds = await colorToolPngModeIcons.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-ui-icon')));
+if (colorToolModeIconIds.join(',') !== 'layers-3,lightbulb,palette') {
+  throw new Error('ColorToolDock PNG icon ids drifted: ' + colorToolModeIconIds.join(','));
+}
 for (const modeLabel of ['表面模式', '灯光模式', '方案模式']) {
   if ((await materialBar.getByRole('button', { name: modeLabel, exact: true }).count()) !== 1) {
     throw new Error('配色工具 should expose internal mode: ' + modeLabel);
@@ -1269,6 +1299,10 @@ await page.waitForSelector('.color-tool-surface-panel', { state: 'detached' });
 await page.waitForTimeout(160);
 
 const lightPanel = page.locator('.light-adjustment-panel');
+if ((await lightPanel.locator('.left-context-panel__heading-icon .ui-icon[data-ui-icon="lightbulb"]').count()) !== 1
+  || (await lightPanel.locator('.left-context-panel__header .icon-button .ui-icon[data-ui-icon="x"]').count()) !== 1) {
+  throw new Error('Lighting LeftContextPanel must use PNG heading and close icons during the pilot.');
+}
 if ((await page.locator('.color-tool-toolbar-cluster').count()) !== 1
   || (await page.locator('.context-utility-toolbar[data-utility-context="color-tool"]').count()) !== 1) {
   throw new Error('Switching to Lighting must keep the same color-tool dock and utility context.');
@@ -1364,6 +1398,9 @@ await page.waitForSelector('.light-adjustment-panel', { state: 'detached' });
 await page.waitForTimeout(160);
 
 const buildingSchemePanel = page.locator('.building-scheme-panel');
+if ((await buildingSchemePanel.locator('.left-context-panel__heading-icon .ui-icon[data-ui-icon="palette"]').count()) !== 1) {
+  throw new Error('Scheme LeftContextPanel heading must use PNG UiIcon during the pilot.');
+}
 if ((await page.locator('.color-tool-toolbar-cluster').count()) !== 1
   || (await page.locator('.context-utility-toolbar[data-utility-context="color-tool"]').count()) !== 1) {
   throw new Error('Scheme mode must remain inside the same color-tool shell.');
