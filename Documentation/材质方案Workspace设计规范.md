@@ -53,9 +53,9 @@ Material ToolActionBar
 
 内容：
 
-- 2 行 × 3 Card；
-- 6 Card / 页；
-- 超过 6 个方案使用 Workspace Pager；
+- 2 行 × 4 Card；
+- 8 Card / 页；
+- 超过 8 个方案使用 Workspace Pager；
 - Card 以单个材质样片 Preview 为主要识别，右侧只显示类型、名称和一个简短质感词；
 - 方案卡不显示四色拼条，不常驻显示 Smoothness / Tiling 等技术数值，也不显示“中等纹理 / 细纹 / 粗纹”等纹理粒度文字；
 - 点击 Card 立即应用方案；
@@ -64,20 +64,32 @@ Material ToolActionBar
 
 第一阶段 Web Demo 内置 9 个演示方案，用于验证分类和分页。它们是交互 / 构图占位，不代表最终美术库。
 
-### 方案卡材质样片
+### 方案卡与 Design Workspace 共用视觉母版
+
+材质方案不再拥有独立 Card 皮肤。它直接复用建筑 / Design Workspace 的 WorkspaceItemCard：
+
+- Card 高度 64px；
+- Preview 固定 64×64、1:1；
+- 4 列 × 2 行，每页 8 项；
+- Card 默认无常驻边框；
+- Hover / Focus、Typography、Copy 间距和缩略图几何与 Design Workspace 共用；
+- Card 两层信息：方案名 + “类型 · 质感”，例如“深胡桃 / 木头 · 偏哑光”；
+- Current 材质方案只增加共享状态线和极弱熟铜 Tone，不重新发明 Selected Card；
+- 自定义方案额外拥有删除按钮，这是 Material 的业务差异。
 
 方案库负责让玩家判断“这个材质大概长什么样”，不是展示底层参数结构。
 
 第一阶段 Web Prototype：
 
-- 使用 BaseColor 作为样片主色；
+- 使用 BaseColor 作为 1:1 样片主色；
 - 使用固定方向受光表达 Smoothness 的粗糙 / 哑光 / 偏哑光 / 光滑差异；
 - 木头 / 瓦片 / 墙面只用极弱类型纹理帮助识别，不额外写纹理说明文字；
 - Emission / NightEmission / Specular 不再拆成四色条展示。
 
 正式 Unity：
 
-- Card 结构保持不变；
+- WorkspaceItemCard.uss / 对应 UXML 结构同时供建筑目录与 Material Scheme 使用；
+- Material 只追加 workspace-item-card--material / Current / Delete 等业务 Modifier；
 - 系统方案优先绑定预生成 MaterialPresetThumbnail（Texture / Sprite）；
 - 没有缩略图时可回退到 BaseColor + 轻量材质样片；
 - 精确颜色与 PBR 参数仍只在左侧 Surface 参数面板编辑。
@@ -91,7 +103,7 @@ Material ToolActionBar
 
 内容：
 
-- 同样使用 2×3 Card Pool；
+- 同样使用 2×4 Card Pool；
 - 保存当前会生成玩家自定义方案；
 - 自定义方案可应用；
 - 自定义方案可删除；
@@ -187,7 +199,7 @@ Body
 
 规则：
 
-- 2×3 通过显式 Flex Rows 实现，不依赖 CSS Grid；
+- 2×4 通过显式 Flex Rows 实现，不依赖 CSS Grid；
 - Pager Marker / Tab Indicator 使用真实 VisualElement；
 - Workspace 自身不拥有 Material Draft；
 - Workspace 只向 Controller 发送 Apply / Save / Delete / Filter / Page 请求；
@@ -202,7 +214,7 @@ Body
 - Workspace 水平居中；
 - 系统方案 / 我的方案两页存在；
 - 系统分类 Rail 存在；
-- 9 个演示预设形成两页 Pager；
+- 9 个演示预设形成两页 Pager，第一页 8 个、第二页 1 个；
 - Apply 后 Workspace 不关闭，左侧 Scheme / 参数实时更新；
 - 手动修改后 CurrentScheme 变成“自定义 · 未保存”；
 - 我的方案支持保存 / 应用 / 删除；
