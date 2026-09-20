@@ -2,7 +2,7 @@
    Shared shell/material/control ownership remains in Placement / Left Context systems. */
 
 .city-wall-construction-context{display:flex;flex-direction:column;gap:0}
-.city-wall-construction-summary p{margin:2px 0 0;color:#7f8780;font-size:9px;line-height:1.7}
+.city-wall-construction-summary p{margin:2px 0 0;color:#7f8780;font-size:var(--wanhu-type-caption,10px);line-height:1.7}
 .city-wall-construction-summary .left-context-panel__section-title,
 .city-wall-construction-parameters .left-context-panel__section-title,
 .city-wall-construction-metrics .left-context-panel__section-title{margin-bottom:5px}
@@ -14,7 +14,7 @@
   gap:14px;
   min-height:28px;
   color:#858c84;
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   font-variant-numeric:tabular-nums;
 }
 .city-wall-construction-metrics span{display:flex;gap:5px;white-space:nowrap}
@@ -22,7 +22,7 @@
 .city-wall-construction-note{
   margin:5px 0 0;
   color:#727872;
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   line-height:1.6;
 }
 .city-wall-facing-summary{
@@ -85,7 +85,7 @@
 .city-wall-range-preview__front{
   position:absolute;
   color:rgba(218,211,198,.62);
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   letter-spacing:.06em;
 }
 .city-wall-range-preview__front--top{left:50%;top:0;translate:-50% 0}
@@ -98,7 +98,7 @@
   top:50%;
   translate:-50% -50%;
   color:rgba(210,204,191,.40);
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   letter-spacing:.08em;
 }
 
@@ -157,7 +157,7 @@
 .city-wall-fixed-preview__back{
   position:absolute;
   color:rgba(218,211,198,.62);
-  font-size:8.5px;
+  font-size:var(--wanhu-type-micro,9.5px);
   letter-spacing:.06em;
 }
 .city-wall-fixed-preview__front--horizontal{left:122px;top:39px}
