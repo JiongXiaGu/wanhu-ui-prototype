@@ -188,3 +188,20 @@ Surface 首页进一步从参数表单收束成材质方案编辑器：
 - 不显示“中等纹理”等纹理粒度文字；
 - 不常驻显示 Smoothness / TextureTiling 数值；
 - 正式 Unity 可把同一 Preview 槽替换成预生成 MaterialPresetThumbnail，不改变卡片信息架构。
+
+
+## 材质方案与 Design Workspace 统一
+
+上一轮横向材质样片虽然替代了四色条，但 Material Scheme Card 仍自己维护 72×50 Preview、3×2 Card Pool、Border 与 Typography，视觉上脱离建筑 Workspace。
+
+本轮改为直接复用 Design Workspace 母版：
+
+- 抽出共享 WorkspaceItemCard 到 workspace.css；
+- DesignWorkspace 与 MaterialSchemeWorkspace 同时使用同一 Card Surface / Typography / Hover / Focus；
+- 状态线改为真实元素，便于后续映射 Unity UI Toolkit；
+- 材质 Preview 改为 64×64、1:1；
+- Material Scheme 改为 4×2，每页 8 项；
+- 9 个系统方案第一页 8 个、第二页 1 个；
+- 卡片信息收成“名称 / 类型 · 质感”两层；
+- Material 只保留 Current、材质样片纹理、删除自定义方案等业务差异；
+- Workspace Rail / Card Grid 继续消费 Design Workspace 共享几何，不再维护独立 920px / 3 列布局。
