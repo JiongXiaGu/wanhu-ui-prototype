@@ -80,6 +80,8 @@ Rail Pager 使用固定视觉槽位，并与 Category Selected 使用不同视�
 - 只有一组分类时不隐藏槽位，显示一个低对比中性灰小圆点；
 - 多组分类时当前页约 `5×5px` 中性亮灰点，其它页约 `3×3px` 暗灰点；
 - Pager 与 Selected 保持现有几何位置，不为了规避重叠额外拆左右 Lane；
+- Pager Marker 与 Rail Item Selection Line 之间必须保留至少约 `12px` 的可见水平间隔；当前共享 Catalog 基线通过 `PrimaryRailContent padding-left:22px` + `Pager width:8px` 达成；
+- Shared Catalog 必须显式重置历史 `.workspace-body aside button` 的 `flex / padding`，避免旧全局 CSS 把 Pager 再次推向 Selected Line；
 - 切换分类或筛选不能因为 Pager 整体出现 / 消失而改变 Rail 内部几何；
 - Pager Marker 使用真实 DOM / VisualElement；最终 UI Toolkit 由 C# 更新 Marker 数量与 Active 状态。
 
