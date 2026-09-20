@@ -131,7 +131,7 @@ export function LoadingSpace({ background, onComplete, durationMs = 15000, stati
         onClick={() => setTipIndex((current) => (current + 1) % TIPS.length)}
       >
         <span key={tipIndex}>{TIPS[tipIndex]}</span>
-        <RefreshCw size={13} aria-hidden="true" />
+        <RefreshCw size={14} aria-hidden="true" />
       </button>
 
       <div className="loading-space__progress-wrap">
