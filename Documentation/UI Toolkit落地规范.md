@@ -398,16 +398,17 @@ Workspace 已确认：
 ColorParameterField.uxml
 ├ Label
 └ Button
-   ├ ColorFill
-   ├ ContrastOverlay
-   ├ HdrBadge (optional)
-   └ Chevron
+   ├ ColorPreview
+   │  └ ColorFill
+   └ Meta
+      ├ HdrLabel (optional)
+      └ Chevron
 
 SharedColorEditor.uxml
 └ SV / Hue / HEX / RGB-HSV / HDR Intensity
 ```
 
-`ColorParameterField` 应与 `NumericSliderField` 共用 Parameter Row 两列几何；HDR Badge 通过真实 Label / VisualElement 条件显示，不能依赖 pseudo-element。
+`ColorParameterField` 应与 `NumericSliderField` 共用 Parameter Row 两列几何；Color Preview 与 Meta 都使用真实 VisualElement，HDR 使用正常字号 Label 条件显示，不依赖 pseudo-element 或 Web-only Overlay。
 
 ## 14. 后续 Web 设计规则
 
