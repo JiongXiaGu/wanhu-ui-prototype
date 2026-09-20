@@ -73,12 +73,15 @@ Primary Rail 当前约 `146px`，必须支持最多 **6 个汉字**的常规分�
 
 打开 Workspace 后，Primary Rail 与 Context Filter 都必须有一个真实有效筛选状态。默认 `所有` / `全部` 可以 Selected，因为它们描述当前内容集合；这和 Main Dock “没有明确选择就不 Selected”是不同语义。
 
-Rail Pager 使用固定视觉槽位：
+Rail Pager 使用固定视觉槽位，并与 Category Selected 使用不同视觉语义：
 
-- 只有一组分类时不隐藏槽位，显示一条低对比竖线 `┃`；
-- 多组分类时显示“当前长竖线 + 其它点”；
-- 切换分类或筛选不能因为 Pager 整体出现 / 消失而改变 Rail 的内部几何；
-- Web 可用伪元素验证单组视觉，最终 UI Toolkit 应使用始终存在的 Pager VisualElement，由 C# 更新 Marker 数量与状态。
+- Category Selected：继续使用熟铜色短竖线，表达“当前选择”；
+- Rail Pager：只使用中性灰圆点，表达“当前分类页”，不使用熟铜长竖线；
+- 只有一组分类时不隐藏槽位，显示一个低对比中性灰小圆点；
+- 多组分类时当前页约 `5×5px` 中性亮灰点，其它页约 `3×3px` 暗灰点；
+- Pager 与 Selected 保持现有几何位置，不为了规避重叠额外拆左右 Lane；
+- 切换分类或筛选不能因为 Pager 整体出现 / 消失而改变 Rail 内部几何；
+- Pager Marker 使用真实 DOM / VisualElement；最终 UI Toolkit 由 C# 更新 Marker 数量与 Active 状态。
 
 ## 当前八类原型配置
 
@@ -223,7 +226,8 @@ Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最�
 
 - `src/workspace/DesignWorkspace.tsx`：共享 Workspace 行为、Asset Button 与当前 Asset Inspector 内容组合；
 - `src/workspace/design-workspace-model.ts`：八类 Definition 与原型数据；
-- `src/workspace/design-workspace.css`：Design Workspace 几何、Rail / Asset Button 与稳定 Pager 槽位；
+- `src/workspace.css`：共享 `workspace--catalog` 几何、Primary Rail、Rail Pager、Context Filter、4×2 Content 与稳定 Pager 槽位；
+- `src/workspace/design-workspace.css`：只保留 Design Workspace Host 宽度等业务特例；
 - `src/workspace/workspace-world-first-glass.css`：Workspace World-first Glass 材质与状态视觉；
 - `src/ui/asset-inspector/AssetInspector.tsx`：跨系统 Asset Inspector 框架；
 - `src/ui/asset-inspector/asset-inspector.css`：Asset Inspector 通用视觉与尺寸边界；
