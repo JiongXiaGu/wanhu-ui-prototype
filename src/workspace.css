@@ -541,6 +541,10 @@
 
 @media (max-width:1500px){
   .gameplay-screen .workspace--catalog .workspace-primary-rail{flex-basis:140px}
+  .gameplay-screen .workspace--catalog .workspace-item-card{height:64px;gap:12px;padding-right:10px}
+  .gameplay-screen .workspace--catalog .workspace-item-card__preview{width:64px;height:64px}
+  .gameplay-screen .workspace--catalog .workspace-item-card__title{font-size:13.8px}
+  .gameplay-screen .workspace--catalog .workspace-item-card__meta{font-size:10.2px}
 }
 
 /* Shared Workspace Item Card ------------------------------------------------- */
