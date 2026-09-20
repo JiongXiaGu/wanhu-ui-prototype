@@ -40,6 +40,7 @@
 - Material Scheme 与 Design Workspace 都直接消费共享 `workspace--catalog`，Material 不再通过挂 `workspace--design` 间接继承；
 - Rail / Filter / 4×2 Content / Pager 的基础几何与状态视觉统一由共享 Catalog USS/CSS 持有；
 - Category Selected = 熟铜短竖线；Rail Pager = 中性灰圆点，二者保持原有位置但不再使用相同强调色。
+- Rail Pager 与 Selected Line 之间使用共享 Catalog 的真实 Gutter，不允许由 Material 私有 CSS 再压缩；当前可见间隔必须 ≥ 12px。
 
 ## 2. Card
 
