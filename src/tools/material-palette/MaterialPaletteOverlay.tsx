@@ -834,21 +834,45 @@ export function MaterialPaletteOverlay({
     });
   }
 
-  function saveCurrentAsCustom() {
-    const index = customPresets.reduce((highest, preset) => {
+  function nextCustomIndex() {
+    return customPresets.reduce((highest, preset) => {
       const parsed = Number(preset.id.replace('custom-', ''));
       return Number.isFinite(parsed) ? Math.max(highest, parsed) : highest;
     }, 0) + 1;
-    const name = `我的配色 ${String(index).padStart(2, '0')}`;
+  }
+
+  function saveCurrentAsCustom(name: string, category: MaterialCategory) {
+    const index = nextCustomIndex();
     const preset: MaterialPreset = {
       id: `custom-${index}`,
-      type: currentCategory,
+      type: category,
       name,
       source: 'mine',
       draft: cloneDraft(draft),
     };
+    setCurrentCategory(category);
     setCustomPresets((current) => [...current, preset]);
-    setCurrentScheme({ id: preset.id, type: currentCategory, name, source: 'saved' });
+    setCurrentScheme({ id: preset.id, type: category, name, source: 'saved' });
+  }
+
+  function renameCustomPreset(id: string, name: string) {
+    setCustomPresets((current) => current.map((preset) => preset.id === id ? { ...preset, name } : preset));
+    if (currentScheme.id === id) {
+      setCurrentScheme((current) => ({ ...current, name }));
+    }
+  }
+
+  function moveCustomPreset(id: string, category: MaterialCategory) {
+    setCustomPresets((current) => current.map((preset) => preset.id === id ? { ...preset, type: category } : preset));
+    if (currentScheme.id === id) {
+      setCurrentCategory(category);
+      setCurrentScheme((current) => ({ ...current, type: category }));
+    }
+  }
+
+  function copyCustomPreset(id: string) {
+    const preset = customPresets.find((entry) => entry.id === id);
+    if (preset) setSurfaceClipboard(cloneDraft(preset.draft));
   }
 
   function deleteCustomPreset(preset: MaterialPreset) {
@@ -875,6 +899,9 @@ export function MaterialPaletteOverlay({
   const systemWorkspacePresets = BUILTIN_PRESETS.map(toWorkspacePreset);
   const workshopWorkspacePresets = WORKSHOP_PRESETS.map(toWorkspacePreset);
   const customWorkspacePresets = customPresets.map(toWorkspacePreset);
+  const saveInitialName = currentScheme.name !== '未保存' && currentScheme.name !== '自定义'
+    ? `${currentScheme.name} 副本`
+    : `我的配色 ${String(nextCustomIndex()).padStart(2, '0')}`;
 
   function renderPage(page: MaterialPageKey, phase: MotionPhase, outgoing = false) {
     const target = pageTarget(page);
@@ -987,6 +1014,8 @@ export function MaterialPaletteOverlay({
         workshopPresets={workshopWorkspacePresets}
         customPresets={customWorkspacePresets}
         canPasteCurrent={surfaceClipboard !== null}
+        currentCategory={currentCategory}
+        saveInitialName={saveInitialName}
         onClose={() => setSchemeWorkspaceOpen(false)}
         onApply={(id) => {
           const preset = [...BUILTIN_PRESETS, ...WORKSHOP_PRESETS, ...customPresets].find((entry) => entry.id === id);
@@ -996,6 +1025,9 @@ export function MaterialPaletteOverlay({
         onPasteCurrent={() => {
           if (surfaceClipboard) replaceDraft(surfaceClipboard);
         }}
+        onRename={renameCustomPreset}
+        onMove={moveCustomPreset}
+        onCopy={copyCustomPreset}
         onDelete={(id) => {
           const preset = customPresets.find((entry) => entry.id === id);
           if (preset) deleteCustomPreset(preset);
