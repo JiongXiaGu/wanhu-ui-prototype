@@ -15,15 +15,13 @@ import {
 import { RuntimeParameterRow, TextInput } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { MOTION_MS, useKeyedTransition, usePresence, type MotionPhase } from '../../ui/motion';
-import { MaterialSchemeWorkspace, type MaterialSchemeWorkspacePreset } from './MaterialSchemeWorkspace';
+import { MATERIAL_FAMILY_LABELS, MaterialSchemeWorkspace, type MaterialFamily, type MaterialSchemeWorkspacePreset } from './MaterialSchemeWorkspace';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
 
 type MaterialWorkflow = '金属' | '高光';
 type MaterialColorTarget = 'BaseColor' | 'EmissionColor' | 'NightEmissionColor' | 'SpecularColor';
 type MaterialPageKey = 'surface' | `color:${MaterialColorTarget}`;
 type ColorNumericMode = 'RGB' | 'HSV';
-type MaterialCategory = '木头' | '瓦片' | '墙面';
-type MaterialSchemeType = MaterialCategory | '自定义';
 
 interface MaterialSurfaceDraft {
   baseColor: string;
@@ -60,7 +58,7 @@ interface ColorClipboardPayload {
 
 interface MaterialPreset {
   id: string;
-  type: MaterialCategory;
+  family: MaterialFamily;
   name: string;
   source: 'builtin' | 'workshop' | 'mine';
   draft: MaterialSurfaceDraft;
@@ -68,7 +66,7 @@ interface MaterialPreset {
 
 interface MaterialSchemeState {
   id?: string;
-  type: MaterialSchemeType;
+  family?: MaterialFamily;
   name: string;
   source: 'builtin' | 'workshop' | 'saved' | 'custom';
 }
@@ -98,63 +96,63 @@ const DEFAULT_SURFACE_DRAFT: MaterialSurfaceDraft = {
 const BUILTIN_PRESETS: MaterialPreset[] = [
   {
     id: 'wood-walnut',
-    type: '木头',
+    family: 'wood',
     name: '深胡桃',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#6f5139', specularColor: '#3a3029', smoothness: 0.34, textureTiling: 1.4, textureBlendSharpness: 1.8 },
   },
   {
     id: 'wood-fir',
-    type: '木头',
+    family: 'wood',
     name: '旧杉木',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#8b6a4f', specularColor: '#392e26', smoothness: 0.26, occlusion: 0.94, textureTiling: 1.1, textureBlendSharpness: 1.5 },
   },
   {
     id: 'wood-lacquer',
-    type: '木头',
+    family: 'wood',
     name: '深漆木',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#4c332c', specularColor: '#2d2320', smoothness: 0.58, textureTiling: 1.0, textureBlendSharpness: 1.4 },
   },
   {
     id: 'tile-gray',
-    type: '瓦片',
+    family: 'masonry',
     name: '青灰瓦',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#566267', specularColor: '#202628', smoothness: 0.48, occlusion: 0.92, textureTiling: 1.8, textureBlendSharpness: 2.2 },
   },
   {
     id: 'tile-black',
-    type: '瓦片',
+    family: 'masonry',
     name: '乌瓦',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#343a3b', specularColor: '#181b1c', smoothness: 0.43, occlusion: 0.90, textureTiling: 2.0, textureBlendSharpness: 2.4 },
   },
   {
     id: 'tile-glazed',
-    type: '瓦片',
+    family: 'masonry',
     name: '黄绿琉璃',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#787443', specularColor: '#2a2a1d', smoothness: 0.66, textureTiling: 1.7, textureBlendSharpness: 2.0 },
   },
   {
     id: 'wall-plaster',
-    type: '墙面',
+    family: 'plaster-earth',
     name: '素灰墙',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#d5d0c5', specularColor: '#10100f', smoothness: 0.22, occlusion: 0.96, textureTiling: 0.8, textureBlendSharpness: 1.2 },
   },
   {
     id: 'wall-white',
-    type: '墙面',
+    family: 'plaster-earth',
     name: '白粉墙',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#e8e4da', specularColor: '#11110f', smoothness: 0.18, occlusion: 0.98, textureTiling: 0.7, textureBlendSharpness: 1.1 },
   },
   {
     id: 'wall-earth',
-    type: '墙面',
+    family: 'plaster-earth',
     name: '夯土墙',
     source: 'builtin',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#aa8464', specularColor: '#2a211c', smoothness: 0.12, occlusion: 0.93, textureTiling: 0.9, textureBlendSharpness: 1.3 },
@@ -164,21 +162,21 @@ const BUILTIN_PRESETS: MaterialPreset[] = [
 const WORKSHOP_PRESETS: MaterialPreset[] = [
   {
     id: 'workshop-wood-smoked',
-    type: '木头',
+    family: 'wood',
     name: '烟熏旧木',
     source: 'workshop',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#5a4638', specularColor: '#312923', smoothness: 0.29, occlusion: 0.91, textureTiling: 1.25, textureBlendSharpness: 1.7 },
   },
   {
     id: 'workshop-tile-rain',
-    type: '瓦片',
+    family: 'masonry',
     name: '雨青瓦',
     source: 'workshop',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#46565b', specularColor: '#1e2527', smoothness: 0.38, occlusion: 0.90, textureTiling: 1.9, textureBlendSharpness: 2.1 },
   },
   {
     id: 'workshop-wall-warm',
-    type: '墙面',
+    family: 'plaster-earth',
     name: '暖灰粉墙',
     source: 'workshop',
     draft: { ...DEFAULT_SURFACE_DRAFT, baseColor: '#c7beb0', specularColor: '#181614', smoothness: 0.17, occlusion: 0.95, textureTiling: 0.82, textureBlendSharpness: 1.15 },
@@ -383,7 +381,7 @@ function SchemeSelector({
   return (
     <button className="material-scheme-selector" type="button" onClick={onOpen} aria-label="打开材质方案库">
       <span className="material-scheme-selector__label">方案</span>
-      <span className="material-scheme-selector__type">{scheme.type}</span>
+      <span className="material-scheme-selector__type">{scheme.family ? MATERIAL_FAMILY_LABELS[scheme.family] : '自定义'}</span>
       <i className="material-scheme-selector__separator" aria-hidden="true">·</i>
       <b className="material-scheme-selector__name">{scheme.name}</b>
       <ChevronRight className="material-scheme-selector__chevron" aria-hidden="true" />
@@ -724,10 +722,10 @@ export function MaterialPaletteOverlay({
   const [colorClipboard, setColorClipboard] = useState<ColorClipboardPayload | null>(null);
   const [customPresets, setCustomPresets] = useState<MaterialPreset[]>([]);
   const [schemeWorkspaceOpen, setSchemeWorkspaceOpen] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState<MaterialCategory>(INITIAL_PRESET.type);
+  const [currentFamily, setCurrentFamily] = useState<MaterialFamily>(INITIAL_PRESET.family);
   const [currentScheme, setCurrentScheme] = useState<MaterialSchemeState>({
     id: INITIAL_PRESET.id,
-    type: INITIAL_PRESET.type,
+    family: INITIAL_PRESET.family,
     name: INITIAL_PRESET.name,
     source: 'builtin',
   });
@@ -741,9 +739,9 @@ export function MaterialPaletteOverlay({
 
   function markCustom() {
     setCurrentScheme((current) => (
-      current.type === '自定义' && current.source === 'custom'
+      current.family === undefined && current.source === 'custom'
         ? current
-        : { type: '自定义', name: '未保存', source: 'custom' }
+        : { name: '未保存', source: 'custom' }
     ));
   }
 
@@ -756,7 +754,7 @@ export function MaterialPaletteOverlay({
 
   function replaceDraft(next: MaterialSurfaceDraft, scheme?: MaterialSchemeState) {
     setDraft(cloneDraft(next));
-    setCurrentScheme(scheme ?? { type: '自定义', name: '未保存', source: 'custom' });
+    setCurrentScheme(scheme ?? { name: '未保存', source: 'custom' });
     onDirty();
   }
 
@@ -825,10 +823,10 @@ export function MaterialPaletteOverlay({
   }
 
   function applyPreset(preset: MaterialPreset) {
-    setCurrentCategory(preset.type);
+    setCurrentFamily(preset.family);
     replaceDraft(preset.draft, {
       id: preset.id,
-      type: preset.type,
+      family: preset.family,
       name: preset.name,
       source: preset.source === 'mine' ? 'saved' : preset.source,
     });
@@ -841,18 +839,18 @@ export function MaterialPaletteOverlay({
     }, 0) + 1;
   }
 
-  function saveCurrentAsCustom(name: string, category: MaterialCategory) {
+  function saveCurrentAsCustom(name: string, family: MaterialFamily) {
     const index = nextCustomIndex();
     const preset: MaterialPreset = {
       id: `custom-${index}`,
-      type: category,
+      family,
       name,
       source: 'mine',
       draft: cloneDraft(draft),
     };
-    setCurrentCategory(category);
+    setCurrentFamily(family);
     setCustomPresets((current) => [...current, preset]);
-    setCurrentScheme({ id: preset.id, type: category, name, source: 'saved' });
+    setCurrentScheme({ id: preset.id, family, name, source: 'saved' });
   }
 
   function renameCustomPreset(id: string, name: string) {
@@ -862,11 +860,11 @@ export function MaterialPaletteOverlay({
     }
   }
 
-  function moveCustomPreset(id: string, category: MaterialCategory) {
-    setCustomPresets((current) => current.map((preset) => preset.id === id ? { ...preset, type: category } : preset));
+  function moveCustomPreset(id: string, family: MaterialFamily) {
+    setCustomPresets((current) => current.map((preset) => preset.id === id ? { ...preset, family } : preset));
     if (currentScheme.id === id) {
-      setCurrentCategory(category);
-      setCurrentScheme((current) => ({ ...current, type: category }));
+      setCurrentFamily(family);
+      setCurrentScheme((current) => ({ ...current, family }));
     }
   }
 
@@ -878,14 +876,14 @@ export function MaterialPaletteOverlay({
   function deleteCustomPreset(preset: MaterialPreset) {
     setCustomPresets((current) => current.filter((entry) => entry.id !== preset.id));
     if (currentScheme.id === preset.id) {
-      setCurrentScheme({ type: '自定义', name: '未保存', source: 'custom' });
+      setCurrentScheme({ name: '未保存', source: 'custom' });
     }
   }
 
   function toWorkspacePreset(preset: MaterialPreset): MaterialSchemeWorkspacePreset {
     return {
       id: preset.id,
-      type: preset.type,
+      family: preset.family,
       name: preset.name,
       source: preset.source,
       selected: currentScheme.id === preset.id,
@@ -994,7 +992,8 @@ export function MaterialPaletteOverlay({
         'data-material-page': requestedPage === 'surface' ? 'surface' : 'color-editor',
         'data-material-color-target': activeColorTarget ?? undefined,
         'data-material-workflow': draft.workflow === '高光' ? 'specular' : 'metallic',
-        'data-material-scheme-type': currentScheme.type,
+        'data-material-scheme-type': currentScheme.family ? MATERIAL_FAMILY_LABELS[currentScheme.family] : '自定义',
+        'data-material-scheme-family': currentScheme.family ?? 'custom',
         'data-material-scheme-name': currentScheme.name,
         'data-material-surface-clipboard': surfaceClipboard ? 'ready' : 'empty',
         'data-material-color-clipboard': colorClipboard ? 'ready' : 'empty',
@@ -1014,7 +1013,7 @@ export function MaterialPaletteOverlay({
         workshopPresets={workshopWorkspacePresets}
         customPresets={customWorkspacePresets}
         canPasteCurrent={surfaceClipboard !== null}
-        currentCategory={currentCategory}
+        currentFamily={currentFamily}
         saveInitialName={saveInitialName}
         onClose={() => setSchemeWorkspaceOpen(false)}
         onApply={(id) => {
