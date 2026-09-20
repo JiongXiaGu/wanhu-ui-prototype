@@ -100,7 +100,7 @@ export function BuildingSchemeModeOverlay({
         icon={Palette}
         title="建筑外观"
         subtitle={selected?.name ?? '请选择场景建筑'}
-        closeLabel="退出方案模式"
+        closeLabel="退出配色工具"
         className={'building-scheme-panel motion-left-surface is-' + motionPhase}
         bodyClassName="building-scheme-panel__body"
         onClose={onClose}
