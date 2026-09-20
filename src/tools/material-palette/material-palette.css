@@ -132,24 +132,12 @@
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.10);
 }
 
-/* Material Scheme Workspace -------------------------------------------------- */
+/* Material Scheme Workspace --------------------------------------------------
+   Geometry, rail and item-card skin are inherited from the shared Design
+   Workspace / WorkspaceItemCard system. This section owns only material-specific
+   page tabs, current-state semantics, material preview rendering and delete/save. */
 .gameplay-screen .workspace--material-scheme{
-  width:920px;
-  height:306px;
   z-index:23;
-}
-
-.gameplay-screen .workspace--material-scheme .workspace-header{
-  position:relative;
-  height:50px;
-}
-
-.gameplay-screen .workspace--material-scheme .workspace-body{
-  height:calc(100% - 50px);
-}
-
-.gameplay-screen .workspace--material-scheme .workspace-title{
-  min-width:150px;
 }
 
 .gameplay-screen .workspace--material-scheme .material-scheme-workspace__page-tabs{
@@ -175,12 +163,8 @@
   transition-property:color,background;
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
-.material-scheme-workspace__page-tabs>button:hover{
-  color:#c7c3ba;
-}
-.material-scheme-workspace__page-tabs>button.is-active{
-  color:#ddd7cb;
-}
+.material-scheme-workspace__page-tabs>button:hover{color:#c7c3ba}
+.material-scheme-workspace__page-tabs>button.is-active{color:#ddd7cb}
 .material-scheme-workspace__tab-indicator{
   position:absolute;
   left:50%;
@@ -194,28 +178,7 @@
   transition-property:opacity;
   transition-duration:var(--wanhu-motion-control,120ms);
 }
-.material-scheme-workspace__page-tabs>button.is-active .material-scheme-workspace__tab-indicator{
-  opacity:1;
-}
-
-.gameplay-screen .workspace--material-scheme .workspace-primary-rail{
-  flex-basis:128px;
-  padding:8px 7px;
-}
-
-.material-scheme-workspace__rail-list{
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-}
-
-.material-scheme-workspace__rail-list>button{
-  flex:0 0 34px;
-  height:34px;
-  min-height:34px;
-  border-radius:8px;
-}
+.material-scheme-workspace__page-tabs>button.is-active .material-scheme-workspace__tab-indicator{opacity:1}
 
 .material-scheme-workspace__save{
   margin-top:7px;
@@ -227,102 +190,28 @@
   background:rgba(169,132,75,.060)!important;
 }
 
-.material-scheme-workspace__catalog{
-  padding:6px 12px 4px 14px;
-}
-
-.material-scheme-workspace__summary{
-  height:32px;
-  min-height:32px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid rgba(238,233,223,.050);
-  color:#858b85;
-  font-size:8.5px;
-}
-.material-scheme-workspace__summary>b{
-  color:#9d9f99;
-  font-size:8px;
-  font-weight:520;
-}
-
-.material-scheme-workspace__stage{
-  height:180px;
-  min-height:180px;
-  padding:8px 0;
-}
-
-.material-scheme-workspace__rows{
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.material-scheme-workspace__row{
-  height:78px;
-  min-height:78px;
-  display:flex;
-  gap:9px;
-}
-
-.material-scheme-workspace__row>*{
-  min-width:0;
-  flex:0 0 calc((100% - 18px)/3);
-}
-
 .material-scheme-workspace__card{
   position:relative;
+  height:64px;
   min-width:0;
-  height:78px;
-  overflow:hidden;
-  border:1px solid rgba(238,233,223,.050);
-  border-radius:8px;
-  background:rgba(255,255,255,.010);
-  transition-property:background,border-color,box-shadow;
-  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
-
-.material-scheme-workspace__card:hover{
-  background:rgba(255,255,255,.030);
-  border-color:rgba(238,233,223,.085);
-}
-
-.material-scheme-workspace__card.is-selected{
-  border-color:rgba(189,153,89,.26);
-  background:rgba(169,132,75,.035);
-  box-shadow:inset 2px 0 0 rgba(189,153,89,.65);
-}
-
 .material-scheme-workspace__card-apply{
   width:100%;
-  height:100%;
-  padding:8px 9px;
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  gap:10px;
-  border:0;
-  background:transparent;
-  color:inherit;
-  text-align:left;
-  cursor:pointer;
+  height:64px;
 }
 .material-scheme-workspace__card.has-delete .material-scheme-workspace__card-apply{
-  padding-right:34px;
+  padding-right:38px;
 }
+.material-scheme-workspace__card.is-selected .workspace-item-card{
+  background:rgba(201,170,104,.038);
+  box-shadow:inset 0 1px 0 rgba(239,233,221,.025);
+}
+.material-scheme-workspace__card.is-selected .workspace-item-card__state-line{
+  opacity:.82;
+}
+
 .material-scheme-workspace__card-preview{
-  position:relative;
-  width:72px;
-  height:50px;
-  flex:0 0 72px;
-  overflow:hidden;
-  border-radius:6px;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.085),
-    inset 0 1px 0 rgba(255,255,255,.050),
-    0 1px 3px rgba(0,0,0,.10);
+  background-color:#6f6a62;
 }
 .material-scheme-workspace__card-preview-texture,
 .material-scheme-workspace__card-preview-light{
@@ -331,9 +220,7 @@
   display:block;
   pointer-events:none;
 }
-.material-scheme-workspace__card-preview-texture{
-  opacity:.14;
-}
+.material-scheme-workspace__card-preview-texture{opacity:.14}
 .material-scheme-workspace__card-preview.is-wood .material-scheme-workspace__card-preview-texture{
   background-image:
     repeating-linear-gradient(166deg,transparent 0 8px,rgba(255,255,255,.13) 8px 9px,transparent 9px 18px),
@@ -357,42 +244,11 @@
 .material-scheme-workspace__card-preview-light{
   background:linear-gradient(136deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.10) 33%,rgba(255,255,255,0) 54%,rgba(0,0,0,.30) 100%);
 }
-.material-scheme-workspace__card-copy{
-  min-width:0;
-  flex:1 1 auto;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:4px;
-}
-.material-scheme-workspace__card-meta{
-  color:#777d78;
-  font-size:7px;
-  line-height:1;
-}
-.material-scheme-workspace__card-copy>b{
-  min-width:0;
-  overflow:hidden;
-  color:#d0cbc1;
-  font-size:10.5px;
-  font-weight:600;
-  line-height:1.15;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-.material-scheme-workspace__card-detail{
-  min-width:0;
-  overflow:hidden;
-  color:#8f958f;
-  font-size:7.5px;
-  line-height:1;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
 
 .material-scheme-workspace__card-delete{
   position:absolute;
-  top:5px;
+  z-index:5;
+  top:20px;
   right:5px;
   width:24px;
   height:24px;
@@ -413,10 +269,6 @@
   width:12px;
   height:12px;
   stroke-width:1.7;
-}
-
-.material-scheme-workspace__pager{
-  height:20px;
 }
 
 .material-scheme-workspace__empty{
