@@ -17,10 +17,7 @@ import { CityWallAccessStairOverlay } from '../tools/city-wall-access-stair/City
 import { CityWallAccessStairDock } from '../tools/city-wall-access-stair/CityWallAccessStairDock';
 import { CityWallTransitionStairOverlay } from '../tools/city-wall-transition-stair/CityWallTransitionStairOverlay';
 import { CityWallTransitionStairDock } from '../tools/city-wall-transition-stair/CityWallTransitionStairDock';
-import { MaterialPaletteOverlay } from '../tools/material-palette/MaterialPaletteOverlay';
-import { MaterialPaletteDock } from '../tools/material-palette/MaterialPaletteDock';
-import { LightAdjustmentOverlay } from '../tools/light-adjustment/LightAdjustmentOverlay';
-import { BuildingSchemeModeOverlay } from '../tools/building-scheme/BuildingSchemeModeOverlay';
+import { MaterialPaletteTool } from '../tools/material-palette/MaterialPaletteTool';
 import { CommandBar } from './CommandBar';
 import { ContextUtilityToolbar } from './ContextUtilityToolbar';
 import { GameplayContextPanel } from './GameplayContextPanel';
@@ -345,33 +342,13 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       )}
 
       {toolPresence.mounted && renderedTool === 'material-palette' && (
-        <>
-          {state.materialPaletteMode === 'surface' && (
-            <MaterialPaletteOverlay
-              key="surface"
-              motionPhase={toolPresence.phase}
-              onClose={exitTool}
-              onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
-            />
-          )}
-          {state.materialPaletteMode === 'lighting' && (
-            <LightAdjustmentOverlay
-              key="lighting"
-              motionPhase={toolPresence.phase}
-              onClose={exitTool}
-              onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
-            />
-          )}
-          {state.materialPaletteMode === 'scheme' && (
-            <BuildingSchemeModeOverlay
-              key="scheme"
-              motionPhase={toolPresence.phase}
-              onClose={exitTool}
-              onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
-            />
-          )}
-          <MaterialPaletteDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
-        </>
+        <MaterialPaletteTool
+          state={state}
+          dispatch={dispatch}
+          motionPhase={toolPresence.phase}
+          onClose={exitTool}
+          onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
+        />
       )}
 
       {toolPresence.mounted && renderedTool === 'terrain-edit' && (
