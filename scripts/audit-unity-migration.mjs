@@ -83,6 +83,10 @@ for(const file of files){
     errors.push(`${file}: shared ColorParameterField stylesheet must be part of the canonical runtime cascade.`);
   }
 
+  if (!file.endsWith('.css') && /\bLucideIcon\b/.test(text)) {
+    errors.push(`${file}: legacy LucideIcon type name is retired. Use UiIconId / UiIconComponent from the local PNG icon contract.`);
+  }
+
   if (!file.endsWith('.css')) {
     const legacyColorIdentifiers = [
       'MaterialPaletteMode',
