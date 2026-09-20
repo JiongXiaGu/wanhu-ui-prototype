@@ -98,3 +98,28 @@ UI Review 新增：
 7. Intensity / Range Scale 实时更新；
 8. Rebind 到另一 Light；
 9. Exit 返回 World Utility。
+
+
+## ColorParameterField 收敛
+
+灯光参数页原先使用私有“小色块 + 外置 HDR + Chevron”，和亮度 / 范围 Slider 的控制列宽度不一致。
+
+本轮新增共享：
+
+```text
+src/ui/color/ColorParameterField.tsx
+```
+
+并将基础视觉放入 `ui-control-system.css`。
+
+稳定规则：
+
+- Root 复用 `ui-parameter-row`；
+- Label Column 与 Slider 完全共用；
+- Color Bar 占满 NumericSliderField 的整个 Control Column；
+- HDR Badge 与 Chevron 都位于颜色条内部；
+- HDR=false 时 Badge 不渲染；
+- Color Fill / Contrast Overlay / Meta 都是真实 Element；
+- Light 私有 `.light-adjustment-color-row` 已删除。
+
+UI Review 增加 BoundingBox 断言：Color Control 的 x / width 必须与亮度 NumericSliderField 一致，HDR Badge 必须位于 Color Bar 内。
