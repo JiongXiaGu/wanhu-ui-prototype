@@ -300,8 +300,8 @@ export function MaterialSchemeWorkspace({
 
   useEffect(() => {
     if (!highlightPresetId) return;
-    const timer = window.setTimeout(() => setHighlightPresetId(''), 650);
-    return () => window.clearTimeout(timer);
+    const timer = setTimeout(() => setHighlightPresetId(''), 650);
+    return () => clearTimeout(timer);
   }, [highlightPresetId, highlightVersion]);
 
   const allPresets = useMemo(
