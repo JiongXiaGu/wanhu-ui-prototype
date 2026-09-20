@@ -44,8 +44,7 @@
   transition-timing-function:ease,ease,ease,ease;
 }
 
-.light-adjustment-handle__ring::after{
-  content:'';
+.light-adjustment-handle__dot{
   position:absolute;
   left:50%;
   top:50%;
@@ -93,7 +92,7 @@
   box-shadow:0 0 0 1px rgba(189,153,89,.16),0 0 14px rgba(189,153,89,.12);
 }
 
-.light-adjustment-handle.is-selected .light-adjustment-handle__ring::after{
+.light-adjustment-handle.is-selected .light-adjustment-handle__dot{
   background:#d0ad67;
 }
 
