@@ -309,7 +309,7 @@
   font-weight:560;
   cursor:pointer;
 }
-.context-panel-reset-button .ui-icon{width:13px;height:13px;}
+.context-panel-reset-button .ui-icon{width:var(--wanhu-icon-xs,14px);height:var(--wanhu-icon-xs,14px);}
 .context-panel-reset-button:hover:not(:disabled){
   background:var(--wanhu-control-hover-strong,rgba(255,255,255,.052));
   color:var(--wanhu-color-paper-primary,#eee9df);
