@@ -220,18 +220,13 @@
   box-shadow:0 0 0 3px rgba(169,132,75,.055);
 }
 .ui-dialog-choice-trigger .ui-icon{
-  width:14px;
-  height:14px;
-  flex:0 0 14px;
+  width:var(--wanhu-icon-xs,14px);
+  height:var(--wanhu-icon-xs,14px);
+  flex:0 0 var(--wanhu-icon-xs,14px);
   color:#7f8580;
   transition:transform var(--wanhu-motion-control,120ms) ease;
 }
-.ui-dialog-choice-trigger .ui-dialog-choice-chevron{
-  color:#7f8580;
-  transition:transform var(--wanhu-motion-control,120ms) ease;
-}
-.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger .ui-icon,
-.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger .ui-dialog-choice-chevron{transform:rotate(180deg)}
+.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger .ui-icon{transform:rotate(180deg)}
 .ui-dialog-choice-menu{
   max-height:150px;
   margin-top:5px;
@@ -268,11 +263,10 @@
   color:#c8b995;
 }
 .ui-dialog-choice-menu>button .ui-icon{
-  width:12px;
-  height:12px;
+  width:var(--wanhu-icon-xs,14px);
+  height:var(--wanhu-icon-xs,14px);
   color:#bd9959;
 }
-.ui-dialog-choice-menu>button .ui-dialog-choice-check{color:#bd9959}
 
 .ui-dialog-change{
   min-height:48px;
