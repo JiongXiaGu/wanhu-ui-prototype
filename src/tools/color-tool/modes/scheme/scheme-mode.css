@@ -1,0 +1,160 @@
+/* Color Tool — Scheme Mode ---------------------------------------------------
+   Unity target: ColorTool/SchemeMode.uss
+   Owns Building selection adapter, Building Appearance panel modifiers and the
+   scheme selector field. Catalog Workspace modifiers live separately.
+------------------------------------------------------------------------------- */
+
+/* Building Scheme Mode -------------------------------------------------------
+   Building selection + left appearance panel + shared central catalog.
+   Business CSS owns only the selection markers, scheme selector and card metadata. */
+
+.gameplay-screen .building-scheme-panel{
+  width:390px;
+  z-index:24;
+}
+
+.gameplay-screen .building-scheme-panel__body{
+  padding-top:8px;
+}
+
+.building-scheme-panel__parameters{
+  min-width:0;
+}
+
+.building-scheme-selector-row{
+  min-height:46px;
+}
+
+.building-scheme-selector{
+  width:100%;
+  min-width:0;
+  height:28px;
+  padding:0 7px 0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  border:1px solid var(--ui-field-border);
+  border-radius:var(--ui-field-radius-inner);
+  background:var(--ui-field-surface);
+  color:#aaa9a2;
+  font:inherit;
+  cursor:pointer;
+  transition-property:color,border-color,background,box-shadow;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+}
+.building-scheme-selector:hover{
+  color:#d8d3ca;
+  border-color:var(--ui-field-border-hover);
+  background:var(--ui-field-surface-hover);
+}
+.building-scheme-selector:focus-visible{
+  outline:0;
+  border-color:var(--ui-field-border-focus);
+  background:var(--ui-field-surface-focus);
+  box-shadow:0 0 0 3px rgba(201,165,95,.045);
+}
+.building-scheme-selector>span{
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:9.5px;
+}
+.building-scheme-selector>svg{
+  width:13px;
+  height:13px;
+  flex:0 0 13px;
+  color:#747b75;
+  stroke-width:1.7;
+}
+
+.building-scheme-panel__empty{
+  min-height:184px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  color:#777d78;
+  text-align:center;
+}
+.building-scheme-panel__empty>svg{
+  width:22px;
+  height:22px;
+  opacity:.72;
+}
+.building-scheme-panel__empty>b{
+  color:#aaafa9;
+  font-size:11px;
+  font-weight:560;
+}
+.building-scheme-panel__empty>span{
+  color:#747a75;
+  font-size:8.5px;
+}
+
+/* Web-only world picking adapter. */
+.building-scheme-world-layer{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  pointer-events:none;
+}
+.building-scheme-handle{
+  position:absolute;
+  width:34px;
+  height:34px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(221,225,217,.34);
+  border-radius:8px;
+  background:rgba(27,33,30,.22);
+  color:#aeb3ad;
+  cursor:pointer;
+  pointer-events:auto;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.12);
+  transition-property:border-color,background,color,box-shadow,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
+}
+.building-scheme-handle>svg{
+  width:16px;
+  height:16px;
+  stroke-width:1.6;
+}
+.building-scheme-handle>span{
+  position:absolute;
+  left:50%;
+  top:39px;
+  min-width:max-content;
+  padding:3px 6px;
+  border-radius:5px;
+  background:rgba(24,29,27,.84);
+  color:#9fa49e;
+  font-size:8px;
+  line-height:1.2;
+  opacity:0;
+  transform:translateX(-50%);
+  pointer-events:none;
+  transition:opacity var(--wanhu-motion-control,120ms) ease;
+}
+.building-scheme-handle:hover,
+.building-scheme-handle:focus-visible{
+  outline:0;
+  border-color:rgba(235,238,231,.66);
+  background:rgba(39,45,41,.42);
+  color:#d2d5cf;
+}
+.building-scheme-handle:hover>span,
+.building-scheme-handle:focus-visible>span,
+.building-scheme-handle.is-selected>span{
+  opacity:1;
+}
+.building-scheme-handle.is-selected{
+  border-color:rgba(189,153,89,.76);
+  background:rgba(169,132,75,.10);
+  color:#cfad69;
+  box-shadow:0 0 0 1px rgba(189,153,89,.12),0 0 13px rgba(189,153,89,.08);
+}
