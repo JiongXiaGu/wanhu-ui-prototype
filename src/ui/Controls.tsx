@@ -240,7 +240,7 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
               onMouseEnter={() => setHighlighted(index)}
               onClick={() => choose(option)}
             >
-              <span>{option}</span>{option === value && <UiIcon icon="check" size={13} className="ui-select__check-icon" />}
+              <span>{option}</span>{option === value && <UiIcon icon="check" size={14} className="ui-select__check-icon" />}
             </button>
           ))}
         </div>
