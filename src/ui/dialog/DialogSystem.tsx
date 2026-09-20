@@ -21,6 +21,14 @@ type InputDialogRequest = {
   confirmText: string; cancelText: string;
   onConfirm: (value: string) => void; onCancel?: () => void;
 };
+type ChoiceInputDialogRequest = {
+  kind: 'choice-input'; id: number; title: string; label: string; initialValue: string;
+  choiceLabel: string; choices: string[]; initialChoice: string;
+  placeholder?: string; helperText?: string; maxLength?: number;
+  validate?: (value: string) => string | undefined;
+  confirmText: string; cancelText: string;
+  onConfirm: (value: string, choice: string) => void; onCancel?: () => void;
+};
 type NumberDialogRequest = {
   kind: 'number'; id: number; title: string; label: string; initialValue: number;
   min: number; max: number; step: number; decimals: number;
@@ -39,11 +47,12 @@ type TimedDialogRequest = {
   summaryValue?: string; seconds: number; confirmText: string; cancelText: string;
   onConfirm: () => void; onCancel: () => void;
 };
-type DialogRequest = ConfirmDialogRequest | InputDialogRequest | NumberDialogRequest | BindingDialogRequest | TimedDialogRequest;
+type DialogRequest = ConfirmDialogRequest | InputDialogRequest | ChoiceInputDialogRequest | NumberDialogRequest | BindingDialogRequest | TimedDialogRequest;
 
-type ToastItem = { id: number; text: string; tone: NotificationTone; exiting: boolean };
+type ToastItem = { id: number; text: string; tone: NotificationTone; exiting: boolean; actionLabel?: string; onAction?: () => void };
 type ConfirmOptions = Omit<ConfirmDialogRequest,'kind'|'id'|'cancelText'|'tone'|'visualTone'> & { cancelText?: string; tone?: DialogTone; visualTone?: DialogVisualTone };
 type InputOptions = Omit<InputDialogRequest,'kind'|'id'|'cancelText'> & { cancelText?: string };
+type ChoiceInputOptions = Omit<ChoiceInputDialogRequest,'kind'|'id'|'cancelText'> & { cancelText?: string };
 type NumberOptions = Omit<NumberDialogRequest,'kind'|'id'|'cancelText'|'decimals'> & { cancelText?: string; decimals?: number };
 type BindingOptions = Omit<BindingDialogRequest,'kind'|'id'|'cancelText'|'clearText'> & { cancelText?: string; clearText?: string };
 type TimedOptions = Omit<TimedDialogRequest,'kind'|'id'|'cancelText'> & { cancelText?: string };
@@ -52,11 +61,12 @@ type DialogContextValue = {
   dialog: DialogRequest | null; toasts: ToastItem[];
   confirm: (options: ConfirmOptions) => void;
   input: (options: InputOptions) => void;
+  choiceInput: (options: ChoiceInputOptions) => void;
   number: (options: NumberOptions) => void;
   binding: (options: BindingOptions) => void;
   timed: (options: TimedOptions) => void;
-  notify: (text: string, tone?: NotificationTone, duration?: number) => void;
-  toast: (text: string, tone?: ToastTone, duration?: number) => void;
+  notify: (text: string, tone?: NotificationTone, duration?: number, actionLabel?: string, onAction?: () => void) => void;
+  toast: (text: string, tone?: ToastTone, duration?: number, actionLabel?: string, onAction?: () => void) => void;
   dismissDialog: (invokeCancel?: boolean) => void;
 };
 
@@ -76,13 +86,14 @@ export function DialogProvider({children}:{children:ReactNode}){
     setDialog({...options,id:nextId++,kind:'confirm',cancelText:options.cancelText??'取消',tone,visualTone:options.visualTone??(tone==='danger'?'danger':'neutral')});
   },[]);
   const input=useCallback((options:InputOptions)=>setDialog({...options,id:nextId++,kind:'input',cancelText:options.cancelText??'取消'}),[]);
+  const choiceInput=useCallback((options:ChoiceInputOptions)=>setDialog({...options,id:nextId++,kind:'choice-input',cancelText:options.cancelText??'取消'}),[]);
   const number=useCallback((options:NumberOptions)=>setDialog({...options,id:nextId++,kind:'number',cancelText:options.cancelText??'取消',decimals:options.decimals??0}),[]);
   const binding=useCallback((options:BindingOptions)=>setDialog({...options,id:nextId++,kind:'binding',cancelText:options.cancelText??'取消',clearText:options.clearText??'清除绑定'}),[]);
   const timed=useCallback((options:TimedOptions)=>setDialog({...options,id:nextId++,kind:'timed',cancelText:options.cancelText??'恢复原设置'}),[]);
 
-  const pushNotification=useCallback((text:string,tone:NotificationTone,duration:number)=>{
+  const pushNotification=useCallback((text:string,tone:NotificationTone,duration:number,actionLabel?:string,onAction?:()=>void)=>{
     const id=nextId++;
-    setToasts(current=>[...current.filter(item=>!item.exiting).slice(-2),{id,text,tone,exiting:false}]);
+    setToasts(current=>[...current.filter(item=>!item.exiting).slice(-2),{id,text,tone,exiting:false,actionLabel,onAction}]);
     const beginExit=window.setTimeout(()=>{
       setToasts(current=>current.map(item=>item.id===id?{...item,exiting:true}:item));
       const remove=window.setTimeout(()=>{setToasts(current=>current.filter(item=>item.id!==id));toastTimers.current.delete(id)},220);
@@ -90,10 +101,10 @@ export function DialogProvider({children}:{children:ReactNode}){
     },duration);
     toastTimers.current.set(id,[beginExit]);
   },[]);
-  const notify=useCallback((text:string,tone:NotificationTone='neutral',duration=2200)=>pushNotification(text,tone,duration),[pushNotification]);
-  const toast=useCallback((text:string,tone:ToastTone='neutral',duration=2200)=>pushNotification(text,tone==='danger'?'error':tone,duration),[pushNotification]);
+  const notify=useCallback((text:string,tone:NotificationTone='neutral',duration=2200,actionLabel?:string,onAction?:()=>void)=>pushNotification(text,tone,duration,actionLabel,onAction),[pushNotification]);
+  const toast=useCallback((text:string,tone:ToastTone='neutral',duration=2200,actionLabel?:string,onAction?:()=>void)=>pushNotification(text,tone==='danger'?'error':tone,duration,actionLabel,onAction),[pushNotification]);
 
-  const value=useMemo(()=>({dialog,toasts,confirm,input,number,binding,timed,notify,toast,dismissDialog}),[dialog,toasts,confirm,input,number,binding,timed,notify,toast,dismissDialog]);
+  const value=useMemo(()=>({dialog,toasts,confirm,input,choiceInput,number,binding,timed,notify,toast,dismissDialog}),[dialog,toasts,confirm,input,choiceInput,number,binding,timed,notify,toast,dismissDialog]);
   return <DialogContext.Provider value={value}>{children}</DialogContext.Provider>;
 }
 
@@ -110,6 +121,7 @@ export function DialogHost(){
   const onDismiss=()=>dismissDialog(false);
   const shared={onDismiss,interactive,motionPhase:presence.phase};
   if(request.kind==='input')return <InputDialogView key={request.id} request={request} {...shared}/>;
+  if(request.kind==='choice-input')return <ChoiceInputDialogView key={request.id} request={request} {...shared}/>;
   if(request.kind==='number')return <NumberDialogView key={request.id} request={request} {...shared}/>;
   if(request.kind==='binding')return <BindingDialogView key={request.id} request={request} {...shared}/>;
   if(request.kind==='timed')return <TimedDialogView key={request.id} request={request} {...shared}/>;
@@ -121,7 +133,7 @@ export function NotificationHost(){
   return <div className="notification-host" aria-live="polite" aria-atomic="false">{toasts.map((toast,index)=>{
     const offset=(toasts.length-1-index)*46;
     const Icon=toast.tone==='success'?Check:toast.tone==='warning'?TriangleAlert:toast.tone==='error'?CircleX:Info;
-    return <div key={toast.id} className={`ui-toast ui-notification is-${toast.tone} ${toast.exiting?'is-exiting':''}`} style={{transform:`translate(-50%, -${offset}px)`}} role={toast.tone==='warning'||toast.tone==='error'?'alert':'status'}><div className="ui-toast__surface"><Icon size={14}/><span>{toast.text}</span></div></div>;
+    return <div key={toast.id} className={`ui-toast ui-notification is-${toast.tone} ${toast.exiting?'is-exiting':''}`} style={{transform:`translate(-50%, -${offset}px)`}} role={toast.tone==='warning'||toast.tone==='error'?'alert':'status'}><div className="ui-toast__surface"><Icon size={14}/><span>{toast.text}</span>{toast.actionLabel&&toast.onAction&&<button type="button" className="ui-toast__action" onClick={toast.onAction}>{toast.actionLabel}</button>}</div></div>;
   })}</div>;
 }
 
@@ -146,6 +158,21 @@ function InputDialogView({request,onDismiss,interactive,motionPhase}:{request:In
   useEffect(()=>{if(interactive){inputRef.current?.focus();inputRef.current?.select()}},[request.id,interactive]);
   useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,canConfirm,interactive]);
   return <DialogFrame title={request.title} motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed);onDismiss()}}}>{request.confirmText}</button></>}><label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={value} inputMode={request.inputMode??'text'} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label></DialogFrame>;
+}
+
+function ChoiceInputDialogView({request,onDismiss,interactive,motionPhase}:{request:ChoiceInputDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
+  const [value,setValue]=useState(request.initialValue);
+  const [choice,setChoice]=useState(request.choices.includes(request.initialChoice)?request.initialChoice:(request.choices[0]??''));
+  const inputRef=useRef<HTMLInputElement>(null);
+  const trimmed=value.trim();
+  const error=trimmed.length===0?'请输入内容。':request.validate?.(trimmed)??'';
+  const canConfirm=!error&&Boolean(choice);
+  useEffect(()=>{if(interactive){inputRef.current?.focus();inputRef.current?.select()}},[request.id,interactive]);
+  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed,choice);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,choice,canConfirm,interactive]);
+  return <DialogFrame title={request.title} motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed,choice);onDismiss()}}}>{request.confirmText}</button></>}>
+    <label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={value} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label>
+    <div className="ui-dialog-choice-group"><span>{request.choiceLabel}</span><div className="ui-dialog-choice-options" role="radiogroup" aria-label={request.choiceLabel}>{request.choices.map(item=><button key={item} type="button" role="radio" aria-checked={choice===item} className={choice===item?'is-active':''} onClick={()=>setChoice(item)}>{item}</button>)}</div></div>
+  </DialogFrame>;
 }
 
 function NumberDialogView({request,onDismiss,interactive,motionPhase}:{request:NumberDialogRequest;onDismiss:()=>void;interactive:boolean;motionPhase:MotionPhase}){
