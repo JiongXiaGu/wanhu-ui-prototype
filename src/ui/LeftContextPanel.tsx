@@ -1,11 +1,11 @@
-import type { LucideIcon } from 'lucide-react';
-import { ArrowLeft, RotateCcw, X } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { UiIcon, UiIconGlyph, type UiIconSource } from './icons/UiIcon';
 
 interface LeftContextPanelProps {
   as?: 'aside' | 'section';
   ariaLabel: string;
-  icon: LucideIcon;
+  icon: UiIconSource;
   title: string;
   subtitle?: string;
   className?: string;
@@ -23,7 +23,7 @@ interface LeftContextPanelProps {
 export function LeftContextPanel({
   as = 'aside',
   ariaLabel,
-  icon: HeadingIcon,
+  icon,
   title,
   subtitle,
   className = '',
@@ -43,16 +43,16 @@ export function LeftContextPanel({
       <header className="left-context-panel__header">
         <div className="gameplay-context-panel__heading left-context-panel__heading">
           {onBack ? (
-            <button className="left-context-panel__back-button" type="button" onClick={onBack} aria-label={backLabel}><ArrowLeft /></button>
+            <button className="left-context-panel__back-button" type="button" onClick={onBack} aria-label={backLabel}><UiIcon icon="arrow-left" size={17} /></button>
           ) : (
-            <span className="gameplay-context-panel__heading-icon left-context-panel__heading-icon"><HeadingIcon /></span>
+            <span className="gameplay-context-panel__heading-icon left-context-panel__heading-icon"><UiIconGlyph icon={icon} size={19} /></span>
           )}
           <div className="gameplay-context-panel__heading-copy left-context-panel__heading-copy">
             <b className="gameplay-context-panel__title left-context-panel__title">{title}</b>
             {subtitle && <span>{subtitle}</span>}
           </div>
         </div>
-        <button className="icon-button" type="button" onClick={onClose} aria-label={closeLabel}><X /></button>
+        <button className="icon-button" type="button" onClick={onClose} aria-label={closeLabel}><UiIcon icon="x" size={16} /></button>
       </header>
 
       <div className={`gameplay-context-panel__body left-context-panel__body ${bodyClassName}`.trim()}>
