@@ -208,7 +208,7 @@
   box-shadow:0 8px 24px rgba(4,7,6,.28);
   pointer-events:none;
   white-space:nowrap;
-  font-size:9px;
+  font-size:var(--wanhu-type-tooltip,10px);
   transition:opacity var(--wanhu-motion-fast,100ms) ease,transform var(--wanhu-motion-fast,100ms) ease,visibility var(--wanhu-motion-fast,100ms) ease;
   transform:translateY(-3px);
 }
