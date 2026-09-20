@@ -36,7 +36,7 @@ export function ColorTool({
 }: Props) {
   return (
     <>
-      {state.materialPaletteMode === 'surface' && (
+      {state.colorToolMode === 'surface' && (
         <SurfaceModeOverlay
           key="surface"
           motionPhase={motionPhase}
@@ -45,7 +45,7 @@ export function ColorTool({
         />
       )}
 
-      {state.materialPaletteMode === 'lighting' && (
+      {state.colorToolMode === 'lighting' && (
         <LightingModeOverlay
           key="lighting"
           motionPhase={motionPhase}
@@ -54,7 +54,7 @@ export function ColorTool({
         />
       )}
 
-      {state.materialPaletteMode === 'scheme' && (
+      {state.colorToolMode === 'scheme' && (
         <SchemeModeOverlay
           key="scheme"
           motionPhase={motionPhase}
