@@ -1,0 +1,106 @@
+/* Shared ColorParameterField ---------------------------------------------------
+   Unity target: Shared/Color/ColorParameterField.uss
+
+   Owns only the reusable parameter-page color entry. Business modes provide
+   label/color/HDR state; they must not restyle this control locally.
+------------------------------------------------------------------------------- */
+
+/* Color Parameter Field --------------------------------------------- */
+/* One neutral parameter control: a readable color preview on the left and
+   simple metadata on the right. No full-color button, nested chip or tiny
+   status treatment. */
+.ui-color-parameter-field__control{
+  position:relative;
+  width:100%;
+  min-width:0;
+  height:28px;
+  padding:4px 6px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid var(--ui-field-border);
+  border-radius:var(--ui-field-radius-inner);
+  background:var(--ui-field-surface);
+  color:var(--ui-field-text);
+  cursor:pointer;
+  transition-property:border-color,background,box-shadow,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
+  transition-timing-function:ease,ease,ease,ease;
+}
+.ui-color-parameter-field__control:hover:not(:disabled){
+  border-color:var(--ui-field-border-hover);
+  background:var(--ui-field-surface-hover);
+}
+.ui-color-parameter-field__control:focus-visible{
+  outline:0;
+  border-color:var(--ui-field-border-focus);
+  background:var(--ui-field-surface-focus);
+  box-shadow:0 0 0 3px rgba(201,165,95,.045);
+}
+.ui-color-parameter-field__control:active:not(:disabled){transform:translateY(1px)}
+.ui-color-parameter-field__control:disabled{cursor:default;opacity:var(--ui-field-disabled)}
+
+.ui-color-parameter-field__preview{
+  position:relative;
+  min-width:0;
+  height:18px;
+  flex:1 1 auto;
+  overflow:hidden;
+  display:block;
+  border:1px solid rgba(238,233,223,.060);
+  border-radius:5px;
+  background:rgba(255,255,255,.010);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),inset 0 -1px 0 rgba(0,0,0,.09);
+  pointer-events:none;
+}
+.ui-color-parameter-field__fill{
+  position:absolute;
+  inset:0;
+  display:block;
+  opacity:.74;
+  filter:saturate(.90) brightness(.96);
+  transition-property:opacity,filter;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+  transition-timing-function:ease,ease;
+}
+.ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__fill{
+  opacity:.82;
+  filter:saturate(.96) brightness(.99);
+}
+
+.ui-color-parameter-field__meta{
+  min-width:48px;
+  flex:0 0 48px;
+  height:18px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  color:#949a94;
+  pointer-events:none;
+}
+.ui-color-parameter-field[data-color-parameter-hdr="false"] .ui-color-parameter-field__meta{
+  min-width:16px;
+  flex-basis:16px;
+}
+.ui-color-parameter-field__hdr{
+  color:#b8b3a8;
+  font-size:10px;
+  font-weight:600;
+  line-height:1;
+  letter-spacing:.035em;
+}
+.ui-color-parameter-field__meta>svg{
+  width:12px;
+  height:12px;
+  flex:0 0 12px;
+  color:#747b75;
+  stroke-width:1.7;
+}
+.ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__hdr{
+  color:#d1cbbf;
+}
+.ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__meta>svg{
+  color:#a3a8a2;
+}
+.ui-color-parameter-field.is-disabled{opacity:.72}
