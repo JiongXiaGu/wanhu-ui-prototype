@@ -105,13 +105,13 @@ npm run build
 
 ## Visual Review
 
-重要 UI 修改后应同时检查 Build 和 Visual Review。
+局部 Control / Surface 的高频视觉微调可以先做源码级组件 Review：读取当前 TSX/CSS，用等价 DOM 和当前 CSS Token/Selector 渲染关键状态并截图，快速检查 Toggle、Slider、Button、ColorParameterField、单个 Surface 等局部视觉。这个中间短循环不要求每次等待 GitHub Actions。
 
-Review Scenario 由 `src/app/scenarios.ts` 提供，可通过 `?review=<scenario>` 直接进入确定性状态。GitHub Actions 使用 Playwright Chromium 自动截图并上传 `visual-review` Artifact。
+源码级组件图不是完整页面实机截图。仓库包含正式 PNG Icon、Gameplay 背景、Glass Noise 和大量页面级状态；当前执行环境无法保证完整还原这些二进制资源与真实 React/Vite 页面，因此完整 HUD、Workspace、Settings、Pause、Color Tool、Terrain Tool 等重要页面的正式交付仍必须检查 Build 和 GitHub Actions UI Review。
 
-不要只检查目标页面；修改全局 Surface、Typography、Button 或布局时应重新检查全部主要状态。
+Review Scenario 由 `src/app/scenarios.ts` 提供，可通过 `?review=<scenario>` 直接进入确定性状态。GitHub Actions 使用 Playwright Chromium 自动截图并上传 `visual-review` Artifact。不要只检查目标页面；修改全局 Surface、Typography、Button 或布局时应重新检查全部主要状态。
 
-Visual Review 验证 Web Prototype 的视觉和交互稳定性；正式实现前还需检查 UI Toolkit 可落地性。
+Visual Review 验证 Web Prototype 的完整视觉和交互稳定性；源码级组件 Review 负责提高中间迭代速度，两者不能互相冒充。正式实现前还需检查 UI Toolkit 可落地性。
 
 ## 部署
 
