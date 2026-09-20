@@ -50,6 +50,7 @@ export const UiIcon = forwardRef<HTMLSpanElement, UiIconProps>(function UiIcon({
       className={('ui-icon ' + className).trim()}
       style={mergedStyle}
       data-ui-icon={icon}
+      data-ui-icon-runtime="png"
     />
   );
 });
