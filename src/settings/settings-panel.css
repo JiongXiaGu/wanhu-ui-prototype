@@ -188,7 +188,7 @@
   border:0;
   border-radius:8px;
   font:inherit;
-  font-size:9px;
+  font-size:var(--wanhu-type-caption,10px);
   cursor:pointer;
   transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease;
 }
