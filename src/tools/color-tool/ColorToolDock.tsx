@@ -14,36 +14,36 @@ interface Props {
 
 export function ColorToolDock({ state, motionPhase = 'steady', dispatch, onComplete, onCancel }: Props) {
   const modeGroups: PlacementModeGroup[] = [{
-    id: 'material-palette-mode',
+    id: 'color-tool-mode',
     label: '配色工具模式',
     items: [
       {
         id: 'surface',
         label: '表面模式',
         icon: Layers3,
-        active: state.materialPaletteMode === 'surface',
-        onClick: () => dispatch({ type: 'SET_MATERIAL_PALETTE_MODE', mode: 'surface' }),
+        active: state.colorToolMode === 'surface',
+        onClick: () => dispatch({ type: 'SET_COLOR_TOOL_MODE', mode: 'surface' }),
       },
       {
         id: 'lighting',
         label: '灯光模式',
         icon: Lightbulb,
-        active: state.materialPaletteMode === 'lighting',
-        onClick: () => dispatch({ type: 'SET_MATERIAL_PALETTE_MODE', mode: 'lighting' }),
+        active: state.colorToolMode === 'lighting',
+        onClick: () => dispatch({ type: 'SET_COLOR_TOOL_MODE', mode: 'lighting' }),
       },
       {
         id: 'scheme',
         label: '方案模式',
         icon: Palette,
-        active: state.materialPaletteMode === 'scheme',
-        onClick: () => dispatch({ type: 'SET_MATERIAL_PALETTE_MODE', mode: 'scheme' }),
+        active: state.colorToolMode === 'scheme',
+        onClick: () => dispatch({ type: 'SET_COLOR_TOOL_MODE', mode: 'scheme' }),
       },
     ],
   }];
 
   return (
     <div
-      className={'tool-bottom-cluster material-palette-toolbar-cluster motion-bottom-surface is-' + motionPhase}
+      className={'tool-bottom-cluster color-tool-toolbar-cluster motion-bottom-surface is-' + motionPhase}
       aria-label="配色工具主控栏"
       aria-busy={motionPhase !== 'steady'}
     >
