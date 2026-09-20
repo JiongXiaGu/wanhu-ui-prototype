@@ -297,7 +297,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
 
   return (
     <>
-      <section className={`workspace workspace--design ${buildingCompatibilityClass} motion-bottom-surface is-${motionPhase}`} data-design-category={definition.id} aria-busy={motionPhase !== 'steady'}>
+      <section className={`workspace workspace--catalog workspace--design ${buildingCompatibilityClass} motion-bottom-surface is-${motionPhase}`} data-design-category={definition.id} aria-busy={motionPhase !== 'steady'}>
         <header className="workspace-header">
           <div className="workspace-title">
             <HeaderIcon size={18} aria-hidden="true" />
