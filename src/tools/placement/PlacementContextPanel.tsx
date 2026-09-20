@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { LeftContextPanel } from '../../ui/LeftContextPanel';
-import type { UiIconSource } from '../../ui/icons/UiIcon';
+import type { UiIconSource } from '../../ui/icons/icon-types';
 
 export interface PlacementContextPanelProps {
   ariaLabel: string;
