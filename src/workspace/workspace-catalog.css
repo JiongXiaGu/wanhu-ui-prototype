@@ -69,9 +69,9 @@
 }
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__page>button .ui-icon{
-  width:15px;
-  height:15px;
-  flex-basis:15px;
+  width:var(--wanhu-icon-sm,16px);
+  height:var(--wanhu-icon-sm,16px);
+  flex-basis:var(--wanhu-icon-sm,16px);
 }
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__page>button>span{
