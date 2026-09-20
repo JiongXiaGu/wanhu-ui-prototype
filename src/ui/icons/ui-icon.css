@@ -1,0 +1,21 @@
+/* Shared PNG runtime icon -------------------------------------------------------
+   Source SVG lives in AssetsSource/UI/Icons/svg.
+   Runtime Web/Unity asset is the same 64x64 white transparent PNG.
+------------------------------------------------------------------------------- */
+.ui-icon{
+  width:var(--ui-icon-size,16px);
+  height:var(--ui-icon-size,16px);
+  flex:0 0 var(--ui-icon-size,16px);
+  display:inline-block;
+  background-color:currentColor;
+  -webkit-mask-image:var(--ui-icon-image);
+  mask-image:var(--ui-icon-image);
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-position:center;
+  mask-position:center;
+  -webkit-mask-size:contain;
+  mask-size:contain;
+  pointer-events:none;
+  user-select:none;
+}
