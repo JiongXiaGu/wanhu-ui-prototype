@@ -76,7 +76,9 @@ export function LightAdjustmentOverlay({
               aria-pressed={active}
               onClick={() => selectLight(light.id)}
             >
-              <i className="light-adjustment-handle__ring" aria-hidden="true" />
+              <i className="light-adjustment-handle__ring" aria-hidden="true">
+                <i className="light-adjustment-handle__dot" />
+              </i>
               <span>{light.name}</span>
             </button>
           );
