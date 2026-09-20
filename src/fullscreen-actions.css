@@ -64,7 +64,7 @@
 }
 
 /* Utility actions deliberately stay visually quieter than flow actions. */
-.settings-restore{min-width:0!important;height:38px!important;padding:0 9px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;border:0!important;box-shadow:none!important;font-size:9px!important;font-weight:500!important;letter-spacing:.012em!important;cursor:pointer}
+.settings-restore{min-width:0!important;height:38px!important;padding:0 9px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;border:0!important;box-shadow:none!important;font-size:var(--wanhu-type-caption,10px)!important;font-weight:500!important;letter-spacing:.012em!important;cursor:pointer}
 .archive-footer-action,
 .save-group-rename{
   min-width:0!important;
@@ -106,6 +106,6 @@
 .save-manual-action{
   min-width:120px;
   height:38px;
-  font-size:9.5px;
+  font-size:var(--wanhu-type-caption,10px);
 }
 .save-quick-action{min-width:108px}
