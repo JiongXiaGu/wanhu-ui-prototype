@@ -51,7 +51,7 @@
   --command-divider-height:24px;
 
   --hud-core-width:940px;
-  --hud-bottom-panel-height:96px;
+  --hud-bottom-panel-height:84px;
   --hud-command-height:var(--hud-bottom-panel-height);
   --hud-world-tools-width:458px;
   --hud-world-tools-stacked-width:356px;

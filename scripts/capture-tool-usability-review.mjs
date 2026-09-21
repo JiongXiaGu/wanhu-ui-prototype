@@ -194,8 +194,10 @@ try {
     rows.nth(1).boundingBox(),
   ]);
   assert(toolbarBox && mainDockBox && firstRowBox && secondRowBox);
-  assert(Math.abs(toolbarBox.width - 356) < 1 && Math.abs(toolbarBox.height - 96) < 1, '双层 World Utility 使用固定 356×96 逻辑尺寸');
-  assert(Math.abs(mainDockBox.height - 96) < 1, 'Main Dock 必须使用 96px 高度');
+  assert(Math.abs(toolbarBox.width - 356) < 1 && Math.abs(toolbarBox.height - 84) < 1, '双层 World Utility 使用固定 356×84 逻辑尺寸');
+  assert(Math.abs(mainDockBox.height - 84) < 1, 'Main Dock 必须使用 84px 高度');
+  const stackedButtonBox = await worldToolbar.getByRole('button', { name: '地图解锁', exact: true }).boundingBox();
+  assert(stackedButtonBox && Math.abs(stackedButtonBox.width - 36) < 1 && Math.abs(stackedButtonBox.height - 36) < 1, '84px 双层 Utility 使用 36px 命中区');
   assert(secondRowBox.y > firstRowBox.y + firstRowBox.height - 1, '两行不能互相重叠');
   const mainDockBottom = mainDockBox.y + mainDockBox.height;
   const utilityBottom = toolbarBox.y + toolbarBox.height;
@@ -209,7 +211,7 @@ try {
   assert(hintsBox && overlap(toolbarBox, hintsBox) < 1, '双层 Utility 不得遮挡操作提示');
   const separator = await worldToolbar.locator('.context-utility-toolbar__separator').first().evaluate(element => getComputedStyle(element).marginLeft);
   assert.equal(separator, '9px');
-  report.checks.push({ label: '主游玩辅助工具双层分组与同高同底边', toolbarBox, mainDockBox, firstRowLabels, secondRowLabels, separator, mainDockBottom, utilityBottom });
+  report.checks.push({ label: '主游玩辅助工具84px双层分组与同高同底边', toolbarBox, mainDockBox, stackedButtonBox, firstRowLabels, secondRowLabels, separator, mainDockBottom, utilityBottom });
   await shot('world-utility-two-rows');
 
   assert.equal(await page.locator('.building-selection-anchor').count(), 3, '普通 Gameplay 应保留建筑选择入口');
