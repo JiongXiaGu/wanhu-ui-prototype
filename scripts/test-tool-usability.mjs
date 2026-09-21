@@ -50,6 +50,31 @@ for (const name of Object.keys(CUSTOM_ICON_PATHS)) {
   checks++;
 }
 
+// Shared Control 收敛：Scrollbar 与 Numeric Slider 内部尺寸只能由 ui-control-system.css 持有。
+const sharedControlsCss = await readFile('src/ui/ui-control-system.css', 'utf8');
+const settingsCss = await readFile('src/settings/settings-panel.css', 'utf8');
+const settingsPanel = await readFile('src/settings/SettingsPanel.tsx', 'utf8');
+const leftContextPanel = await readFile('src/ui/LeftContextPanel.tsx', 'utf8');
+const buildingInspector = await readFile('src/selection/BuildingSelectionInspector.tsx', 'utf8');
+const schemeMode = await readFile('src/tools/color-tool/modes/scheme/SchemeModeOverlay.tsx', 'utf8');
+const placementControls = await readFile('src/tools/placement/placement-parameter-controls.css', 'utf8');
+const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
+
+assert(sharedControlsCss.includes('.ui-scroll-region'), '共享控件必须持有 ui-scroll-region');
+assert(sharedControlsCss.includes('.ui-numeric-slider-field.is-standard'), '共享控件必须定义 standard density');
+assert(sharedControlsCss.includes('.ui-numeric-slider-field.is-compact'), '共享控件必须定义 compact density');
+assert(!settingsCss.includes('::-webkit-scrollbar') && !settingsCss.includes('scrollbar-width'), 'Settings 不得私有重画 Scrollbar');
+assert(!settingsCss.includes('.settings-numeric-field'), 'Settings 不得私有持有 NumericSlider 内部尺寸');
+assert(settingsPanel.includes('settings-list ui-scroll-region'), 'Settings List 必须消费共享 Scrollbar');
+assert(settingsPanel.includes('density="standard"'), 'Settings Slider 必须使用 standard density');
+assert(leftContextPanel.includes('left-context-panel__body ui-scroll-region'), 'LeftContextPanel Body 必须消费共享 Scrollbar');
+assert(buildingInspector.includes('density="standard"'), 'Building Selection 做旧程度必须与 Settings 共用 standard density');
+assert(schemeMode.includes('density="standard"'), 'Building Scheme 做旧程度必须使用 standard density');
+assert(buildingParameters.includes('density="compact"'), 'Placement 参数必须显式使用 compact density');
+assert(!placementControls.includes('--ui-parameter-step-size') && !placementControls.includes('--ui-parameter-value-width'), 'Placement Feature 不得持有 Slider 内部列尺寸');
+assert(!placementControls.includes('.ui-slider{height:28px}'), 'Placement Feature 不得持有 Slider 内部高度');
+checks += 13;
+
 // 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {
   'src/gameplay/inventory-management.css': 'c9d332c653c9fea61c918fb1dbb74af9782b7d83',

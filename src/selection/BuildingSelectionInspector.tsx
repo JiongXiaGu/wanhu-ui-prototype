@@ -63,6 +63,7 @@ export function BuildingSelectionInspector({
           min={0}
           max={1}
           step={0.01}
+          density="standard"
           format={(value) => Math.round(value * 100) + '%'}
           onChange={onWeatheringChange}
         />

@@ -57,7 +57,7 @@ export function LeftContextPanel({
         {showClose && <button className="icon-button" type="button" onClick={onClose} aria-label={closeLabel}><UiIcon icon="x" size={16} /></button>}
       </header>
 
-      <div className={`gameplay-context-panel__body left-context-panel__body ${bodyClassName}`.trim()}>
+      <div className={`gameplay-context-panel__body left-context-panel__body ui-scroll-region ${bodyClassName}`.trim()}>
         {children}
       </div>
 

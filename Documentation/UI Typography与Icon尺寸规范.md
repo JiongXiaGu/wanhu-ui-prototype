@@ -27,7 +27,7 @@
 
 PNG Runtime Asset 保持 64×64，显示档位仍为 14 / 16 / 18 / 20 / 24px。Source Master 与图标生产管线不变。
 
-图标尺寸和命中区分离：小型 Stepper 保持 28px 命中区，普通 Select / Binding Field 保持 34px 高，Toggle 保持 52×32px 命中区和 38×20px 可见轨道。无需把整个工具面板放大。
+图标尺寸和命中区分离。Numeric Slider 使用两档共享密度：Standard 的 Stepper 30px / Value 68px，用于 Settings 与普通 Context；Compact 的 Stepper 28px / Value 58px，用于 Placement 等高密度工具。普通 Select / Binding Field 保持 34px 高，Toggle 保持 52×32px 命中区和 38×20px 可见轨道。无需把整个工具面板放大。
 
 数字优先 tabular-nums。相同语义的数值框宽度、单位和精度规则应一致；不要求所有参数使用相同小数位。颜色参数和数字参数继续使用共享两列 Parameter Row。
 
@@ -39,7 +39,7 @@ PNG Runtime Asset 保持 64×64，显示档位仍为 14 / 16 / 18 / 20 / 24px。
 
 ## 样式归属
 
-Theme 持有档位和色彩；共享控件选择档位；Feature 只对确有业务语义的阅读内容选择 Reading / Subheading。不得在业务文件里反复改同一种 Slider 的基础字体、圆角和交互色。
+Theme 持有档位和色彩；共享控件选择档位；Feature 只对确有业务语义的阅读内容选择 Reading / Subheading。不得在业务文件里反复改同一种 Slider 的基础字体、圆角、内部尺寸和交互色，也不得为单个页面私有重画 Scrollbar。
 
 Archive 的历史基础样式和后续覆盖已在原文件收敛。Management Skin 不再覆写 Inventory 的内部字体和选中样式，库存内部由自身组件文件持有。
 

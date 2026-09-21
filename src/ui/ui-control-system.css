@@ -22,6 +22,10 @@
   --ui-slider-thumb:var(--wanhu-color-paper-primary);
   --ui-slider-thumb-border:rgba(244,239,226,.92);
   --ui-slider-focus:rgba(169,132,75,.10);
+  --ui-scrollbar-size:6px;
+  --ui-scrollbar-track:transparent;
+  --ui-scrollbar-thumb:rgba(183,179,170,.16);
+  --ui-scrollbar-thumb-hover:rgba(216,211,202,.27);
   --ui-toggle-hit-width:52px;
   --ui-toggle-hit-height:32px;
   --ui-toggle-track-width:38px;
@@ -52,8 +56,12 @@
 .ui-slider.is-disabled{cursor:default;opacity:var(--ui-field-disabled)}
 .ui-slider.is-disabled input{cursor:default}
 
-/* Label + Field 保持两列；Field 内部的四项只有一个样式所有者。 */
-.ui-numeric-slider-field{--ui-parameter-step-size:28px;--ui-parameter-value-width:58px;width:100%;min-width:0;display:grid;grid-template-columns:var(--ui-parameter-step-size) minmax(86px,1fr) var(--ui-parameter-step-size) var(--ui-parameter-value-width);align-items:center;gap:6px}
+/* Label + Field 保持两列；Field 内部尺寸由共享 density variant 持有。 */
+.ui-numeric-slider-field{width:100%;min-width:0;display:grid;grid-template-columns:var(--ui-parameter-step-size) minmax(86px,1fr) var(--ui-parameter-step-size) var(--ui-parameter-value-width);align-items:center;gap:6px}
+.ui-numeric-slider-field.is-compact{--ui-parameter-step-size:28px;--ui-parameter-value-width:58px}
+.ui-numeric-slider-field.is-standard{--ui-parameter-step-size:30px;--ui-parameter-value-width:68px}
+.ui-numeric-slider-field.is-compact .ui-slider{height:28px}
+.ui-numeric-slider-field.is-standard .ui-slider{height:24px}
 .game-canvas .ui-numeric-slider-field>.ui-stepper-button{width:var(--ui-parameter-step-size);height:var(--ui-parameter-step-size);padding:0;display:grid;place-items:center;border:1px solid transparent;border-radius:var(--ui-field-radius-inner);background:transparent;color:var(--ui-field-muted);cursor:pointer;transition:background var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease}
 .game-canvas .ui-numeric-slider-field>.ui-stepper-button:hover:not(:disabled){background:var(--ui-field-surface-hover);border-color:var(--ui-field-border-hover);color:var(--wanhu-color-paper-primary)}
 .game-canvas .ui-numeric-slider-field>.ui-stepper-button:active:not(:disabled){transform:translateY(1px)}
@@ -65,9 +73,18 @@
 .game-canvas .ui-numeric-slider-field>.ui-value-button:active:not(:disabled){transform:translateY(1px)}
 .game-canvas .ui-numeric-slider-field>.ui-value-button:disabled{cursor:default}
 .ui-numeric-slider-field.is-disabled{opacity:.72}
-.ui-parameter-row{--ui-parameter-label-width:78px;--ui-parameter-step-size:28px;--ui-parameter-value-width:58px;min-height:42px;display:grid;grid-template-columns:var(--ui-parameter-label-width) minmax(0,1fr);align-items:center;gap:6px}
+.ui-parameter-row{--ui-parameter-label-width:78px;min-height:42px;display:grid;grid-template-columns:var(--ui-parameter-label-width) minmax(0,1fr);align-items:center;gap:6px}
 .ui-parameter-row>span{color:var(--ui-field-muted);font-size:var(--wanhu-type-caption)}
 .ui-parameter-row.is-disabled>span{opacity:.72}
+
+
+/* Shared scroll region: Web prototype mirrors the ScrollView/Scroller visual contract.
+   Feature CSS owns overflow and max-height; scrollbar geometry/tone stay centralized here. */
+.ui-scroll-region{scrollbar-width:thin;scrollbar-color:var(--ui-scrollbar-thumb) var(--ui-scrollbar-track)}
+.ui-scroll-region::-webkit-scrollbar{width:var(--ui-scrollbar-size);height:var(--ui-scrollbar-size)}
+.ui-scroll-region::-webkit-scrollbar-track{background:var(--ui-scrollbar-track)}
+.ui-scroll-region::-webkit-scrollbar-thumb{background:var(--ui-scrollbar-thumb);border-radius:calc(var(--ui-scrollbar-size) / 2)}
+.ui-scroll-region::-webkit-scrollbar-thumb:hover{background:var(--ui-scrollbar-thumb-hover)}
 
 /* Select：高实度菜单保证阅读，不为每个选项增加滤镜。 */
 .ui-select{position:relative;width:100%;z-index:2}

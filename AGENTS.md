@@ -54,7 +54,7 @@
 - 图标 SVG 只为 Source Master；64×64 PNG 是 Web / Unity 共用 Runtime Asset。src 禁止依赖 lucide-react 或 LucideIcon。
 - 新图标加入 Source List 后执行 icons:build / icons:check；自定义来源显式标记为 wanhu-authored，不能冒用 Lucide 来源；重要视觉变化仍需正式 UI Review。
 - 1080p 共享文字：Metadata / Caption 11px，Label / Body 12px，Reading 13px，Subheading 14px，Panel / Workspace Title 16 / 18px。图标仍为 14 / 16 / 18 / 20 / 24px。
-- Feature 不重写共享控件基础字号与状态。禁止用更小文字、transform scale 或额外空白列掩盖布局问题。
+- Feature 不重写共享控件基础字号与状态。Numeric Slider 内部尺寸只通过 shared `standard / compact` density 选择；Scrollbar 统一消费 `ui-scroll-region`，Feature 只负责 overflow / max-height。禁止用更小文字、transform scale 或额外空白列掩盖布局问题。
 - Hover 中性提亮，Selected / On 熟铜，Focus 独立轮廓；选中与焦点必须可以并存。
 - 不新增末尾美化覆盖文件；在 Theme、Surface、Control 或对应组件的现有所有者中修改。
 

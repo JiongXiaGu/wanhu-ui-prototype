@@ -13,11 +13,7 @@
 .settings-space__tabs button:focus-visible{outline:1px solid var(--wanhu-control-focus);outline-offset:-2px}
 .settings-space__tabs button.is-active::after{opacity:1;transform:scaleX(1)}
 .settings-space__content{flex:1 1 auto;min-height:0;width:var(--settings-content-width);max-width:calc(100% - 120px);align-self:center;overflow:hidden;padding:24px 0 18px}
-.settings-list{height:100%;overflow-y:auto;overflow-x:hidden;padding:2px 12px 38px 4px;scrollbar-width:thin;scrollbar-color:rgba(183,179,170,.20) transparent;animation:settings-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both}
-.settings-list::-webkit-scrollbar{width:6px}
-.settings-list::-webkit-scrollbar-track{background:transparent}
-.settings-list::-webkit-scrollbar-thumb{background:rgba(183,179,170,.16);border-radius:3px}
-.settings-list::-webkit-scrollbar-thumb:hover{background:rgba(216,211,202,.27)}
+.settings-list{height:100%;overflow-y:auto;overflow-x:hidden;padding:2px 12px 38px 4px;animation:settings-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both}
 .settings-section{display:flex;flex-direction:column;margin:0 0 30px}
 .settings-section:last-child{margin-bottom:8px}
 .settings-section__title{height:36px;display:flex;align-items:center;gap:13px;font-size:var(--wanhu-type-label,12px);font-weight:500;letter-spacing:.04em}
@@ -31,7 +27,6 @@
 .settings-row__label{min-width:0;flex:0 0 var(--settings-label-width);display:flex;align-items:center}
 .settings-row__label b{font-size:var(--wanhu-type-label,12px);font-weight:500;letter-spacing:.012em;line-height:1.5}
 .settings-row__control{flex:0 0 var(--settings-control-width);min-width:0;display:flex;align-items:center;justify-content:flex-start}
-.settings-numeric-field{--ui-parameter-step-size:30px;--ui-parameter-value-width:68px;width:100%}
 .settings-select-control{width:100%}
 .settings-toggle-control{flex:0 0 52px}
 .settings-space__footer{flex:0 0 72px;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid transparent}

@@ -115,6 +115,7 @@ export function SchemeModeOverlay({
                 min={0}
                 max={1}
                 step={0.01}
+                density="standard"
                 format={(value) => `${Math.round(value * 100)}%`}
                 onChange={(weathering) => updateSelected({ weathering })}
               />

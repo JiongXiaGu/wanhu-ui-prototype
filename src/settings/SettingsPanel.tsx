@@ -387,7 +387,7 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
       </nav>
 
       <main className="settings-space__content">
-        <div className="settings-list" key={active}>
+        <div className="settings-list ui-scroll-region" key={active}>
           {active === '操作' ? (
             <ControlsSettingsView
               rows={groups.操作[0].rows}
@@ -501,7 +501,7 @@ function SettingsRowView({ row, value, disabled, onChange }: { row: SettingRow; 
             step={row.step ?? 1}
             format={(next) => formatSliderValue(row, next)}
             disabled={disabled}
-            className="settings-numeric-field"
+            density="standard"
             onChange={onChange}
           />
         )}

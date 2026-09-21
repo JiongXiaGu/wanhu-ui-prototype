@@ -14,6 +14,7 @@ export function BuildingNumericParameter({ label, initial, min, max, step, suffi
       min={min}
       max={max}
       step={step}
+      density="compact"
       format={(next) => next.toFixed(decimals) + suffix}
       onChange={(next) => {
         if (Object.is(next, value)) return;

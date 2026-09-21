@@ -91,6 +91,8 @@ export function SliderControl({ ariaLabel, value, min, max, step, disabled = fal
   );
 }
 
+export type ControlDensity = 'standard' | 'compact';
+
 interface NumericSliderFieldProps {
   ariaLabel: string;
   value: number;
@@ -99,6 +101,7 @@ interface NumericSliderFieldProps {
   step: number;
   format?: (value: number) => string;
   disabled?: boolean;
+  density?: ControlDensity;
   className?: string;
   onChange: (value: number) => void;
 }
@@ -111,6 +114,7 @@ export function NumericSliderField({
   step,
   format,
   disabled = false,
+  density = 'compact',
   className = '',
   onChange,
 }: NumericSliderFieldProps) {
@@ -124,7 +128,7 @@ export function NumericSliderField({
   }
 
   return (
-    <div className={`ui-numeric-slider-field ${disabled ? 'is-disabled' : ''} ${className}`.trim()}>
+    <div className={`ui-numeric-slider-field is-${density} ${disabled ? 'is-disabled' : ''} ${className}`.trim()}>
       <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value - step)} aria-label={`${ariaLabel}减小`}>−</button>
       <SliderControl ariaLabel={ariaLabel} value={value} min={min} max={max} step={step} disabled={disabled} onChange={commit} />
       <button className="ui-stepper-button" type="button" disabled={disabled} onClick={() => commit(value + step)} aria-label={`${ariaLabel}增大`}>＋</button>
@@ -141,14 +145,15 @@ interface RuntimeParameterRowProps {
   step: number;
   format?: (value: number) => string;
   disabled?: boolean;
+  density?: ControlDensity;
   onChange: (value: number) => void;
 }
 
-export function RuntimeParameterRow({ label, value, min, max, step, format, disabled = false, onChange }: RuntimeParameterRowProps) {
+export function RuntimeParameterRow({ label, value, min, max, step, format, disabled = false, density = 'compact', onChange }: RuntimeParameterRowProps) {
   return (
     <div className={`parameter-row runtime-parameter-row ui-parameter-row ${disabled ? 'is-disabled' : ''}`}>
       <span>{label}</span>
-      <NumericSliderField ariaLabel={label} value={value} min={min} max={max} step={step} format={format} disabled={disabled} onChange={onChange} />
+      <NumericSliderField ariaLabel={label} value={value} min={min} max={max} step={step} format={format} disabled={disabled} density={density} onChange={onChange} />
     </div>
   );
 }

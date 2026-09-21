@@ -74,9 +74,11 @@ RuntimeParameterRow
    └ ValueButton
 ```
 
-外层只有两列，Field 填满剩余宽度。Camera、Environment、Building、Road、Terrain 只通过尺寸参数改变密度，不复制结构。ValueButton 打开共享输入弹窗，不恢复常驻输入框。
+外层只有两列，Field 填满剩余宽度。NumericSliderField 只允许共享 `standard / compact` 两种 density：Standard 用于 Settings、Building Selection / Appearance 等普通阅读面板（Stepper 30、Value 68）；Compact 用于 Placement / Road / Terrain 等高密度工具（Stepper 28、Value 58）。Feature 不直接覆写 Slider 高度、Stepper 或 ValueButton 宽度。ValueButton 打开共享输入弹窗，不恢复常驻输入框。
 
 Toggle 保留一条普通 Track 与一个 Thumb，不恢复中间凹槽。可见图形与命中区分离；禁用时仍可辨认原本的值。
+
+可滚动区域统一使用 `ui-scroll-region` 语义类；Web 的 6px Scrollbar、Thumb / Hover Tone 由 `ui-control-system.css` 持有，Settings、LeftContextPanel 等 Feature 只声明 `overflow` 与可用高度。Unity 迁移时该语义映射到共享 ScrollView / Scroller USS，不复制 Settings 私有滚动条。
 
 ColorParameterField 仍采用 Label + Button，其中包含 ColorPreview 和可选 HDR / Chevron 元信息。实际颜色编辑由 SharedColorEditor 负责，RGB / HSV 同时只挂载一组通道；HDR Intensity 是编辑 Adapter，最终合成为颜色值，不扩大 Runtime 持久字段。
 

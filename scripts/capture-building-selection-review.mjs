@@ -35,6 +35,20 @@ try {
   ok('left panel current scheme', await page.getByText('墨瓦沉木', { exact: true }).count() === 1);
   ok('left panel weathering', await page.getByText('48%', { exact: true }).count() >= 1);
   const inspectorBody = page.locator('.building-selection-inspector__body');
+  const buildingSliderField = page.locator('.building-selection-inspector .ui-numeric-slider-field').first();
+  const buildingControlMetrics = await buildingSliderField.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      className: node.className,
+      stepSize: style.getPropertyValue('--ui-parameter-step-size').trim(),
+      valueWidth: style.getPropertyValue('--ui-parameter-value-width').trim(),
+    };
+  });
+  ok('building slider uses standard density', buildingControlMetrics.className.includes('is-standard'));
+  ok('building standard stepper size', buildingControlMetrics.stepSize === '30px');
+  ok('building standard value width', buildingControlMetrics.valueWidth === '68px');
+  ok('building inspector uses shared scroll region', await inspectorBody.evaluate((node) => node.classList.contains('ui-scroll-region')));
+  ok('building scrollbar consumes shared 6px token', await inspectorBody.evaluate((node) => getComputedStyle(node).getPropertyValue('--ui-scrollbar-size').trim()) === '6px');
   const schemeField = page.getByRole('button', { name: '打开当前建筑配色方案', exact: true });
   const [bodyBox, schemeBox] = await Promise.all([inspectorBody.boundingBox(), schemeField.boundingBox()]);
   ok('appearance controls visible without scrolling', Boolean(bodyBox && schemeBox && schemeBox.y >= bodyBox.y && schemeBox.y + schemeBox.height <= bodyBox.y + bodyBox.height));
@@ -108,6 +122,29 @@ try {
   await open('building-selection');
   await shot('building-selection-07-direct');
   ok('direct scenario no edit action', await page.getByRole('button', { name: '编辑建筑', exact: true }).count() === 0);
+
+  const settingsUrl = new URL(base);
+  settingsUrl.searchParams.set('review', 'settings');
+  await page.goto(settingsUrl.toString(), { waitUntil: 'networkidle' });
+  await page.waitForSelector('.settings-space');
+  await page.waitForTimeout(180);
+  const settingsSliderField = page.locator('.settings-row--slider .ui-numeric-slider-field').first();
+  const settingsControlMetrics = await settingsSliderField.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      className: node.className,
+      stepSize: style.getPropertyValue('--ui-parameter-step-size').trim(),
+      valueWidth: style.getPropertyValue('--ui-parameter-value-width').trim(),
+    };
+  });
+  ok('settings slider uses standard density', settingsControlMetrics.className.includes('is-standard'));
+  ok('building and settings share stepper size', settingsControlMetrics.stepSize === buildingControlMetrics.stepSize);
+  ok('building and settings share value width', settingsControlMetrics.valueWidth === buildingControlMetrics.valueWidth);
+  const settingsList = page.locator('.settings-list');
+  ok('settings uses shared scroll region', await settingsList.evaluate((node) => node.classList.contains('ui-scroll-region')));
+  ok('settings scrollbar consumes shared 6px token', await settingsList.evaluate((node) => getComputedStyle(node).getPropertyValue('--ui-scrollbar-size').trim()) === '6px');
+  await shot('building-selection-08-shared-settings-controls');
+
   ok('no runtime errors', report.errors.length === 0);
 
   console.log('Building selection visual review: PASS (' + report.checks.length + ' checks, ' + report.screenshots.length + ' screenshots).');
