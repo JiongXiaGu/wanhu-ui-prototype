@@ -140,7 +140,7 @@ try {
     await checkSettings('菜单设置/' + tab); await shot('settings-' + tab);
   }
   await page.locator('.settings-space__tabs').getByRole('button', { name: '音频', exact: true }).click(); await settle();
-  await page.locator('.settings-numeric-field .ui-value-button').first().click();
+  await page.locator('.settings-row--slider .ui-numeric-slider-field .ui-value-button').first().click();
   await page.waitForSelector('.ui-dialog'); await shot('settings-number-dialog');
   await page.keyboard.press('Escape'); await page.waitForSelector('.ui-dialog', { state: 'detached' });
   await page.locator('.settings-space__tabs').getByRole('button', { name: '操作', exact: true }).click(); await settle();
