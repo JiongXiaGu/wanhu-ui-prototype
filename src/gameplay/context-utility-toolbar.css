@@ -1,5 +1,9 @@
 /* 右下单一辅助工具 Host。保持屏幕锚点和隐藏后重绑，只强化组间留白。 */
 .gameplay-screen > .context-utility-toolbar.command-utility{position:absolute;left:auto;z-index:23;height:var(--hud-utility-tools-height,var(--command-height-sm,56px));padding:6px;display:flex;align-items:center;justify-content:center;gap:0;opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);transition-property:opacity,transform;transition-duration:var(--wanhu-motion-surface,160ms);transition-timing-function:var(--wanhu-motion-ease-out,ease)}
+.gameplay-screen > .context-utility-toolbar.is-world-stacked{height:var(--hud-world-tools-stacked-height,104px);padding:6px;flex-direction:column;gap:4px}
+.context-utility-toolbar__row{width:100%;height:42px;display:flex;align-items:center;justify-content:center;gap:0}
+.context-utility-toolbar__row[data-utility-row="1"]{position:relative}
+.context-utility-toolbar__row[data-utility-row="1"]::after{content:'';position:absolute;left:18px;right:18px;bottom:-2px;height:1px;background:rgba(238,233,223,.032);pointer-events:none}
 .gameplay-screen > .context-utility-toolbar.is-exiting{opacity:0;pointer-events:none;transform:translateY(6px);transition-duration:var(--wanhu-motion-fast,100ms);transition-timing-function:var(--wanhu-motion-ease-in,ease-in)}
 .gameplay-screen > .context-utility-toolbar.is-entering{opacity:0;pointer-events:none;transform:translateY(6px)}
 .context-utility-toolbar__group{height:100%;display:flex;align-items:center;gap:0}
@@ -15,10 +19,12 @@
 .context-utility-toolbar.is-exiting .context-utility-toolbar__button,.context-utility-toolbar.is-entering .context-utility-toolbar__button{opacity:.55}
 .context-utility-toolbar__button[data-tooltip]::after{content:attr(data-tooltip);position:absolute;left:50%;bottom:50px;transform:translate(var(--utility-tooltip-x),4px);min-width:max-content;padding:6px 8px;opacity:0;visibility:hidden;pointer-events:none;white-space:nowrap;color:var(--wanhu-color-paper-secondary);background:var(--command-tooltip-bg,rgba(25,26,24,.985));border:1px solid var(--command-tooltip-edge,rgba(238,233,223,.080));border-radius:var(--hud-radius-sm,10px);box-shadow:var(--command-tooltip-shadow,0 8px 22px rgba(6,8,7,.26));font-size:var(--wanhu-type-tooltip,12px);letter-spacing:.02em;z-index:60;transition-property:opacity,transform,visibility;transition-duration:var(--wanhu-motion-fast,100ms);transition-delay:0s}
 /* 历史操作固定在最右组；提示向内展开，防止末端文字伸出安全边界。 */
-.context-utility-toolbar__group:last-child .context-utility-toolbar__button{--utility-tooltip-x:0%}
-.context-utility-toolbar__group:last-child .context-utility-toolbar__button[data-tooltip]::after{left:auto;right:0}
+.context-utility-toolbar__row:last-child .context-utility-toolbar__group:last-child .context-utility-toolbar__button{--utility-tooltip-x:0%}
+.context-utility-toolbar__row:last-child .context-utility-toolbar__group:last-child .context-utility-toolbar__button[data-tooltip]::after{left:auto;right:0}
 .context-utility-toolbar__button:hover:not(:disabled)::after,.context-utility-toolbar__button:focus-visible::after{opacity:1;visibility:visible;transform:translate(var(--utility-tooltip-x),0);transition-delay:var(--wanhu-tooltip-delay,320ms)}
 
 .context-utility-toolbar__button.is-danger{color:#a57a72}
 .context-utility-toolbar__button.is-danger:hover:not(:disabled){background:rgba(152,84,71,.080);color:#cf8e82}
+.context-utility-toolbar__button.is-danger.is-active{color:#d09184;background:linear-gradient(180deg,rgba(152,84,71,.12),rgba(152,84,71,.035))}
+.context-utility-toolbar__button.is-danger.is-active::before{background:rgba(207,142,130,.82)}
 .context-utility-toolbar__button.is-danger:focus-visible{outline-color:rgba(207,142,130,.52)}

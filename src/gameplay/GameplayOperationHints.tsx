@@ -13,6 +13,17 @@ const gameplayPreset: HintPreset = {
   ],
 };
 
+const demolitionPreset: HintPreset = {
+  task: '批量摧毁',
+  rows: [
+    { binding: '鼠标左键拖动', description: '框选待摧毁建筑', primary: true },
+    { binding: 'Shift', description: '追加选择范围' },
+    { binding: 'Alt', description: '从选择中排除' },
+    { binding: 'Enter', description: '确认摧毁' },
+    { binding: 'Esc', description: '退出摧毁模式' },
+  ],
+};
+
 const buildingPlacementPresets: Record<BuildingPlacementIntent, HintPreset> = {
   new: {
     task: '建筑放置',
@@ -219,6 +230,7 @@ function HintRowView({ row }: { row: HintRow }) {
 
 interface Props {
   tool: Tool;
+  worldDemolitionMode: boolean;
   buildingPlacementIntent: BuildingPlacementIntent;
   roadDrawMode: RoadDrawMode;
   terrainEditMode: TerrainEditMode;
@@ -228,14 +240,17 @@ interface Props {
 
 export function GameplayOperationHints({
   tool,
+  worldDemolitionMode,
   buildingPlacementIntent,
   roadDrawMode,
   terrainEditMode,
   cityWallConstructionMode,
   cityWallGatePlacementMode,
 }: Props) {
-  const preset = tool === 'building-placement'
-    ? buildingPlacementPresets[buildingPlacementIntent]
+  const preset = tool === 'none' && worldDemolitionMode
+    ? demolitionPreset
+    : tool === 'building-placement'
+      ? buildingPlacementPresets[buildingPlacementIntent]
     : tool === 'road-placement'
       ? roadPresets[roadDrawMode]
       : tool === 'terrain-edit'

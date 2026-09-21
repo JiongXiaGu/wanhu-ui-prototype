@@ -458,20 +458,20 @@ scheme   → 方案模式
 
 ## 12. World Utility
 
-当前：
+普通主游玩状态使用两行 World Utility，仍然只有一个 Host：
 
-- 地图解锁；
-- 区域编辑；
-- 地形编辑；
-- 配色工具；
-- 网格吸附；
-- 网格显示；
-- 范围复制；
-- 范围移动；
-- 撤销；
-- 重做。
+```text
+第一行：地图解锁 / 区域编辑 / 地形编辑 / 配色工具
+第二行：网格吸附 / 网格显示 / 范围复制 / 范围移动 │ Undo / Redo │ 批量摧毁
+```
 
-Gameplay / Workspace / Tool 中保留；Management / Pause 隐藏。
+第一行是世界模式 / 编辑入口，视觉层级略高；第二行是辅助与一次性动作。批量摧毁位于第二行最右，使用 Danger Tone，并作为 Toggle 进入批量摧毁模式。
+
+批量摧毁 V1 只验证 UI 状态与输入互斥：激活后普通建筑 Selection 暂时退出，Operation Hints 改为框选 / 追加 / 排除 / 确认 / Esc；再次点击或 Esc 退出。Web Prototype 不伪造真实范围查询和 ECS 删除，正式 Unity 由 World Demolition Controller / Command History 处理框选、过滤、确认与建筑生命周期。
+
+双层布局只用于普通 Gameplay。Workspace、Building Selection 与各 Tool 的 Context Utility 继续保持单行，以免所有状态都变厚。
+
+Gameplay / Workspace / Tool 中保留 Utility Host；Management / Pause 隐藏。
 
 ## 13. Launcher 类型
 

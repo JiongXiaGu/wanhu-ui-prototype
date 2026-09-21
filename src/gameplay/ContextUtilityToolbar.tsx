@@ -25,6 +25,7 @@ type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'selection-focus-building'
   | 'selection-remove-building'
+  | 'world-bulk-demolish'
   | 'unlock'
   | 'region'
   | 'terrain'
@@ -61,6 +62,8 @@ interface UtilityItem {
 interface ContextUtilityToolbarProps {
   tool: Tool;
   selection: WorldSelection;
+  stackWorldTools: boolean;
+  worldDemolitionMode: boolean;
   gridSnap: boolean;
   gridVisible: boolean;
   canUndo: boolean;
@@ -79,6 +82,7 @@ interface ContextUtilityToolbarProps {
   cityWallTransitionStairClearance: boolean;
   onToggleGridSnap: () => void;
   onToggleGridVisible: () => void;
+  onToggleWorldDemolitionMode: () => void;
   onUndo: () => void;
   onRedo: () => void;
   onToggleTerrainContours: () => void;
@@ -111,6 +115,9 @@ const WORLD_GROUPS: readonly (readonly UtilityItem[])[] = [
   [
     { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
     { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+  [
+    { id: 'world-bulk-demolish', label: '批量摧毁建筑', icon: Trash2, kind: 'toggle' },
   ],
 ];
 
@@ -299,6 +306,8 @@ function ariaLabelForContext(context: UtilityContext) {
 export function ContextUtilityToolbar({
   tool,
   selection,
+  stackWorldTools,
+  worldDemolitionMode,
   gridSnap,
   gridVisible,
   canUndo,
@@ -317,6 +326,7 @@ export function ContextUtilityToolbar({
   cityWallTransitionStairClearance,
   onToggleGridSnap,
   onToggleGridVisible,
+  onToggleWorldDemolitionMode,
   onUndo,
   onRedo,
   onToggleTerrainContours,
@@ -363,6 +373,7 @@ export function ContextUtilityToolbar({
   function getState(item: UtilityItem) {
     if (item.id === 'grid-snap') return { active: gridSnap, pressed: gridSnap, onClick: onToggleGridSnap };
     if (item.id === 'grid-visible') return { active: gridVisible, pressed: gridVisible, onClick: onToggleGridVisible };
+    if (item.id === 'world-bulk-demolish') return { active: worldDemolitionMode, pressed: worldDemolitionMode, onClick: onToggleWorldDemolitionMode };
     if (item.id === 'undo') return { disabled: !canUndo, onClick: onUndo };
     if (item.id === 'redo') return { disabled: !canRedo, onClick: onRedo };
     if (item.id === 'terrain-contours') return { active: terrainContours, pressed: terrainContours, onClick: onToggleTerrainContours };
@@ -381,37 +392,46 @@ export function ContextUtilityToolbar({
   }
 
   const groups = DEFINITIONS[displayedContext];
+  const stackedWorld = displayedContext === 'world' && stackWorldTools;
+  const rows: readonly (readonly (readonly UtilityItem[])[])[] = stackedWorld
+    ? [[groups[0]], [groups[1], groups[2], groups[3]]]
+    : [groups];
 
   return (
     <div
-      className={`context-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm is-${phase}`}
+      className={`context-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm is-${phase} ${stackedWorld ? 'is-world-stacked' : ''}`}
       data-utility-context={displayedContext}
       aria-label={ariaLabelForContext(displayedContext)}
       aria-busy={phase !== 'steady'}
     >
-      {groups.map((group, groupIndex) => (
-        <span className="context-utility-toolbar__group" key={group[0].id}>
-          {groupIndex > 0 && <i className="context-utility-toolbar__separator" aria-hidden="true" />}
-          {group.map((item) => {
-            const Icon = item.icon;
-            const state = getState(item);
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={`context-utility-toolbar__button ${state.active ? 'is-active' : ''} ${item.id === 'selection-remove-building' ? 'is-danger' : ''}`}
-                data-utility-kind={item.kind}
-                data-tooltip={item.label}
-                aria-label={item.label}
-                aria-pressed={item.kind === 'toggle' ? state.pressed : undefined}
-                disabled={state.disabled || phase !== 'steady'}
-                onClick={state.onClick}
-              >
-                <Icon />
-              </button>
-            );
-          })}
-        </span>
+      {rows.map((row, rowIndex) => (
+        <div className="context-utility-toolbar__row" data-utility-row={rowIndex + 1} key={rowIndex}>
+          {row.map((group, groupIndex) => (
+            <span className="context-utility-toolbar__group" key={group[0].id}>
+              {groupIndex > 0 && <i className="context-utility-toolbar__separator" aria-hidden="true" />}
+              {group.map((item) => {
+                const Icon = item.icon;
+                const state = getState(item);
+                const danger = item.id === 'selection-remove-building' || item.id === 'world-bulk-demolish';
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`context-utility-toolbar__button ${state.active ? 'is-active' : ''} ${danger ? 'is-danger' : ''}`}
+                    data-utility-kind={item.kind}
+                    data-tooltip={item.label}
+                    aria-label={item.label}
+                    aria-pressed={item.kind === 'toggle' ? state.pressed : undefined}
+                    disabled={state.disabled || phase !== 'steady'}
+                    onClick={state.onClick}
+                  >
+                    <Icon />
+                  </button>
+                );
+              })}
+            </span>
+          ))}
+        </div>
       ))}
     </div>
   );

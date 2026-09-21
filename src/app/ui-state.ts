@@ -67,6 +67,7 @@ export interface GameplayUiState {
   toolOrigin: ToolOrigin | null;
   selection: WorldSelection;
   buildingSchemeOpen: boolean;
+  worldDemolitionMode: boolean;
   contextPanel: ContextPanel;
   management: ManagementView;
   mapView: MapView;
@@ -121,6 +122,7 @@ export const initialGameplayUiState: GameplayUiState = {
   toolOrigin: null,
   selection: null,
   buildingSchemeOpen: false,
+  worldDemolitionMode: false,
   contextPanel: 'none',
   management: 'none',
   mapView: 'default',
@@ -178,6 +180,8 @@ export type GameplayUiAction =
   | { type: 'TOGGLE_SELECTED_BUILDING_SCHEME' }
   | { type: 'OPEN_SELECTED_BUILDING_SCHEME' }
   | { type: 'CLOSE_SELECTED_BUILDING_SCHEME' }
+  | { type: 'TOGGLE_WORLD_DEMOLITION_MODE' }
+  | { type: 'EXIT_WORLD_DEMOLITION_MODE' }
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'ENTER_SELECTED_BUILDING_MOVE' }
   | { type: 'ENTER_ROAD_PLACEMENT' }
@@ -258,6 +262,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management: 'none',
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         contextPanel: 'none',
         mapPanelOpen: false,
       };
@@ -271,6 +276,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management: 'none',
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         contextPanel: workspace === 'none' ? state.contextPanel : 'none',
         mapPanelOpen: false,
       };
@@ -286,6 +292,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         selection: { kind: 'building', entityId: action.entityId },
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         dockCategory: null,
         tool: 'none',
@@ -303,12 +310,26 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return state.selection?.kind === 'building' ? { ...state, buildingSchemeOpen: true } : state;
     case 'CLOSE_SELECTED_BUILDING_SCHEME':
       return state.buildingSchemeOpen ? { ...state, buildingSchemeOpen: false } : state;
+    case 'TOGGLE_WORLD_DEMOLITION_MODE': {
+      const available = state.tool === 'none'
+        && state.workspace === 'none'
+        && state.management === 'none'
+        && state.contextPanel === 'none'
+        && state.selection === null
+        && !state.mapPanelOpen
+        && state.mapView === 'default'
+        && !state.paused;
+      return available ? { ...state, worldDemolitionMode: !state.worldDemolitionMode } : state;
+    }
+    case 'EXIT_WORLD_DEMOLITION_MODE':
+      return state.worldDemolitionMode ? { ...state, worldDemolitionMode: false } : state;
     case 'ENTER_BUILDING_PLACEMENT':
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'building-placement',
         management: 'none',
@@ -326,6 +347,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         toolOrigin: { kind: 'selection', selection: state.selection },
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'building-placement',
         management: 'none',
@@ -343,6 +365,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'road-placement',
         management: 'none',
@@ -359,6 +382,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'tree-placement',
         management: 'none',
@@ -378,6 +402,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'city-wall-construction',
         management: 'none',
@@ -401,6 +426,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'city-wall-gate',
         management: 'none',
@@ -425,6 +451,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'city-wall-access-stair',
         management: 'none',
@@ -447,6 +474,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'city-wall-transition-stair',
         management: 'none',
@@ -468,6 +496,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         toolOrigin: captureToolOrigin(state),
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'color-tool',
         management: 'none',
@@ -486,6 +515,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         toolOrigin: captureToolOrigin(state),
         selection: null,
         buildingSchemeOpen: false,
+        worldDemolitionMode: false,
         workspace: 'none',
         tool: 'terrain-edit',
         management: 'none',
@@ -530,6 +560,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         contextPanel,
         selection: opening ? null : state.selection,
         buildingSchemeOpen: opening ? false : state.buildingSchemeOpen,
+        worldDemolitionMode: opening ? false : state.worldDemolitionMode,
         workspace: opening ? 'none' : state.workspace,
         dockCategory: opening && state.workspace === 'design' ? null : state.dockCategory,
         management: opening ? 'none' : state.management,
@@ -545,6 +576,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         management,
         selection: opening ? null : state.selection,
         buildingSchemeOpen: opening ? false : state.buildingSchemeOpen,
+        worldDemolitionMode: opening ? false : state.worldDemolitionMode,
         workspace: opening ? 'none' : state.workspace,
         tool: opening ? 'none' : state.tool,
         toolOrigin: opening ? null : state.toolOrigin,
@@ -561,6 +593,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapPanelOpen,
         selection: mapPanelOpen ? null : state.selection,
         buildingSchemeOpen: mapPanelOpen ? false : state.buildingSchemeOpen,
+        worldDemolitionMode: mapPanelOpen ? false : state.worldDemolitionMode,
         management: mapPanelOpen ? 'none' : state.management,
         contextPanel: mapPanelOpen ? 'none' : state.contextPanel,
       };
@@ -573,6 +606,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapView: action.mapView,
         selection: action.mapView === 'default' ? state.selection : null,
         buildingSchemeOpen: action.mapView === 'default' ? state.buildingSchemeOpen : false,
+        worldDemolitionMode: action.mapView === 'default' ? state.worldDemolitionMode : false,
         mapPanelOpen: false,
         management: action.mapView === 'default' ? state.management : 'none',
         contextPanel: action.mapView === 'default' ? state.contextPanel : 'none',
@@ -582,6 +616,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         paused: action.paused,
         pauseView: 'menu',
+        worldDemolitionMode: action.paused ? false : state.worldDemolitionMode,
         management: action.paused ? 'none' : state.management,
         contextPanel: action.paused ? 'none' : state.contextPanel,
         mapView: action.paused ? 'default' : state.mapView,

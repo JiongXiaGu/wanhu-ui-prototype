@@ -58,7 +58,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const selectionOpen = !state.paused && space === 'gameplay' && state.selection !== null;
-  const buildingSelectionActive = !state.paused && space === 'gameplay' && state.tool === 'none' && state.workspace === 'none' && state.management === 'none' && state.contextPanel === 'none' && !state.mapPanelOpen;
+  const worldUtilityStacked = !state.paused && space === 'gameplay' && state.tool === 'none' && state.selection === null;
+  const buildingSelectionActive = !state.paused && !state.worldDemolitionMode && space === 'gameplay' && state.tool === 'none' && state.workspace === 'none' && state.management === 'none' && state.contextPanel === 'none' && !state.mapPanelOpen;
   const selectedBuilding = state.selection?.kind === 'building' && !removedBuildingIds.has(state.selection.entityId)
     ? getBuildingSelectionDefinition(state.selection.entityId)
     : null;
@@ -151,6 +152,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         dispatch({ type: 'CLOSE_SELECTED_BUILDING_SCHEME' });
         return;
       }
+      if (state.worldDemolitionMode) {
+        dispatch({ type: 'EXIT_WORLD_DEMOLITION_MODE' });
+        return;
+      }
       if (state.selection !== null) {
         dispatch({ type: 'CLEAR_SELECTION' });
         return;
@@ -161,7 +166,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
     window.addEventListener('keydown', handleGameplayEscape);
     return () => window.removeEventListener('keydown', handleGameplayEscape);
-  }, [state.buildingSchemeOpen, state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace]);
+  }, [state.buildingSchemeOpen, state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace, state.worldDemolitionMode]);
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
@@ -205,8 +210,9 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
   return (
     <section
-      className={`screen gameplay-screen gameplay-screen--${space} ${isNight ? 'is-night' : 'is-day'}`}
+      className={`screen gameplay-screen gameplay-screen--${space} ${isNight ? 'is-night' : 'is-day'} ${worldUtilityStacked ? 'has-world-utility-stack' : ''} ${state.worldDemolitionMode ? 'is-world-demolition-mode' : ''}`}
       data-time-of-day={isNight ? 'night' : 'day'}
+      data-world-demolition={state.worldDemolitionMode ? 'active' : 'inactive'}
       style={{ backgroundImage: `url(${sceneBackground})` }}
     >
       <div className="game-vignette" />
@@ -244,6 +250,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <ContextUtilityToolbar
           tool={state.tool}
           selection={state.selection}
+          stackWorldTools={worldUtilityStacked}
+          worldDemolitionMode={state.worldDemolitionMode}
           gridSnap={state.gridSnap}
           gridVisible={state.gridVisible}
           canUndo={state.canUndo}
@@ -262,6 +270,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           cityWallTransitionStairClearance={state.cityWallTransitionStairClearance}
           onToggleGridSnap={() => dispatch({ type: 'TOGGLE_GRID_SNAP' })}
           onToggleGridVisible={() => dispatch({ type: 'TOGGLE_GRID_VISIBLE' })}
+          onToggleWorldDemolitionMode={() => dispatch({ type: 'TOGGLE_WORLD_DEMOLITION_MODE' })}
           onUndo={() => dispatch({ type: 'UNDO' })}
           onRedo={() => dispatch({ type: 'REDO' })}
           onToggleTerrainContours={() => dispatch({ type: 'TOGGLE_TERRAIN_CONTOURS' })}
@@ -486,6 +495,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       {space !== 'management' && !state.paused && state.selection === null && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'color-tool' && (
         <GameplayOperationHints
           tool={state.tool}
+          worldDemolitionMode={state.worldDemolitionMode}
           buildingPlacementIntent={state.buildingPlacementIntent}
           roadDrawMode={state.roadDrawMode}
           terrainEditMode={state.terrainEditMode}
