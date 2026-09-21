@@ -5,7 +5,7 @@ import { LeftContextSection } from '../../../../ui/LeftContextPanel';
 import { usePresence, type MotionPhase } from '../../../../ui/motion';
 import { PlacementContextPanel } from '../../../placement/PlacementContextPanel';
 import { BuildingSchemeWorkspace } from './BuildingSchemeWorkspace';
-import { BUILDING_BUILDING_COLOR_SCHEMES } from './building-scheme-catalog';
+import { BUILDING_COLOR_SCHEMES } from './building-scheme-catalog';
 
 interface BuildingAppearanceDraft {
   id: string;
