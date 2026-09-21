@@ -83,3 +83,14 @@ jobs:
             review-screenshots/building-selection-report.json
           if-no-files-found: warn
           retention-days: 7
+      - name: Upload world utility review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: world-utility-review
+          path: |
+            review-screenshots/usability-world-utility-two-rows.png
+            review-screenshots/usability-world-utility-demolition-active.png
+            review-screenshots/tool-usability-report.json
+          if-no-files-found: warn
+          retention-days: 7
