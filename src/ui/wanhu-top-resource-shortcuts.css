@@ -1,101 +1,14 @@
-/* Wanhu Top Metric Shortcuts v1
-   The centered status metrics are compact shortcuts, not a second navigation state.
-   They expose icon + value only; the secondary tray below remains the primary navigation. */
-
-.gameplay-top-shell{
-  --top-nav-width:400px;
-}
-
-.gameplay-top-status__resources{
-  gap:0;
-}
-
-.gameplay-screen .gameplay-top-status__resources>.gameplay-top-resource-slot{
-  position:relative;
-  width:112px;
-  min-width:112px;
-  height:34px;
-  padding:0 4px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:inherit;
-  border-right:0;
-}
-
-.gameplay-top-resource-shortcut{
-  position:relative;
-  width:102px;
-  min-width:102px;
-  height:34px;
-  padding:0 8px;
-  border:0;
-  border-radius:8px;
-  background:transparent;
-  color:#8d918e;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:9px;
-  cursor:pointer;
-  transition:background .14s ease,color .14s ease,transform .08s ease;
-}
-
-.gameplay-top-resource-shortcut .ui-icon{
-  width:16px;
-  height:16px;
-  flex:0 0 16px;
-  color:#8d918e;
-  transition:color .14s ease;
-}
-
-.gameplay-top-resource-shortcut b{
-  min-width:48px;
-  color:var(--hud-text,#e5dfd4);
-  font-size:12px;
-  font-weight:600;
-  line-height:1;
-  font-variant-numeric:tabular-nums;
-  letter-spacing:.006em;
-  text-align:right;
-}
-
-.gameplay-top-resource-shortcut:hover{
-  background:rgba(255,255,255,.030);
-  color:#c7c5bd;
-}
-.gameplay-top-resource-shortcut:hover .ui-icon{color:#bbb8b0}
+/* 顶部指标仍为快捷入口，不拥有第二套 Selected。只收敛图标比例和提示状态。 */
+.gameplay-top-shell{--top-nav-width:400px}
+.gameplay-top-status__resources{gap:0}
+.gameplay-screen .gameplay-top-status__resources>.gameplay-top-resource-slot{position:relative;width:112px;min-width:112px;height:34px;padding:0 4px;display:flex;align-items:center;justify-content:center;color:inherit;border-right:0}
+.gameplay-top-resource-shortcut{position:relative;width:102px;min-width:102px;height:34px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:var(--wanhu-color-icon);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease}
+.gameplay-top-resource-shortcut .ui-icon{width:var(--wanhu-icon-md,18px);height:var(--wanhu-icon-md,18px);flex:0 0 var(--wanhu-icon-md,18px);color:var(--wanhu-color-icon);transition:color var(--wanhu-motion-control,120ms) ease}
+.gameplay-top-resource-shortcut b{min-width:48px;color:var(--hud-text,#e5dfd4);font-size:12px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.006em;text-align:right}
+.gameplay-top-resource-shortcut:hover{background:var(--wanhu-control-hover);color:var(--wanhu-color-icon-hover)}
+.gameplay-top-resource-shortcut:hover .ui-icon{color:var(--wanhu-color-icon-hover)}
 .gameplay-top-resource-shortcut:active{transform:translateY(1px)}
-
-/* Intentionally no .is-active state here. These are shortcuts only; the control tray
-   below owns navigation selection and communicates the currently open management domain. */
-.gameplay-top-resource-shortcut[data-tooltip]::after{
-  content:attr(data-tooltip);
-  position:absolute;
-  left:50%;
-  top:calc(100% + 9px);
-  transform:translate(-50%,-3px);
-  min-width:max-content;
-  padding:6px 8px;
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  white-space:nowrap;
-  color:#d8d4ca;
-  background:rgba(17,23,20,.985);
-  border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
-  border-radius:9px;
-  box-shadow:0 8px 24px rgba(4,7,6,.28);
-  font-size:var(--wanhu-type-tooltip,10px);
-  font-weight:450;
-  letter-spacing:.025em;
-  transition:opacity .11s ease,transform .11s ease,visibility .11s ease;
-  transition-delay:0s;
-  z-index:78;
-}
-.gameplay-top-resource-shortcut[data-tooltip]:hover::after{
-  opacity:1;
-  visibility:visible;
-  transform:translate(-50%,0);
-  transition-delay:.28s;
-}
+.gameplay-top-resource-shortcut:focus-visible{outline:1px solid var(--wanhu-control-focus);outline-offset:1px}
+.gameplay-top-resource-shortcut[data-tooltip]::after{content:attr(data-tooltip);position:absolute;left:50%;top:calc(100% + 9px);transform:translate(-50%,-3px);min-width:max-content;padding:6px 8px;opacity:0;visibility:hidden;pointer-events:none;white-space:nowrap;color:var(--wanhu-color-text-secondary);background:var(--wanhu-command-tooltip-bg);border:1px solid var(--wanhu-command-tooltip-edge);border-radius:9px;box-shadow:var(--wanhu-command-tooltip-shadow);font-size:var(--wanhu-type-tooltip,12px);font-weight:400;letter-spacing:.025em;transition:opacity var(--wanhu-motion-fast,100ms) ease,transform var(--wanhu-motion-fast,100ms) ease,visibility var(--wanhu-motion-fast,100ms) ease;transition-delay:0s;z-index:78}
+.gameplay-top-resource-shortcut[data-tooltip]:hover::after,
+.gameplay-top-resource-shortcut[data-tooltip]:focus-visible::after{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:var(--wanhu-tooltip-delay,320ms)}

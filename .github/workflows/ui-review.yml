@@ -8,6 +8,7 @@ on:
       - 'src/**'
       - 'scripts/capture-ui-review.mjs'
       - 'scripts/capture-typography-decision-review.mjs'
+      - 'scripts/capture-tool-usability-review.mjs'
       - 'public/assets/**'
       - 'index.html'
       - 'package.json'
@@ -59,6 +60,8 @@ jobs:
         run: node scripts/capture-ui-review.mjs
       - name: Capture typography decision surfaces
         run: node scripts/capture-typography-decision-review.mjs
+      - name: Capture tool usability and layout
+        run: node scripts/capture-tool-usability-review.mjs
       - name: Upload UI review screenshots
         if: always()
         uses: actions/upload-artifact@v4
