@@ -8,7 +8,7 @@ export const BUILDING_SELECTIONS: readonly BuildingSelectionDefinition[] = [
 {title:'人员',rows:[{label:'当前雇员',value:'6 / 8'},{label:'当前在岗',value:'5'},{label:'服务容量',value:'37 / 48'}]},
 {title:'供应',rows:[{label:'食材库存',value:'正常',tone:'positive'},{label:'柴薪储量',value:'68%'}]},
 {title:'建筑',rows:[{label:'耐久度',value:'92%'},{label:'占地',value:'3 × 4'},{label:'道路连接',value:'正常',tone:'positive'}]}]},
-{id:'building-yongan-residence',name:'永安坊民居',category:'民居',district:'西坊',status:'居住稳定',anchor:{left:310,top:650,width:230,height:142},sections:[
+{id:'building-yongan-residence',name:'永安坊民居',category:'民居',district:'西坊',status:'居住稳定',anchor:{left:570,top:650,width:220,height:138},sections:[
 {title:'居住',rows:[{label:'入住家庭',value:'4 / 5'},{label:'当前居民',value:'17 / 22'},{label:'入住率',value:'77%'}]},
 {title:'生活',rows:[{label:'粮食保障',value:'充足',tone:'positive'},{label:'取水距离',value:'较近'},{label:'舒适度',value:'74%'}]},
 {title:'建筑',rows:[{label:'耐久度',value:'88%'},{label:'占地',value:'4 × 5'},{label:'维护状态',value:'正常',tone:'positive'}]}]},
