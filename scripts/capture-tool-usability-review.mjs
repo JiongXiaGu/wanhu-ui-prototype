@@ -194,11 +194,13 @@ try {
     rows.nth(1).boundingBox(),
   ]);
   assert(toolbarBox && mainDockBox && firstRowBox && secondRowBox);
-  assert(Math.abs(toolbarBox.width - 356) < 1 && Math.abs(toolbarBox.height - 104) < 1, '双层 World Utility 使用固定 356×104 逻辑尺寸');
+  assert(Math.abs(toolbarBox.width - 356) < 1 && Math.abs(toolbarBox.height - 96) < 1, '双层 World Utility 使用固定 356×96 逻辑尺寸');
+  assert(Math.abs(mainDockBox.height - 96) < 1, 'Main Dock 必须使用 96px 高度');
   assert(secondRowBox.y > firstRowBox.y + firstRowBox.height - 1, '两行不能互相重叠');
-  const mainDockCenterY = mainDockBox.y + mainDockBox.height / 2;
-  const utilityCenterY = toolbarBox.y + toolbarBox.height / 2;
-  assert(Math.abs(mainDockCenterY - utilityCenterY) <= 1, 'Main Dock 与双层 Utility 必须视觉中心线平齐');
+  const mainDockBottom = mainDockBox.y + mainDockBox.height;
+  const utilityBottom = toolbarBox.y + toolbarBox.height;
+  assert(Math.abs(mainDockBox.height - toolbarBox.height) <= 1, 'Main Dock 与双层 Utility 必须同高');
+  assert(Math.abs(mainDockBottom - utilityBottom) <= 1, 'Main Dock 与双层 Utility 必须同底边');
   const destroy = worldToolbar.getByRole('button', { name: '批量摧毁建筑', exact: true });
   const destroyBox = await destroy.boundingBox();
   const secondButtons = await rows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => ({ label: button.getAttribute('aria-label'), right: button.getBoundingClientRect().right })));
@@ -207,7 +209,7 @@ try {
   assert(hintsBox && overlap(toolbarBox, hintsBox) < 1, '双层 Utility 不得遮挡操作提示');
   const separator = await worldToolbar.locator('.context-utility-toolbar__separator').first().evaluate(element => getComputedStyle(element).marginLeft);
   assert.equal(separator, '9px');
-  report.checks.push({ label: '主游玩辅助工具双层分组与中心线平齐', toolbarBox, mainDockBox, firstRowLabels, secondRowLabels, separator, mainDockCenterY, utilityCenterY });
+  report.checks.push({ label: '主游玩辅助工具双层分组与同高同底边', toolbarBox, mainDockBox, firstRowLabels, secondRowLabels, separator, mainDockBottom, utilityBottom });
   await shot('world-utility-two-rows');
 
   assert.equal(await page.locator('.building-selection-anchor').count(), 3, '普通 Gameplay 应保留建筑选择入口');
@@ -237,11 +239,12 @@ try {
   const workspaceBottom = workspaceBox.y + workspaceBox.height;
   const utilityGap = workspaceUtilityBox.y - workspaceBottom;
   const mainDockGap = workspaceMainDockBox.y - workspaceBottom;
-  const workspaceMainCenterY = workspaceMainDockBox.y + workspaceMainDockBox.height / 2;
-  const workspaceUtilityCenterY = workspaceUtilityBox.y + workspaceUtilityBox.height / 2;
+  const workspaceMainBottom = workspaceMainDockBox.y + workspaceMainDockBox.height;
+  const workspaceUtilityBottom = workspaceUtilityBox.y + workspaceUtilityBox.height;
   assert(utilityGap >= 11.5, 'Workspace 与双层 Utility 至少保留 12px 安全间距');
-  assert(mainDockGap >= 11.5, 'Workspace 与抬高后的 Main Dock 不得重叠');
-  assert(Math.abs(workspaceMainCenterY - workspaceUtilityCenterY) <= 1, 'Workspace 状态下 Main Dock / Utility 中心线仍需平齐');
+  assert(mainDockGap >= 11.5, 'Workspace 与 Main Dock 至少保留 12px 安全间距');
+  assert(Math.abs(workspaceMainDockBox.height - workspaceUtilityBox.height) <= 1, 'Workspace 状态下 Main Dock / Utility 必须同高');
+  assert(Math.abs(workspaceMainBottom - workspaceUtilityBottom) <= 1, 'Workspace 状态下 Main Dock / Utility 必须同底边');
   assert(overlap(workspaceBox, workspaceUtilityBox) < 1 && overlap(workspaceBox, workspaceMainDockBox) < 1, 'Workspace 不得覆盖任一底部菜单');
   report.checks.push({ label: 'Workspace 与双层 Utility 共存', workspaceBox, workspaceUtilityBox, workspaceMainDockBox, utilityGap, mainDockGap });
   await shot('world-utility-workspace-balanced');

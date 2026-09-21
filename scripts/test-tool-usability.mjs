@@ -78,13 +78,14 @@ checks += 13;
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
-assert(hudLayoutCss.includes('--hud-main-dock-lift:14px'), 'Main Dock 必须按 76/104 高度差抬高 14px');
-assert(hudLayoutCss.includes('--hud-main-dock-bottom:calc(var(--hud-edge) + var(--hud-main-dock-lift))'), 'Main Dock 必须消费共享 bottom token');
-assert(hudLayoutCss.includes('--hud-bottom-safe-line:calc(var(--hud-edge) + var(--hud-world-tools-stacked-height))'), 'Bottom HUD Safe Line 必须由双层 Utility 顶边定义');
+assert(hudLayoutCss.includes('--hud-bottom-panel-height:96px'), 'Main Dock 与双层 Utility 必须共用 96px 高度');
+assert(!hudLayoutCss.includes('--hud-main-dock-lift'), '统一同高后不得继续抬高 Main Dock');
+assert(hudLayoutCss.includes('bottom:var(--hud-edge);'), 'Main Dock 与 Utility 必须共用 16px 底边');
+assert(hudLayoutCss.includes('--hud-bottom-safe-line:calc(var(--hud-edge) + var(--hud-bottom-panel-height))'), 'Bottom HUD Safe Line 必须由统一底部面板高度定义');
 assert(hudLayoutCss.includes('--hud-bottom-safe-offset:calc(var(--hud-bottom-safe-line) + var(--hud-gap-md))'), 'Workspace / Hints 必须消费统一安全间距');
 assert(hudLayoutCss.includes('.gameplay-screen--workspace.has-world-utility-stack .workspace'), 'Workspace 必须有双层 Utility 安全线覆盖');
 assert(gameplayScreen.includes("(space === 'gameplay' || space === 'workspace')"), 'Workspace 打开时 World Utility 必须继续保持双层');
-checks += 6;
+checks += 7;
 
 // 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {

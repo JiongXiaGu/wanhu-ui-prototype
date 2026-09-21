@@ -51,15 +51,14 @@
   --command-divider-height:24px;
 
   --hud-core-width:940px;
-  --hud-command-height:var(--command-height-lg);
-  --hud-main-dock-lift:14px;
-  --hud-main-dock-bottom:calc(var(--hud-edge) + var(--hud-main-dock-lift));
+  --hud-bottom-panel-height:96px;
+  --hud-command-height:var(--hud-bottom-panel-height);
   --hud-world-tools-width:458px;
   --hud-world-tools-stacked-width:356px;
-  --hud-world-tools-stacked-height:104px;
+  --hud-world-tools-stacked-height:var(--hud-bottom-panel-height);
   --hud-tool-tools-width:304px;
   --hud-utility-tools-height:var(--command-height-sm);
-  --hud-bottom-safe-line:calc(var(--hud-edge) + var(--hud-world-tools-stacked-height));
+  --hud-bottom-safe-line:calc(var(--hud-edge) + var(--hud-bottom-panel-height));
   --hud-bottom-safe-offset:calc(var(--hud-bottom-safe-line) + var(--hud-gap-md));
   --hud-context-weather-width:400px;
   --hud-context-camera-width:360px;
@@ -93,7 +92,7 @@
 
 .gameplay-screen .command-bar{
   width:var(--hud-core-width);
-  bottom:var(--hud-main-dock-bottom);
+  bottom:var(--hud-edge);
 }
 
 .gameplay-screen > .context-utility-toolbar.command-utility{

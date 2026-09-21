@@ -470,7 +470,7 @@ scheme   → 方案模式
 
 批量摧毁 V1 只验证 UI 状态与输入互斥：激活后普通建筑 Selection 暂时退出，Operation Hints 改为框选 / 追加 / 排除 / 确认 / Esc；再次点击或 Esc 退出。Web Prototype 不伪造真实范围查询和 ECS 删除，正式 Unity 由 World Demolition Controller / Command History 处理框选、过滤、确认与建筑生命周期。
 
-双层布局用于普通 Gameplay 与 Design Workspace。Building Selection 与各 Tool 的 Context Utility 继续保持单行。Main Dock 不与双层 Utility 做顶边或底边硬对齐，而按视觉中心线对齐；Workspace 与 Operation Hints 共同使用 Bottom HUD Safe Line，避免任何一方侵占目录空间。
+双层布局用于普通 Gameplay 与 Design Workspace。Building Selection 与各 Tool 的 Context Utility 继续保持单行。Main Dock 与双层 Utility 统一使用 96px 高度并共用 16px 底边；Workspace 与 Operation Hints 共同使用 `16 + 96 + 12 = 124px` Bottom HUD Safe Offset，避免任何一方侵占目录空间。
 
 Gameplay / Workspace / Tool 中保留 Utility Host；Management / Pause 隐藏。
 
