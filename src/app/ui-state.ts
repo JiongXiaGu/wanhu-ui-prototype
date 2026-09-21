@@ -3,11 +3,10 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement' | 'building-edit' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
+export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
 export type TreePlacementMode = 'brush' | 'single';
-export type AdjustmentMode = 'position' | 'massing' | 'roof' | 'facade';
 export type RoadDrawMode = 'smart-curve' | 'curve' | 'straight';
 export type CityWallConstructionMode = 'range' | 'fixed-width';
 export type CityWallFacingSide = 'left' | 'right';
@@ -108,7 +107,6 @@ export interface GameplayUiState {
   cityWallTransitionStairReversed: boolean;
   cityWallTransitionStairClearance: boolean;
   colorToolMode: ColorToolMode;
-  adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   gridSnap: boolean;
   gridVisible: boolean;
@@ -162,7 +160,6 @@ export const initialGameplayUiState: GameplayUiState = {
   cityWallTransitionStairReversed: false,
   cityWallTransitionStairClearance: true,
   colorToolMode: 'surface',
-  adjustmentMode: 'position',
   roadDrawMode: 'smart-curve',
   gridSnap: true,
   gridVisible: true,
@@ -178,7 +175,6 @@ export type GameplayUiAction =
   | { type: 'CLEAR_SELECTION' }
   | { type: 'ENTER_BUILDING_PLACEMENT' }
   | { type: 'ENTER_SELECTED_BUILDING_MOVE' }
-  | { type: 'ENTER_SELECTED_BUILDING_EDIT' }
   | { type: 'ENTER_ROAD_PLACEMENT' }
   | { type: 'ENTER_TREE_PLACEMENT'; speciesId: string; speciesName: string }
   | { type: 'ENTER_CITY_WALL_CONSTRUCTION'; moduleId: string; moduleName: string; systemId: string; systemName: string }
@@ -221,7 +217,6 @@ export type GameplayUiAction =
   | { type: 'ROTATE_CITY_WALL_TRANSITION_STAIR'; direction: 'left' | 'right' }
   | { type: 'FLIP_CITY_WALL_TRANSITION_STAIR_DIRECTION' }
   | { type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' }
-  | { type: 'SET_ADJUSTMENT_MODE'; mode: AdjustmentMode }
   | { type: 'SET_ROAD_DRAW_MODE'; mode: RoadDrawMode }
   | { type: 'TOGGLE_GRID_SNAP' }
   | { type: 'TOGGLE_GRID_VISIBLE' }
@@ -307,7 +302,6 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapPanelOpen: false,
         buildingTerrainMode: 'balanced-earthwork',
         buildingPlacementIntent: 'new',
-        adjustmentMode: 'position',
         canUndo: false,
         canRedo: false,
       };
@@ -324,22 +318,6 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapPanelOpen: false,
         buildingTerrainMode: 'balanced-earthwork',
         buildingPlacementIntent: 'move',
-        adjustmentMode: 'position',
-        canUndo: false,
-        canRedo: false,
-      };
-    case 'ENTER_SELECTED_BUILDING_EDIT':
-      if (!state.selection || state.selection.kind !== 'building') return state;
-      return {
-        ...state,
-        toolOrigin: { kind: 'selection', selection: state.selection },
-        workspace: 'none',
-        tool: 'building-edit',
-        management: 'none',
-        contextPanel: 'none',
-        mapView: 'default',
-        mapPanelOpen: false,
-        adjustmentMode: 'massing',
         canUndo: false,
         canRedo: false,
       };
@@ -653,8 +631,6 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return { ...state, cityWallTransitionStairReversed: !state.cityWallTransitionStairReversed, canUndo: true, canRedo: false };
     case 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE':
       return { ...state, cityWallTransitionStairClearance: !state.cityWallTransitionStairClearance };
-    case 'SET_ADJUSTMENT_MODE':
-      return { ...state, adjustmentMode: action.mode, canUndo: true, canRedo: false };
     case 'SET_ROAD_DRAW_MODE':
       return { ...state, roadDrawMode: action.mode, canUndo: true, canRedo: false };
     case 'TOGGLE_GRID_SNAP':

@@ -1,4 +1,0 @@
-/* Existing-building edit: geometry only; material and controls remain shared. */
-.gameplay-screen .building-edit-prototype{width:400px}
-.building-edit-prototype__body{max-height:620px;overflow-y:auto;overflow-x:hidden}
-.building-edit-placeholder{margin:6px 0 0;color:var(--wanhu-color-text-muted);font-size:var(--wanhu-type-body);line-height:1.65}

@@ -26,8 +26,6 @@ export type ReviewScenario =
   | 'tree-brush'
   | 'tree-single'
   | 'building-position'
-  | 'building-massing'
-  | 'building-roof'
   | 'building-height'
   | 'road-smart'
   | 'road-curve'
@@ -105,10 +103,6 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'tree-placement', toolOrigin: { kind: 'design-workspace', category: 'tree' }, dockMode: 'design', dockCategory: 'tree', treeSpeciesId: 'tree-willow', treeSpeciesName: '垂柳', treePlacementMode: 'single', treeVariant: 3 } };
     case 'building-position':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building' } };
-    case 'building-massing':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-edit', toolOrigin: { kind: 'selection', selection: { kind: 'building', entityId: 'building-riverside-inn' } }, selection: { kind: 'building', entityId: 'building-riverside-inn' }, adjustmentMode: 'massing' } };
-    case 'building-roof':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-edit', toolOrigin: { kind: 'selection', selection: { kind: 'building', entityId: 'building-riverside-inn' } }, selection: { kind: 'building', entityId: 'building-riverside-inn' }, adjustmentMode: 'roof' } };
     case 'building-height':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building', buildingTerrainMode: 'manual-elevation' } };
     case 'road-smart':

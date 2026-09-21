@@ -24,7 +24,6 @@ import './fullscreen-actions.css';
 import './tools/placement/placement-action-bar.css';
 import './tools/placement/placement-context-panel.css';
 import './tools/building-placement/building-placement.css';
-import './tools/building-edit/building-edit.css';
 import './tools/road-placement/road-placement.css';
 import './tools/terrain-edit/terrain-edit.css';
 import './tools/tree-placement/tree-placement.css';

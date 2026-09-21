@@ -49,24 +49,3 @@ export function BuildingPositionParameters({ onDirty }: { onDirty: () => void })
     </LeftContextSection>
   );
 }
-
-export function BuildingMassingParameters({ onDirty }: { onDirty: () => void }) {
-  return (
-    <LeftContextSection title="楼身调整" className="bp-mode-content">
-      <BuildingNumericParameter label="楼层数量" initial={3} min={1} max={12} step={1} onDirty={onDirty} />
-      <BuildingNumericParameter label="单层高度" initial={4.2} min={2.4} max={8} step={0.1} suffix=" m" onDirty={onDirty} />
-      <SegmentRow label="柱网布局" items={['疏朗', '均衡', '紧凑']} defaultValue="均衡" onDirty={onDirty} />
-      <BuildingNumericParameter label="楼层收分" initial={0.12} min={0} max={0.4} step={0.01} onDirty={onDirty} />
-    </LeftContextSection>
-  );
-}
-
-export function BuildingRoofParameters({ onDirty }: { onDirty: () => void }) {
-  return (
-    <LeftContextSection title="屋顶调整" className="bp-mode-content">
-      <SegmentRow label="屋顶区段" items={['重檐上', '重檐下', '层檐']} defaultValue="重檐上" onDirty={onDirty} />
-      <BuildingNumericParameter label="出檐尺度" initial={1.4} min={0} max={4} step={0.1} suffix=" m" onDirty={onDirty} />
-      <BuildingNumericParameter label="翼角起冲" initial={0.45} min={0} max={1} step={0.05} onDirty={onDirty} />
-    </LeftContextSection>
-  );
-}

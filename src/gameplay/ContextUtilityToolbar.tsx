@@ -19,7 +19,7 @@ import {
 } from '../ui/icons/runtime-icons.generated';
 import type { CityWallGatePlacementMode, Tool, WorldSelection } from '../app/ui-state';
 
-export type UtilityContext = 'world' | 'building-selection' | 'building-placement' | 'building-edit' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
+export type UtilityContext = 'world' | 'building-selection' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'selection-focus-building'
@@ -122,13 +122,6 @@ const BUILDING_GROUPS: readonly (readonly UtilityItem[])[] = [
     { id: 'building-align-road', label: '对齐最近道路', icon: Route, kind: 'action' },
     { id: 'building-calibrate-footprint', label: '校准建筑基底', icon: Building2, kind: 'action' },
   ],
-  [
-    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
-    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
-  ],
-];
-
-const BUILDING_EDIT_GROUPS: readonly (readonly UtilityItem[])[] = [
   [
     { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
     { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
@@ -260,7 +253,6 @@ const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> =
   world: WORLD_GROUPS,
   'building-selection': BUILDING_SELECTION_GROUPS,
   'building-placement': BUILDING_GROUPS,
-  'building-edit': BUILDING_EDIT_GROUPS,
   'road-placement': ROAD_GROUPS,
   'terrain-edit': TERRAIN_GROUPS,
   'tree-placement': TREE_GROUPS,
@@ -274,7 +266,6 @@ const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> =
 
 function contextForState(tool: Tool, gateMode: CityWallGatePlacementMode, selection: WorldSelection): UtilityContext {
   if (tool === 'building-placement') return 'building-placement';
-  if (tool === 'building-edit') return 'building-edit';
   if (tool === 'road-placement') return 'road-placement';
   if (tool === 'terrain-edit') return 'terrain-edit';
   if (tool === 'tree-placement') return 'tree-placement';
@@ -290,7 +281,6 @@ function contextForState(tool: Tool, gateMode: CityWallGatePlacementMode, select
 function ariaLabelForContext(context: UtilityContext) {
   if (context === 'building-selection') return '选中建筑快捷工具';
   if (context === 'building-placement') return '建筑放置辅助工具';
-  if (context === 'building-edit') return '建筑编辑辅助工具';
   if (context === 'road-placement') return '道路铺设辅助工具';
   if (context === 'terrain-edit') return '地形编辑辅助工具';
   if (context === 'tree-placement') return '树木放置辅助工具';

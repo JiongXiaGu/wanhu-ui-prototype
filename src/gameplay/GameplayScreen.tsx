@@ -5,8 +5,6 @@ import { DesignWorkspace } from '../workspace/DesignWorkspace';
 import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
-import { BuildingEditOverlay } from '../tools/building-edit/BuildingEditOverlay';
-import { BuildingEditDock } from '../tools/building-edit/BuildingEditDock';
 import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
 import { RoadPlacementDock } from '../tools/road-placement/RoadPlacementDock';
 import { TerrainEditTool } from '../tools/terrain-edit/TerrainEditTool';
@@ -265,7 +263,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       {selectionPresence.mounted && renderedSelectedBuilding && (
         <>
           <BuildingSelectionInspector building={renderedSelectedBuilding} motionPhase={selectionPresence.phase} onClose={() => dispatch({ type: 'CLEAR_SELECTION' })} />
-          <BuildingSelectionActionBar motionPhase={selectionPresence.phase} onMove={() => dispatch({ type: 'ENTER_SELECTED_BUILDING_MOVE' })} onEdit={() => dispatch({ type: 'ENTER_SELECTED_BUILDING_EDIT' })} onClose={() => dispatch({ type: 'CLEAR_SELECTION' })} />
+          <BuildingSelectionActionBar motionPhase={selectionPresence.phase} onMove={() => dispatch({ type: 'ENTER_SELECTED_BUILDING_MOVE' })} onClose={() => dispatch({ type: 'CLEAR_SELECTION' })} />
         </>
       )}
 
@@ -290,13 +288,6 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
           <BuildingPlacementDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
-        </>
-      )}
-
-      {toolPresence.mounted && renderedTool === 'building-edit' && (
-        <>
-          <BuildingEditOverlay buildingName={selectedBuilding?.name ?? undefined} adjustmentMode={state.adjustmentMode} motionPhase={toolPresence.phase} onClose={exitTool} onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })} />
-          <BuildingEditDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 
@@ -406,7 +397,6 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <GameplayOperationHints
           tool={state.tool}
           buildingPlacementIntent={state.buildingPlacementIntent}
-          adjustmentMode={state.adjustmentMode}
           roadDrawMode={state.roadDrawMode}
           terrainEditMode={state.terrainEditMode}
           cityWallConstructionMode={state.cityWallConstructionMode}
