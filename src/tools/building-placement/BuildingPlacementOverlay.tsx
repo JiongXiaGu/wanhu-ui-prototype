@@ -1,9 +1,8 @@
 import { Building2 } from '../../ui/icons/runtime-icons.generated';
 import type { BuildingPlacementIntent, BuildingTerrainMode } from '../../app/ui-state';
-import { RuntimeParameterRow } from '../../ui/Controls';
 import { LeftContextSection } from '../../ui/LeftContextPanel';
 import { PlacementContextPanel } from '../placement/PlacementContextPanel';
-import { BuildingPositionParameters } from '../building-common/BuildingParameterSections';
+import { BuildingNumericParameter, BuildingPositionParameters } from '../building-common/BuildingParameterSections';
 import type { MotionPhase } from '../../ui/motion';
 
 interface Props {
@@ -17,7 +16,7 @@ interface Props {
 
 function TerrainSummary({ mode, onDirty }: { mode: BuildingTerrainMode; onDirty: () => void }) {
   if (mode === 'fill-only') return <LeftContextSection title="只填不挖" className="bp-terrain-summary"><div className="bp-terrain-metrics"><span>标高 <b>12.68 m</b></span><span>填高 <b>0.64 m</b></span></div></LeftContextSection>;
-  if (mode === 'manual-elevation') return <LeftContextSection title="手动标高" className="bp-terrain-summary"><RuntimeParameterRow label="相对标高" value={0} min={-5} max={5} step={0.1} format={(value) => value.toFixed(1) + ' m'} onChange={() => onDirty()} /></LeftContextSection>;
+  if (mode === 'manual-elevation') return <LeftContextSection title="手动标高" className="bp-terrain-summary"><BuildingNumericParameter label="相对标高" initial={0} min={-5} max={5} step={0.1} suffix=" m" onDirty={onDirty} /></LeftContextSection>;
   return <LeftContextSection title="平衡挖填" className="bp-terrain-summary"><div className="bp-terrain-metrics"><span>标高 <b>12.40 m</b></span><span>挖深 <b>0.42 m</b></span><span>填高 <b>0.38 m</b></span></div></LeftContextSection>;
 }
 
