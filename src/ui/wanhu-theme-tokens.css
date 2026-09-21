@@ -1,95 +1,84 @@
-/* Wanhu Theme Tokens v7
-   Canonical game-wide palette + material recipe values.
-   The game canvas owns the visual language; individual screens consume these tokens
-   instead of inventing local palettes. Gameplay may only override role density for
-   scene-dependent states such as night. */
-
+/* 全局视觉语义：1920×1080 逻辑尺寸，Unity 6.6 迁移基线。
+   页面只选择语义档位；材质由 Surface System 消费，不新增末尾美化覆盖层。 */
 .game-canvas{
-  /* Palette */
   --wanhu-color-ink-950:#171a19;
   --wanhu-color-ink-900:#242725;
   --wanhu-color-ink-800:#2e312e;
   --wanhu-color-paper-primary:#eee9df;
-  --wanhu-color-paper-secondary:#b9b5ab;
-  --wanhu-color-paper-tertiary:#8c8f89;
+  --wanhu-color-paper-secondary:#c1bcb2;
+  --wanhu-color-paper-tertiary:#a2a49e;
   --wanhu-color-text-secondary:#d4cfc6;
-  --wanhu-color-text-muted:#999b96;
-  --wanhu-color-icon:#8a8d87;
+  --wanhu-color-text-muted:#afb0a9;
+  --wanhu-color-icon:#9ca099;
   --wanhu-color-icon-hover:#d8d3ca;
   --wanhu-color-brass:#a9844b;
-  --wanhu-color-brass-high:#bd9959;
+  --wanhu-color-brass-high:#c5a469;
+  --wanhu-color-brass-text:#d1b47a;
   --wanhu-color-brass-soft:rgba(169,132,75,.105);
   --wanhu-color-cinnabar:#985447;
 
-  /* Typography scale — 1920×1080 baseline.
-     9.5px is the minimum for intentionally secondary readable metadata.
-     Primary interactive labels should normally use caption / label / body tiers. */
-  --wanhu-type-micro:9.5px;
-  --wanhu-type-caption:10px;
-  --wanhu-type-label:10.5px;
-  --wanhu-type-body:11px;
-  --wanhu-type-body-strong:12px;
-  --wanhu-type-subheading:13px;
+  /* 操作区与阅读区分档；不通过整体缩放改变既有屏幕布局。 */
+  --wanhu-type-micro:11px;
+  --wanhu-type-caption:11px;
+  --wanhu-type-label:12px;
+  --wanhu-type-body:12px;
+  --wanhu-type-reading:13px;
+  --wanhu-type-body-strong:13px;
+  --wanhu-type-subheading:14px;
   --wanhu-type-panel-title:16px;
   --wanhu-type-workspace-title:18px;
-  --wanhu-type-tooltip:10px;
+  --wanhu-type-tooltip:12px;
+  --wanhu-type-reading-leading:1.65;
+  --wanhu-font-regular:400;
+  --wanhu-font-medium:500;
+  --wanhu-font-semibold:600;
 
-  /* Icon scale — PNG Runtime assets remain 64×64; these tokens define logical UI size. */
   --wanhu-icon-xs:14px;
   --wanhu-icon-sm:16px;
   --wanhu-icon-md:18px;
   --wanhu-icon-lg:20px;
   --wanhu-icon-xl:24px;
-  /* Shared material assets */
   --wanhu-material-noise:url('/assets/ui/materials/glass-noise-soft.png');
   --wanhu-material-highlight:rgba(255,255,255,.014);
   --wanhu-material-shade:rgba(0,0,0,.022);
 
-  /* Context surface: neutral Smoked Graphite instrument panels.
-     The tint is deliberately self-stable so vegetation cannot turn the panel green. */
-  --wanhu-surface-context-bg:rgba(45,47,44,.82);
+  /* 阅读稳定性来自中性 Tint；不提高 Blur 半径补救文字对比。 */
+  --wanhu-surface-context-bg:rgba(45,47,44,.89);
   --wanhu-surface-context-generic-top:rgba(55,57,53,.42);
   --wanhu-surface-context-generic-bottom:rgba(34,36,34,.38);
   --wanhu-surface-context-highlight:rgba(255,249,238,.022);
   --wanhu-surface-context-shade:rgba(7,9,8,.055);
-  --wanhu-surface-context-header:rgba(255,249,238,.018);
-  --wanhu-surface-context-body:rgba(8,10,9,.085);
+  --wanhu-surface-context-header:rgba(255,249,238,.025);
+  --wanhu-surface-context-body:rgba(8,10,9,.10);
   --wanhu-surface-context-footer:rgba(8,10,9,.055);
-  --wanhu-surface-context-edge:rgba(238,233,223,.085);
-  --wanhu-surface-context-rule:rgba(238,233,223,.055);
+  --wanhu-surface-context-edge:rgba(238,233,223,.095);
+  --wanhu-surface-context-rule:rgba(238,233,223,.065);
   --wanhu-surface-context-card:transparent;
-  --wanhu-surface-context-card-hover:rgba(255,255,255,.033);
+  --wanhu-surface-context-card-hover:rgba(255,255,255,.040);
   --wanhu-surface-context-shadow:0 20px 50px rgba(6,8,7,.34),inset 0 1px 0 rgba(255,255,255,.028);
   --wanhu-surface-context-filter:blur(16px) saturate(.82) brightness(.99);
 
-  /* Work sheet: large browsing surfaces such as Design Workspace.
-     The base sheet stays relatively transparent; the body adds a smoke overlay. */
-  --wanhu-surface-work-sheet-bg:rgba(24,30,32,.56);
-  --wanhu-surface-work-body-overlay:rgba(14,20,22,.34);
-  --wanhu-surface-work-edge:rgba(238,233,223,.018);
-  --wanhu-surface-work-rule:rgba(238,233,223,.062);
+  --wanhu-surface-work-sheet-bg:rgba(43,45,42,.78);
+  --wanhu-surface-work-body-overlay:rgba(21,23,21,.22);
+  --wanhu-surface-work-edge:rgba(238,233,223,.045);
+  --wanhu-surface-work-rule:rgba(238,233,223,.070);
   --wanhu-surface-work-card:transparent;
-  --wanhu-surface-work-card-hover:rgba(255,255,255,.034);
-  --wanhu-surface-work-focus:rgba(169,132,75,.040);
+  --wanhu-surface-work-card-hover:rgba(255,255,255,.045);
+  --wanhu-surface-work-focus:rgba(169,132,75,.055);
   --wanhu-surface-work-shadow:0 18px 44px rgba(2,4,5,.28),inset 0 1px 0 rgba(255,255,255,.028);
-  --wanhu-surface-work-filter:blur(20px) saturate(.92) brightness(.985);
+  --wanhu-surface-work-filter:blur(20px) saturate(.86) brightness(.985);
 
-  /* Blocking / Global surface: full-screen configuration and management spaces.
-     It is denser than a Work surface but remains a textured graphite material, not
-     an opaque black webpage. */
-  --wanhu-surface-blocking-top:rgba(27,32,34,.935);
-  --wanhu-surface-blocking-bottom:rgba(16,21,23,.955);
+  --wanhu-surface-blocking-top:rgba(42,44,41,.95);
+  --wanhu-surface-blocking-bottom:rgba(30,32,29,.97);
   --wanhu-surface-blocking-vignette:rgba(5,8,9,.18);
   --wanhu-surface-blocking-edge:rgba(238,233,223,.075);
-  --wanhu-surface-blocking-rule:rgba(238,233,223,.055);
-  --wanhu-surface-blocking-row-hover:rgba(255,255,255,.028);
-  --wanhu-surface-blocking-menu:rgba(25,31,33,.975);
+  --wanhu-surface-blocking-rule:rgba(238,233,223,.065);
+  --wanhu-surface-blocking-row-hover:rgba(255,255,255,.035);
+  --wanhu-surface-blocking-menu:rgba(34,36,33,.98);
   --wanhu-surface-blocking-menu-hover:rgba(255,255,255,.048);
   --wanhu-surface-blocking-shadow:0 24px 64px rgba(2,4,5,.40),inset 0 1px 0 rgba(255,255,255,.028);
-  /* Full-screen Global Space material. Settings consumes it first; Save / Load can
-     migrate to the same recipe without becoming floating windows. */
-  --wanhu-global-space-top:rgba(48,50,46,.89);
-  --wanhu-global-space-bottom:rgba(31,34,31,.92);
+  --wanhu-global-space-top:rgba(48,50,46,.94);
+  --wanhu-global-space-bottom:rgba(31,34,31,.965);
   --wanhu-global-space-highlight:rgba(255,249,238,.014);
   --wanhu-global-space-shade:rgba(7,9,8,.055);
   --wanhu-global-space-backdrop:rgba(9,11,10,.10);
@@ -97,12 +86,12 @@
   --wanhu-global-space-header-bg:rgba(255,255,255,.010);
   --wanhu-global-space-tabs-bg:rgba(255,255,255,.005);
   --wanhu-global-space-footer-bg:rgba(8,10,9,.070);
-  --wanhu-global-space-rule:rgba(238,233,223,.055);
-  --wanhu-global-space-row-hover:rgba(255,255,255,.028);
+  --wanhu-global-space-rule:rgba(238,233,223,.065);
+  --wanhu-global-space-row-hover:rgba(255,255,255,.035);
   --wanhu-global-space-item-bg:rgba(255,255,255,.004);
   --wanhu-global-space-item-selected:rgba(169,132,75,.075);
 
-  /* Pause Blocking Space: same graphite family, tuned for a frozen-world overlay. */
+  /* 暂停菜单保持已确认的无颗粒面板；背景弱化与面板本体分离。 */
   --wanhu-pause-dim:rgba(12,14,13,.44);
   --wanhu-pause-vignette:rgba(6,8,7,.145);
   --wanhu-pause-scene-filter:blur(8px) brightness(.70) saturate(.80);
@@ -117,42 +106,33 @@
   --wanhu-pause-row-focus:rgba(169,132,75,.050);
   --wanhu-pause-focus-line:rgba(169,132,75,.90);
 
-
-  /* Management Topic Visual System: body stays neutral Smoked Graphite;
-     topic identity is restricted to Header / icon / data visualization accents. */
-  --wanhu-management-surface-bg:rgba(39,41,39,.955);
+  --wanhu-management-surface-bg:rgba(39,41,39,.975);
   --wanhu-management-surface-highlight:rgba(255,249,238,.014);
   --wanhu-management-surface-shade:rgba(8,10,9,.050);
   --wanhu-management-surface-edge:rgba(238,233,223,.080);
-  --wanhu-management-rule:rgba(238,233,223,.060);
+  --wanhu-management-rule:rgba(238,233,223,.065);
   --wanhu-management-header-bg:rgba(255,249,238,.010);
   --wanhu-management-surface-shadow:0 30px 82px rgba(3,5,4,.42),inset 0 1px 0 rgba(255,255,255,.022);
-
   --wanhu-topic-overview-accent:#b3a07a;
   --wanhu-topic-overview-tint:rgba(179,160,122,.105);
   --wanhu-topic-overview-chart:rgba(179,160,122,.62);
-
   --wanhu-topic-civic-accent:#b58d78;
   --wanhu-topic-civic-tint:rgba(181,141,120,.105);
   --wanhu-topic-civic-chart:rgba(181,141,120,.62);
-
   --wanhu-topic-economy-accent:#b79255;
   --wanhu-topic-economy-tint:rgba(183,146,85,.110);
   --wanhu-topic-economy-chart:rgba(183,146,85,.68);
-
   --wanhu-topic-resource-accent:#8f9c72;
   --wanhu-topic-resource-tint:rgba(143,156,114,.100);
   --wanhu-topic-resource-chart:rgba(143,156,114,.62);
-
   --wanhu-topic-governance-accent:#8294a0;
   --wanhu-topic-governance-tint:rgba(130,148,160,.100);
   --wanhu-topic-governance-chart:rgba(130,148,160,.62);
-
   --wanhu-topic-defense-accent:#aa6d62;
   --wanhu-topic-defense-tint:rgba(170,109,98,.105);
   --wanhu-topic-defense-chart:rgba(170,109,98,.64);
 
-  /* Persistent information surface: Top Status. */
+  /* 常驻 HUD 不因正文升级而扩大，保留原来的空间重量。 */
   --wanhu-surface-info-bg:rgba(25,31,33,.50);
   --wanhu-surface-info-edge:rgba(238,233,223,.12);
   --wanhu-surface-info-rule:rgba(238,233,223,.045);
@@ -160,8 +140,6 @@
   --wanhu-surface-info-filter:blur(20px) saturate(.92) brightness(.98);
   --wanhu-surface-info-highlight:rgba(255,255,255,.030);
   --wanhu-surface-info-shade:rgba(0,0,0,.035);
-
-  /* Secondary persistent controls: Control Tray below Top Status. */
   --wanhu-surface-control-bg:rgba(24,30,32,.41);
   --wanhu-surface-control-edge-top:rgba(238,233,223,.080);
   --wanhu-surface-control-edge-side:rgba(238,233,223,.040);
@@ -172,31 +150,26 @@
   --wanhu-surface-control-highlight:rgba(255,255,255,.024);
   --wanhu-surface-control-shade:rgba(0,0,0,.025);
 
-  /* Bottom Command family: L / M / S share one neutral Smoked Graphite hue.
-     Density and shadow express role; hue never changes between Main Dock, Placement and Utility. */
   --wanhu-bottom-command-lg-bg:rgba(46,48,45,.58);
   --wanhu-bottom-command-lg-highlight:rgba(255,249,238,.024);
   --wanhu-bottom-command-lg-shade:rgba(8,10,9,.045);
   --wanhu-bottom-command-lg-edge:rgba(238,233,223,.018);
   --wanhu-bottom-command-lg-shadow:0 16px 38px rgba(6,8,7,.25),inset 0 1px 0 rgba(255,255,255,.022);
   --wanhu-bottom-command-lg-filter:blur(20px) saturate(.86) brightness(.99);
-
   --wanhu-bottom-command-md-bg:rgba(43,45,42,.80);
   --wanhu-bottom-command-md-highlight:rgba(255,249,238,.028);
   --wanhu-bottom-command-md-shade:rgba(8,10,9,.060);
   --wanhu-bottom-command-md-edge:rgba(238,233,223,.055);
   --wanhu-bottom-command-md-shadow:0 16px 40px rgba(6,8,7,.30),inset 0 1px 0 rgba(255,255,255,.026);
   --wanhu-bottom-command-md-filter:blur(18px) saturate(.84) brightness(.99);
-
   --wanhu-bottom-command-sm-bg:rgba(48,50,46,.42);
   --wanhu-bottom-command-sm-highlight:rgba(255,249,238,.018);
   --wanhu-bottom-command-sm-shade:rgba(8,10,9,.035);
   --wanhu-bottom-command-sm-edge:rgba(238,233,223,.016);
   --wanhu-bottom-command-sm-shadow:0 12px 30px rgba(6,8,7,.20),inset 0 1px 0 rgba(255,255,255,.018);
   --wanhu-bottom-command-sm-filter:blur(20px) saturate(.88) brightness(.995);
-
   --wanhu-command-divider:rgba(238,233,223,.052);
-  --wanhu-command-hover:rgba(255,255,255,.038);
+  --wanhu-command-hover:rgba(255,255,255,.045);
   --wanhu-command-active-top:rgba(169,132,75,.070);
   --wanhu-command-active-bottom:rgba(169,132,75,.018);
   --wanhu-command-active-line:rgba(169,132,75,.84);
@@ -207,8 +180,6 @@
   --wanhu-command-tooltip-bg:rgba(25,26,24,.985);
   --wanhu-command-tooltip-edge:rgba(238,233,223,.080);
   --wanhu-command-tooltip-shadow:0 8px 22px rgba(6,8,7,.26);
-
-  /* Ambient surface: World Utility + tiny detached utility actions. */
   --wanhu-surface-ambient-bg:rgba(24,30,32,.41);
   --wanhu-surface-ambient-soft-bg:rgba(24,30,32,.40);
   --wanhu-surface-ambient-edge:rgba(238,233,223,.016);
@@ -216,8 +187,6 @@
   --wanhu-surface-ambient-filter:blur(20px) saturate(.94) brightness(.985);
   --wanhu-surface-ambient-highlight:rgba(255,255,255,.022);
   --wanhu-surface-ambient-shade:rgba(0,0,0,.022);
-
-  /* Readout surface: Operation Hint protects small text without becoming a work panel. */
   --wanhu-surface-readout-bg:rgba(22,28,30,.45);
   --wanhu-surface-readout-edge:rgba(238,233,223,.016);
   --wanhu-surface-readout-shadow:0 10px 26px rgba(2,4,5,.22),inset 0 1px 0 rgba(255,255,255,.022);
@@ -225,16 +194,16 @@
   --wanhu-surface-readout-highlight:rgba(255,255,255,.020);
   --wanhu-surface-readout-shade:rgba(0,0,0,.024);
 
-  /* Common control tones used across the game. */
-  --wanhu-control-hover:rgba(255,255,255,.040);
-  --wanhu-control-hover-strong:rgba(255,255,255,.052);
-  --wanhu-control-border-soft:rgba(238,233,223,.065);
-  --wanhu-control-border-hover:rgba(238,233,223,.15);
+  /* Hover 提亮中性底色；Selected 保留熟铜；Focus 是独立轮廓。 */
+  --wanhu-control-hover:rgba(255,255,255,.045);
+  --wanhu-control-hover-strong:rgba(255,255,255,.060);
+  --wanhu-control-border-soft:rgba(238,233,223,.085);
+  --wanhu-control-border-hover:rgba(238,233,223,.20);
   --wanhu-control-active-bg:rgba(169,132,75,.075);
   --wanhu-control-active-line:rgba(169,132,75,.78);
+  --wanhu-control-focus:var(--wanhu-color-brass-text);
 
-  /* Compatibility aliases. These keep legacy component geometry functional while
-     visual ownership lives in this token contract rather than in historical Pass files. */
+  /* 已有组件的兼容别名；不在历史样式里另建一套 Palette。 */
   --wanhu-tonal-ink-950:var(--wanhu-color-ink-950);
   --wanhu-tonal-ink-900:var(--wanhu-color-ink-900);
   --wanhu-tonal-ink-800:var(--wanhu-color-ink-800);
@@ -245,7 +214,6 @@
   --wanhu-tonal-brass-hi:var(--wanhu-color-brass-high);
   --wanhu-tonal-brass-soft:var(--wanhu-color-brass-soft);
   --wanhu-tonal-cinnabar:var(--wanhu-color-cinnabar);
-
   --hud-text:var(--wanhu-color-paper-primary);
   --hud-text-secondary:var(--wanhu-color-paper-secondary);
   --hud-icon:var(--wanhu-color-paper-tertiary);
@@ -259,7 +227,6 @@
   --hud-shadow-secondary:0 12px 30px rgba(2,4,5,.24),inset 0 1px 0 rgba(255,255,255,.025);
   --hud-glass-filter:blur(16px) saturate(.92) brightness(.98);
   --hud-glass-filter-soft:blur(13px) saturate(.94) brightness(.985);
-
   --hud-surface-ambient-top:rgba(29,35,36,.66);
   --hud-surface-ambient-bottom:rgba(20,25,27,.62);
   --hud-surface-context-top:rgba(30,36,38,.78);
@@ -268,7 +235,6 @@
   --hud-surface-work-bottom:rgba(18,23,25,.84);
   --hud-surface-blocking-top:var(--wanhu-surface-blocking-top);
   --hud-surface-blocking-bottom:var(--wanhu-surface-blocking-bottom);
-
   --command-surface-lg-top:var(--wanhu-bottom-command-lg-bg);
   --command-surface-lg-bottom:var(--wanhu-bottom-command-lg-bg);
   --command-surface-md-top:var(--wanhu-bottom-command-md-bg);
@@ -295,7 +261,6 @@
   --command-blur-lg:20px;
   --command-blur-md:18px;
   --command-blur-sm:20px;
-
   --wanhu-hud-paper:var(--wanhu-color-paper-primary);
   --wanhu-hud-text:var(--wanhu-color-text-secondary);
   --wanhu-hud-muted:var(--wanhu-color-paper-secondary);
@@ -303,15 +268,13 @@
   --wanhu-hud-gold:var(--wanhu-color-brass);
   --wanhu-hud-filter:blur(16px) saturate(.92) brightness(.98);
   --wanhu-hud-filter-soft:blur(13px) saturate(.94) brightness(.985);
-
   --wanhu-identity-paper:var(--wanhu-color-paper-primary);
   --wanhu-identity-text:var(--wanhu-color-text-secondary);
   --wanhu-identity-secondary:var(--wanhu-color-paper-secondary);
-  --wanhu-identity-muted:#969a98;
+  --wanhu-identity-muted:var(--wanhu-color-text-muted);
   --wanhu-identity-faint:var(--wanhu-color-paper-tertiary);
   --wanhu-identity-gold:var(--wanhu-color-brass);
   --wanhu-identity-gold-hi:var(--wanhu-color-brass-high);
-
   --wanhu-character-gold:var(--wanhu-color-brass);
   --wanhu-character-gold-hi:var(--wanhu-color-brass-high);
   --wanhu-character-gold-soft:rgba(169,132,75,.14);
@@ -320,42 +283,35 @@
   --wanhu-character-beam:rgba(231,226,216,.24);
 }
 
+/* 昼夜共用色相，只微调自身密度；不建立独立 Night Theme。 */
 .gameplay-screen[data-time-of-day="night"]{
-  --wanhu-surface-context-bg:rgba(49,51,48,.84);
+  --wanhu-surface-context-bg:rgba(49,51,48,.90);
   --wanhu-surface-context-generic-top:rgba(59,61,57,.44);
   --wanhu-surface-context-generic-bottom:rgba(37,39,36,.40);
-  --wanhu-surface-context-header:rgba(255,249,238,.020);
-  --wanhu-surface-context-body:rgba(8,10,9,.080);
+  --wanhu-surface-context-header:rgba(255,249,238,.025);
+  --wanhu-surface-context-body:rgba(8,10,9,.10);
   --wanhu-surface-context-footer:rgba(8,10,9,.050);
-  --wanhu-surface-context-edge:rgba(238,233,223,.095);
-  --wanhu-surface-context-rule:rgba(238,233,223,.058);
-  --wanhu-surface-context-card-hover:rgba(255,255,255,.038);
+  --wanhu-surface-context-edge:rgba(238,233,223,.10);
+  --wanhu-surface-context-rule:rgba(238,233,223,.065);
+  --wanhu-surface-context-card-hover:rgba(255,255,255,.040);
   --wanhu-surface-context-filter:blur(16px) saturate(.80) brightness(1.01);
-
-  --wanhu-surface-work-sheet-bg:rgba(27,33,35,.58);
-  --wanhu-surface-work-body-overlay:rgba(15,21,23,.36);
-  --wanhu-surface-work-rule:rgba(238,233,223,.064);
-  --wanhu-surface-work-filter:blur(20px) saturate(.90) brightness(1.0);
-
+  --wanhu-surface-work-sheet-bg:rgba(47,49,46,.80);
+  --wanhu-surface-work-body-overlay:rgba(23,25,23,.24);
+  --wanhu-surface-work-rule:rgba(238,233,223,.070);
+  --wanhu-surface-work-filter:blur(20px) saturate(.84) brightness(1.0);
   --wanhu-bottom-command-lg-bg:rgba(50,52,49,.60);
   --wanhu-bottom-command-md-bg:rgba(47,49,46,.82);
   --wanhu-bottom-command-sm-bg:rgba(52,54,50,.44);
   --wanhu-bottom-command-lg-filter:blur(20px) saturate(.84) brightness(1.0);
   --wanhu-bottom-command-md-filter:blur(18px) saturate(.82) brightness(1.0);
   --wanhu-bottom-command-sm-filter:blur(20px) saturate(.86) brightness(1.0);
-
-  /* Night keeps the same Pause language; only density/scene attenuation shift slightly. */
   --wanhu-pause-dim:rgba(10,12,11,.50);
   --wanhu-pause-surface-bg:rgba(37,39,36,.95);
   --wanhu-pause-scene-filter:blur(9px) brightness(.72) saturate(.72);
-  --wanhu-global-space-top:rgba(51,53,49,.90);
-  --wanhu-global-space-bottom:rgba(34,37,34,.93);
+  --wanhu-global-space-top:rgba(51,53,49,.95);
+  --wanhu-global-space-bottom:rgba(34,37,34,.97);
   --wanhu-global-space-filter:blur(7px) saturate(.74) brightness(.92);
-
-  /* Persistent HUD keeps the reviewed role separation at night. Only the top
-     information strip needs a small density lift; detached controls stay stable. */
   --wanhu-surface-info-bg:rgba(28,34,36,.52);
-
   --hud-surface-ambient-top:rgba(33,39,41,.69);
   --hud-surface-ambient-bottom:rgba(21,27,29,.66);
   --hud-surface-context-top:rgba(34,40,42,.80);
@@ -366,11 +322,10 @@
   --wanhu-hud-filter-soft:blur(13px) saturate(.92) brightness(1.0);
 }
 
-/* Elevated Dialog Surface: UI-over-UI must remain readable without relying on
-   real-time background blur so the Web prototype maps cleanly to Unity UI Toolkit. */
+/* Dialog 不额外模糊仍是当前美术/成本选择，不再声称 Unity 6.6 做不到 UI-over-UI Blur。 */
 .game-canvas{
   --wanhu-dialog-backdrop:rgba(8,10,9,.64);
-  --wanhu-dialog-surface-bg:rgba(43,45,42,.94);
+  --wanhu-dialog-surface-bg:rgba(43,45,42,.95);
   --wanhu-dialog-surface-highlight:rgba(255,249,238,.018);
   --wanhu-dialog-surface-shade:rgba(8,10,9,.052);
   --wanhu-dialog-surface-edge:rgba(238,233,223,.085);
@@ -382,4 +337,3 @@
   --wanhu-dialog-accent-warning:rgba(189,153,89,.78);
   --wanhu-dialog-accent-danger:rgba(152,84,71,.86);
 }
-
