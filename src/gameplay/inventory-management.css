@@ -13,14 +13,14 @@
 .inventory-overview__resources{min-width:0;overflow:hidden}
 .inventory-overview__aside{min-width:0;display:grid;grid-template-rows:1fr 1fr;gap:16px}
 
-/* 行高和列数保持不变；比较列对齐，状态仍由独立文字表达。 */
+/* 行高和列数保持不变；数字列右对齐，资源名称与状态列左对齐。 */
 .inventory-resource-table{margin-top:6px;display:flex;flex-direction:column}
 .inventory-resource-row{min-height:54px;display:grid;grid-template-columns:1.1fr .9fr .86fr .86fr .76fr .68fr;align-items:center;gap:10px;padding:0 14px;border-top:1px solid var(--wanhu-management-rule);color:var(--wanhu-color-text-secondary);font-size:var(--wanhu-type-reading);line-height:1.5}
 .inventory-resource-row--head{min-height:34px;border-top:0;color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-caption);letter-spacing:0}
 .inventory-resource-row>b{color:var(--wanhu-color-paper-primary);font-size:var(--wanhu-type-reading);font-weight:500}
 .inventory-resource-row>strong{color:var(--wanhu-color-paper-primary);font-size:var(--wanhu-type-subheading);font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
 .inventory-resource-row>span,.inventory-resource-row>em{font-style:normal;font-variant-numeric:tabular-nums;text-align:right}
-.inventory-resource-row--head>span:first-child{text-align:left}
+.inventory-resource-row--head>span:first-child,.inventory-resource-row--head>span:last-child{text-align:left}
 .inventory-resource-row>em{color:var(--wanhu-color-paper-secondary)}
 .inventory-resource-row>.inventory-status{justify-self:start;min-width:38px;font-style:normal;text-align:left;color:var(--wanhu-color-paper-secondary)}
 .inventory-resource-row>.inventory-status--good{color:var(--wanhu-color-text-secondary)}

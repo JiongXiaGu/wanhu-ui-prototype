@@ -1,94 +1,17 @@
 # 万户天工 UI Prototype
 
-交互式 UI 美术与流程原型，用于在 Unity UI Toolkit 正式实现前验证《万户天工》的界面视觉、空间关系、交互层级和完整玩家流程。
+《万户天工》的 UI 美术、构图、信息架构和交互验证原型。最终运行时为 **Unity 6.6 + URP + UI Toolkit**，本仓库仍是 React / TypeScript / Vite 原型，不是 Unity 游戏客户端。
 
-> **最终运行时 UI：Unity UI Toolkit。**
->
-> 本仓库的 React / TypeScript / CSS 页面只负责美术、构图、信息架构和交互验证，不是最终 Web 产品，也不要求 Web CSS 与 Unity USS 逐行对应。
+## 当前基线
 
-- GitHub：`JiongXiaGu/wanhu-ui-prototype`
-- Vercel：`https://wanhu-ui-prototype.vercel.app/`
-- 固定逻辑画布：`1920 × 1080`
-- Web Prototype：React + TypeScript + Vite + GitHub Actions + Playwright
-- 最终目标：Unity UI Toolkit + UXML / USS / C# Runtime UI
-- 场景级模糊：计划使用统一 URP Fullscreen Blur Pass
+- 固定 1920×1080 逻辑画布，浏览器整体等比缩放。
+- 烟墨 Graphite 面板、暖纸文字、熟铜状态；不回到墨绿皮肤或仿古卷轴。
+- 保留现有 Gameplay / Management / Workspace / Tool / Pause / Archive / Settings 空间和输入契约。
+- 共享正文与操作字号 12px，阅读内容 13px，分组 14px，面板标题 16px，Workspace 标题 18px；元信息与紧凑标签 11px。
+- 普通图标采用 committed 64×64 PNG，SVG 只作 Source Master；运行时不生成 Lucide SVG。
+- 原生 backdrop-filter 与 drop-shadow 已属于 Unity 6.6 可验证的迁移方向；共享自定义 URP Blur 从强制前提调整为性能或效果不满足时的回退。
 
-## 当前范围
-
-- 主菜单
-- 新建城市
-- Archive / 载入游戏
-- 全屏 Settings
-- Gameplay HUD
-- Gameplay Quick Controls
-- Utility Toolbar / Main Dock
-- Building Selection Workspace
-- Building Placement ToolOverlay / Tool Dock
-- Terrain Edit / Tree Placement Tool
-- GameplayOperationHints
-- Camera / Weather Right Edge Flyout
-- Pause Layer
-- Pause Save / Pause Settings
-
-## 设计基线
-
-- 黛墨 / 深青灰 Surface；
-- 暖金用于 Selected / Focus；
-- 浅纸文字；
-- 世界画面优先；
-- 弱边界、低圆角；
-- 常驻 UI 信息保持精简；
-- 信息做减法，视觉层级通过 Tone、材质、真实游戏内容、排版和轻动效补足；
-- 不使用繁复仿古装饰；
-- 新增重要 UI 必须能说明其 Unity UI Toolkit 落地方式。
-
-## Web 与 Unity 的边界
-
-Web Prototype 可以使用浏览器能力快速表达目标视觉，例如 Grid、Gradient、Shadow、Filter、Backdrop Blur、Pseudo Element 和 Keyframe。
-
-这些写法**不是最终技术方案**。正式 Unity 中应根据需要翻译为：
-
-- UXML / USS；
-- C# 状态与事件；
-- VisualElement；
-- Sprite / 9-slice；
-- Texture / RenderTexture；
-- Painter2D / Mesh；
-- URP 全屏效果。
-
-当前网页不因为纯实现差异而大规模返工。只有结构、交互、性能或信息架构本身不适合 Unity 时，才修改设计。
-
-完整规则见：`Documentation/UI Toolkit落地规范.md`。
-
-## 文档与交接
-
-长期设计、决策、开发记录和当前工作上下文统一放在 `Documentation/`。
-
-新对话或新开发者接手时，建议按顺序阅读：
-
-1. `Documentation/工作交接.md`
-2. `Documentation/项目概览.md`
-3. `Documentation/UI Toolkit落地规范.md`
-4. `Documentation/UI设计原则.md`
-5. `Documentation/UI空间与状态架构.md`
-6. 当前任务对应的代码和决策记录
-
-重要目录：
-
-```text
-Documentation/
-├─ 项目概览.md
-├─ UI Toolkit落地规范.md
-├─ UI设计原则.md
-├─ UI空间与状态架构.md
-├─ 组件设计规范.md
-├─ 工作交接.md
-├─ 决策记录/
-├─ 开发记录/
-└─ 代码审查/
-```
-
-代码是具体实现的权威来源；正式文档记录稳定设计目标、职责边界、关键不变量和决策原因；`开发记录/` 记录阶段修改及原因；`工作交接.md` 维护当前上下文。
+6.6 能力、渲染条件和测试边界见 `Documentation/Unity 6.6视觉能力与回退规范.md`。原生引擎支持某效果，不表示本 Web 仓库已完成 Unity Player 验收。
 
 ## 开发
 
@@ -97,22 +20,56 @@ npm install
 npm run dev
 ```
 
-生产构建：
+检查与构建：
 
 ```bash
+npm run icons:check
+npm run audit:scale
+npm run audit:unity
 npm run build
 ```
 
-## Visual Review
+也可运行 `npm run check` 执行图标校验、迁移审查与构建；字号扫描需单独运行 `audit:scale`。
 
-局部 Control / Surface 的高频视觉微调可以先做源码级组件 Review：读取当前 TSX/CSS，用等价 DOM 和当前 CSS Token/Selector 渲染关键状态并截图，快速检查 Toggle、Slider、Button、ColorParameterField、单个 Surface 等局部视觉。这个中间短循环不要求每次等待 GitHub Actions。
+## 体验入口
 
-源码级组件图不是完整页面实机截图。仓库包含正式 PNG Icon、Gameplay 背景、Glass Noise 和大量页面级状态；当前执行环境无法保证完整还原这些二进制资源与真实 React/Vite 页面，因此完整 HUD、Workspace、Settings、Pause、Color Tool、Terrain Tool 等重要页面的正式交付仍必须检查 Build 和 GitHub Actions UI Review。
+通过 URL 查询参数进入确定性页面，例如：
 
-Review Scenario 由 `src/app/scenarios.ts` 提供，可通过 `?review=<scenario>` 直接进入确定性状态。GitHub Actions 使用 Playwright Chromium 自动截图并上传 `visual-review` Artifact。不要只检查目标页面；修改全局 Surface、Typography、Button 或布局时应重新检查全部主要状态。
+```text
+?review=gameplay
+?review=workspace-building
+?review=color-tool-surface
+?review=weather
+?review=load
+?review=settings
+?review=pause
+```
 
-Visual Review 验证 Web Prototype 的完整视觉和交互稳定性；源码级组件 Review 负责提高中间迭代速度，两者不能互相冒充。正式实现前还需检查 UI Toolkit 可落地性。
+完整 Scenario 以 `src/app/scenarios.ts` 为准。城市和库存可以从 Gameplay 顶部入口打开。
 
-## 部署
+## 工作方式
 
-仓库包含 `vercel.json`。`main` 分支提交后由 Vercel 自动部署。
+默认直接提交 main，不要求创建临时分支，也不要求部署 Vercel。仓库中保留的历史部署配置不是日常验收依赖。
+
+局部 Control / Surface 可以先做源码级组件 Review；组件图不能替代真实页面、正式 PNG 图标、世界背景与交互测试。
+
+重要视觉修改需通过 GitHub Actions Build 和 UI Review。下载 `ui-review` Artifact 并实际查看完整页面截图，不能仅以 Action Success 交付。基础工具回归由 `scripts/capture-ui-review.mjs` 提供；阅读、控件状态、昼夜和 4K 回归由 `scripts/capture-typography-decision-review.mjs` 提供，并输出 `readability-report.json`。
+
+目前 Web 字体仍通过已有 Noto 字体加载方式使用；字体离线打包、Unity Font Asset、fallback 和目标设备性能属于后续 Unity 迁移验证，不应宣称已完成。
+
+## 文档与样式职责
+
+从 `AGENTS.md` 和 `Documentation/工作交接.md` 开始。主要规范：
+
+- `Documentation/UI设计原则.md`
+- `Documentation/Wanhu 烟墨熟铜视觉材质规范.md`
+- `Documentation/UI Typography与Icon尺寸规范.md`
+- `Documentation/UI空间与状态架构.md`
+- `Documentation/UI Toolkit落地规范.md`
+- `Documentation/Unity 6.6视觉能力与回退规范.md`
+- `Documentation/UI Motion System设计规范.md`
+- `Documentation/UI图标资产管线.md`
+
+Theme 定义语义，Surface 定义材质，Controls 定义内部结构与交互状态，Feature 定义业务内容布局。不要新增一个最后加载的美化覆盖文件来修正所有页面。
+
+代码是具体实现权威；文档记录意图、边界、职责与不变量。历史快照不作为当前版本的能力基线。

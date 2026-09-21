@@ -82,8 +82,9 @@
 .archive-save-card__copy>span:nth-child(2){color:var(--wanhu-color-text-muted);font-size:var(--wanhu-type-label)}
 .archive-save-card__copy>small{color:var(--wanhu-color-paper-tertiary);font-size:var(--wanhu-type-micro)}
 .archive-save-card .archive-save-card__time-row{display:flex;align-items:center;gap:10px;color:var(--wanhu-color-text-muted)}
-.archive-save-card .archive-save-card__time-row>small{flex:0 0 44px;color:var(--wanhu-color-paper-tertiary);font-size:var(--wanhu-type-micro);letter-spacing:.015em}
-.archive-save-card .archive-save-card__time-row>span{color:var(--wanhu-color-text-muted);font-size:var(--wanhu-type-label);font-variant-numeric:tabular-nums}
+/* 四字标签预留字距与缩放余量；不能靠缩小文字避免换行。 */
+.archive-save-card .archive-save-card__time-row>small{flex:0 0 56px;color:var(--wanhu-color-paper-tertiary);font-size:var(--wanhu-type-micro);letter-spacing:.015em;white-space:nowrap}
+.archive-save-card .archive-save-card__time-row>span{color:var(--wanhu-color-text-muted);font-size:var(--wanhu-type-label);font-variant-numeric:tabular-nums;white-space:nowrap}
 .archive-save-card.is-selected .archive-save-card__time-row>span{color:var(--wanhu-color-paper-secondary)}
 .archive-save-card__status{position:absolute;right:14px;top:12px;z-index:7;display:flex;align-items:center;gap:6px;pointer-events:none}
 .archive-save-card__kind{width:25px;height:25px;display:grid;place-items:center;border:1px solid var(--wanhu-control-border-soft);border-radius:7px;background:var(--ui-field-surface);color:var(--wanhu-color-icon)}
