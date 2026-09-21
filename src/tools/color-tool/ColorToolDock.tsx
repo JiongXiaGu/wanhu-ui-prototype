@@ -8,7 +8,6 @@ interface Props {
   motionPhase?: MotionPhase;
   dispatch: Dispatch<GameplayUiAction>;
   onComplete: () => void;
-  onCancel: () => void;
 }
 
 export function ColorToolDock({ state, motionPhase = 'steady', dispatch, onComplete }: Props) {
@@ -23,7 +22,7 @@ export function ColorToolDock({ state, motionPhase = 'steady', dispatch, onCompl
 
   return (
     <div className={'tool-bottom-cluster color-tool-toolbar-cluster motion-bottom-surface is-' + motionPhase} aria-label="配色工具主控栏" aria-busy={motionPhase !== 'steady'}>
-      {/* 原 Complete / Cancel 都调用 onClose，没有回退行为；只展示真实的结束动作。 */}
+      {/* 没有整轮回退契约，仅展示真实的结束动作。 */}
       <ToolActionBar ariaLabel="配色工具操作栏" modeGroups={modeGroups} completeLabel="完成配色" completeShortLabel="完成" completeKind="exit" commitGroupLabel="配色工具任务" onComplete={onComplete} />
     </div>
   );

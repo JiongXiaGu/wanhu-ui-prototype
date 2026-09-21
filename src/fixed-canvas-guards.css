@@ -1,38 +1,22 @@
 /*
  * Fixed 1920x1080 virtual-canvas guards.
- *
- * The prototype is authored on a fixed 1920x1080 logical canvas and the
- * entire canvas is scaled in App.tsx to fit the browser viewport.
- * Viewport media queries must therefore not re-layout content inside that
- * logical canvas. These rules keep full-screen spaces visually identical
- * across browser sizes/zoom levels; only the outer canvas scale may change.
+ * The entire canvas is scaled in App.tsx. Viewport queries must not re-layout
+ * logical content. These guards contain no material or visual theme.
  */
-
-/* NewGameSpace keeps the old .flow-frame review selector without inheriting the legacy inset frame.
-   Material is owned exclusively by .wanhu-global-space; this guard must never paint a theme. */
 .new-game-space.flow-frame {
   inset: 0;
   border: 0;
   box-shadow: none;
 }
 
-/* Settings canonical 1920 layout. Wider than the old 900px column so the page
-   reads as a game settings workspace rather than a narrow web form. */
-.settings-space__content {
-  width: 1100px;
-  max-width: none;
-}
-
-.settings-row__control {
-  flex-basis: 420px;
-}
+/* Settings 的固定逻辑尺寸已由 settings-panel.css 单独持有。
+   不在此恢复旧 1100px 内容宽度 / 420px 字段覆盖，避免双重几何所有者。 */
 
 /* SaveGameSpace canonical 1920 layout. */
 .save-game-space__body {
   width: 1140px;
   max-width: none;
 }
-
 .save-manual-card__select {
   padding-right: 158px;
 }
@@ -43,28 +27,22 @@
   max-width: none;
   gap: 34px;
 }
-
 .archive-groups {
   flex-basis: 344px;
   padding-right: 28px;
 }
-
 .archive-group-card__image {
   flex-basis: 98px;
 }
-
 .archive-save-card__image {
   flex-basis: 146px;
 }
-
 .archive-save-card__select {
   padding-right: 290px;
 }
-
 .archive-save-type-tabs button {
   min-width: 86px;
 }
-
 .archive-save-card__type,
 .archive-save-card__status > em {
   padding-left: 7px;

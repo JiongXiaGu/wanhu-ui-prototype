@@ -70,7 +70,6 @@ export function ColorTool({
         motionPhase={motionPhase}
         dispatch={dispatch}
         onComplete={onClose}
-        onCancel={onClose}
       />
     </>
   );

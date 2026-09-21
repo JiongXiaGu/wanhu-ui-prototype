@@ -16,7 +16,7 @@ async function open(review, selector) {
   await page.goto(url.toString(), { waitUntil: 'networkidle' });
   await page.waitForSelector(selector); await settle();
 }
-async function shot(name) { await page.mouse.move(1900, 20); await page.screenshot({ path: `${out}/usability-${name}.png` }); report.screenshots.push(name); }
+async function shot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/usability-${name}.png` }); report.screenshots.push(name); }
 const overlap = (a, b) => Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
 async function checkToolLayout(label) {
   const bar = await page.locator('.tool-action-bar').boundingBox();
@@ -39,16 +39,35 @@ async function checkInspector(label) {
   report.checks.push({ label, placement: await page.locator('.asset-inspector-popover').getAttribute('data-placement'), popup, workspace });
 }
 async function checkSettings(label) {
-  const rows = await page.locator('.settings-row').evaluateAll(elements => elements.flatMap(element => {
-    const label = element.querySelector('.settings-row__label');
-    const control = element.querySelector('.settings-row__control');
-    if (!label || !control) return [];
-    const a = label.getBoundingClientRect(), b = control.getBoundingClientRect();
-    return [{ text: label.textContent.trim(), gap: b.left - a.right, left: b.left, right: b.right }];
-  }));
-  assert(rows.length > 0, label + ': 缺少设置行');
-  assert(rows.every(row => Math.abs(row.gap - 40) < 1 && Math.abs(row.left - rows[0].left) < 1), label + ': 控件列起点不一致');
-  report.checks.push({ label, rows });
+  const geometry = await page.locator('.settings-space__content').evaluate(root => {
+    const canvas = root.closest('.game-canvas');
+    const scale = canvas.getBoundingClientRect().width / canvas.clientWidth;
+    const rows = [...root.querySelectorAll('.settings-row')].flatMap(element => {
+      const label = element.querySelector('.settings-row__label');
+      const control = element.querySelector('.settings-row__control');
+      if (!label || !control) return [];
+      const a = label.getBoundingClientRect(), b = control.getBoundingClientRect();
+      return [{ text: label.textContent.trim(), gap: (b.left - a.right) / scale, left: b.left / scale, width: b.width / scale }];
+    });
+    return { contentWidth: root.clientWidth, rows };
+  });
+  assert.equal(geometry.contentWidth, 820, label + ': 旧几何覆盖不能恢复 1100px 宽度');
+  assert(geometry.rows.length > 0, label + ': 缺少设置行');
+  assert(geometry.rows.every(row => Math.abs(row.gap - 40) < 1 && Math.abs(row.width - 380) < 1 && Math.abs(row.left - geometry.rows[0].left) < 1), label + ': 控件列几何不一致');
+  report.checks.push({ label, ...geometry });
+}
+async function checkSelectEscape(label, focusOption) {
+  const trigger = page.locator('.settings-select-control .ui-select__trigger').first();
+  const previous = await trigger.textContent();
+  await trigger.click();
+  await page.waitForSelector('.ui-select__menu');
+  if (focusOption) await page.locator('.ui-select__menu [role="option"]').first().focus();
+  await page.keyboard.press('Escape'); await settle();
+  assert.equal(await page.locator('.ui-select__menu').count(), 0, label + ': 下拉应关闭');
+  assert.equal(await page.locator('.settings-space:visible').count(), 1, label + ': 不得同时关闭设置页');
+  assert.equal(await trigger.textContent(), previous, label + ': 取消下拉不得修改设置');
+  assert(await trigger.evaluate(element => element === document.activeElement), label + ': 焦点应返回触发按钮');
+  report.checks.push({ label, focusOption });
 }
 
 try {
@@ -86,7 +105,6 @@ try {
   report.checks.push({ label: '配色只有真实的结束动作，未新增提交/回退' });
 
   await open('workspace-building', '.workspace--catalog');
-  // 真实焦点和条目触发 Inspector，不改 DOM 内容或人工放置浮层。
   const cards = page.locator('.design-item-card');
   const count = await cards.count();
   assert(count >= 4, '建筑目录需要足够的条目用于两排避让检查');
@@ -112,9 +130,11 @@ try {
 
   await open('settings', '.settings-space');
   await checkSettings('菜单设置/显示'); await shot('settings-display');
-  await page.locator('.settings-select-control .ui-select__trigger').first().click();
-  await page.waitForSelector('.ui-select__menu'); await shot('settings-select-open');
-  await page.keyboard.press('Escape');
+  const firstSelect = page.locator('.settings-select-control .ui-select__trigger').first();
+  await firstSelect.click(); await page.waitForSelector('.ui-select__menu'); await shot('settings-select-open');
+  await firstSelect.click();
+  await checkSelectEscape('Trigger Esc 只关闭下拉', false);
+  await checkSelectEscape('Option Esc 只关闭下拉并返回焦点', true);
   for (const tab of ['图形', '音频', '操作', '游戏']) {
     await page.locator('.settings-space__tabs').getByRole('button', { name: tab, exact: true }).click(); await settle();
     await checkSettings('菜单设置/' + tab); await shot('settings-' + tab);
@@ -131,13 +151,15 @@ try {
   const binding = await page.locator('.settings-binding-control:visible').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().width));
   assert(binding.length && binding.every(width => width >= 170), '键位表保留自己的字段尺寸');
   report.checks.push({ label: '键位绑定字段未被普通表单压缩', widths: binding }); await shot('settings-bindings');
-  await open('pause-settings', '.settings-space'); await checkSettings('暂停设置/显示'); await shot('pause-settings');
+  await open('pause-settings', '.settings-space'); await checkSettings('暂停设置/显示');
+  await checkSelectEscape('暂停设置中的 Esc 只关闭下拉', true); await shot('pause-settings');
 
   for (const [width, height] of [[2560, 1440], [3840, 2160]]) {
     await page.setViewportSize({ width, height });
     await open('workspace-building', '.workspace--catalog');
     await page.locator('.design-item-card').last().focus(); await checkInspector('缩放/' + height); await shot('inspector-' + height);
     await open('terrain-edit', '.terrain-edit-prototype'); await checkToolLayout('缩放地形/' + height); await shot('terrain-' + height);
+    await open('settings', '.settings-space'); await checkSettings('缩放设置/' + height); await shot('settings-' + height);
   }
   await page.setViewportSize({ width: 1920, height: 1080 });
   await open('weather', '.gameplay-context-panel--weather');

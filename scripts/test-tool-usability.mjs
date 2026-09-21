@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
-import ts from 'typescript';
+import { stripTypeScriptTypes } from 'node:module';
 import sharp from 'sharp';
 import { CUSTOM_ICON_PATHS, renderCustomIcon } from './icons/custom-icon-sources.mjs';
 
-// 使用项目编译器加载纯几何函数，不依赖浏览器 DOM 或 Node 的实验 TypeScript 解析开关。
+// CI 使用 Node 22；只剥离这个纯几何模块的类型，不依赖 typescript 包的编译器 API 导出形态。
 const source = await readFile('src/ui/asset-inspector/inspector-placement.ts', 'utf8');
-const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } });
-const { placeInspector } = await import('data:text/javascript;base64,' + Buffer.from(compiled.outputText).toString('base64'));
+const compiled = stripTypeScriptTypes(source, { mode: 'strip' });
+const { placeInspector } = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
 const bounds = { width: 1920, height: 1080 };
 const workspace = { left: 420, top: 650, width: 1080, height: 310 };
 const size = { width: 320, height: 230 };
@@ -50,7 +50,7 @@ for (const name of Object.keys(CUSTOM_ICON_PATHS)) {
   checks++;
 }
 
-// 这一轮明确排除的内容必须保持原样；这是阶段保护，不是永远冻结未来开发。
+// 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {
   'src/gameplay/inventory-management.css': 'c9d332c653c9fea61c918fb1dbb74af9782b7d83',
   'src/gameplay/management-panel-skin.css': '9904b60f85b1d6a95cc8e639a5fdc9ffaf196970',

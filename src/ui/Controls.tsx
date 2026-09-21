@@ -164,6 +164,7 @@ interface SelectControlProps {
 
 export function SelectControl({ ariaLabel, value, options, disabled = false, className = '', onChange }: SelectControlProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(Math.max(0, options.indexOf(value)));
   const [opensUp, setOpensUp] = useState(false);
@@ -191,6 +192,16 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
     setOpen(false);
   }
 
+  // 下拉框自身消费 Esc，不能让同一次按键继续关闭 Settings / Tool。
+  // 在根节点捕获，保证焦点在 Trigger 或某个 Option 上时行为相同。
+  function handleDismiss(event: KeyboardEvent<HTMLDivElement>) {
+    if (!open || event.key !== 'Escape') return;
+    event.preventDefault();
+    event.stopPropagation();
+    setOpen(false);
+    triggerRef.current?.focus();
+  }
+
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (disabled || options.length === 0) return;
     if (!open && (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ')) {
@@ -199,10 +210,7 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
       return;
     }
     if (!open) return;
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      setOpen(false);
-    } else if (event.key === 'ArrowDown') {
+    if (event.key === 'ArrowDown') {
       event.preventDefault();
       setHighlighted((current) => (current + 1) % options.length);
     } else if (event.key === 'ArrowUp') {
@@ -215,8 +223,9 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
   }
 
   return (
-    <div ref={rootRef} className={`ui-select ${open ? 'is-open' : ''} ${opensUp ? 'opens-up' : ''} ${className}`.trim()}>
+    <div ref={rootRef} className={`ui-select ${open ? 'is-open' : ''} ${opensUp ? 'opens-up' : ''} ${className}`.trim()} onKeyDownCapture={handleDismiss}>
       <button
+        ref={triggerRef}
         type="button"
         className="ui-select__trigger"
         aria-label={ariaLabel}
