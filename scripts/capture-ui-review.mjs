@@ -117,9 +117,9 @@ async function assertParameterFieldFillsRow(rootSelector, label) {
   }
 }
 
-await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
-const worldUtility = page.locator('.context-utility-toolbar[data-utility-context="world"]');
-await worldUtility.getByRole('button', { name: '地形编辑', exact: true }).click();
+await open('gameplay', '.gameplay-world-action-dock');
+const worldDock = page.locator('.gameplay-world-action-dock');
+await worldDock.getByRole('button', { name: '地形编辑', exact: true }).click();
 await page.waitForSelector('.terrain-edit-prototype');
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="terrain-edit"]');
 await page.waitForTimeout(260);
@@ -705,13 +705,13 @@ if (!buildingSelectionColor || !buildingPagerColor || buildingSelectionColor ===
 }
 await page.screenshot({ path: outDir + '/workspace-building-rail-selection-vs-page.png' });
 
-await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
-const worldUtilityForMaterial = page.locator('.context-utility-toolbar[data-utility-context="world"]');
-if (await worldUtilityForMaterial.getByRole('button', { name: '灯光调整', exact: true }).count()
-  || await worldUtilityForMaterial.getByRole('button', { name: '方案模式', exact: true }).count()) {
-  throw new Error('World Utility must expose one 配色工具 entry; Light and Scheme are internal color-tool modes.');
+await open('gameplay', '.gameplay-world-action-dock');
+const worldDockForMaterial = page.locator('.gameplay-world-action-dock');
+if (await worldDockForMaterial.getByRole('button', { name: '灯光调整', exact: true }).count()
+  || await worldDockForMaterial.getByRole('button', { name: '方案模式', exact: true }).count()) {
+  throw new Error('World Dock must expose one 配色工具 entry; Light and Scheme are internal color-tool modes.');
 }
-await worldUtilityForMaterial.getByRole('button', { name: '配色工具', exact: true }).click();
+await worldDockForMaterial.getByRole('button', { name: '配色工具', exact: true }).click();
 await page.waitForSelector('.color-tool-surface-panel');
 await page.waitForSelector('.context-utility-toolbar[data-utility-context="color-tool"]');
 await page.waitForTimeout(260);

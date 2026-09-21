@@ -24,6 +24,7 @@ import { GameplayContextPanel } from './GameplayContextPanel';
 import { GameplayCompassHud, GameplaySystemMenuButton } from './GameplayCornerHud';
 import { GameplayHUD } from './GameplayHUD';
 import { GameplayOperationHints } from './GameplayOperationHints';
+import { GameplayWorldActionDock } from './GameplayWorldActionDock';
 import { ManagementSpace } from './management/ManagementSpace';
 import { PauseLayer } from './PauseLayer';
 import { MOTION_MS, usePresence } from '../ui/motion';
@@ -58,7 +59,14 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const selectionOpen = !state.paused && space === 'gameplay' && state.selection !== null;
-  const worldUtilityStacked = !state.paused && space === 'gameplay' && state.tool === 'none' && state.selection === null;
+  const worldActionDockVisible = !state.paused
+    && space === 'gameplay'
+    && state.tool === 'none'
+    && state.workspace === 'none'
+    && state.management === 'none'
+    && state.selection === null
+    && !state.mapPanelOpen
+    && state.mapView === 'default';
   const buildingSelectionActive = !state.paused && !state.worldDemolitionMode && space === 'gameplay' && state.tool === 'none' && state.workspace === 'none' && state.management === 'none' && state.contextPanel === 'none' && !state.mapPanelOpen;
   const selectedBuilding = state.selection?.kind === 'building' && !removedBuildingIds.has(state.selection.entityId)
     ? getBuildingSelectionDefinition(state.selection.entityId)
@@ -86,6 +94,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const workspacePresence = usePresence(designWorkspace !== null, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
   const toolPresence = usePresence(toolOpen && !state.paused, { enterDelayMs: enteringTool ? MOTION_MS.fast : 0 });
   const contextPresence = usePresence(showContextPanel);
+  const worldActionDockPresence = usePresence(worldActionDockVisible);
   const selectionPresence = usePresence(selectionOpen);
   const selectionSchemePresence = usePresence(selectionOpen && state.buildingSchemeOpen && selectedBuilding !== null);
   const managementPresence = usePresence(space === 'management' && state.management !== 'none', { exitMs: MOTION_MS.fast });
@@ -210,7 +219,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
   return (
     <section
-      className={`screen gameplay-screen gameplay-screen--${space} ${isNight ? 'is-night' : 'is-day'} ${worldUtilityStacked ? 'has-world-utility-stack' : ''} ${state.worldDemolitionMode ? 'is-world-demolition-mode' : ''}`}
+      className={`screen gameplay-screen gameplay-screen--${space} ${isNight ? 'is-night' : 'is-day'} ${worldActionDockPresence.mounted ? 'has-world-action-dock' : ''} ${state.worldDemolitionMode ? 'is-world-demolition-mode' : ''}`}
       data-time-of-day={isNight ? 'night' : 'day'}
       data-world-demolition={state.worldDemolitionMode ? 'active' : 'inactive'}
       style={{ backgroundImage: `url(${sceneBackground})` }}
@@ -231,7 +240,6 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       {!state.paused && <GameplaySystemMenuButton onClick={() => dispatch({ type: 'SET_PAUSED', paused: true })} />}
 
       <GameplayHUD
-        contextPanel={state.contextPanel}
         dayTime={dayTime}
         management={state.management}
         mapView={state.mapView}
@@ -239,18 +247,28 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         speed={state.speed}
         showControlTray={showControlTray}
         controlTrayEnterDelayMs={enteringFromTool ? MOTION_MS.fast : 0}
-        onContextPanelChange={(panel) => dispatch({ type: 'SET_CONTEXT_PANEL', panel })}
         onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
         onToggleMapPanel={() => dispatch({ type: 'TOGGLE_MAP_PANEL' })}
         onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
         onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
       />
 
+      {worldActionDockPresence.mounted && (
+        <GameplayWorldActionDock
+          contextPanel={state.contextPanel}
+          motionPhase={worldActionDockPresence.phase}
+          onContextPanelChange={(panel) => dispatch({ type: 'SET_CONTEXT_PANEL', panel })}
+          onWorldAction={(id) => {
+            if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
+            else if (id === 'palette') dispatch({ type: 'ENTER_COLOR_TOOL' });
+          }}
+        />
+      )}
+
       {showContextUtilityToolbar && (
         <ContextUtilityToolbar
           tool={state.tool}
           selection={state.selection}
-          stackWorldTools={worldUtilityStacked}
           worldDemolitionMode={state.worldDemolitionMode}
           gridSnap={state.gridSnap}
           gridVisible={state.gridVisible}
@@ -285,9 +303,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleCityWallAccessStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_ACCESS_STAIR_CLEARANCE' })}
           onToggleCityWallTransitionStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' })}
           onToolAction={(id) => {
-            if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
-            else if (id === 'palette') dispatch({ type: 'ENTER_COLOR_TOOL' });
-            else if (id === 'selection-focus-building') setSelectionFocusPulse((value) => value + 1);
+            if (id === 'selection-focus-building') setSelectionFocusPulse((value) => value + 1);
             else if (id === 'selection-remove-building') requestRemoveSelectedBuilding();
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
           }}

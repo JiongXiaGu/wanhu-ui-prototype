@@ -30,7 +30,7 @@
 - 详情浮层避让整个 Workspace；不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
 - 世界对象选中属于 Gameplay Selection，不新增 Selection Tool。V1 只实现 Building Consumer；UI State 只持有 kind + entityId，经营数据由 Selection Presenter / ViewModel 提供。
 - Building Selection 中下主操作为“移动 / 配色(toggle) / 关闭”，不提供单独“编辑建筑”。配色直接开关 Selection 内 BuildingSchemeWorkspace，不进入顶层 Color Tool；右下只保留聚焦 / Undo / Redo / 移除，移除必须使用共享危险确认 Dialog。Building Move 与 Building New 共用 Building Placement（intent=new|move）。
-- 普通主游玩 World Utility 使用两行：第一行固定地图解锁 / 区域 / 地形 / 配色四个世界模式入口；第二行放网格 / 范围动作 / Undo / Redo，并把“批量摧毁建筑”作为最右侧 Danger Toggle。该双层布局只属于普通 Gameplay；Workspace / Tool / Building Selection 保持单行 Utility。
+- 普通主游玩采用底部三岛：左下 World Dock 放相机 / 环境 / 地图解锁 / 区域 / 地形 / 配色，中下 Main Dock 只管建设分类，右下 Utility 保持单行网格 / 范围动作 / Undo / Redo / 批量摧毁。Camera / Weather 从顶部 Control Tray 移除；Workspace / Tool / Building Selection 隐藏左下 World Dock。
 
 ## 开发与交付
 
