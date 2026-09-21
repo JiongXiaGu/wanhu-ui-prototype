@@ -5,6 +5,7 @@ import {
   Copy,
   Grid3X3,
   Magnet,
+  Mountain,
   Move,
   Redo2,
   Route,
