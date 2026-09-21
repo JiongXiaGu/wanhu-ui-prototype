@@ -30,7 +30,10 @@ import { MOTION_MS, usePresence } from '../ui/motion';
 import { BuildingSelectionLayer } from '../selection/BuildingSelectionLayer';
 import { BuildingSelectionInspector } from '../selection/BuildingSelectionInspector';
 import { BuildingSelectionActionBar } from '../selection/BuildingSelectionActionBar';
-import { getBuildingSelectionDefinition } from '../selection/building-selection-model';
+import { BUILDING_SELECTIONS, getBuildingSelectionDefinition } from '../selection/building-selection-model';
+import { BuildingSchemeWorkspace } from '../tools/color-tool/modes/scheme/BuildingSchemeWorkspace';
+import { BUILDING_COLOR_SCHEMES, getBuildingColorScheme } from '../tools/color-tool/modes/scheme/building-scheme-catalog';
+import { useDialogSystem } from '../ui/dialog/DialogSystem';
 
 interface GameplayScreenProps {
   background: string;
@@ -41,8 +44,13 @@ interface GameplayScreenProps {
 
 export function GameplayScreen({ background, nightBackground, initialState, onMainMenu }: GameplayScreenProps) {
   const [state, dispatch] = useReducer(gameplayUiReducer, initialState);
+  const dialogs = useDialogSystem();
   const [dayTime, setDayTime] = useState(14.5);
   const [selectionFocusPulse, setSelectionFocusPulse] = useState(0);
+  const [removedBuildingIds, setRemovedBuildingIds] = useState<Set<string>>(() => new Set());
+  const [buildingAppearance, setBuildingAppearance] = useState<Record<string, { schemeId: string; weathering: number }>>(() => (
+    Object.fromEntries(BUILDING_SELECTIONS.map((building) => [building.id, { ...building.appearance }]))
+  ));
   const space = selectGameplaySpace(state);
   const toolOpen = state.tool !== 'none';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
@@ -51,7 +59,11 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const selectionOpen = !state.paused && space === 'gameplay' && state.selection !== null;
   const buildingSelectionActive = !state.paused && space === 'gameplay' && state.tool === 'none' && state.workspace === 'none' && state.management === 'none' && state.contextPanel === 'none' && !state.mapPanelOpen;
-  const selectedBuilding = state.selection?.kind === 'building' ? getBuildingSelectionDefinition(state.selection.entityId) : null;
+  const selectedBuilding = state.selection?.kind === 'building' && !removedBuildingIds.has(state.selection.entityId)
+    ? getBuildingSelectionDefinition(state.selection.entityId)
+    : null;
+  const selectedAppearance = selectedBuilding ? buildingAppearance[selectedBuilding.id] ?? selectedBuilding.appearance : null;
+  const selectedScheme = selectedAppearance ? getBuildingColorScheme(selectedAppearance.schemeId) : BUILDING_COLOR_SCHEMES[0];
   const isNight = dayTime >= 18 || dayTime < 6;
   const sceneBackground = isNight ? nightBackground : background;
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
@@ -74,6 +86,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const toolPresence = usePresence(toolOpen && !state.paused, { enterDelayMs: enteringTool ? MOTION_MS.fast : 0 });
   const contextPresence = usePresence(showContextPanel);
   const selectionPresence = usePresence(selectionOpen);
+  const selectionSchemePresence = usePresence(selectionOpen && state.buildingSchemeOpen && selectedBuilding !== null);
   const managementPresence = usePresence(space === 'management' && state.management !== 'none', { exitMs: MOTION_MS.fast });
   const pausePresence = usePresence(state.paused, { exitMs: MOTION_MS.fast });
 
@@ -94,7 +107,11 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const renderedTool = state.tool !== 'none' ? state.tool : lastToolRef.current;
   const renderedContextPanel = state.contextPanel !== 'none' ? state.contextPanel : lastContextPanelRef.current;
   const renderedSelection = state.selection ?? lastSelectionRef.current;
-  const renderedSelectedBuilding = renderedSelection?.kind === 'building' ? getBuildingSelectionDefinition(renderedSelection.entityId) : null;
+  const renderedSelectedBuilding = renderedSelection?.kind === 'building' && !removedBuildingIds.has(renderedSelection.entityId)
+    ? getBuildingSelectionDefinition(renderedSelection.entityId)
+    : null;
+  const renderedAppearance = renderedSelectedBuilding ? buildingAppearance[renderedSelectedBuilding.id] ?? renderedSelectedBuilding.appearance : null;
+  const renderedScheme = renderedAppearance ? getBuildingColorScheme(renderedAppearance.schemeId) : BUILDING_COLOR_SCHEMES[0];
   const renderedManagement = state.management !== 'none' ? state.management : lastManagementRef.current;
   const renderedPauseView = state.paused ? state.pauseView : lastPauseViewRef.current;
 
@@ -130,6 +147,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         dispatch({ type: 'SET_MAP_VIEW', mapView: 'default' });
         return;
       }
+      if (state.buildingSchemeOpen) {
+        dispatch({ type: 'CLOSE_SELECTED_BUILDING_SCHEME' });
+        return;
+      }
       if (state.selection !== null) {
         dispatch({ type: 'CLEAR_SELECTION' });
         return;
@@ -140,10 +161,46 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
     window.addEventListener('keydown', handleGameplayEscape);
     return () => window.removeEventListener('keydown', handleGameplayEscape);
-  }, [state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace]);
+  }, [state.buildingSchemeOpen, state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace]);
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
+  }
+
+  function updateSelectedAppearance(patch: Partial<{ schemeId: string; weathering: number }>) {
+    if (!selectedBuilding) return;
+    setBuildingAppearance((current) => ({
+      ...current,
+      [selectedBuilding.id]: {
+        ...(current[selectedBuilding.id] ?? selectedBuilding.appearance),
+        ...patch,
+      },
+    }));
+    dispatch({ type: 'MARK_HISTORY_DIRTY' });
+  }
+
+  function requestRemoveSelectedBuilding() {
+    if (!selectedBuilding) return;
+    const entityId = selectedBuilding.id;
+    const name = selectedBuilding.name;
+    dialogs.confirm({
+      title: '移除建筑',
+      message: '是否移除「' + name + '」？移除后，该建筑将从城市中删除。',
+      confirmText: '确认移除',
+      cancelText: '取消',
+      tone: 'danger',
+      visualTone: 'danger',
+      onConfirm: () => {
+        setRemovedBuildingIds((current) => {
+          const next = new Set(current);
+          next.add(entityId);
+          return next;
+        });
+        dispatch({ type: 'MARK_HISTORY_DIRTY' });
+        dispatch({ type: 'CLEAR_SELECTION' });
+        dialogs.toast('已移除「' + name + '」', 'warning');
+      },
+    });
   }
 
   return (
@@ -155,7 +212,14 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       <div className="game-vignette" />
       <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
 
-      <BuildingSelectionLayer selection={state.selection} active={buildingSelectionActive} focusPulse={selectionFocusPulse} onSelect={(entityId) => dispatch({ type: 'SELECT_BUILDING', entityId })} onClear={() => dispatch({ type: 'CLEAR_SELECTION' })} />
+      <BuildingSelectionLayer
+        selection={state.selection}
+        active={buildingSelectionActive}
+        focusPulse={selectionFocusPulse}
+        removedBuildingIds={removedBuildingIds}
+        onSelect={(entityId) => dispatch({ type: 'SELECT_BUILDING', entityId })}
+        onClear={() => dispatch({ type: 'CLEAR_SELECTION' })}
+      />
 
       {showCompassHud && <GameplayCompassHud buildMode={toolOpen} />}
       {!state.paused && <GameplaySystemMenuButton onClick={() => dispatch({ type: 'SET_PAUSED', paused: true })} />}
@@ -213,8 +277,9 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleCityWallTransitionStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
-            else if (id === 'palette' || id === 'selection-color-building') dispatch({ type: 'ENTER_COLOR_TOOL' });
+            else if (id === 'palette') dispatch({ type: 'ENTER_COLOR_TOOL' });
             else if (id === 'selection-focus-building') setSelectionFocusPulse((value) => value + 1);
+            else if (id === 'selection-remove-building') requestRemoveSelectedBuilding();
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
           }}
         />
@@ -260,11 +325,36 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         />
       )}
 
-      {selectionPresence.mounted && renderedSelectedBuilding && (
+      {selectionPresence.mounted && renderedSelectedBuilding && renderedAppearance && (
         <>
-          <BuildingSelectionInspector building={renderedSelectedBuilding} motionPhase={selectionPresence.phase} onClose={() => dispatch({ type: 'CLEAR_SELECTION' })} />
-          <BuildingSelectionActionBar motionPhase={selectionPresence.phase} onMove={() => dispatch({ type: 'ENTER_SELECTED_BUILDING_MOVE' })} onClose={() => dispatch({ type: 'CLEAR_SELECTION' })} />
+          <BuildingSelectionInspector
+            building={renderedSelectedBuilding}
+            schemeName={renderedScheme.name}
+            schemeOpen={state.buildingSchemeOpen}
+            weathering={renderedAppearance.weathering}
+            motionPhase={selectionPresence.phase}
+            onOpenScheme={() => dispatch({ type: 'OPEN_SELECTED_BUILDING_SCHEME' })}
+            onWeatheringChange={(weathering) => updateSelectedAppearance({ weathering })}
+            onClose={() => dispatch({ type: 'CLEAR_SELECTION' })}
+          />
+          <BuildingSelectionActionBar
+            motionPhase={selectionPresence.phase}
+            schemeOpen={state.buildingSchemeOpen}
+            onMove={() => dispatch({ type: 'ENTER_SELECTED_BUILDING_MOVE' })}
+            onToggleScheme={() => dispatch({ type: 'TOGGLE_SELECTED_BUILDING_SCHEME' })}
+            onClose={() => dispatch({ type: 'CLEAR_SELECTION' })}
+          />
         </>
+      )}
+
+      {selectionSchemePresence.mounted && selectedBuilding && selectedAppearance && (
+        <BuildingSchemeWorkspace
+          motionPhase={selectionSchemePresence.phase}
+          schemes={BUILDING_COLOR_SCHEMES}
+          selectedSchemeId={selectedAppearance.schemeId}
+          onApply={(schemeId) => updateSelectedAppearance({ schemeId })}
+          onClose={() => dispatch({ type: 'CLOSE_SELECTED_BUILDING_SCHEME' })}
+        />
       )}
 
       {contextPresence.mounted && renderedContextPanel !== 'none' && (

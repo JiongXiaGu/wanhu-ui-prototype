@@ -29,7 +29,7 @@
 - 地形、树木、配色的主要模式采用可选图标＋短名称；通用辅助动作及未选择此变体的工具保持纯图标。
 - 详情浮层避让整个 Workspace；不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
 - 世界对象选中属于 Gameplay Selection，不新增 Selection Tool。V1 只实现 Building Consumer；UI State 只持有 kind + entityId，经营数据由 Selection Presenter / ViewModel 提供。
-- Building Selection 的底部对象操作只保留“移动”；不再提供单独“编辑建筑”。Building Move 与 Building New 共用正式 Building Placement Session（intent=new|move），Move 不通过销毁重建改变建筑身份，正式 Unity 应保存 Original + Draft 后提交原实体 Placement。
+- Building Selection 中下主操作为“移动 / 配色(toggle) / 关闭”，不提供单独“编辑建筑”。配色直接开关 Selection 内 BuildingSchemeWorkspace，不进入顶层 Color Tool；右下只保留聚焦 / Undo / Redo / 移除，移除必须使用共享危险确认 Dialog。Building Move 与 Building New 共用 Building Placement（intent=new|move）。
 
 ## 开发与交付
 

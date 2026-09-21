@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   ScanLine,
   Undo2,
+  Trash2,
 } from '../ui/icons/runtime-icons.generated';
 import type { CityWallGatePlacementMode, Tool, WorldSelection } from '../app/ui-state';
 
@@ -23,7 +24,7 @@ export type UtilityContext = 'world' | 'building-selection' | 'building-placemen
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
   | 'selection-focus-building'
-  | 'selection-color-building'
+  | 'selection-remove-building'
   | 'unlock'
   | 'region'
   | 'terrain'
@@ -234,11 +235,13 @@ const CITY_WALL_TRANSITION_STAIR_GROUPS: readonly (readonly UtilityItem[])[] = [
 const BUILDING_SELECTION_GROUPS: readonly (readonly UtilityItem[])[] = [
   [
     { id: 'selection-focus-building', label: '聚焦所选建筑', icon: ScanLine, kind: 'action' },
-    { id: 'selection-color-building', label: '配色所选建筑', icon: Palette, kind: 'action' },
   ],
   [
     { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
     { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+  [
+    { id: 'selection-remove-building', label: '移除建筑', icon: Trash2, kind: 'action' },
   ],
 ];
 
@@ -396,7 +399,7 @@ export function ContextUtilityToolbar({
               <button
                 key={item.id}
                 type="button"
-                className={`context-utility-toolbar__button ${state.active ? 'is-active' : ''}`}
+                className={`context-utility-toolbar__button ${state.active ? 'is-active' : ''} ${item.id === 'selection-remove-building' ? 'is-danger' : ''}`}
                 data-utility-kind={item.kind}
                 data-tooltip={item.label}
                 aria-label={item.label}

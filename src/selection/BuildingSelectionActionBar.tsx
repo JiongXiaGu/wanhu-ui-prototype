@@ -1,18 +1,21 @@
-import { Move, X } from '../ui/icons/runtime-icons.generated';
+import { Move, Palette, X } from '../ui/icons/runtime-icons.generated';
 import type { MotionPhase } from '../ui/motion';
 
 interface Props {
   motionPhase?: MotionPhase;
+  schemeOpen: boolean;
   onMove: () => void;
+  onToggleScheme: () => void;
   onClose: () => void;
 }
 
-export function BuildingSelectionActionBar({ motionPhase = 'steady', onMove, onClose }: Props) {
+export function BuildingSelectionActionBar({ motionPhase = 'steady', schemeOpen, onMove, onToggleScheme, onClose }: Props) {
   return (
     <div className={'building-selection-action-cluster motion-bottom-surface is-' + motionPhase} aria-label="选中建筑操作">
       <div className="building-selection-action-bar bottom-command-surface bottom-command-surface--md">
         <div className="building-selection-action-group" role="group" aria-label="建筑操作">
           <button type="button" onClick={onMove} aria-label="移动建筑"><Move /><span>移动</span></button>
+          <button type="button" className={schemeOpen ? 'is-active' : ''} aria-pressed={schemeOpen} onClick={onToggleScheme} aria-label="配色"><Palette /><span>配色</span></button>
         </div>
         <i className="building-selection-action-divider" aria-hidden="true" />
         <button type="button" className="building-selection-action-close" onClick={onClose} aria-label="关闭建筑选择"><X /><span>关闭</span></button>

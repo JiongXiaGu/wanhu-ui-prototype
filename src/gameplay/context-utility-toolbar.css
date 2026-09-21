@@ -18,3 +18,7 @@
 .context-utility-toolbar__group:last-child .context-utility-toolbar__button{--utility-tooltip-x:0%}
 .context-utility-toolbar__group:last-child .context-utility-toolbar__button[data-tooltip]::after{left:auto;right:0}
 .context-utility-toolbar__button:hover:not(:disabled)::after,.context-utility-toolbar__button:focus-visible::after{opacity:1;visibility:visible;transform:translate(var(--utility-tooltip-x),0);transition-delay:var(--wanhu-tooltip-delay,320ms)}
+
+.context-utility-toolbar__button.is-danger{color:#a57a72}
+.context-utility-toolbar__button.is-danger:hover:not(:disabled){background:rgba(152,84,71,.080);color:#cf8e82}
+.context-utility-toolbar__button.is-danger:focus-visible{outline-color:rgba(207,142,130,.52)}

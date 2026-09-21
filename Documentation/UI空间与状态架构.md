@@ -236,12 +236,13 @@ World Selection 已进入 Gameplay 层，不是独立 Tool。第一批 Consumer 
 
 - 世界 Anchor：Hover 中性纸灰，Selected 弱熟铜轮廓；Unity 正式改由 World Selection Renderer。
 - 左下 Inspector：复用 LeftContextPanel，Selection 不重复 Header Close。
-- 中下 Selection Action Bar：Building V1 只保留移动 / 关闭。
-- 右下 Context Utility：Building Selection 为聚焦 / 配色 / Undo / Redo。
+- 中下 Selection Action Bar：Building 为移动 / 配色(toggle) / 关闭。
+- 左下 Inspector：除经营信息外显示当前配色方案与做旧程度；方案行与中下配色按钮共用入口。
+- 右下 Context Utility：Building Selection 为聚焦 / Undo / Redo / 移除；移除必须二次确认。
 - Top Shell / Control Tray 保留；Main Dock 在 Selection 存在时收起。
 - 点击另一建筑原位 Rebind；空地 / Esc / 关闭统一 CLEAR_SELECTION。
 - Camera / Weather / Management / Workspace 清 Selection；Pause 只隐藏 UI、不丢 Selection。
-- Selection → Move / Color Tool 使用 Selection ToolOrigin，退出后恢复同一对象。
+- Selection → Move 使用 Selection ToolOrigin，退出后恢复同一对象；建筑单独配色是 Selection 内 Workspace，不进入 Color Tool。
 
 详见 `Documentation/世界对象选中系统.md`。
 
