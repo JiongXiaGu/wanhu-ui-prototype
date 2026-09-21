@@ -43,19 +43,6 @@ export function BuildingSelectionInspector({
     >
       <div className="building-selection-status"><span>当前状态</span><b>{building.status}</b></div>
 
-      {building.sections.map((section) => (
-        <LeftContextSection title={section.title} key={section.title}>
-          <div className="building-selection-info-list">
-            {section.rows.map((row) => (
-              <div className="building-selection-info-row" key={row.label}>
-                <span>{row.label}</span>
-                <b className={row.tone && row.tone !== 'normal' ? 'is-' + row.tone : ''}>{row.value}</b>
-              </div>
-            ))}
-          </div>
-        </LeftContextSection>
-      ))}
-
       <LeftContextSection title="外观参数" className="building-selection-appearance-section">
         <div className="ui-parameter-row building-scheme-selector-row">
           <span>配色方案</span>
@@ -80,6 +67,21 @@ export function BuildingSelectionInspector({
           onChange={onWeatheringChange}
         />
       </LeftContextSection>
+
+      {building.sections.map((section) => (
+        <LeftContextSection title={section.title} key={section.title}>
+          <div className="building-selection-info-list">
+            {section.rows.map((row) => (
+              <div className="building-selection-info-row" key={row.label}>
+                <span>{row.label}</span>
+                <b className={row.tone && row.tone !== 'normal' ? 'is-' + row.tone : ''}>{row.value}</b>
+              </div>
+            ))}
+          </div>
+        </LeftContextSection>
+      ))}
+
+
     </LeftContextPanel>
   );
 }
