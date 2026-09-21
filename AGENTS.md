@@ -17,7 +17,8 @@
 9. `Documentation/Unity UI Toolkit迁移准备清单.md`
 10. `Documentation/UI图标资产管线.md`、`Documentation/UI Typography与Icon尺寸规范.md`
 11. `Documentation/工具辨识与局部布局.md`
-12. 当前任务涉及的组件规范和代码。
+12. `Documentation/世界对象选中系统.md`
+13. 当前任务涉及的组件规范和代码。
 
 目标运行时已确定为 Unity 6.6 + URP UI Toolkit。涉及原生 Blur / Shadow 的版本能力，以《Unity 6.6视觉能力与回退规范》为准；不得用历史文档中的“不能模糊 UI”限制新设计，也不得把支持某能力写成已经完成 Unity 实测。
 
@@ -27,6 +28,7 @@
 - 库存和管理页暂缓优化，包括资源图标与详情面板；除非用户另行批准，不混入工具和设置布局任务。
 - 地形、树木、配色的主要模式采用可选图标＋短名称；通用辅助动作及未选择此变体的工具保持纯图标。
 - 详情浮层避让整个 Workspace；不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
+- 世界对象选中属于 Gameplay Selection，不新增 Selection Tool。V1 只实现 Building Consumer；UI State 只持有 kind + entityId，经营数据由 Selection Presenter / ViewModel 提供。
 
 ## 开发与交付
 

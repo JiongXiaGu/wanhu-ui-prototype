@@ -21,4 +21,5 @@ jobs:
       - run: npm run audit:scale
       - run: npm run audit:unity
       - run: node scripts/test-tool-usability.mjs
+      - run: node scripts/test-building-selection.mjs
       - run: npm run build

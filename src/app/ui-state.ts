@@ -16,6 +16,9 @@ export type ColorToolMode = 'surface' | 'lighting' | 'scheme';
 export type GameplaySpace = 'gameplay' | 'management' | 'workspace' | 'tool' | 'pause';
 export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 0 | 1 | 2 | 4;
+export type WorldSelectionTarget = { kind: 'building'; entityId: string };
+export type WorldSelection = WorldSelectionTarget | null;
+export type BuildingEditIntent = 'place' | 'move' | 'edit';
 
 export type DockMode = 'design' | 'blueprint';
 export type DesignDockCategory =
@@ -41,7 +44,8 @@ export type DockCategory = DesignDockCategory | BlueprintDockCategory;
 
 export type ToolOrigin =
   | { kind: 'gameplay' }
-  | { kind: 'design-workspace'; category: DesignDockCategory };
+  | { kind: 'design-workspace'; category: DesignDockCategory }
+  | { kind: 'selection'; selection: WorldSelectionTarget };
 
 const DESIGN_DOCK_CATEGORIES: readonly DesignDockCategory[] = [
   'road',
@@ -62,6 +66,7 @@ export interface GameplayUiState {
   workspace: Workspace;
   tool: Tool;
   toolOrigin: ToolOrigin | null;
+  selection: WorldSelection;
   contextPanel: ContextPanel;
   management: ManagementView;
   mapView: MapView;
@@ -72,6 +77,7 @@ export interface GameplayUiState {
   dockMode: DockMode;
   dockCategory: DockCategory | null;
   buildingTerrainMode: BuildingTerrainMode;
+  buildingEditIntent: BuildingEditIntent;
   terrainEditMode: TerrainEditMode;
   terrainContours: boolean;
   terrainSlopeView: boolean;
@@ -114,6 +120,7 @@ export const initialGameplayUiState: GameplayUiState = {
   workspace: 'none',
   tool: 'none',
   toolOrigin: null,
+  selection: null,
   contextPanel: 'none',
   management: 'none',
   mapView: 'default',
@@ -124,6 +131,7 @@ export const initialGameplayUiState: GameplayUiState = {
   dockMode: 'design',
   dockCategory: null,
   buildingTerrainMode: 'balanced-earthwork',
+  buildingEditIntent: 'place',
   terrainEditMode: 'raise',
   terrainContours: false,
   terrainSlopeView: false,
@@ -166,7 +174,11 @@ export type GameplayUiAction =
   | { type: 'SET_DOCK_MODE'; mode: DockMode }
   | { type: 'SET_DOCK_CATEGORY'; category: DockCategory }
   | { type: 'CLOSE_WORKSPACE' }
+  | { type: 'SELECT_BUILDING'; entityId: string }
+  | { type: 'CLEAR_SELECTION' }
   | { type: 'ENTER_BUILDING_PLACEMENT' }
+  | { type: 'ENTER_SELECTED_BUILDING_MOVE' }
+  | { type: 'ENTER_SELECTED_BUILDING_EDIT' }
   | { type: 'ENTER_ROAD_PLACEMENT' }
   | { type: 'ENTER_TREE_PLACEMENT'; speciesId: string; speciesName: string }
   | { type: 'ENTER_CITY_WALL_CONSTRUCTION'; moduleId: string; moduleName: string; systemId: string; systemName: string }
@@ -227,6 +239,7 @@ function workspaceForDockSelection(mode: DockMode, category: DockCategory | null
 }
 
 function captureToolOrigin(state: GameplayUiState): ToolOrigin {
+  if (state.selection) return { kind: 'selection', selection: state.selection };
   if (state.workspace === 'design' && isDesignDockCategory(state.dockCategory)) {
     return { kind: 'design-workspace', category: state.dockCategory };
   }
@@ -243,6 +256,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         dockCategory: null,
         workspace: 'none',
         management: 'none',
+        selection: null,
         contextPanel: 'none',
         mapPanelOpen: false,
       };
@@ -254,6 +268,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         dockCategory,
         workspace,
         management: 'none',
+        selection: null,
         contextPanel: workspace === 'none' ? state.contextPanel : 'none',
         mapPanelOpen: false,
       };
@@ -264,10 +279,26 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         workspace: 'none',
         dockCategory: state.workspace === 'design' ? null : state.dockCategory,
       };
+    case 'SELECT_BUILDING':
+      return {
+        ...state,
+        selection: { kind: 'building', entityId: action.entityId },
+        workspace: 'none',
+        dockCategory: null,
+        tool: 'none',
+        toolOrigin: null,
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+      };
+    case 'CLEAR_SELECTION':
+      return state.selection ? { ...state, selection: null } : state;
     case 'ENTER_BUILDING_PLACEMENT':
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'building-placement',
         management: 'none',
@@ -275,7 +306,42 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapView: 'default',
         mapPanelOpen: false,
         buildingTerrainMode: 'balanced-earthwork',
+        buildingEditIntent: 'place',
         adjustmentMode: 'position',
+        canUndo: false,
+        canRedo: false,
+      };
+    case 'ENTER_SELECTED_BUILDING_MOVE':
+      if (!state.selection || state.selection.kind !== 'building') return state;
+      return {
+        ...state,
+        toolOrigin: { kind: 'selection', selection: state.selection },
+        workspace: 'none',
+        tool: 'building-placement',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        buildingTerrainMode: 'balanced-earthwork',
+        buildingEditIntent: 'move',
+        adjustmentMode: 'position',
+        canUndo: false,
+        canRedo: false,
+      };
+    case 'ENTER_SELECTED_BUILDING_EDIT':
+      if (!state.selection || state.selection.kind !== 'building') return state;
+      return {
+        ...state,
+        toolOrigin: { kind: 'selection', selection: state.selection },
+        workspace: 'none',
+        tool: 'building-placement',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        buildingTerrainMode: 'balanced-earthwork',
+        buildingEditIntent: 'edit',
+        adjustmentMode: 'massing',
         canUndo: false,
         canRedo: false,
       };
@@ -283,6 +349,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'road-placement',
         management: 'none',
@@ -297,6 +364,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'tree-placement',
         management: 'none',
@@ -314,6 +382,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'city-wall-construction',
         management: 'none',
@@ -335,6 +404,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'city-wall-gate',
         management: 'none',
@@ -357,6 +427,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'city-wall-access-stair',
         management: 'none',
@@ -377,6 +448,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'city-wall-transition-stair',
         management: 'none',
@@ -413,6 +485,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         toolOrigin: captureToolOrigin(state),
+        selection: null,
         workspace: 'none',
         tool: 'terrain-edit',
         management: 'none',
@@ -427,11 +500,16 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       const returnCategory = state.toolOrigin?.kind === 'design-workspace'
         ? state.toolOrigin.category
         : null;
+      const returnSelection = state.toolOrigin?.kind === 'selection'
+        ? state.toolOrigin.selection
+        : null;
       const returningToWorkspace = returnCategory !== null;
       return {
         ...state,
         tool: 'none',
         toolOrigin: null,
+        selection: returnSelection,
+        buildingEditIntent: 'place',
         workspace: returningToWorkspace ? 'design' : 'none',
         dockMode: returningToWorkspace ? 'design' : state.dockMode,
         dockCategory: returnCategory,
@@ -449,6 +527,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         contextPanel,
+        selection: opening ? null : state.selection,
         workspace: opening ? 'none' : state.workspace,
         dockCategory: opening && state.workspace === 'design' ? null : state.dockCategory,
         management: opening ? 'none' : state.management,
@@ -462,6 +541,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         management,
+        selection: opening ? null : state.selection,
         workspace: opening ? 'none' : state.workspace,
         tool: opening ? 'none' : state.tool,
         toolOrigin: opening ? null : state.toolOrigin,
@@ -476,6 +556,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         mapPanelOpen,
+        selection: mapPanelOpen ? null : state.selection,
         management: mapPanelOpen ? 'none' : state.management,
         contextPanel: mapPanelOpen ? 'none' : state.contextPanel,
       };
@@ -486,6 +567,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         mapView: action.mapView,
+        selection: action.mapView === 'default' ? state.selection : null,
         mapPanelOpen: false,
         management: action.mapView === 'default' ? state.management : 'none',
         contextPanel: action.mapView === 'default' ? state.contextPanel : 'none',

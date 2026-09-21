@@ -17,11 +17,13 @@ import {
   ScanLine,
   Undo2,
 } from '../ui/icons/runtime-icons.generated';
-import type { CityWallGatePlacementMode, Tool } from '../app/ui-state';
+import type { CityWallGatePlacementMode, Tool, WorldSelection } from '../app/ui-state';
 
-export type UtilityContext = 'world' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
+export type UtilityContext = 'world' | 'building-selection' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
 type UtilityKind = 'toggle' | 'action' | 'history';
 export type UtilityItemId =
+  | 'selection-focus-building'
+  | 'selection-color-building'
   | 'unlock'
   | 'region'
   | 'terrain'
@@ -57,6 +59,7 @@ interface UtilityItem {
 
 interface ContextUtilityToolbarProps {
   tool: Tool;
+  selection: WorldSelection;
   gridSnap: boolean;
   gridVisible: boolean;
   canUndo: boolean;
@@ -228,6 +231,17 @@ const CITY_WALL_TRANSITION_STAIR_GROUPS: readonly (readonly UtilityItem[])[] = [
   ],
 ];
 
+const BUILDING_SELECTION_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'selection-focus-building', label: '聚焦所选建筑', icon: ScanLine, kind: 'action' },
+    { id: 'selection-color-building', label: '配色所选建筑', icon: Palette, kind: 'action' },
+  ],
+  [
+    { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
+    { id: 'redo', label: '重做 · Ctrl+Y', icon: Redo2, kind: 'history' },
+  ],
+];
+
 const COLOR_TOOL_GROUPS: readonly (readonly UtilityItem[])[] = [
   [
     { id: 'undo', label: '撤销 · Ctrl+Z', icon: Undo2, kind: 'history' },
@@ -237,6 +251,7 @@ const COLOR_TOOL_GROUPS: readonly (readonly UtilityItem[])[] = [
 
 const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> = {
   world: WORLD_GROUPS,
+  'building-selection': BUILDING_SELECTION_GROUPS,
   'building-placement': BUILDING_GROUPS,
   'road-placement': ROAD_GROUPS,
   'terrain-edit': TERRAIN_GROUPS,
@@ -249,7 +264,7 @@ const DEFINITIONS: Record<UtilityContext, readonly (readonly UtilityItem[])[]> =
   'color-tool': COLOR_TOOL_GROUPS,
 };
 
-function contextForTool(tool: Tool, gateMode: CityWallGatePlacementMode): UtilityContext {
+function contextForState(tool: Tool, gateMode: CityWallGatePlacementMode, selection: WorldSelection): UtilityContext {
   if (tool === 'building-placement') return 'building-placement';
   if (tool === 'road-placement') return 'road-placement';
   if (tool === 'terrain-edit') return 'terrain-edit';
@@ -259,10 +274,12 @@ function contextForTool(tool: Tool, gateMode: CityWallGatePlacementMode): Utilit
   if (tool === 'city-wall-access-stair') return 'city-wall-access-stair';
   if (tool === 'city-wall-transition-stair') return 'city-wall-transition-stair';
   if (tool === 'color-tool') return 'color-tool';
+  if (selection?.kind === 'building') return 'building-selection';
   return 'world';
 }
 
 function ariaLabelForContext(context: UtilityContext) {
+  if (context === 'building-selection') return '选中建筑快捷工具';
   if (context === 'building-placement') return '建筑放置辅助工具';
   if (context === 'road-placement') return '道路铺设辅助工具';
   if (context === 'terrain-edit') return '地形编辑辅助工具';
@@ -278,6 +295,7 @@ function ariaLabelForContext(context: UtilityContext) {
 
 export function ContextUtilityToolbar({
   tool,
+  selection,
   gridSnap,
   gridVisible,
   canUndo,
@@ -311,7 +329,7 @@ export function ContextUtilityToolbar({
   onToggleCityWallTransitionStairClearance,
   onToolAction,
 }: ContextUtilityToolbarProps) {
-  const requestedContext = contextForTool(tool, cityWallGatePlacementMode);
+  const requestedContext = contextForState(tool, cityWallGatePlacementMode, selection);
   const [displayedContext, setDisplayedContext] = useState<UtilityContext>(requestedContext);
   const [phase, setPhase] = useState<'steady' | 'exiting' | 'entering'>('steady');
   const swapTimer = useRef<number | null>(null);

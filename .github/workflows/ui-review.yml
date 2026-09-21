@@ -9,6 +9,7 @@ on:
       - 'scripts/capture-ui-review.mjs'
       - 'scripts/capture-typography-decision-review.mjs'
       - 'scripts/capture-tool-usability-review.mjs'
+      - 'scripts/capture-building-selection-review.mjs'
       - 'public/assets/**'
       - 'index.html'
       - 'package.json'
@@ -62,6 +63,8 @@ jobs:
         run: node scripts/capture-typography-decision-review.mjs
       - name: Capture tool usability and layout
         run: node scripts/capture-tool-usability-review.mjs
+      - name: Capture building selection flow
+        run: node scripts/capture-building-selection-review.mjs
       - name: Upload UI review screenshots
         if: always()
         uses: actions/upload-artifact@v4

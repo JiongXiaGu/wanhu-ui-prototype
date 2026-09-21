@@ -15,6 +15,7 @@ interface LeftContextPanelProps {
   closeLabel?: string;
   backLabel?: string;
   onBack?: () => void;
+  showClose?: boolean;
   onClose: () => void;
   dataAttributes?: Record<string, string | undefined>;
   children: ReactNode;
@@ -33,6 +34,7 @@ export function LeftContextPanel({
   closeLabel = '关闭面板',
   backLabel = '返回',
   onBack,
+  showClose = true,
   onClose,
   dataAttributes = {},
   children,
@@ -52,7 +54,7 @@ export function LeftContextPanel({
             {subtitle && <span>{subtitle}</span>}
           </div>
         </div>
-        <button className="icon-button" type="button" onClick={onClose} aria-label={closeLabel}><UiIcon icon="x" size={16} /></button>
+        {showClose && <button className="icon-button" type="button" onClick={onClose} aria-label={closeLabel}><UiIcon icon="x" size={16} /></button>}
       </header>
 
       <div className={`gameplay-context-panel__body left-context-panel__body ${bodyClassName}`.trim()}>

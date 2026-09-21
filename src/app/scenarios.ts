@@ -8,6 +8,7 @@ export type ReviewScenario =
   | 'settings'
   | 'loading'
   | 'gameplay'
+  | 'building-selection'
   | 'management-finance'
   | 'management-policy'
   | 'map-land-value'
@@ -68,6 +69,8 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'loading', gameplay, loadingProgress: 62 };
     case 'gameplay':
       return { screen: 'gameplay', gameplay };
+    case 'building-selection':
+      return { screen: 'gameplay', gameplay: { ...gameplay, selection: { kind: 'building', entityId: 'building-riverside-inn' } } };
     case 'management-finance':
       return { screen: 'gameplay', gameplay: { ...gameplay, management: 'finance' } };
     case 'management-policy':

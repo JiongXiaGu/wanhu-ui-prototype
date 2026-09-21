@@ -27,6 +27,10 @@ import { GameplayOperationHints } from './GameplayOperationHints';
 import { ManagementSpace } from './management/ManagementSpace';
 import { PauseLayer } from './PauseLayer';
 import { MOTION_MS, usePresence } from '../ui/motion';
+import { BuildingSelectionLayer } from '../selection/BuildingSelectionLayer';
+import { BuildingSelectionInspector } from '../selection/BuildingSelectionInspector';
+import { BuildingSelectionActionBar } from '../selection/BuildingSelectionActionBar';
+import { getBuildingSelectionDefinition } from '../selection/building-selection-model';
 
 interface GameplayScreenProps {
   background: string;
@@ -38,12 +42,16 @@ interface GameplayScreenProps {
 export function GameplayScreen({ background, nightBackground, initialState, onMainMenu }: GameplayScreenProps) {
   const [state, dispatch] = useReducer(gameplayUiReducer, initialState);
   const [dayTime, setDayTime] = useState(14.5);
+  const [selectionFocusPulse, setSelectionFocusPulse] = useState(0);
   const space = selectGameplaySpace(state);
   const toolOpen = state.tool !== 'none';
   const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
   const showContextUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
   const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
+  const selectionOpen = !state.paused && space === 'gameplay' && state.selection !== null;
+  const buildingSelectionActive = !state.paused && space === 'gameplay' && state.tool === 'none' && state.workspace === 'none' && state.management === 'none' && state.contextPanel === 'none' && !state.mapPanelOpen;
+  const selectedBuilding = state.selection?.kind === 'building' ? getBuildingSelectionDefinition(state.selection.entityId) : null;
   const isNight = dayTime >= 18 || dayTime < 6;
   const sceneBackground = isNight ? nightBackground : background;
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
@@ -60,11 +68,12 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const enteringFromTool = transitionFrom === 'tool' && space !== 'tool';
   const enteringTool = transitionFrom !== 'tool' && space === 'tool';
 
-  const mainDockVisible = space === 'gameplay' || space === 'workspace';
+  const mainDockVisible = (space === 'gameplay' || space === 'workspace') && state.selection === null;
   const mainDockPresence = usePresence(mainDockVisible, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
   const workspacePresence = usePresence(designWorkspace !== null, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
   const toolPresence = usePresence(toolOpen && !state.paused, { enterDelayMs: enteringTool ? MOTION_MS.fast : 0 });
   const contextPresence = usePresence(showContextPanel);
+  const selectionPresence = usePresence(selectionOpen);
   const managementPresence = usePresence(space === 'management' && state.management !== 'none', { exitMs: MOTION_MS.fast });
   const pausePresence = usePresence(state.paused, { exitMs: MOTION_MS.fast });
 
@@ -74,6 +83,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   if (state.tool !== 'none') lastToolRef.current = state.tool;
   const lastContextPanelRef = useRef(state.contextPanel);
   if (state.contextPanel !== 'none') lastContextPanelRef.current = state.contextPanel;
+  const lastSelectionRef = useRef(state.selection);
+  if (state.selection) lastSelectionRef.current = state.selection;
   const lastManagementRef = useRef(state.management);
   if (state.management !== 'none') lastManagementRef.current = state.management;
   const lastPauseViewRef = useRef(state.pauseView);
@@ -82,6 +93,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const renderedWorkspace = designWorkspace ?? lastWorkspaceRef.current;
   const renderedTool = state.tool !== 'none' ? state.tool : lastToolRef.current;
   const renderedContextPanel = state.contextPanel !== 'none' ? state.contextPanel : lastContextPanelRef.current;
+  const renderedSelection = state.selection ?? lastSelectionRef.current;
+  const renderedSelectedBuilding = renderedSelection?.kind === 'building' ? getBuildingSelectionDefinition(renderedSelection.entityId) : null;
   const renderedManagement = state.management !== 'none' ? state.management : lastManagementRef.current;
   const renderedPauseView = state.paused ? state.pauseView : lastPauseViewRef.current;
 
@@ -117,13 +130,17 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         dispatch({ type: 'SET_MAP_VIEW', mapView: 'default' });
         return;
       }
+      if (state.selection !== null) {
+        dispatch({ type: 'CLEAR_SELECTION' });
+        return;
+      }
 
       dispatch({ type: 'SET_PAUSED', paused: true });
     }
 
     window.addEventListener('keydown', handleGameplayEscape);
     return () => window.removeEventListener('keydown', handleGameplayEscape);
-  }, [state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.tool, state.workspace]);
+  }, [state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace]);
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
@@ -137,6 +154,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
     >
       <div className="game-vignette" />
       <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
+
+      <BuildingSelectionLayer selection={state.selection} active={buildingSelectionActive} focusPulse={selectionFocusPulse} onSelect={(entityId) => dispatch({ type: 'SELECT_BUILDING', entityId })} onClear={() => dispatch({ type: 'CLEAR_SELECTION' })} />
 
       {showCompassHud && <GameplayCompassHud buildMode={toolOpen} />}
       {!state.paused && <GameplaySystemMenuButton onClick={() => dispatch({ type: 'SET_PAUSED', paused: true })} />}
@@ -160,6 +179,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       {showContextUtilityToolbar && (
         <ContextUtilityToolbar
           tool={state.tool}
+          selection={state.selection}
           gridSnap={state.gridSnap}
           gridVisible={state.gridVisible}
           canUndo={state.canUndo}
@@ -193,7 +213,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           onToggleCityWallTransitionStairClearance={() => dispatch({ type: 'TOGGLE_CITY_WALL_TRANSITION_STAIR_CLEARANCE' })}
           onToolAction={(id) => {
             if (id === 'terrain') dispatch({ type: 'ENTER_TERRAIN_EDIT' });
-            else if (id === 'palette') dispatch({ type: 'ENTER_COLOR_TOOL' });
+            else if (id === 'palette' || id === 'selection-color-building') dispatch({ type: 'ENTER_COLOR_TOOL' });
+            else if (id === 'selection-focus-building') setSelectionFocusPulse((value) => value + 1);
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
           }}
         />
@@ -239,6 +260,13 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         />
       )}
 
+      {selectionPresence.mounted && renderedSelectedBuilding && (
+        <>
+          <BuildingSelectionInspector building={renderedSelectedBuilding} motionPhase={selectionPresence.phase} onClose={() => dispatch({ type: 'CLEAR_SELECTION' })} />
+          <BuildingSelectionActionBar motionPhase={selectionPresence.phase} onMove={() => dispatch({ type: 'ENTER_SELECTED_BUILDING_MOVE' })} onEdit={() => dispatch({ type: 'ENTER_SELECTED_BUILDING_EDIT' })} onClose={() => dispatch({ type: 'CLEAR_SELECTION' })} />
+        </>
+      )}
+
       {contextPresence.mounted && renderedContextPanel !== 'none' && (
         <GameplayContextPanel
           panel={renderedContextPanel}
@@ -253,6 +281,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <>
           <BuildingPlacementOverlay
             terrainMode={state.buildingTerrainMode}
+            editIntent={state.buildingEditIntent}
+            buildingName={selectedBuilding?.name ?? undefined}
             motionPhase={toolPresence.phase}
             adjustmentMode={state.adjustmentMode}
             onClose={exitTool}
@@ -364,7 +394,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <TreePlacementTool state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onExit={exitTool} />
       )}
 
-      {space !== 'management' && !state.paused && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'color-tool' && (
+      {space !== 'management' && !state.paused && state.selection === null && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'color-tool' && (
         <GameplayOperationHints
           tool={state.tool}
           adjustmentMode={state.adjustmentMode}

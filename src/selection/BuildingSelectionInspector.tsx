@@ -1,0 +1,6 @@
+import { Building2 } from '../ui/icons/runtime-icons.generated';
+import { LeftContextPanel, LeftContextSection } from '../ui/LeftContextPanel';
+import type { MotionPhase } from '../ui/motion';
+import type { BuildingSelectionDefinition } from './building-selection-model';
+interface Props { building: BuildingSelectionDefinition; motionPhase?: MotionPhase; onClose:()=>void; }
+export function BuildingSelectionInspector({building,motionPhase='steady',onClose}:Props){return <LeftContextPanel ariaLabel={'建筑信息 '+building.name} icon={Building2} title={building.name} subtitle={building.category+' · '+building.district} className={'building-selection-inspector motion-left-surface is-'+motionPhase} bodyClassName="building-selection-inspector__body" showClose={false} onClose={onClose} dataAttributes={{'data-selection-kind':'building','data-selection-id':building.id}}><div className="building-selection-status"><span>当前状态</span><b>{building.status}</b></div>{building.sections.map((section)=><LeftContextSection title={section.title} key={section.title}><div className="building-selection-info-list">{section.rows.map((row)=><div className="building-selection-info-row" key={row.label}><span>{row.label}</span><b className={row.tone&&row.tone!=='normal'?'is-'+row.tone:''}>{row.value}</b></div>)}</div></LeftContextSection>)}</LeftContextPanel>;}

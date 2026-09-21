@@ -230,14 +230,20 @@ Workspace → Camera / Weather
 
 Tool / Management / Pause 打开时关闭 Context Surface。
 
-### 7.3 Selection Inspector 预留
+### 7.3 World Selection
 
-推荐双层表达：
+World Selection 已进入 Gameplay 层，不是独立 Tool。第一批 Consumer 为 Building，UI State 只持有 kind + entityId。
 
-- 世界 Anchor：名称、状态、警告等极轻信息；
-- 左下 Inspector：完整详情与动作。
+- 世界 Anchor：Hover 中性纸灰，Selected 弱熟铜轮廓；Unity 正式改由 World Selection Renderer。
+- 左下 Inspector：复用 LeftContextPanel，Selection 不重复 Header Close。
+- 中下 Selection Action Bar：Building V1 为移动 / 编辑 / 关闭。
+- 右下 Context Utility：Building Selection 为聚焦 / 配色 / Undo / Redo。
+- Top Shell / Control Tray 保留；Main Dock 在 Selection 存在时收起。
+- 点击另一建筑原位 Rebind；空地 / Esc / 关闭统一 CLEAR_SELECTION。
+- Camera / Weather / Management / Workspace 清 Selection；Pause 只隐藏 UI、不丢 Selection。
+- Selection → Move / Edit / Color Tool 使用 Selection ToolOrigin，退出后恢复同一对象。
 
-Selection Inspector 是否与 Workspace 共存，等真实对象选择系统实现后验证，不机械套 Camera / Weather 的互斥规则。
+详见 `Documentation/世界对象选中系统.md`。
 
 ## 8. Information Views
 
