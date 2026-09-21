@@ -34,6 +34,10 @@ try {
   ok('left panel scheme field', await page.getByRole('button', { name: '打开当前建筑配色方案', exact: true }).count() === 1);
   ok('left panel current scheme', await page.getByText('墨瓦沉木', { exact: true }).count() === 1);
   ok('left panel weathering', await page.getByText('48%', { exact: true }).count() >= 1);
+  const inspectorBody = page.locator('.building-selection-inspector__body');
+  const schemeField = page.getByRole('button', { name: '打开当前建筑配色方案', exact: true });
+  const [bodyBox, schemeBox] = await Promise.all([inspectorBody.boundingBox(), schemeField.boundingBox()]);
+  ok('appearance controls visible without scrolling', Boolean(bodyBox && schemeBox && schemeBox.y >= bodyBox.y && schemeBox.y + schemeBox.height <= bodyBox.y + bodyBox.height));
 
   const utility = page.locator('.context-utility-toolbar[data-utility-context="building-selection"]');
   await utility.waitFor();
