@@ -58,7 +58,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const showCompassHud = !state.paused && space !== 'management';
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const selectionOpen = !state.paused && space === 'gameplay' && state.selection !== null;
-  const worldUtilityStacked = !state.paused && space === 'gameplay' && state.tool === 'none' && state.selection === null;
+  const worldUtilityStacked = !state.paused
+    && (space === 'gameplay' || space === 'workspace')
+    && state.tool === 'none'
+    && state.selection === null;
   const buildingSelectionActive = !state.paused && !state.worldDemolitionMode && space === 'gameplay' && state.tool === 'none' && state.workspace === 'none' && state.management === 'none' && state.contextPanel === 'none' && !state.mapPanelOpen;
   const selectedBuilding = state.selection?.kind === 'building' && !removedBuildingIds.has(state.selection.entityId)
     ? getBuildingSelectionDefinition(state.selection.entityId)

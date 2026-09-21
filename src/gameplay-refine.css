@@ -154,3 +154,6 @@
   align-items:stretch;
   gap:8px;
 }
+
+/* Workspace-space bottom geometry is owned by gameplay-hud-layout.css.
+   This file intentionally does not override --hud-bottom-safe-offset. */

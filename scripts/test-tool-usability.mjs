@@ -75,6 +75,17 @@ assert(!placementControls.includes('--ui-parameter-step-size') && !placementCont
 assert(!placementControls.includes('.ui-slider{height:28px}'), 'Placement Feature 不得持有 Slider 内部高度');
 checks += 13;
 
+// Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
+const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
+const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
+assert(hudLayoutCss.includes('--hud-main-dock-lift:14px'), 'Main Dock 必须按 76/104 高度差抬高 14px');
+assert(hudLayoutCss.includes('--hud-main-dock-bottom:calc(var(--hud-edge) + var(--hud-main-dock-lift))'), 'Main Dock 必须消费共享 bottom token');
+assert(hudLayoutCss.includes('--hud-bottom-safe-line:calc(var(--hud-edge) + var(--hud-world-tools-stacked-height))'), 'Bottom HUD Safe Line 必须由双层 Utility 顶边定义');
+assert(hudLayoutCss.includes('--hud-bottom-safe-offset:calc(var(--hud-bottom-safe-line) + var(--hud-gap-md))'), 'Workspace / Hints 必须消费统一安全间距');
+assert(hudLayoutCss.includes('.gameplay-screen--workspace.has-world-utility-stack .workspace'), 'Workspace 必须有双层 Utility 安全线覆盖');
+assert(gameplayScreen.includes("(space === 'gameplay' || space === 'workspace')"), 'Workspace 打开时 World Utility 必须继续保持双层');
+checks += 6;
+
 // 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {
   'src/gameplay/inventory-management.css': 'c9d332c653c9fea61c918fb1dbb74af9782b7d83',

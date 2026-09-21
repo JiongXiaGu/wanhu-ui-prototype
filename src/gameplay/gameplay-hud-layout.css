@@ -52,11 +52,15 @@
 
   --hud-core-width:940px;
   --hud-command-height:var(--command-height-lg);
+  --hud-main-dock-lift:14px;
+  --hud-main-dock-bottom:calc(var(--hud-edge) + var(--hud-main-dock-lift));
   --hud-world-tools-width:458px;
   --hud-world-tools-stacked-width:356px;
   --hud-world-tools-stacked-height:104px;
   --hud-tool-tools-width:304px;
   --hud-utility-tools-height:var(--command-height-sm);
+  --hud-bottom-safe-line:calc(var(--hud-edge) + var(--hud-world-tools-stacked-height));
+  --hud-bottom-safe-offset:calc(var(--hud-bottom-safe-line) + var(--hud-gap-md));
   --hud-context-weather-width:400px;
   --hud-context-camera-width:360px;
   --hud-left-context-max-height:720px;
@@ -89,7 +93,7 @@
 
 .gameplay-screen .command-bar{
   width:var(--hud-core-width);
-  bottom:var(--hud-edge);
+  bottom:var(--hud-main-dock-bottom);
 }
 
 .gameplay-screen > .context-utility-toolbar.command-utility{
@@ -116,7 +120,7 @@
   bottom:calc(var(--hud-edge) + var(--hud-utility-tools-height) + var(--hud-gap-md));
 }
 .gameplay-screen.has-world-utility-stack .gameplay-operation-hints{
-  bottom:calc(var(--hud-edge) + var(--hud-world-tools-stacked-height) + var(--hud-gap-md));
+  bottom:var(--hud-bottom-safe-offset);
 }
 .gameplay-screen.is-world-demolition-mode{cursor:crosshair}
 .gameplay-screen.is-world-demolition-mode button,
@@ -124,6 +128,9 @@
 
 .gameplay-screen .workspace{
   bottom:calc(var(--hud-edge) + var(--hud-command-height) + var(--hud-gap-md));
+}
+.gameplay-screen--workspace.has-world-utility-stack .workspace{
+  bottom:var(--hud-bottom-safe-offset);
 }
 
 /* All full lower-left context surfaces share the same screen anchor as placement tool parameter panels.

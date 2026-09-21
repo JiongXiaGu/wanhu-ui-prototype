@@ -91,6 +91,7 @@ jobs:
           path: |
             review-screenshots/usability-world-utility-two-rows.png
             review-screenshots/usability-world-utility-demolition-active.png
+            review-screenshots/usability-world-utility-workspace-balanced.png
             review-screenshots/tool-usability-report.json
           if-no-files-found: warn
           retention-days: 7

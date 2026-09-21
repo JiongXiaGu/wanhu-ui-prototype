@@ -343,7 +343,8 @@ Main Dock = 模式选择器 + 当前模式分类带。
 - 只有玩家明确点击分类才 Selected；
 - 设计八类进入同一个 Design Workspace；
 - 当前分类再次点击 / Close / Esc 关闭 Workspace 并清分类；
-- Workspace 打开时点击另一个设计分类直接替换 Definition。
+- Workspace 打开时点击另一个设计分类直接替换 Definition；
+- Workspace 打开时 Main Dock 与双层 World Utility 都保持可见，并与 Workspace 通过统一 Bottom HUD Safe Line 分离。
 
 Blueprint Workspace 尚未实现。
 
@@ -469,7 +470,7 @@ scheme   → 方案模式
 
 批量摧毁 V1 只验证 UI 状态与输入互斥：激活后普通建筑 Selection 暂时退出，Operation Hints 改为框选 / 追加 / 排除 / 确认 / Esc；再次点击或 Esc 退出。Web Prototype 不伪造真实范围查询和 ECS 删除，正式 Unity 由 World Demolition Controller / Command History 处理框选、过滤、确认与建筑生命周期。
 
-双层布局只用于普通 Gameplay。Workspace、Building Selection 与各 Tool 的 Context Utility 继续保持单行，以免所有状态都变厚。
+双层布局用于普通 Gameplay 与 Design Workspace。Building Selection 与各 Tool 的 Context Utility 继续保持单行。Main Dock 不与双层 Utility 做顶边或底边硬对齐，而按视觉中心线对齐；Workspace 与 Operation Hints 共同使用 Bottom HUD Safe Line，避免任何一方侵占目录空间。
 
 Gameplay / Workspace / Tool 中保留 Utility Host；Management / Pause 隐藏。
 

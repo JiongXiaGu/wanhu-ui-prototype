@@ -186,10 +186,19 @@ try {
   const secondRowLabels = await rows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
   assert.deepEqual(firstRowLabels, ['地图解锁', '编辑区域', '地形编辑', '配色工具']);
   assert.deepEqual(secondRowLabels, ['网格吸附', '网格显示', '范围复制', '范围移动', '撤销 · Ctrl+Z', '重做 · Ctrl+Y', '批量摧毁建筑']);
-  const [toolbarBox, firstRowBox, secondRowBox] = await Promise.all([worldToolbar.boundingBox(), rows.nth(0).boundingBox(), rows.nth(1).boundingBox()]);
-  assert(toolbarBox && firstRowBox && secondRowBox);
+  const mainDock = page.locator('.command-bar');
+  const [toolbarBox, mainDockBox, firstRowBox, secondRowBox] = await Promise.all([
+    worldToolbar.boundingBox(),
+    mainDock.boundingBox(),
+    rows.nth(0).boundingBox(),
+    rows.nth(1).boundingBox(),
+  ]);
+  assert(toolbarBox && mainDockBox && firstRowBox && secondRowBox);
   assert(Math.abs(toolbarBox.width - 356) < 1 && Math.abs(toolbarBox.height - 104) < 1, '双层 World Utility 使用固定 356×104 逻辑尺寸');
   assert(secondRowBox.y > firstRowBox.y + firstRowBox.height - 1, '两行不能互相重叠');
+  const mainDockCenterY = mainDockBox.y + mainDockBox.height / 2;
+  const utilityCenterY = toolbarBox.y + toolbarBox.height / 2;
+  assert(Math.abs(mainDockCenterY - utilityCenterY) <= 1, 'Main Dock 与双层 Utility 必须视觉中心线平齐');
   const destroy = worldToolbar.getByRole('button', { name: '批量摧毁建筑', exact: true });
   const destroyBox = await destroy.boundingBox();
   const secondButtons = await rows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => ({ label: button.getAttribute('aria-label'), right: button.getBoundingClientRect().right })));
@@ -198,7 +207,7 @@ try {
   assert(hintsBox && overlap(toolbarBox, hintsBox) < 1, '双层 Utility 不得遮挡操作提示');
   const separator = await worldToolbar.locator('.context-utility-toolbar__separator').first().evaluate(element => getComputedStyle(element).marginLeft);
   assert.equal(separator, '9px');
-  report.checks.push({ label: '主游玩辅助工具双层分组', toolbarBox, firstRowLabels, secondRowLabels, separator });
+  report.checks.push({ label: '主游玩辅助工具双层分组与中心线平齐', toolbarBox, mainDockBox, firstRowLabels, secondRowLabels, separator, mainDockCenterY, utilityCenterY });
   await shot('world-utility-two-rows');
 
   assert.equal(await page.locator('.building-selection-anchor').count(), 3, '普通 Gameplay 应保留建筑选择入口');
@@ -214,10 +223,28 @@ try {
   report.checks.push({ label: '批量摧毁 Toggle / Esc / Selection 互斥' });
 
   await open('workspace-building', '.workspace--catalog');
+  const workspace = page.locator('.workspace--catalog');
   const workspaceUtility = page.locator('.context-utility-toolbar[data-utility-context="world"]');
-  assert(!(await workspaceUtility.evaluate(element => element.classList.contains('is-world-stacked'))), 'Workspace 中 World Utility 仍保持单行');
-  assert.equal(await workspaceUtility.locator('.context-utility-toolbar__row').count(), 1);
-  report.checks.push({ label: '双层结构只作用于主游玩 World Utility' });
+  const workspaceMainDock = page.locator('.command-bar');
+  assert(await workspaceUtility.evaluate(element => element.classList.contains('is-world-stacked')), 'Workspace 打开时 World Utility 应继续保持双层');
+  assert.equal(await workspaceUtility.locator('.context-utility-toolbar__row').count(), 2);
+  const [workspaceBox, workspaceUtilityBox, workspaceMainDockBox] = await Promise.all([
+    workspace.boundingBox(),
+    workspaceUtility.boundingBox(),
+    workspaceMainDock.boundingBox(),
+  ]);
+  assert(workspaceBox && workspaceUtilityBox && workspaceMainDockBox);
+  const workspaceBottom = workspaceBox.y + workspaceBox.height;
+  const utilityGap = workspaceUtilityBox.y - workspaceBottom;
+  const mainDockGap = workspaceMainDockBox.y - workspaceBottom;
+  const workspaceMainCenterY = workspaceMainDockBox.y + workspaceMainDockBox.height / 2;
+  const workspaceUtilityCenterY = workspaceUtilityBox.y + workspaceUtilityBox.height / 2;
+  assert(utilityGap >= 11.5, 'Workspace 与双层 Utility 至少保留 12px 安全间距');
+  assert(mainDockGap >= 11.5, 'Workspace 与抬高后的 Main Dock 不得重叠');
+  assert(Math.abs(workspaceMainCenterY - workspaceUtilityCenterY) <= 1, 'Workspace 状态下 Main Dock / Utility 中心线仍需平齐');
+  assert(overlap(workspaceBox, workspaceUtilityBox) < 1 && overlap(workspaceBox, workspaceMainDockBox) < 1, 'Workspace 不得覆盖任一底部菜单');
+  report.checks.push({ label: 'Workspace 与双层 Utility 共存', workspaceBox, workspaceUtilityBox, workspaceMainDockBox, utilityGap, mainDockGap });
+  await shot('world-utility-workspace-balanced');
 
   assert.equal(report.errors.length, 0, report.errors.join('\n'));
   console.log(`Tool usability visual review: PASS (${report.checks.length} checks, ${report.screenshots.length} screenshots).`);
