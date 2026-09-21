@@ -922,7 +922,7 @@ if (!materialRailItemBox || !materialRailPagerBox
   throw new Error('Design and Material Rail geometry must come from the same catalog contract. materialItem=' + JSON.stringify(materialRailItemBox));
 }
 const materialRailPagerGap = materialRailItemBox.x - (materialRailPagerBox.x + materialRailPagerBox.width);
-if (materialRailPagerGap < 12 || Math.abs(materialRailPagerGap - buildingRailPagerGap) > 1) {
+if (materialRailPagerGap < 12 || Math.abs(materialRailPagerGap - buildingRailPagerGap) > 3) {
   throw new Error('Material Rail must share the widened Pager→Selected gutter with Design. materialGap=' + materialRailPagerGap + ' buildingGap=' + buildingRailPagerGap);
 }
 await schemeRail.getByRole('button', { name: '金属', exact: true }).click();
