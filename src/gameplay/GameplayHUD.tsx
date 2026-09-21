@@ -1,5 +1,6 @@
 import type { UiIconComponent } from '../ui/icons/runtime-icons.generated';
 import {
+  Camera,
   ChevronsRight,
   CloudSun,
   Coins,
@@ -14,7 +15,7 @@ import {
   Store,
   Users,
 } from '../ui/icons/runtime-icons.generated';
-import type { ManagementView, MapView, Speed } from '../app/ui-state';
+import type { ContextPanel, ManagementView, MapView, Speed } from '../app/ui-state';
 import { usePresence } from '../ui/motion';
 import { MANAGEMENT_PRIMARY_NAV, MANAGEMENT_STATUS_QUICK_ENTRIES } from './management/management-navigation';
 
@@ -31,6 +32,7 @@ interface SpeedControlItem {
 }
 
 interface GameplayHUDProps {
+  contextPanel: ContextPanel;
   dayTime: number;
   management: ManagementView;
   mapView: MapView;
@@ -38,6 +40,7 @@ interface GameplayHUDProps {
   speed: Speed;
   showControlTray: boolean;
   controlTrayEnterDelayMs?: number;
+  onContextPanelChange: (panel: ContextPanel) => void;
   onManagementChange: (management: ManagementView) => void;
   onToggleMapPanel: () => void;
   onMapViewChange: (mapView: MapView) => void;
@@ -69,6 +72,7 @@ function formatTime(value: number) {
 }
 
 export function GameplayHUD({
+  contextPanel,
   dayTime,
   management,
   mapView,
@@ -76,6 +80,7 @@ export function GameplayHUD({
   speed,
   showControlTray,
   controlTrayEnterDelayMs = 0,
+  onContextPanelChange,
   onManagementChange,
   onToggleMapPanel,
   onMapViewChange,
@@ -132,6 +137,29 @@ export function GameplayHUD({
 
       {trayPresence.mounted && (
         <nav className={`gameplay-top-navigation motion-top-surface is-${trayPresence.phase}`} aria-label="城市控制" aria-busy={trayPresence.phase !== 'steady'}>
+          <div className="gameplay-top-navigation__scene" aria-label="场景工具">
+            <button
+              type="button"
+              className={`gameplay-top-navigation__button ${contextPanel === 'camera' ? 'is-active' : ''}`}
+              aria-label="相机"
+              data-tooltip="相机"
+              onClick={() => onContextPanelChange('camera')}
+            >
+              <Camera />
+            </button>
+            <button
+              type="button"
+              className={`gameplay-top-navigation__button ${contextPanel === 'weather' ? 'is-active' : ''}`}
+              aria-label="环境控制"
+              data-tooltip="环境控制"
+              onClick={() => onContextPanelChange('weather')}
+            >
+              <CloudSun />
+            </button>
+          </div>
+
+          <i className="gameplay-top-navigation__separator" />
+
           <div className="gameplay-top-navigation__management" aria-label="城市管理">
             {MANAGEMENT_PRIMARY_NAV.map((item) => {
               const Icon = item.icon;

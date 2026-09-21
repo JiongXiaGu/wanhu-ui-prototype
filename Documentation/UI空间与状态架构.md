@@ -40,7 +40,7 @@ else                      → Gameplay
 - 左上：Compass HUD；
 - 顶部中央：Gameplay Top Shell；
 - 右上：System Menu + 未来 Notification / Objective；
-- 左下：Normal Gameplay 时为 World Dock；打开 Camera / Weather 后 Context Surface 从 World Dock 上方展开；Selection / Tool 时该槽改由对应 Context Surface 占用；
+- 左下：Context Surface；
 - 中下：Main Dock / Workspace / Tool Dock；
 - 右下：Operation Hints + Context Utility Toolbar；World / Building / Road / Terrain 根据当前 Tool Context 换内容。
 
@@ -107,13 +107,17 @@ Top Shell 是持续状态与一级入口的核心控制岛。
 
 ### 4.2 Control Tray
 
-第二层只保留城市管理主导航与 Information Views：
+第二层是真正的一级 Launcher：
 
 ```text
-城市 / 经济 / 库存 / 政策 / 军事 │ Information Views
+Camera / Weather │ 城市 / 经济 / 库存 / 政策 / 军事 │ Information Views
 ```
 
-Camera / Weather 不再占用顶部 Control Tray，移动到左下 World Dock。顶部因此只表达“城市管理 + 世界数据观察”，场景观察和世界编辑统一归底部左侧。
+语义：
+
+- 左：场景观察 / 调整；
+- 中：城市管理主导航；
+- 右：世界数据观察。
 
 规则：
 
@@ -452,44 +456,28 @@ scheme   → 方案模式
 - 中央 Scheme Workspace 是配色工具内部 Work Surface，不写入顶层 `Workspace=design`；
 - 正式设计见 `Documentation/灯光调整工具设计规范.md` 与 `Documentation/建筑配色方案模式设计规范.md`。
 
-## 12. World Dock / Utility
+## 12. World Utility
 
-普通 Gameplay 底部采用三个视觉岛：
+普通主游玩状态使用两行 World Utility，仍然只有一个 Host：
 
 ```text
-左下 World Dock        中下 Main Dock              右下 Utility
-相机 环境 │ 解锁 区域 地形 配色   设计 / 建设分类   网格 复制 移动 │ Undo Redo │ 批量摧毁
+第一行：地图解锁 / 区域编辑 / 地形编辑 / 配色工具
+第二行：网格吸附 / 网格显示 / 范围复制 / 范围移动 │ Undo / Redo │ 批量摧毁
 ```
 
-### 12.1 左下 World Dock
+第一行是世界模式 / 编辑入口，视觉层级略高；第二行是辅助与一次性动作。批量摧毁位于第二行最右，使用 Danger Tone，并作为 Toggle 进入批量摧毁模式。
 
-- 相机 / 环境属于 Scene Launcher，打开共享 Context Surface；
-- 地图解锁 / 区域 / 地形 / 配色属于 World Editing Launcher；
-- Camera / Weather 当前入口以熟铜 Selected 表示；
-- Camera / Weather 面板在 Dock 上方展开，不覆盖 Dock；
-- World Dock 只属于 Normal Gameplay；
-- 打开 Workspace、Building Selection、Tool、Management、Map Panel 或 Pause 时隐藏。
+批量摧毁 V1 只验证 UI 状态与输入互斥：激活后普通建筑 Selection 暂时退出，Operation Hints 改为框选 / 追加 / 排除 / 确认 / Esc；再次点击或 Esc 退出。Web Prototype 不伪造真实范围查询和 ECS 删除，正式 Unity 由 World Demolition Controller / Command History 处理框选、过滤、确认与建筑生命周期。
 
-### 12.2 右下 Utility
+双层布局只用于普通 Gameplay。Workspace、Building Selection 与各 Tool 的 Context Utility 继续保持单行，以免所有状态都变厚。
 
-普通 Gameplay 恢复单行：
-
-- 网格吸附；
-- 网格显示；
-- 范围复制；
-- 范围移动；
-- Undo / Redo；
-- 最右侧批量摧毁。
-
-批量摧毁继续是 Danger Toggle。激活后普通建筑 Selection 暂停，Operation Hints 切换为批量摧毁提示，Esc 退出。Web Prototype 不伪造真实范围查询和 ECS 删除。
-
-Workspace 仍可保留单行 World Utility，但不显示左下 World Dock。Tool / Building Selection 使用各自的单行 Context Utility Definition。
+Gameplay / Workspace / Tool 中保留 Utility Host；Management / Pause 隐藏。
 
 ## 13. Launcher 类型
 
 ### Surface Launcher
 
-- 左下 World Dock 的 Camera / Weather；
+- Camera / Weather；
 - Control Tray Management 主域；
 - Main Dock 分类；
 - Information Views Palette。

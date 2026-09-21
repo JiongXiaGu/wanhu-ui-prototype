@@ -3,10 +3,12 @@ import type { UiIconComponent } from '../ui/icons/runtime-icons.generated';
 import {
   Building2,
   Copy,
+  DoorOpen,
   Grid3X3,
   Magnet,
   Mountain,
   Move,
+  Palette,
   Redo2,
   Route,
   Ruler,
@@ -24,6 +26,10 @@ export type UtilityItemId =
   | 'selection-focus-building'
   | 'selection-remove-building'
   | 'world-bulk-demolish'
+  | 'unlock'
+  | 'region'
+  | 'terrain'
+  | 'palette'
   | 'grid-snap'
   | 'grid-visible'
   | 'copy'
@@ -56,6 +62,7 @@ interface UtilityItem {
 interface ContextUtilityToolbarProps {
   tool: Tool;
   selection: WorldSelection;
+  stackWorldTools: boolean;
   worldDemolitionMode: boolean;
   gridSnap: boolean;
   gridVisible: boolean;
@@ -93,6 +100,12 @@ interface ContextUtilityToolbarProps {
 }
 
 const WORLD_GROUPS: readonly (readonly UtilityItem[])[] = [
+  [
+    { id: 'unlock', label: '地图解锁', icon: DoorOpen, kind: 'action' },
+    { id: 'region', label: '编辑区域', icon: ScanLine, kind: 'action' },
+    { id: 'terrain', label: '地形编辑', icon: Mountain, kind: 'action' },
+    { id: 'palette', label: '配色工具', icon: Palette, kind: 'action' },
+  ],
   [
     { id: 'grid-snap', label: '网格吸附', icon: Magnet, kind: 'toggle' },
     { id: 'grid-visible', label: '网格显示', icon: Grid3X3, kind: 'toggle' },
@@ -293,6 +306,7 @@ function ariaLabelForContext(context: UtilityContext) {
 export function ContextUtilityToolbar({
   tool,
   selection,
+  stackWorldTools,
   worldDemolitionMode,
   gridSnap,
   gridVisible,
@@ -378,11 +392,14 @@ export function ContextUtilityToolbar({
   }
 
   const groups = DEFINITIONS[displayedContext];
-  const rows: readonly (readonly (readonly UtilityItem[])[])[] = [groups];
+  const stackedWorld = displayedContext === 'world' && stackWorldTools;
+  const rows: readonly (readonly (readonly UtilityItem[])[])[] = stackedWorld
+    ? [[groups[0]], [groups[1], groups[2], groups[3]]]
+    : [groups];
 
   return (
     <div
-      className={`context-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm is-${phase}`}
+      className={`context-utility-toolbar command-utility bottom-command-surface bottom-command-surface--sm is-${phase} ${stackedWorld ? 'is-world-stacked' : ''}`}
       data-utility-context={displayedContext}
       aria-label={ariaLabelForContext(displayedContext)}
       aria-busy={phase !== 'steady'}

@@ -177,61 +177,47 @@ try {
   assert(tooltip.visible === 'visible' && tooltip.focused); report.checks.push({ label: '顶部指标键盘提示', ...tooltip });
   await page.screenshot({ path: `${out}/usability-hud-focus.png` }); report.screenshots.push('hud-focus');
 
-  const worldDock = page.locator('.gameplay-world-action-dock');
   const worldToolbar = page.locator('.context-utility-toolbar[data-utility-context="world"]');
-  await Promise.all([worldDock.waitFor(), worldToolbar.waitFor()]);
-  const dockLabels = await worldDock.getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
-  const utilityLabels = await worldToolbar.getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
-  assert.deepEqual(dockLabels, ['相机', '环境控制', '地图解锁', '编辑区域', '地形编辑', '配色工具']);
-  assert.deepEqual(utilityLabels, ['网格吸附', '网格显示', '范围复制', '范围移动', '撤销 · Ctrl+Z', '重做 · Ctrl+Y', '批量摧毁建筑']);
-  const [dockBox, toolbarBox, mainDockBox, hintsBox] = await Promise.all([
-    worldDock.boundingBox(),
-    worldToolbar.boundingBox(),
-    page.locator('.command-bar').boundingBox(),
-    page.locator('.gameplay-operation-hints').boundingBox(),
-  ]);
-  assert(dockBox && toolbarBox && mainDockBox && hintsBox);
-  assert(Math.abs(dockBox.width - 284) < 1 && Math.abs(dockBox.height - 56) < 1, '左下 World Dock 使用 284×56 逻辑尺寸');
-  assert(Math.abs(toolbarBox.width - 356) < 1 && Math.abs(toolbarBox.height - 56) < 1, '右下 Utility 恢复单行 356×56');
-  assert(overlap(dockBox, mainDockBox) < 1 && overlap(toolbarBox, mainDockBox) < 1, '左/中/右三个底部岛不得互相遮挡');
-  assert(overlap(toolbarBox, hintsBox) < 1, '右下 Utility 不得遮挡操作提示');
-  assert.equal(await page.locator('.gameplay-top-navigation').getByRole('button', { name: '相机', exact: true }).count(), 0, '顶部不再重复相机入口');
-  assert.equal(await page.locator('.gameplay-top-navigation').getByRole('button', { name: '环境控制', exact: true }).count(), 0, '顶部不再重复环境入口');
-  report.checks.push({ label: 'Gameplay 左中右三岛结构', dockBox, toolbarBox, mainDockBox, dockLabels, utilityLabels });
-  await shot('world-dock-three-islands');
-
-  await worldDock.getByRole('button', { name: '相机', exact: true }).click(); await settle();
-  const cameraPanel = page.locator('.gameplay-context-panel--camera');
-  await cameraPanel.waitFor();
-  const cameraBox = await cameraPanel.boundingBox();
-  const dockBoxWithCamera = await worldDock.boundingBox();
-  assert(cameraBox && dockBoxWithCamera && cameraBox.y + cameraBox.height <= dockBoxWithCamera.y - 11, '相机面板必须在 World Dock 上方展开');
-  assert.equal(await worldDock.getByRole('button', { name: '相机', exact: true }).getAttribute('aria-pressed'), 'true');
-  await shot('world-dock-camera-open');
-  await worldDock.getByRole('button', { name: '环境控制', exact: true }).click(); await settle();
-  await page.waitForSelector('.gameplay-context-panel--weather');
-  assert.equal(await worldDock.getByRole('button', { name: '环境控制', exact: true }).getAttribute('aria-pressed'), 'true');
-  report.checks.push({ label: 'Camera / Environment 从左下 Dock 原位切换' });
-  await worldDock.getByRole('button', { name: '环境控制', exact: true }).click(); await settle();
-  await page.waitForSelector('.gameplay-context-panel--weather', { state: 'detached' });
-
+  await worldToolbar.waitFor();
+  assert(await worldToolbar.evaluate(element => element.classList.contains('is-world-stacked')), '主游玩 World Utility 应使用双层结构');
+  const rows = worldToolbar.locator('.context-utility-toolbar__row');
+  assert.equal(await rows.count(), 2, '主游玩 World Utility 必须只有两行');
+  const firstRowLabels = await rows.nth(0).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+  const secondRowLabels = await rows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+  assert.deepEqual(firstRowLabels, ['地图解锁', '编辑区域', '地形编辑', '配色工具']);
+  assert.deepEqual(secondRowLabels, ['网格吸附', '网格显示', '范围复制', '范围移动', '撤销 · Ctrl+Z', '重做 · Ctrl+Y', '批量摧毁建筑']);
+  const [toolbarBox, firstRowBox, secondRowBox] = await Promise.all([worldToolbar.boundingBox(), rows.nth(0).boundingBox(), rows.nth(1).boundingBox()]);
+  assert(toolbarBox && firstRowBox && secondRowBox);
+  assert(Math.abs(toolbarBox.width - 356) < 1 && Math.abs(toolbarBox.height - 104) < 1, '双层 World Utility 使用固定 356×104 逻辑尺寸');
+  assert(secondRowBox.y > firstRowBox.y + firstRowBox.height - 1, '两行不能互相重叠');
   const destroy = worldToolbar.getByRole('button', { name: '批量摧毁建筑', exact: true });
+  const destroyBox = await destroy.boundingBox();
+  const secondButtons = await rows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => ({ label: button.getAttribute('aria-label'), right: button.getBoundingClientRect().right })));
+  assert(destroyBox && secondButtons.every(button => button.label === '批量摧毁建筑' || destroyBox.x + destroyBox.width >= button.right - 1), '批量摧毁必须位于第二行最右侧');
+  const hintsBox = await page.locator('.gameplay-operation-hints').boundingBox();
+  assert(hintsBox && overlap(toolbarBox, hintsBox) < 1, '双层 Utility 不得遮挡操作提示');
+  const separator = await worldToolbar.locator('.context-utility-toolbar__separator').first().evaluate(element => getComputedStyle(element).marginLeft);
+  assert.equal(separator, '9px');
+  report.checks.push({ label: '主游玩辅助工具双层分组', toolbarBox, firstRowLabels, secondRowLabels, separator });
+  await shot('world-utility-two-rows');
+
   assert.equal(await page.locator('.building-selection-anchor').count(), 3, '普通 Gameplay 应保留建筑选择入口');
   await destroy.click(); await settle();
   assert.equal(await destroy.getAttribute('aria-pressed'), 'true');
   assert.equal(await page.locator('.gameplay-screen').getAttribute('data-world-demolition'), 'active');
   assert.equal(await page.locator('.building-selection-anchor').count(), 0, '批量摧毁模式不得与单栋建筑 Selection 抢点击');
   assert.equal(await page.locator('.operation-hints__task').textContent(), '批量摧毁');
-  await shot('world-demolition-active');
+  await shot('world-utility-demolition-active');
   await page.keyboard.press('Escape'); await settle();
   assert.equal(await page.locator('.gameplay-screen').getAttribute('data-world-demolition'), 'inactive');
   assert.equal(await page.locator('.building-selection-anchor').count(), 3, 'Esc 退出批量摧毁后恢复普通建筑 Selection');
   report.checks.push({ label: '批量摧毁 Toggle / Esc / Selection 互斥' });
 
   await open('workspace-building', '.workspace--catalog');
-  assert.equal(await page.locator('.gameplay-world-action-dock').count(), 0, 'Workspace 中左下 World Dock 必须隐藏');
-  assert.equal(await page.locator('.context-utility-toolbar[data-utility-context="world"] .context-utility-toolbar__row').count(), 1, 'Workspace 的右下 Utility 保持单行');
-  report.checks.push({ label: 'World Dock 只属于普通 Gameplay' });
+  const workspaceUtility = page.locator('.context-utility-toolbar[data-utility-context="world"]');
+  assert(!(await workspaceUtility.evaluate(element => element.classList.contains('is-world-stacked'))), 'Workspace 中 World Utility 仍保持单行');
+  assert.equal(await workspaceUtility.locator('.context-utility-toolbar__row').count(), 1);
+  report.checks.push({ label: '双层结构只作用于主游玩 World Utility' });
 
   assert.equal(report.errors.length, 0, report.errors.join('\n'));
   console.log(`Tool usability visual review: PASS (${report.checks.length} checks, ${report.screenshots.length} screenshots).`);

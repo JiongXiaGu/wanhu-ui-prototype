@@ -52,9 +52,9 @@
 
   --hud-core-width:940px;
   --hud-command-height:var(--command-height-lg);
-  --hud-world-tools-width:356px;
-  --hud-world-action-width:284px;
-  --hud-world-action-height:var(--command-height-sm);
+  --hud-world-tools-width:458px;
+  --hud-world-tools-stacked-width:356px;
+  --hud-world-tools-stacked-height:104px;
   --hud-tool-tools-width:304px;
   --hud-utility-tools-height:var(--command-height-sm);
   --hud-context-weather-width:400px;
@@ -98,6 +98,7 @@
   height:var(--hud-utility-tools-height);
 }
 .gameplay-screen > .context-utility-toolbar[data-utility-context="world"]{width:var(--hud-world-tools-width)}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="world"].is-world-stacked{width:var(--hud-world-tools-stacked-width);height:var(--hud-world-tools-stacked-height)}
 .gameplay-screen > .context-utility-toolbar[data-utility-context="building-selection"]{width:218px}
 .gameplay-screen > .context-utility-toolbar[data-utility-context="building-placement"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"],
@@ -114,6 +115,9 @@
   right:var(--hud-edge);
   bottom:calc(var(--hud-edge) + var(--hud-utility-tools-height) + var(--hud-gap-md));
 }
+.gameplay-screen.has-world-utility-stack .gameplay-operation-hints{
+  bottom:calc(var(--hud-edge) + var(--hud-world-tools-stacked-height) + var(--hud-gap-md));
+}
 .gameplay-screen.is-world-demolition-mode{cursor:crosshair}
 .gameplay-screen.is-world-demolition-mode button,
 .gameplay-screen.is-world-demolition-mode input{cursor:pointer}
@@ -128,9 +132,6 @@
   left:var(--hud-edge);
   bottom:var(--hud-edge);
   max-height:var(--hud-left-context-max-height);
-}
-.gameplay-screen.has-world-action-dock .gameplay-left-context-surface{
-  bottom:calc(var(--hud-edge) + var(--hud-world-action-height) + var(--hud-gap-md));
 }
 .gameplay-screen .gameplay-context-panel--camera{width:var(--hud-context-camera-width)}
 .gameplay-screen .gameplay-context-panel--weather{width:var(--hud-context-weather-width)}

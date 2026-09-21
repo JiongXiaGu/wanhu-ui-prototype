@@ -89,8 +89,8 @@ jobs:
         with:
           name: world-utility-review
           path: |
-            review-screenshots/usability-world-dock-three-islands.png
-            review-screenshots/usability-world-demolition-active.png
+            review-screenshots/usability-world-utility-two-rows.png
+            review-screenshots/usability-world-utility-demolition-active.png
             review-screenshots/tool-usability-report.json
           if-no-files-found: warn
           retention-days: 7
