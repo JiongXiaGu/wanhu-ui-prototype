@@ -1,6 +1,7 @@
 /* 工具主控栏：共享 M 档材质，参数留在左侧，模式只在需要时展开短名称。
    原有纯图标调用点默认不变；模式和结束按钮使用稳定命中区，不随选中缩放。 */
 .gameplay-screen .building-placement-toolbar-cluster,
+.gameplay-screen .building-edit-toolbar-cluster,
 .gameplay-screen .road-placement-toolbar-cluster,
 .gameplay-screen .terrain-edit-toolbar-cluster,
 .gameplay-screen .city-wall-construction-toolbar-cluster,

@@ -3,7 +3,7 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design';
-export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
+export type Tool = 'none' | 'building-placement' | 'building-edit' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
 export type TreePlacementMode = 'brush' | 'single';
@@ -18,7 +18,7 @@ export type PauseView = 'menu' | 'save' | 'settings';
 export type Speed = 0 | 1 | 2 | 4;
 export type WorldSelectionTarget = { kind: 'building'; entityId: string };
 export type WorldSelection = WorldSelectionTarget | null;
-export type BuildingEditIntent = 'place' | 'move' | 'edit';
+export type BuildingPlacementIntent = 'new' | 'move';
 
 export type DockMode = 'design' | 'blueprint';
 export type DesignDockCategory =
@@ -77,7 +77,7 @@ export interface GameplayUiState {
   dockMode: DockMode;
   dockCategory: DockCategory | null;
   buildingTerrainMode: BuildingTerrainMode;
-  buildingEditIntent: BuildingEditIntent;
+  buildingPlacementIntent: BuildingPlacementIntent;
   terrainEditMode: TerrainEditMode;
   terrainContours: boolean;
   terrainSlopeView: boolean;
@@ -131,7 +131,7 @@ export const initialGameplayUiState: GameplayUiState = {
   dockMode: 'design',
   dockCategory: null,
   buildingTerrainMode: 'balanced-earthwork',
-  buildingEditIntent: 'place',
+  buildingPlacementIntent: 'new',
   terrainEditMode: 'raise',
   terrainContours: false,
   terrainSlopeView: false,
@@ -306,7 +306,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapView: 'default',
         mapPanelOpen: false,
         buildingTerrainMode: 'balanced-earthwork',
-        buildingEditIntent: 'place',
+        buildingPlacementIntent: 'new',
         adjustmentMode: 'position',
         canUndo: false,
         canRedo: false,
@@ -323,7 +323,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         mapView: 'default',
         mapPanelOpen: false,
         buildingTerrainMode: 'balanced-earthwork',
-        buildingEditIntent: 'move',
+        buildingPlacementIntent: 'move',
         adjustmentMode: 'position',
         canUndo: false,
         canRedo: false,
@@ -334,13 +334,11 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         ...state,
         toolOrigin: { kind: 'selection', selection: state.selection },
         workspace: 'none',
-        tool: 'building-placement',
+        tool: 'building-edit',
         management: 'none',
         contextPanel: 'none',
         mapView: 'default',
         mapPanelOpen: false,
-        buildingTerrainMode: 'balanced-earthwork',
-        buildingEditIntent: 'edit',
         adjustmentMode: 'massing',
         canUndo: false,
         canRedo: false,
@@ -509,7 +507,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         tool: 'none',
         toolOrigin: null,
         selection: returnSelection,
-        buildingEditIntent: 'place',
+        buildingPlacementIntent: 'new',
         workspace: returningToWorkspace ? 'design' : 'none',
         dockMode: returningToWorkspace ? 'design' : state.dockMode,
         dockCategory: returnCategory,

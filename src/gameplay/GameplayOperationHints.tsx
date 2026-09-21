@@ -1,4 +1,4 @@
-import type { AdjustmentMode, CityWallConstructionMode, CityWallGatePlacementMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
+import type { AdjustmentMode, BuildingPlacementIntent, CityWallConstructionMode, CityWallGatePlacementMode, RoadDrawMode, TerrainEditMode, Tool } from '../app/ui-state';
 
 type HintRow = { binding: string; description: string; primary?: boolean };
 type HintPreset = { task: string; rows: HintRow[] };
@@ -13,7 +13,36 @@ const gameplayPreset: HintPreset = {
   ],
 };
 
-const buildingPresets: Record<AdjustmentMode, HintPreset> = {
+const buildingPlacementPresets: Record<BuildingPlacementIntent, HintPreset> = {
+  new: {
+    task: '建筑编辑 · 位置',
+    rows: [
+      { binding: '鼠标左键', description: '确定位置', primary: true },
+      { binding: '鼠标右键', description: '旋转镜头' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: '鼠标滚轮', description: '缩放镜头' },
+      { binding: 'R', description: '顺时针旋转' },
+      { binding: 'Shift + R', description: '逆时针旋转' },
+      { binding: 'Ctrl + Z', description: '撤销' },
+      { binding: 'Esc', description: '取消放置' },
+    ],
+  },
+  move: {
+    task: '移动建筑',
+    rows: [
+      { binding: '鼠标左键', description: '确定新位置', primary: true },
+      { binding: '鼠标右键', description: '旋转镜头' },
+      { binding: 'W / A / S / D', description: '移动镜头' },
+      { binding: '鼠标滚轮', description: '缩放镜头' },
+      { binding: 'R', description: '顺时针旋转' },
+      { binding: 'Shift + R', description: '逆时针旋转' },
+      { binding: 'Ctrl + Z', description: '撤销' },
+      { binding: 'Esc', description: '取消移动' },
+    ],
+  },
+};
+
+const buildingEditPresets: Record<AdjustmentMode, HintPreset> = {
   position: {
     task: '建筑放置',
     rows: [
@@ -240,6 +269,7 @@ function HintRowView({ row }: { row: HintRow }) {
 
 interface Props {
   tool: Tool;
+  buildingPlacementIntent: BuildingPlacementIntent;
   adjustmentMode: AdjustmentMode;
   roadDrawMode: RoadDrawMode;
   terrainEditMode: TerrainEditMode;
@@ -249,6 +279,7 @@ interface Props {
 
 export function GameplayOperationHints({
   tool,
+  buildingPlacementIntent,
   adjustmentMode,
   roadDrawMode,
   terrainEditMode,
@@ -256,8 +287,10 @@ export function GameplayOperationHints({
   cityWallGatePlacementMode,
 }: Props) {
   const preset = tool === 'building-placement'
-    ? buildingPresets[adjustmentMode]
-    : tool === 'road-placement'
+    ? buildingPlacementPresets[buildingPlacementIntent]
+    : tool === 'building-edit'
+      ? buildingEditPresets[adjustmentMode]
+      : tool === 'road-placement'
       ? roadPresets[roadDrawMode]
       : tool === 'terrain-edit'
         ? terrainPresets[terrainEditMode]

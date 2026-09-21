@@ -372,12 +372,15 @@ Blueprint Workspace 尚未实现。
 - 中下：Placement Action Bar；
 - 右下：World Utility。
 
-Building：
+Building Placement：
 
+- Intent：New / Move，共用一套 Placement；
 - Terrain Mode：平衡挖填 / 只填不挖 / 手动标高；
-- Adjustment Mode：位置 / 楼身 / 屋顶 / 立面；
+- 固定位置参数：自由 / 道路吸附 / 网格、旋转、吸附距离；
 - Quick Action：旋转 / 镜像；
 - 完成 / 取消。
+
+Building Edit 独立于 Placement：楼身 / 屋顶 / 未来立面。
 
 Road：
 
@@ -402,7 +405,8 @@ Tool 高于 Workspace / Management，打开后：
 
 当前 Tool：
 
-- Building Placement；
+- Building Placement（New / Move）；
+- Building Edit；
 - Road Placement；
 - Terrain Edit World Tool；
 - Material Palette（内部含 Surface / Lighting / Scheme 三模式）。

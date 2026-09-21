@@ -68,38 +68,23 @@ Action Bar 外壳约 `68px` 高，固定屏幕下方居中；宽度由当前 Too
 
 ## 3. Building Placement
 
-左侧 Placement Context 继续承载：
+Building Placement 只回答“建筑在哪里”，正式 Intent：
 
-- 地形状态摘要；
-- 位置参数；
-- 体量 / 楼身参数；
-- 屋顶参数；
-- 未来立面参数。
+```text
+BuildingPlacementIntent
+├ new
+└ move
+```
 
-Action Bar 当前包含两组 Mode：
+New 从 Design Workspace 进入，Move 从 Building Selection 进入。两者共享同一套 Placement Context、Action Bar、World Preview、地形 / 道路 / 碰撞校验和 Building Utility；不会维护第二套 Move Controller。
 
-### 地形关系
+左侧承载地形关系（平衡挖填 / 只填不挖 / 手动标高）和固定的位置参数（自由 / 道路吸附 / 网格、旋转角度、吸附距离）。中下只保留地形 ModeGroup + 旋转 / 镜像 Quick Action + 完成 / 取消。位置不再作为“调整对象”模式，因为整个 Placement Session 本身就是位置操作。
 
-- 平衡挖填；
-- 只填不挖；
-- 手动标高。
+New 完成后未来创建正式 Building Entity；Move 完成后只提交原建筑的 Placement / Transform 数据，不通过 Destroy + Create 重建对象。Move 必须保留原建筑身份及岗位、居民、库存、经营统计、配色等引用。取消 Move 丢弃 Draft 并保持 Original 不变。
 
-### 调整对象
+楼身 / 屋顶 / 立面已经移出 Placement，进入独立 Building Edit Tool。Building Edit 与 Placement 只共享 Left Context、ToolActionBar 和建筑参数控件 Primitive，不共享业务 Session。
 
-- 位置调整；
-- 楼身调整；
-- 屋顶调整；
-- 立面调整（当前 Disabled）。
-
-### Quick Actions
-
-- 逆时针旋转；
-- 顺时针旋转；
-- 镜像建筑。
-
-旋转 / 镜像不改变当前调整对象。例如处于屋顶调整时执行旋转，执行后仍保持屋顶调整。
-
-完成 / 取消 Building Placement 后由 `ToolOrigin` 返回进入前的 Design Workspace；当前正常路径为 `设计 → 建筑`。
+Move / Edit 从 Selection 进入时 ToolOrigin 为 Selection，结束后恢复同一 entityId；New 仍返回对应 Design Workspace。
 
 ## 4. Road Placement
 
@@ -335,12 +320,14 @@ Terrain Edit Tool
 ```text
 ToolOrigin
 ├ gameplay
-└ design-workspace(category)
+├ design-workspace(category)
+└ selection(kind + entityId)
 ```
 
 进入任何 Tool 时先捕获 Origin，`EXIT_TOOL` 只消费 Origin 恢复空间。
 
-- Building / Road：通常来自 Design Workspace；
+- Building New / Road：通常来自 Design Workspace；
+- Building Move / Edit：来自 Selection，退出后恢复同一对象；
 - Terrain Edit：通常来自 Gameplay；如果在 Workspace 中点击右下地形编辑，则退出后恢复原 Workspace；
 - Future Bridge / Wall / Platform / Shortcut：统一复用同一 Origin 机制。
 

@@ -5,6 +5,8 @@ import { DesignWorkspace } from '../workspace/DesignWorkspace';
 import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
+import { BuildingEditOverlay } from '../tools/building-edit/BuildingEditOverlay';
+import { BuildingEditDock } from '../tools/building-edit/BuildingEditDock';
 import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
 import { RoadPlacementDock } from '../tools/road-placement/RoadPlacementDock';
 import { TerrainEditTool } from '../tools/terrain-edit/TerrainEditTool';
@@ -281,14 +283,20 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <>
           <BuildingPlacementOverlay
             terrainMode={state.buildingTerrainMode}
-            editIntent={state.buildingEditIntent}
+            placementIntent={state.buildingPlacementIntent}
             buildingName={selectedBuilding?.name ?? undefined}
             motionPhase={toolPresence.phase}
-            adjustmentMode={state.adjustmentMode}
             onClose={exitTool}
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
           <BuildingPlacementDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+        </>
+      )}
+
+      {toolPresence.mounted && renderedTool === 'building-edit' && (
+        <>
+          <BuildingEditOverlay buildingName={selectedBuilding?.name ?? undefined} adjustmentMode={state.adjustmentMode} motionPhase={toolPresence.phase} onClose={exitTool} onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })} />
+          <BuildingEditDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 
@@ -397,6 +405,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       {space !== 'management' && !state.paused && state.selection === null && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'color-tool' && (
         <GameplayOperationHints
           tool={state.tool}
+          buildingPlacementIntent={state.buildingPlacementIntent}
           adjustmentMode={state.adjustmentMode}
           roadDrawMode={state.roadDrawMode}
           terrainEditMode={state.terrainEditMode}

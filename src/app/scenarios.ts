@@ -106,9 +106,9 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
     case 'building-position':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building' } };
     case 'building-massing':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building', adjustmentMode: 'massing' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-edit', toolOrigin: { kind: 'selection', selection: { kind: 'building', entityId: 'building-riverside-inn' } }, selection: { kind: 'building', entityId: 'building-riverside-inn' }, adjustmentMode: 'massing' } };
     case 'building-roof':
-      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building', adjustmentMode: 'roof' } };
+      return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-edit', toolOrigin: { kind: 'selection', selection: { kind: 'building', entityId: 'building-riverside-inn' } }, selection: { kind: 'building', entityId: 'building-riverside-inn' }, adjustmentMode: 'roof' } };
     case 'building-height':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'building-placement', toolOrigin: { kind: 'design-workspace', category: 'building' }, dockMode: 'design', dockCategory: 'building', buildingTerrainMode: 'manual-elevation' } };
     case 'road-smart':
