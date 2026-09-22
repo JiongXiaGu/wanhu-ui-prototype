@@ -27,7 +27,7 @@
 - 材质方案和建筑配色方案的文字列表是有意设计，保留现有结构；不增加缩略图，不改为视觉目录，也不将其记录为待补的美术欠缺。
 - 库存和管理页暂缓优化，包括资源图标与详情面板；除非用户另行批准，不混入工具和设置布局任务。
 - Gameplay 二级中下栏统一使用 Secondary Bottom Action Bar：84px 总高；带文字按钮 76×64px；24px 图标在上、11px 短标签在下，图标为第一视觉层级。Building Selection、Terrain、Color 与全部 Placement 必须复用同一 Primitive；Mode / Quick / Complete / Cancel 不得各自使用另一套横排 Geometry。右下 Utility 继续保持纯图标。
-- Rich Hover 默认锚定条目并优先左右贴附；只有显式使用 `workspace-edge` 的目录详情才避让整个 Workspace。不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
+- 所有当前 Catalog Workspace 的 Rich Hover 统一锚定当前条目并优先左右贴附；Feature 不声明私有定位模式。`workspace-edge` 只保留为框架级特殊能力，未来确有完整目录避让需求时才允许显式启用。不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
 - 世界对象选中属于 Gameplay Selection，不新增 Selection Tool。V1 只实现 Building Consumer；UI State 只持有 kind + entityId，经营数据由 Selection Presenter / ViewModel 提供。
 - Building Selection 中下主操作为“移动 / 配色(toggle) / 关闭”，不提供单独“编辑建筑”。配色直接开关 Selection 内 BuildingSchemeWorkspace，不进入顶层 Color Tool；右下只保留聚焦 / Undo / Redo / 移除，移除必须使用共享危险确认 Dialog。Building Move 与 Building New 共用 Building Placement（intent=new|move）。
 - World Utility 保持两行：第一行固定地图解锁 / 区域 / 地形 / 配色，第二行放网格 / 范围动作 / Undo / Redo / 批量摧毁。普通 Gameplay 与 Design Workspace 都保持双层；Main Dock 与双层 Utility 统一为 84px 高、bottom=16px，同高同底边。真实 Placement 同样使用 84px 中下主栏 + 84px 右下双层 Utility：第一行只放 Primary Object Action，第二行按 Toggle / Secondary Action / History / optional Danger 组织；Placement Utility 宽度必须随可见内容收缩、第二行固定右对齐，并且每个真实 Placement 状态都必须满足“第二行可见图标数严格多于第一行”。Terrain / Color / Building Selection 不机械套用 Placement 结构。Workspace / Operation Hints 统一消费 112px Bottom HUD Safe Offset。
@@ -87,5 +87,5 @@
 - Tooltip 用于简短控件解释；Hover Card 用于详细对象阅读；可交互浮层另建 Popover，不向 Hover Card 塞按钮；
 - 全局层级为普通 UI < Hover < Notification < Modal；Modal 打开必须清空 Hover；
 - Hover Surface 必须 `pointer-events:none` / UIToolkit `PickingMode.Ignore`；
-- Workspace Rich Hover 必须锚定条目 Element、不跟随鼠标位置；默认 `anchor` 采用 right → left → top → bottom，只有明确声明 `workspace-edge` 时才避让整个 Workspace；
+- Catalog Workspace Rich Hover 必须锚定条目 Element、不跟随鼠标位置，并统一消费框架默认 `anchor`：right → left → top → bottom；当前 Feature 不得自行声明 `workspace-edge`，该模式仅作为未来特殊布局的框架能力保留；
 - Hover 定位与 Delay 只允许由 Hover Framework 持有，Feature 只提交 HoverDefinition。
