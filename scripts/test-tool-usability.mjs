@@ -78,6 +78,8 @@ const toolActionSourceForHover = await readFile('src/tools/ToolActionBar.tsx', '
 const utilitySourceForHover = await readFile('src/gameplay/ContextUtilityToolbar.tsx', 'utf8');
 const gameplayHudSourceForHover = await readFile('src/gameplay/GameplayHUD.tsx', 'utf8');
 const designWorkspaceSourceForHover = await readFile('src/workspace/DesignWorkspace.tsx', 'utf8');
+const materialWorkspaceSourceForHover = await readFile('src/tools/color-tool/modes/surface/MaterialPresetWorkspace.tsx', 'utf8');
+const buildingSchemeWorkspaceSourceForHover = await readFile('src/tools/color-tool/modes/scheme/BuildingSchemeWorkspace.tsx', 'utf8');
 const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 
@@ -129,8 +131,11 @@ assert(!toolActionSourceForHover.includes('data-tooltip=') && toolActionSourceFo
 assert(!utilitySourceForHover.includes('data-tooltip=') && utilitySourceForHover.includes('hover.bind'), 'Context Utility 必须迁移到全局 Tooltip');
 assert(!gameplayHudSourceForHover.includes('data-tooltip=') && gameplayHudSourceForHover.includes('hover.bind'), 'Top HUD Tooltip 必须迁移到全局 Tooltip');
 assert(!designWorkspaceSourceForHover.includes('AssetInspector') && designWorkspaceSourceForHover.includes("kind: 'card'") && designWorkspaceSourceForHover.includes('hover.bind'), 'Design Workspace 必须使用通用 Hover Card');
+assert(materialWorkspaceSourceForHover.includes("kind: 'card'") && materialWorkspaceSourceForHover.includes('hover.bind'), 'Material Preset Workspace 必须使用通用 Hover Card');
+assert(buildingSchemeWorkspaceSourceForHover.includes("kind: 'card'") && buildingSchemeWorkspaceSourceForHover.includes('hover.bind'), 'Building Scheme Workspace 必须使用通用 Hover Card');
+assert(hoverOverlaySource.includes('looksLikeShortcut') && hoverOverlaySource.includes('detailIsShortcut'), 'Tooltip label adapter 必须区分快捷键与普通描述');
 
-checks += 48;
+checks += 51;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');

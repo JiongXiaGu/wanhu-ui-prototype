@@ -11,6 +11,7 @@ import {
   type UiIconComponent,
 } from '../../../../ui/icons/runtime-icons.generated';
 import { useMemo, useState } from 'react';
+import { useHoverOverlay, type HoverCardDefinition } from '../../../../ui/hover/HoverOverlay';
 import type { MotionPhase } from '../../../../ui/motion';
 
 export type BuildingSchemeStyle =
@@ -118,6 +119,22 @@ function SchemeCard({
   selected: boolean;
   onApply: (schemeId: string) => void;
 }) {
+  const hover = useHoverOverlay();
+  const hoverDefinition: HoverCardDefinition = {
+    kind: 'card',
+    id: 'building-scheme-' + scheme.id,
+    title: scheme.name,
+    subtitle: '建筑配色方案 · ' + SOURCE_LABELS[scheme.source],
+    facts: [
+      { label: '来源', value: SOURCE_LABELS[scheme.source] },
+      { label: '风格', value: STYLE_LABELS[scheme.style] },
+      { label: '主色', value: scheme.colors[0], accent: true },
+      { label: '辅色', value: scheme.colors[1] },
+      { label: '点缀', value: scheme.colors[2] },
+    ],
+    description: '用于快速替换当前建筑的整套配色关系；应用后仍可继续调整做旧程度等建筑外观参数。',
+    preferOutsideWorkspace: true,
+  };
   return (
     <article className={'building-scheme-workspace__card ' + (selected ? 'is-selected' : '')}>
       <button
@@ -125,6 +142,7 @@ function SchemeCard({
         className="workspace-item-card building-scheme-workspace__card-apply"
         aria-label={'应用建筑配色方案 ' + scheme.name}
         aria-pressed={selected}
+        {...hover.bind(hoverDefinition)}
         onClick={() => onApply(scheme.id)}
       >
         <i className="workspace-item-card__state-line" aria-hidden="true" />
@@ -152,6 +170,7 @@ export function BuildingSchemeWorkspace({
   onApply,
   onClose,
 }: Props) {
+  const hover = useHoverOverlay();
   const [style, setStyle] = useState<BuildingSchemeStyleFilter>('all');
   const [source, setSource] = useState<BuildingSchemeSourceFilter>('all');
   const [page, setPage] = useState(0);
@@ -170,11 +189,13 @@ export function BuildingSchemeWorkspace({
   const rows = [visible.slice(0, 4), visible.slice(4, 8)].filter((row) => row.length > 0);
 
   function selectStyle(next: BuildingSchemeStyleFilter) {
+    hover.clear();
     setStyle(next);
     setPage(0);
   }
 
   function selectSource(next: BuildingSchemeSourceFilter) {
+    hover.clear();
     setSource(next);
     setPage(0);
   }
@@ -192,7 +213,7 @@ export function BuildingSchemeWorkspace({
           <Palette aria-hidden="true" />
           <b>配色方案</b>
         </div>
-        <button className="icon-button" type="button" onClick={onClose} aria-label="关闭建筑配色方案工作区">
+        <button className="icon-button" type="button" onClick={() => { hover.clear(); onClose(); }} aria-label="关闭建筑配色方案工作区">
           <X />
         </button>
       </header>

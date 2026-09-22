@@ -9,6 +9,7 @@ import {
   Trash2,
 } from '../../../../ui/icons/runtime-icons.generated';
 import { useDialogSystem } from '../../../../ui/dialog/DialogSystem';
+import { useHoverOverlay, type HoverCardDefinition } from '../../../../ui/hover/HoverOverlay';
 import { UiIcon, type UiIconId } from '../../../../ui/icons/UiIcon';
 import type { MotionPhase } from '../../../../ui/motion';
 
@@ -150,10 +151,30 @@ function SchemeCard({
   onDragStart: (preset: MaterialPresetWorkspaceItem, event: ReactDragEvent<HTMLButtonElement>) => void;
   onDragEnd: () => void;
 }) {
+  const hover = useHoverOverlay();
   const finishLabel = materialFinishLabel(preset.smoothness);
   const sourceLabel = SOURCE_LABELS[preset.source];
   const familyLabel = MATERIAL_FAMILY_LABELS[preset.family];
   const editable = preset.source === 'mine';
+  const hoverDefinition: HoverCardDefinition = {
+    kind: 'card',
+    id: 'material-preset-' + preset.id,
+    title: preset.name,
+    subtitle: '材质方案 · ' + sourceLabel,
+    facts: [
+      { label: '材质分类', value: familyLabel },
+      { label: '表面质感', value: finishLabel },
+      { label: '工作流', value: preset.workflow },
+      { label: '平滑度', value: Math.round(preset.smoothness * 100) + '%' },
+      { label: '纹理平铺', value: preset.textureTiling.toFixed(2) + '×' },
+    ],
+    description: preset.source === 'mine'
+      ? '玩家保存的材质参数方案；应用后仍可继续在左侧表面参数中微调。'
+      : preset.source === 'workshop'
+        ? '来自创意工坊的材质参数方案；应用后会覆盖当前表面参数。'
+        : '系统内置材质参数方案；用于快速建立稳定的表面材质基线。',
+    preferOutsideWorkspace: true,
+  };
 
   return (
     <article
@@ -172,8 +193,12 @@ function SchemeCard({
         className="workspace-item-card material-preset-workspace__card-apply"
         aria-label={'应用材质方案 ' + familyLabel + ' · ' + preset.name}
         aria-pressed={preset.selected}
+        {...hover.bind(hoverDefinition)}
         draggable={editable}
-        onDragStart={(event) => onDragStart(preset, event)}
+        onDragStart={(event) => {
+          hover.clear();
+          onDragStart(preset, event);
+        }}
         onDragEnd={onDragEnd}
         onClick={() => onApply(preset.id)}
       >
@@ -276,6 +301,7 @@ export function MaterialPresetWorkspace({
   onDelete,
 }: Props) {
   const dialogs = useDialogSystem();
+  const hover = useHoverOverlay();
   const [category, setCategory] = useState<MaterialPresetWorkspaceCategory>('all');
   const [categoryPage, setCategoryPage] = useState(0);
   const [source, setSource] = useState<MaterialPresetWorkspaceSource>('all');
@@ -323,12 +349,14 @@ export function MaterialPresetWorkspace({
   }
 
   function selectCategory(next: MaterialPresetWorkspaceCategory) {
+    hover.clear();
     setCategory(next);
     setPage(0);
     setMenuPresetId('');
   }
 
   function selectSource(next: MaterialPresetWorkspaceSource) {
+    hover.clear();
     setSource(next);
     setPage(0);
     setMenuPresetId('');
@@ -485,7 +513,7 @@ export function MaterialPresetWorkspace({
           <b>材质方案</b>
         </div>
 
-        <button className="icon-button" type="button" onClick={onClose} aria-label="关闭材质方案工作区">
+        <button className="icon-button" type="button" onClick={() => { hover.clear(); onClose(); }} aria-label="关闭材质方案工作区">
           <UiIcon icon="x" size={16} />
         </button>
       </header>

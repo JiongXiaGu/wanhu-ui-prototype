@@ -96,13 +96,18 @@ function removeDescription(anchor: HTMLElement | null) {
   }
 }
 
+function looksLikeShortcut(value: string) {
+  return /^(?:(?:Ctrl|Shift|Alt|Cmd|Meta)(?:\+[A-Za-z0-9]+)+|F\d{1,2}|Esc|Enter|Tab|Space|[A-Za-z0-9])$/i.test(value.trim());
+}
+
 export function tooltipFromLabel(label: string, description?: string): TooltipDefinition {
-  const [title, shortcut] = label.split(' · ', 2);
+  const [title, detail] = label.split(' · ', 2);
+  const detailIsShortcut = Boolean(detail && looksLikeShortcut(detail));
   return {
     kind: 'tooltip',
     title,
-    description,
-    shortcut: shortcut || undefined,
+    description: description ?? (detail && !detailIsShortcut ? detail : undefined),
+    shortcut: detailIsShortcut ? detail : undefined,
   };
 }
 

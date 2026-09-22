@@ -1099,6 +1099,15 @@ if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 石�
 }
 
 await schemeWorkspace.getByRole('button', { name: '应用材质方案 石材 · 城墙暖灰', exact: true }).hover();
+await page.waitForTimeout(540);
+const materialHoverCard = page.locator('.ui-hover-card[data-ready="true"]');
+if ((await materialHoverCard.count()) !== 1
+  || (await materialHoverCard.getByText('材质分类', { exact: true }).count()) !== 1
+  || (await materialHoverCard.getByText('石材', { exact: true }).count()) !== 1
+  || (await materialHoverCard.getByText('工作流', { exact: true }).count()) !== 1) {
+  throw new Error('Material Preset Workspace must use the shared rich Hover Card.');
+}
+await page.screenshot({ path: outDir + '/hover-card-material-preset.png' });
 await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true }).click();
 await page.waitForSelector('.material-preset-workspace__card-menu');
 let presetMenu = schemeWorkspace.locator('.material-preset-workspace__card-menu');
@@ -1475,6 +1484,18 @@ if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配�
   throw new Error('Current building scheme should be selected.');
 }
 await page.screenshot({ path: outDir + '/color-tool-40-scheme-workspace.png' });
+
+const currentBuildingSchemeCard = buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 江南素雅', exact: true });
+await currentBuildingSchemeCard.hover();
+await page.waitForTimeout(540);
+const buildingSchemeHoverCard = page.locator('.ui-hover-card[data-ready="true"]');
+if ((await buildingSchemeHoverCard.count()) !== 1
+  || (await buildingSchemeHoverCard.getByText('来源', { exact: true }).count()) !== 1
+  || (await buildingSchemeHoverCard.getByText('风格', { exact: true }).count()) !== 1
+  || (await buildingSchemeHoverCard.getByText('素雅', { exact: true }).count()) !== 1) {
+  throw new Error('Building Scheme Workspace must use the shared rich Hover Card.');
+}
+await page.screenshot({ path: outDir + '/hover-card-building-scheme.png' });
 
 await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 皇家朱金', exact: true }).click();
 await page.waitForTimeout(90);
