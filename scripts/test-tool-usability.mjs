@@ -99,8 +99,10 @@ assert(commandBarSource.includes('Pencil') && commandBarSource.includes('ScrollT
 assert(commandBarSource.includes('key={mode}') && commandBarSource.includes('main-dock__category-button'), '分类内容切换必须只重挂 Category Strip');
 assert(mainDockCss.includes('--main-dock-category-icon-size,24px') && mainDockCss.includes('--main-dock-label-size,11px'), 'Main Dock 分类必须使用 24px 图标 + 11px 文字');
 assert(mainDockCss.includes('flex-direction:row') && mainDockCss.includes('--main-dock-mode-button-width,54px'), '设计 / 蓝图 Mode 必须横向排列并使用 54px 按钮');
+assert(!commandBarSource.includes('<i className="main-dock__state-line" aria-hidden="true" />\n              <Icon size={20}'), '设计 / 蓝图 Mode 不得再挂底部 State Line');
+assert(!mainDockCss.includes('.main-dock__mode-button .main-dock__state-line') && mainDockCss.includes('.main-dock__category-button .main-dock__state-line'), '只删除 Mode 底线，Category 顶部状态线必须保留');
 assert(!legacyStyles.includes('.command-bar{position:absolute') && !gameplayRefineCss.includes('.mode-rail') && !gameplayRefineCss.includes('.category-row'), '旧 Main Dock Geometry 不得继续散落在 styles / gameplay-refine');
-checks += 28;
+checks += 30;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
