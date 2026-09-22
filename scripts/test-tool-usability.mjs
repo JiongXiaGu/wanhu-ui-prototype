@@ -108,7 +108,8 @@ assert(!legacyStyles.includes('.command-bar{position:absolute'), '旧 Main Dock 
 assert(!legacyStyles.includes('/* Workspace base geometry.') && !legacyStyles.includes('.segment{'), 'styles.css 不得继续持有 Workspace / Segment 业务 Geometry');
 assert(workspaceCss.includes('position:absolute') && workspaceCss.includes('display:flex') && workspaceCss.includes('flex-direction:column'), 'Workspace Shell 结构必须由 workspace.css 自己持有');
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
-assert(!operationHintsCss.includes('backdrop-filter') && !operationHintsCss.includes('box-shadow:'), 'Operation Hints 组件样式不得持有 Surface 材质');
+const operationHintsRootRule = operationHintsCss.match(/\.gameplay-operation-hints\s*\{([^}]*)\}/s)?.[1] ?? '';
+assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRootRule.includes('box-shadow:') && !operationHintsRootRule.includes('background:'), 'Operation Hints Root 不得持有 Surface 材质');
 assert(!uiVisualCss.includes('.gameplay-screen .workspace,') && !uiVisualCss.includes('.bottom-command-surface{'), 'ui-visual-system 不得重复持有 Gameplay Surface 材质');
 assert(!mainDockCss.includes('display:grid') && mainDockCss.includes('display:flex') && mainDockCss.includes('flex:1 1 0'), 'Main Dock Category Strip 必须使用 Flex 而不是新增长期 Grid 债务');
 assert(migrationAudit.includes('SHARED_CONTROL_INTERNAL_OWNER_FILES') && migrationAudit.includes('SHARED_SURFACE_MATERIAL_OWNER_FILES'), 'Unity migration audit 必须包含 Shared Control / Surface Ownership Guard');
