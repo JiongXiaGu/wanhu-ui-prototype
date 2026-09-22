@@ -2,6 +2,7 @@
 export interface HoverRect { left: number; top: number; width: number; height: number }
 export type HoverPlacement = 'right' | 'left' | 'bottom' | 'top';
 export type HoverSurfaceKind = 'tooltip' | 'card';
+export type HoverCardPlacementMode = 'anchor' | 'workspace-edge' | 'auto';
 
 interface HoverPlacementInput {
   kind: HoverSurfaceKind;
@@ -9,6 +10,7 @@ interface HoverPlacementInput {
   size: { width: number; height: number };
   bounds: { width: number; height: number };
   workspace?: HoverRect;
+  placementMode?: HoverCardPlacementMode;
   avoid?: readonly HoverRect[];
   safeEdge?: number;
   gap?: number;
@@ -34,6 +36,7 @@ export function placeHoverSurface({
   size,
   bounds,
   workspace,
+  placementMode = 'anchor',
   avoid = [],
   safeEdge = 16,
   gap = kind === 'tooltip' ? 8 : 12,
@@ -42,7 +45,7 @@ export function placeHoverSurface({
   const h = Math.min(size.height, Math.max(0, bounds.height - safeEdge * 2));
   const cx = anchor.left + anchor.width / 2;
   const cy = anchor.top + anchor.height / 2;
-  const frame = kind === 'card' && workspace ? workspace : anchor;
+  const workspaceFrame = workspace ?? anchor;
 
   const tooltipCandidates: Array<{ placement: HoverPlacement; left: number; top: number }> = [
     { placement: 'top', left: cx - w / 2, top: anchor.top - gap - h },
@@ -51,20 +54,30 @@ export function placeHoverSurface({
     { placement: 'left', left: anchor.left - gap - w, top: cy - h / 2 },
   ];
 
-  const cardCandidates: Array<{ placement: HoverPlacement; left: number; top: number }> = workspace ? [
-    { placement: 'top', left: cx - w / 2, top: frame.top - gap - h },
-    { placement: 'left', left: frame.left - gap - w, top: cy - h / 2 },
-    { placement: 'right', left: frame.left + frame.width + gap, top: cy - h / 2 },
-    { placement: 'bottom', left: cx - w / 2, top: frame.top + frame.height + gap },
-  ] : [
+  const anchorCardCandidates: Array<{ placement: HoverPlacement; left: number; top: number }> = [
     { placement: 'right', left: anchor.left + anchor.width + gap, top: cy - h / 2 },
     { placement: 'left', left: anchor.left - gap - w, top: cy - h / 2 },
     { placement: 'top', left: cx - w / 2, top: anchor.top - gap - h },
     { placement: 'bottom', left: cx - w / 2, top: anchor.top + anchor.height + gap },
   ];
 
+  const workspaceCardCandidates: Array<{ placement: HoverPlacement; left: number; top: number }> = [
+    { placement: 'top', left: cx - w / 2, top: workspaceFrame.top - gap - h },
+    { placement: 'left', left: workspaceFrame.left - gap - w, top: cy - h / 2 },
+    { placement: 'right', left: workspaceFrame.left + workspaceFrame.width + gap, top: cy - h / 2 },
+    { placement: 'bottom', left: cx - w / 2, top: workspaceFrame.top + workspaceFrame.height + gap },
+  ];
+
+  const cardCandidates = placementMode === 'workspace-edge' && workspace
+    ? workspaceCardCandidates
+    : placementMode === 'auto' && workspace
+      ? [...anchorCardCandidates, ...workspaceCardCandidates]
+      : anchorCardCandidates;
+
   const candidates = kind === 'tooltip' ? tooltipCandidates : cardCandidates;
-  const blocked = kind === 'card' && workspace ? [workspace, ...avoid] : avoid;
+  const blocked = kind === 'card' && placementMode === 'workspace-edge' && workspace
+    ? [workspace, ...avoid]
+    : avoid;
 
   const scored = candidates.map((candidate, index) => {
     const left = clamp(candidate.left, safeEdge, bounds.width - safeEdge - w);
