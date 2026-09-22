@@ -23,6 +23,8 @@ export type ReviewScenario =
   | 'city-wall-transition-stair'
   | 'color-tool-surface'
   | 'workspace-tree'
+  | 'workspace-blueprint-residential'
+  | 'workspace-blueprint-all'
   | 'tree-brush'
   | 'tree-single'
   | 'building-position'
@@ -49,6 +51,13 @@ function designWorkspace(gameplay: GameplayUiState, dockCategory: 'road' | 'brid
   return {
     screen: 'gameplay',
     gameplay: { ...gameplay, workspace: 'design', dockMode: 'design', dockCategory },
+  };
+}
+
+function blueprintWorkspace(gameplay: GameplayUiState, dockCategory: 'all' | 'residential'): ReviewBootstrap {
+  return {
+    screen: 'gameplay',
+    gameplay: { ...gameplay, workspace: 'blueprint', dockMode: 'blueprint', dockCategory },
   };
 }
 
@@ -97,6 +106,10 @@ export function resolveReviewBootstrap(search: string): ReviewBootstrap {
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'color-tool', toolOrigin: { kind: 'gameplay' }, colorToolMode: 'surface' } };
     case 'workspace-tree':
       return designWorkspace(gameplay, 'tree');
+    case 'workspace-blueprint-residential':
+      return blueprintWorkspace(gameplay, 'residential');
+    case 'workspace-blueprint-all':
+      return blueprintWorkspace(gameplay, 'all');
     case 'tree-brush':
       return { screen: 'gameplay', gameplay: { ...gameplay, tool: 'tree-placement', toolOrigin: { kind: 'design-workspace', category: 'tree' }, dockMode: 'design', dockCategory: 'tree', treeSpeciesId: 'tree-pine', treeSpeciesName: '油松', treePlacementMode: 'brush', treeVariant: 0 } };
     case 'tree-single':
