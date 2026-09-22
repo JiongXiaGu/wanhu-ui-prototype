@@ -66,6 +66,13 @@
 - 创意工坊：冷灰青；
 - 我的方案：暖灰铜。
 
+Hover 详情：
+
+- Card 复用全局 Rich Hover Card，不建立材质专用详情浮层；
+- 使用框架默认 `anchor`，优先 right → left → top → bottom；
+- Feature 不声明私有 `placementMode`，也不把整个 Workspace 当成默认避让区；
+- Hover Card 不覆盖当前 Card，但允许覆盖相邻目录条目；拖拽开始时必须清理 Hover，管理菜单仍保持独立可交互 Popover 语义。
+
 ## 3. 保存配色
 
 点击右上“保存配色”打开共享方案信息窗口。
