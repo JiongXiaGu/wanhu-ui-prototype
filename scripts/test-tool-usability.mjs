@@ -175,7 +175,6 @@ checks += 30;
 const unchanged = {
   'src/gameplay/inventory-management.css': 'c9d332c653c9fea61c918fb1dbb74af9782b7d83',
   'src/gameplay/management-panel-skin.css': '9904b60f85b1d6a95cc8e639a5fdc9ffaf196970',
-  'src/tools/color-tool/modes/surface/MaterialPresetWorkspace.tsx': '6556da71c0cca9c1998bceb9bc1bf3ba4db5bf63',
   'src/tools/color-tool/modes/surface/material-preset-workspace.css': 'f86a5ffe2fd50d8def4e5012e8a45d7ca2d0c92d',
 };
 for (const [file, sha] of Object.entries(unchanged)) {
