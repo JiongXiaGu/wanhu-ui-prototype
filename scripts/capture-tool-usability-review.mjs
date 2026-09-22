@@ -392,11 +392,11 @@ try {
   await checkPersistentHints('普通 Gameplay', 'world');
   await checkMainDock('Main Dock/设计', 'design', 8);
   await mainDockShot('design');
-  const mainDock = page.locator('.main-dock');
-  await mainDock.getByRole('button', { name: '蓝图', exact: true }).click(); await settle();
+  const mainDockSwitch = page.locator('.main-dock');
+  await mainDockSwitch.getByRole('button', { name: '蓝图', exact: true }).click(); await settle();
   await checkMainDock('Main Dock/蓝图', 'blueprint', 9);
   await mainDockShot('blueprint');
-  await mainDock.getByRole('button', { name: '设计', exact: true }).click(); await settle();
+  await mainDockSwitch.getByRole('button', { name: '设计', exact: true }).click(); await settle();
   await checkMainDock('Main Dock/返回设计', 'design', 8);
   const metric = page.locator('.gameplay-top-resource-shortcut').first();
   await page.keyboard.press('Tab'); await metric.focus(); await page.waitForTimeout(450);
