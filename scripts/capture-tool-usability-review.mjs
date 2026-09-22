@@ -329,7 +329,7 @@ try {
   assert(await materialCards.count() > 0, '材质方案 Workspace 必须存在可悬浮条目');
   await materialCards.first().hover(); await page.waitForTimeout(540);
   await checkHoverCard('材质方案锚定', materialCards.first());
-  await page.screenshot({ path: `${out}/hover-material-preset-anchor.png` }); report.screenshots.push('hover-material-preset-anchor');
+  await page.screenshot({ path: `${out}/hover-material-preset-top.png` }); report.screenshots.push('hover-material-preset-top');
   await page.getByRole('button', { name: '关闭材质方案工作区', exact: true }).click();
   await page.waitForSelector('.material-preset-workspace', { state: 'detached' });
 
@@ -369,7 +369,7 @@ try {
   await wallCards.first().hover({ position: { x: 15, y: 15 } }); await page.waitForTimeout(80);
   const after = await page.locator('.ui-hover-card').boundingBox();
   assert(before && after && Math.abs(before.x - after.x) < 1 && Math.abs(before.y - after.y) < 1, '浮层不能随同一条目内鼠标移动');
-  await page.screenshot({ path: `${out}/hover-design-workspace-anchor.png` }); report.screenshots.push('hover-design-workspace-anchor');
+  await page.screenshot({ path: `${out}/hover-design-workspace-top.png` }); report.screenshots.push('hover-design-workspace-top');
 
   await open('settings', '.settings-space');
   await checkSettings('菜单设置/显示'); await shot('settings-display');
