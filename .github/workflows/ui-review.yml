@@ -95,6 +95,17 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           compression-level: 9
+      - name: Upload top shell review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: top-shell-review
+          path: |
+            review-screenshots/top-control-tray.png
+            review-screenshots/tool-usability-report.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 9
       - name: Upload secondary action review
         if: always()
         uses: actions/upload-artifact@v4
