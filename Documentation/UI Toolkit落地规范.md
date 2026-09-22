@@ -266,8 +266,8 @@ Tooltip 与 Hover Card 共用 `hover-placement.ts`：
 
 - Tooltip 优先 top → bottom → right → left；
 - Hover Card 默认 `placementMode = anchor`，优先 right → left → top → bottom，贴近当前条目；
-- 只有明确需要保护完整目录内容时使用 `placementMode = workspace-edge`，其候选顺序为 top → left → right → bottom，并把整个 Workspace 作为保护区域；
-- `auto` 允许框架同时评估条目贴附与 Workspace 外侧候选，但业务 Feature 不自行计算坐标；
+- 当前 DesignWorkspace、MaterialPresetWorkspace、BuildingSchemeWorkspace 全部直接消费默认 `anchor`，Feature 不重复声明定位模式；
+- `workspace-edge` 仅保留为框架级特殊能力：未来确有“完整目录必须保持可见”的稳定需求时才显式启用，其候选顺序为 top → left → right → bottom，并把整个 Workspace 作为保护区域；
 - 所有模式都必须遵守 Safe Edge 和屏幕 Clamp，并避让 Top Shell、Left Context、Main Dock、Tool Bar、Context Utility、Operation Hints；
 - Surface 锚定 UI Element，不跟随鼠标坐标漂移。
 
