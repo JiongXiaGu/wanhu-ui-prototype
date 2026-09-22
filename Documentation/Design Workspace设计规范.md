@@ -139,13 +139,13 @@ Content Pager 永远保留稳定视觉槽位，不因为筛选结果只有一页
 
 Pager 是浏览状态指示器，不是新的 Footer Surface。
 
-## Asset Inspector
+## Rich Hover Card
 
-Design Workspace 的资产详情使用共享 **Asset Inspector**，不是每个系统各做一套 Building / Road / Wall Tooltip。
+Design Workspace 的资产详情使用全局 **Rich Hover Card**，不是每个系统各做一套 Building / Road / Wall Tooltip。
 
 ### 职责
 
-Asset Inspector 用于玩家点击前的决策摘要，例如：
+Rich Hover Card 用于玩家点击前的决策摘要，例如：
 
 - 尺寸 / 占地 / 宽度；
 - 价格 / 造价；
@@ -155,16 +155,16 @@ Asset Inspector 用于玩家点击前的决策摘要，例如：
 
 它不承担确认、购买、放置、参数修改等操作，内部不放可点击按钮。
 
-注意：**Asset Inspector 与 Gameplay 左下 Context Surface 是两种不同层级。** Asset Inspector 是绑定 Asset Card 的短时悬浮详情；Context Surface 是屏幕级稳定槽位，用于 Camera / Environment / 未来 Selection Inspector。
+注意：**Rich Hover Card 与 Gameplay 左下 Context Surface 是两种不同层级。** Hover Card 是绑定 Asset Card 的短时悬浮详情；Context Surface 是屏幕级稳定槽位，用于 Camera / Environment / Selection Inspector。
 
 ### 尺寸与 Composition
 
-Inspector 外层是无业务内容的自适应容器。实际宽高由 Children 自然布局决定；框架只提供边界：
+Hover Card 外层是无业务状态的自适应容器。实际宽高由内容自然布局决定；框架只提供边界：
 
 - `min-width: 240px`；
 - `max-width: 380px`；
 - `min-height: 90px`；
-- `max-height: 320px`；
+- `max-height: 340px`；
 - Gameplay Safe Edge：`16px`；
 - Anchor Gap：`12px`。
 
@@ -172,11 +172,11 @@ Inspector 外层是无业务内容的自适应容器。实际宽高由 Children 
 
 `Title / Image / Fact Grid / Cost / Tags / Description / Warning`
 
-不应为了新增图片或多行文字去改 Inspector 外层固定尺寸。内容超过 Max Height 时优先信息降级 / 截断，而不是在 Hover Inspector 内加入需要鼠标操作的 ScrollView。
+不应为了新增图片或多行文字去改 Hover Card 外层固定尺寸。内容超过 Max Height 时优先信息降级 / 截断，而不是在 Hover Card 内加入需要鼠标操作的 ScrollView。
 
 ### 视觉层级
 
-Inspector 必须明显高于 Workspace Surface，而不是与 Workspace 混成一块：
+Hover Card 必须明显高于 Workspace Surface，而不是与 Workspace 混成一块：
 
 - 背景更深、更实；
 - 使用清晰但克制的浅纸细边；
@@ -186,17 +186,17 @@ Inspector 必须明显高于 Workspace Surface，而不是与 Workspace 混成�
 
 ### 触发与生命周期
 
-- 第一次 Hover Asset Button：约 `280ms` 后显示；
-- Inspector 已打开后在相邻资产间移动：立即替换内容；
+- 第一次 Hover Asset Button：约 `460ms` 后显示；
+- Hover Card 已打开后在相邻资产间移动：立即替换内容；
 - 离开资产区域后短延迟关闭；
 - Keyboard / Gamepad Focus：立即显示；
 - Focus / Hover 离开 Asset Button 后关闭；
-- Inspector `pointer-events:none`，Unity 对应 `pickingMode=Ignore`；
-- Card 点击进入 Tool 前立即清理 Inspector。
+- Hover Card `pointer-events:none`，Unity 对应 `pickingMode=Ignore`；
+- Card 点击进入 Tool 前立即清理 Hover。
 
 ### 定位
 
-Inspector 根据内容实际尺寸与 Anchor 位置动态定位，优先顺序：右侧 → 左侧 → 下方 → 上方，并 Clamp 到 `16px` Gameplay Safe Edge。
+Hover Card 根据内容实际尺寸与 Anchor 位置动态定位，统一消费框架默认 `anchor`：右侧 → 左侧 → 上方 → 下方，并 Clamp 到 `16px` Gameplay Safe Edge。允许覆盖相邻目录条目，但不得覆盖当前 Anchor。
 
 Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最终 Unity UI Toolkit 使用 `worldBound / resolvedStyle` 完成同类定位。不要假定固定宽高后硬编码位置。
 
@@ -204,10 +204,11 @@ Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最�
 
 共享框架：
 
-- `src/ui/asset-inspector/AssetInspector.tsx`：生命周期、Hover / Focus Controller、Intrinsic Size 定位；
-- `src/ui/asset-inspector/asset-inspector.css`：Surface 与 Min / Max Size Contract。
+- `src/ui/hover/HoverOverlay.tsx`：Hover / Focus 生命周期、Delay、热切换、全局 Overlay Host；
+- `src/ui/hover/hover-placement.ts`：Anchor / Safe Edge / HUD 避让的纯几何定位；
+- `src/ui/hover/hover-overlay.css`：Tooltip / Hover Card 的共享 Surface 与尺寸边界。
 
-`DesignWorkspace` 只是 Consumer：提供当前资产的标题、尺寸、原型造价、规格和说明 Children。以后 Blueprint、单位、物品等需要同类只读 Hover 详情时优先复用。
+`DesignWorkspace` 只是 Consumer：提供当前资产的 `HoverCardDefinition`，包含标题、尺寸、原型造价、规格和说明；不自行计算位置。以后 Blueprint、单位、物品等需要同类只读 Hover 详情时继续复用同一框架。
 
 ## 状态与交互不变量
 
@@ -217,7 +218,7 @@ Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最�
 - A 分类打开时点击 B 分类 → 保持一个 Workspace Surface，直接切换 Definition；
 - 关闭 Workspace → Main Dock 分类取消 Selected；
 - Asset Card 不保存 Selected；
-- Hover / Focus Asset Inspector 只提供只读详情，不改变 GameplayUiState；
+- Hover / Focus Rich Hover Card 只提供只读详情，不改变 GameplayUiState；
 - 打开 Camera / Environment Context Surface → Design Workspace 关闭并清空分类；
 - 打开 Design Workspace → Camera / Environment Context Surface 关闭；
 - Top Shell、Navigation HUD、World Utility Toolbar、Main Dock 在 Design Workspace 中继续保留；
@@ -226,18 +227,17 @@ Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最�
 
 ## 代码所有权
 
-- `src/workspace/DesignWorkspace.tsx`：共享 Workspace 行为、Asset Button 与当前 Asset Inspector 内容组合；
+- `src/workspace/DesignWorkspace.tsx`：共享 Workspace 行为、Asset Button 与 HoverCardDefinition 内容组合；
 - `src/workspace/design-workspace-model.ts`：八类 Definition 与原型数据；
-- `src/workspace.css`：共享 `workspace--catalog` 几何、Primary Rail、Rail Pager、Context Filter、4×2 Content 与稳定 Pager 槽位；
+- `src/workspace.css`：Workspace 通用壳与基础样式；
+- `src/workspace/workspace-catalog.css`：共享 `workspace--catalog` 几何、Primary Rail、Rail Pager、Context Filter、4×2 Content 与稳定 Pager 槽位；
 - `src/workspace/design-workspace.css`：只保留 Design Workspace Host 宽度等业务特例；
 - `src/workspace/workspace-world-first-glass.css`：Workspace World-first Glass 材质与状态视觉；
-- `src/ui/asset-inspector/AssetInspector.tsx`：跨系统 Asset Inspector 框架；
-- `src/ui/asset-inspector/asset-inspector.css`：Asset Inspector 通用视觉与尺寸边界；
-- `src/workspace.css`：Workspace 通用壳与基础样式；
+- `src/ui/hover/HoverOverlay.tsx` / `hover-placement.ts` / `hover-overlay.css`：跨系统 Tooltip / Rich Hover Card 框架；
 - `src/app/ui-state.ts`：Workspace / Main Dock / Context Surface 全局状态与切换逻辑；
 - `src/gameplay/GameplayScreen.tsx`：把当前 Definition 接入 Gameplay 空间。
 
-不要重新创建 `RoadWorkspace / BridgeWorkspace / CityWallWorkspace` 等只复制相同壳层的组件；也不要为每种资产复制独立 Inspector 外壳。只有某一类别出现真正不同的稳定交互结构时，才抽取类别专用子组件。
+不要重新创建 `RoadWorkspace / BridgeWorkspace / CityWallWorkspace` 等只复制相同壳层的组件；也不要为每种资产复制独立 Hover Card 外壳。只有某一类别出现真正不同的稳定交互结构时，才抽取类别专用子组件。
 
 
 ## Shared WorkspaceItemCard
