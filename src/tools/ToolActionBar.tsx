@@ -66,7 +66,7 @@ export function ToolActionBar({
 }: ToolActionBarProps) {
   const CompleteIcon = completeKind === 'exit' ? LogOut : Check;
   return (
-    <div className={`tool-action-bar placement-action-bar bottom-command-surface bottom-command-surface--md ${className}`.trim()} aria-label={ariaLabel}>
+    <div className={`tool-action-bar secondary-action-bar placement-action-bar bottom-command-surface bottom-command-surface--md ${className}`.trim()} aria-label={ariaLabel}>
       {modeGroups.map((group, groupIndex) => (
         <div className="placement-action-bar__section" key={group.id}>
           {groupIndex > 0 && <i className="placement-action-bar__divider" aria-hidden="true" />}
@@ -84,7 +84,7 @@ export function ToolActionBar({
                 onClick={onClick}
               >
                 <i className="placement-action-bar__state-line" aria-hidden="true" />
-                <UiIconGlyph icon={icon} size={20} />
+                <UiIconGlyph icon={icon} size={24} />
                 {group.presentation === 'icon-label' && <span className="placement-action-bar__label" aria-hidden="true">{shortLabel ?? label}</span>}
               </button>
             ))}
@@ -107,7 +107,7 @@ export function ToolActionBar({
                 onClick={onClick}
               >
                 <i className="placement-action-bar__state-line" aria-hidden="true" />
-                <UiIconGlyph icon={icon} size={20} />
+                <UiIconGlyph icon={icon} size={24} />
                 {quickActionPresentation === 'icon-label' && <span className="placement-action-bar__label" aria-hidden="true">{shortLabel ?? label}</span>}
               </button>
             ))}
@@ -126,7 +126,7 @@ export function ToolActionBar({
             onClick={onComplete}
           >
             {completeKind === 'commit' && <i className="placement-action-bar__state-line" aria-hidden="true" />}
-            {completeIcon ? <UiIconGlyph icon={completeIcon} size={20} /> : <CompleteIcon aria-hidden="true" />}
+            {completeIcon ? <UiIconGlyph icon={completeIcon} size={24} /> : <CompleteIcon size={24} aria-hidden="true" />}
             {completeShortLabel && <span className="placement-action-bar__label" aria-hidden="true">{completeShortLabel}</span>}
           </button>
           {showCancel && onCancel && (
@@ -137,7 +137,7 @@ export function ToolActionBar({
               data-tooltip={cancelLabel}
               onClick={onCancel}
             >
-              <X aria-hidden="true" />
+              <X size={24} aria-hidden="true" />
               {cancelShortLabel && <span className="placement-action-bar__label" aria-hidden="true">{cancelShortLabel}</span>}
             </button>
           )}

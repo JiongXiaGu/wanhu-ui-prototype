@@ -602,3 +602,23 @@ Gameplay Operation Hints 是 Gameplay 级常驻 HUD Host，不属于某一个 To
 当前已定义的 Context 包括 Default World / Demolition、Design Workspace、Building Selection / Building Scheme、Building / Road / Tree / City Wall / Gate / Stair Placement、Terrain 五模式、Color Surface / Lighting / Scheme、Camera / Weather、Information View 和 Management。
 
 Unity UI Toolkit 迁移时保留单一稳定 UXML Host，由 Gameplay HUD Controller 提供 HintContext / rows ViewModel；切换 Context 只更新内容，不销毁再创建 Host，也不允许 Feature Controller 直接控制其 Display。
+
+
+## Secondary Bottom Action Bar V2
+
+所有 Gameplay 二级页面的中下菜单统一使用同一个 Secondary Bottom Action Bar，不再区分 Selection / Terrain / Color / Placement 的另一套高度或按钮排版。
+
+稳定不变量：
+
+- Secondary Action Bar 高度统一为 **84px**，与一级 Main Dock 及 Placement Utility 的底部基准一致；统一使用 `bottom=16px`；
+- 带文字的二级按钮统一为 **76px × 64px**，主图标 **24px**，说明文字 **11px**；
+- 带文字按钮必须采用 **Icon Top / Label Bottom**：图标在上、文字在下、两者水平居中；图标是第一视觉层级，文字只承担说明；
+- Mode、Quick Action、Complete、Cancel / Exit 全部遵守同一纵向构图，不允许流程按钮回退为“图标 + 文字横排”；
+- Selected / On 的主要识别来自 24px 熟铜图标 + 顶部 2px State Line；Selected 背景仅做弱提亮，不能靠大面积高亮抢过图标；
+- Complete 可以保持熟铜强调；Cancel / Exit 保持中性纸灰，但两者 Geometry 与其他按钮完全一致；
+- Secondary Action Bar 宽度随内容自然收缩，不为不同二级页面强行使用统一宽度；
+- Building Selection、Terrain、Color、Building / Road / Tree / City Wall / Gate / Access Stair / Transition Stair 都消费同一个 ToolActionBar / Secondary Action Bar Primitive；
+- PlacementActionBar 只保留 Placement 语义，不再持有单独的 84px / 60px Geometry；Terrain / Tree / Selection Feature CSS 也不得私有维护中下栏 Screen Anchor；
+- 右下 Context Utility 与 Persistent Operation Hints 不属于本轮重排对象，继续沿用各自已经确认的结构。
+
+Web 共享样式所有者为 `src/tools/secondary-action-bar.css`。当前 React 仍暂时保留 `placement-action-bar__*` 子节点 class 以降低迁移风险，但 Geometry / visual hierarchy 的唯一权威已经移动到 Secondary Action Bar。迁移 Unity UI Toolkit 时对应单一 `SecondaryActionBar.uxml / .uss` Primitive，Feature 只提供 Mode / Action Definition，不复制尺寸与排版。

@@ -16,16 +16,6 @@
   overflow-x:hidden;
 }
 
-.gameplay-screen .terrain-edit-toolbar-cluster{
-  left:50%;
-  bottom:var(--hud-edge);
-  transform:translateX(-50%);
-  z-index:24;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
 .terrain-edit-mode-section{
   animation:terrain-edit-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both;
 }

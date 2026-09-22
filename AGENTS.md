@@ -26,7 +26,7 @@
 
 - 材质方案和建筑配色方案的文字列表是有意设计，保留现有结构；不增加缩略图，不改为视觉目录，也不将其记录为待补的美术欠缺。
 - 库存和管理页暂缓优化，包括资源图标与详情面板；除非用户另行批准，不混入工具和设置布局任务。
-- 地形、树木、配色的主要模式采用可选图标＋短名称；通用辅助动作及未选择此变体的工具保持纯图标。
+- Gameplay 二级中下栏统一使用 Secondary Bottom Action Bar：84px 总高；带文字按钮 76×64px；24px 图标在上、11px 短标签在下，图标为第一视觉层级。Building Selection、Terrain、Color 与全部 Placement 必须复用同一 Primitive；Mode / Quick / Complete / Cancel 不得各自使用另一套横排 Geometry。右下 Utility 继续保持纯图标。
 - 详情浮层避让整个 Workspace；不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
 - 世界对象选中属于 Gameplay Selection，不新增 Selection Tool。V1 只实现 Building Consumer；UI State 只持有 kind + entityId，经营数据由 Selection Presenter / ViewModel 提供。
 - Building Selection 中下主操作为“移动 / 配色(toggle) / 关闭”，不提供单独“编辑建筑”。配色直接开关 Selection 内 BuildingSchemeWorkspace，不进入顶层 Color Tool；右下只保留聚焦 / Undo / Redo / 移除，移除必须使用共享危险确认 Dialog。Building Move 与 Building New 共用 Building Placement（intent=new|move）。
@@ -61,3 +61,11 @@
 - 不新增末尾美化覆盖文件；在 Theme、Surface、Control 或对应组件的现有所有者中修改。
 
 正式文档记录稳定职责、边界、生命周期、不变量与 Unity 映射，不重复实现。阶段性记录放在 Documentation/开发记录，不创建额外 _AI 文档层。
+
+
+### Secondary Action Bar 护栏
+
+- `src/tools/secondary-action-bar.css` 是二级中下栏 Geometry / visual hierarchy 的唯一共享所有者；
+- Placement Feature 只保留 Placement 语义，不得重新定义按钮高度 / 宽度 / 横纵排列；
+- Terrain / Tree / Selection Feature CSS 不得私有维护中下栏 Screen Anchor；
+- 正式 UI Review 至少覆盖 Terrain、Color、Building Selection、Building Placement、Road、Tree、City Wall，并验证 84px 高、24px 图标、Icon Top / Label Bottom 和文字不截断。

@@ -50,6 +50,13 @@
   --command-icon-size:20px;
   --command-divider-height:24px;
 
+  --secondary-action-bar-height:84px;
+  --secondary-action-control-height:64px;
+  --secondary-action-button-width:76px;
+  --secondary-action-icon-button-width:52px;
+  --secondary-action-icon-size:24px;
+  --secondary-action-label-size:11px;
+
   --hud-core-width:940px;
   --hud-bottom-panel-height:84px;
   --placement-main-bar-height:var(--hud-bottom-panel-height);
@@ -170,14 +177,14 @@
 }
 
 .gameplay-screen .tool-bottom-cluster,
-.gameplay-screen .building-placement-toolbar-cluster,
-.gameplay-screen .road-placement-toolbar-cluster,
-.gameplay-screen .terrain-edit-toolbar-cluster,
-.gameplay-screen .tree-placement-toolbar-cluster,
-.gameplay-screen .city-wall-construction-toolbar-cluster,
-.gameplay-screen .city-wall-gate-toolbar-cluster,
-.gameplay-screen .city-wall-access-stair-toolbar-cluster,
-.gameplay-screen .city-wall-transition-stair-toolbar-cluster,
-.gameplay-screen .color-tool-toolbar-cluster{
+.gameplay-screen .building-selection-action-cluster{
+  position:absolute;
+  left:50%;
   bottom:var(--hud-edge);
+  z-index:24;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
 }

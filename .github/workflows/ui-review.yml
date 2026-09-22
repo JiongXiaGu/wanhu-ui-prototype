@@ -73,6 +73,18 @@ jobs:
           path: review-screenshots/
           if-no-files-found: error
           retention-days: 7
+      - name: Upload secondary action review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: secondary-action-review
+          path: |
+            review-screenshots/secondary-action-*.png
+            review-screenshots/tool-usability-report.json
+            review-screenshots/building-selection-report.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 9
       - name: Upload operation hints review
         if: always()
         uses: actions/upload-artifact@v4

@@ -31,6 +31,16 @@ try {
   ok('selection exposes move', await page.getByRole('button', { name: '移动建筑', exact: true }).count() === 1);
   ok('selection exposes scheme toggle', await page.getByRole('button', { name: '配色', exact: true }).count() === 1);
   ok('selection exposes close', await page.getByRole('button', { name: '关闭建筑选择', exact: true }).count() === 1);
+  const selectionActionBar = page.locator('.building-selection-action-cluster .secondary-action-bar');
+  const selectionActionBarBox = await selectionActionBar.boundingBox();
+  ok('selection action bar unified height', Boolean(selectionActionBarBox && Math.abs(selectionActionBarBox.height - 84) < 1));
+  const selectionActionMetrics = await selectionActionBar.locator('.placement-action-bar__button--labeled').evaluateAll((buttons) => buttons.map((button) => {
+    const icon = button.querySelector('.ui-icon')?.getBoundingClientRect();
+    const label = button.querySelector('.placement-action-bar__label')?.getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
+    return { width: rect.width, height: rect.height, iconY: icon?.y, iconBottom: icon?.bottom, iconWidth: icon?.width, labelY: label?.y };
+  }));
+  ok('selection uses vertical icon-label hierarchy', selectionActionMetrics.length === 3 && selectionActionMetrics.every((item) => item.width === 76 && item.height === 64 && item.iconWidth === 24 && item.iconBottom < item.labelY));
   const selectionHints = page.locator('.gameplay-operation-hints');
   ok('selection keeps persistent operation hints', await selectionHints.count() === 1);
   ok('selection operation hints context', await selectionHints.getAttribute('data-hint-context') === 'building-selection');
@@ -64,6 +74,7 @@ try {
   ok('right utility has no color action', await utility.getByRole('button', { name: '配色所选建筑', exact: true }).count() === 0);
   await shot('building-selection-01-selected-appearance');
   await page.screenshot({ path: out + '/operation-hints-selection.png' }); report.screenshots.push('operation-hints-selection');
+  await page.screenshot({ path: out + '/secondary-action-building-selection.png' }); report.screenshots.push('secondary-action-building-selection');
 
   const schemeToggle = page.getByRole('button', { name: '配色', exact: true });
   await schemeToggle.click();

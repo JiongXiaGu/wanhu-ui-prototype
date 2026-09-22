@@ -50,3 +50,17 @@ Archive 的历史基础样式和后续覆盖已在原文件收敛。Management S
 本轮共享档位升级不表示仓库所有历史局部字号都已完成逐条迁移。新增修改不得再通过 7–10px 文字或 transform scale 掩盖布局问题；残留例外应按页面实际阅读需求处理。
 
 1080p 为正式审图基准；4K 使用同一逻辑画布缩放，不维护所有数值翻倍的第二套 USS。Web 截图不能代替 Unity 6.6 Player 中的字体、DPI、PanelSettings 和手柄可读性检查。
+
+
+## Secondary Action Bar 字号与图标
+
+Gameplay 二级中下菜单是图标主导型控件，使用独立的稳定层级：
+
+- 主图标：24px；
+- 可见短标签：11px；
+- 标签位于图标下方，不与图标横向并排；
+- 按钮 76×64px；Bar 总高 84px；
+- Selected 依靠图标色与顶部状态线，不放大图标、不改变按钮尺寸；
+- Tooltip 仍使用共享 12px Tooltip 文字，不因可见标签变小而同步缩小。
+
+此规则只约束 Secondary Bottom Action Bar；右下 Utility 继续使用 20px 图标，普通正文 / Label 继续遵守既有 12px 基线。

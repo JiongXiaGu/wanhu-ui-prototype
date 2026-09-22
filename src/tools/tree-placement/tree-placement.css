@@ -1,7 +1,6 @@
 /* Tree Placement Tool: component geometry and world-preview placeholders only. */
 .gameplay-screen .tree-placement-prototype{left:var(--hud-edge);top:auto;bottom:var(--hud-edge);width:400px;height:auto;max-height:var(--hud-left-context-max-height)}
 .tree-placement-prototype__body{max-height:calc(100vh - 150px);overflow-y:auto;overflow-x:hidden}
-.gameplay-screen .tree-placement-toolbar-cluster{left:50%;bottom:var(--hud-edge);transform:translateX(-50%);z-index:24;display:flex;flex-direction:column;align-items:center}
 
 .tree-variant-mix{width:100%;height:34px;margin-bottom:8px;padding:0 10px;border:1px solid var(--wanhu-control-border-soft,rgba(238,233,223,.065));border-radius:8px;background:rgba(255,255,255,.018);color:var(--wanhu-color-text-muted,#999b96);display:flex;align-items:center;gap:8px;cursor:pointer;transition-property:background,color,border-color;transition-duration:var(--wanhu-motion-control,120ms)}
 .tree-variant-mix .ui-icon{width:var(--wanhu-icon-sm,16px);height:var(--wanhu-icon-sm,16px)}.tree-variant-mix span{font-size:10px}.tree-variant-mix small{margin-left:auto;font-size:var(--wanhu-type-micro,9.5px);color:inherit;opacity:.7}

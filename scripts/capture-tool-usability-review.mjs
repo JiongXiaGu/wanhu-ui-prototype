@@ -19,6 +19,7 @@ async function open(review, selector) {
 async function shot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/usability-${name}.png` }); report.screenshots.push(name); }
 async function placementShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/${name}.png` }); report.screenshots.push(name); }
 async function operationHintsShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/operation-hints-${name}.png` }); report.screenshots.push('operation-hints-' + name); }
+async function secondaryActionShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/secondary-action-${name}.png` }); report.screenshots.push('secondary-action-' + name); }
 async function checkPersistentHints(label, expectedContext, utilityExpected = true) {
   const hints = page.locator('.gameplay-operation-hints');
   assert.equal(await hints.count(), 1, label + ': 非 Pause Gameplay 必须恰好存在一个 Operation Hints Host');
@@ -77,6 +78,46 @@ async function checkPlacementBottom(label) {
   report.checks.push({ label, mainBox, utilityBox, firstKinds, secondMeta, labels });
 }
 const overlap = (a, b) => Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+async function checkSecondaryActionBar(label, selector = '.secondary-action-bar') {
+  const bar = page.locator(selector).first();
+  const barBox = await bar.boundingBox();
+  const viewport = page.viewportSize();
+  assert(barBox && viewport, label + ': Secondary Action Bar 必须可测量');
+  assert(Math.abs(barBox.height - 84) < 1, label + ': 所有二级中下菜单必须统一为 84px 高');
+  assert(Math.abs((barBox.y + barBox.height) - (viewport.height - 16)) < 1.5, label + ': Secondary Action Bar 必须保持 16px 底部安全边');
+
+  const buttons = bar.locator('.placement-action-bar__button--labeled');
+  const count = await buttons.count();
+  assert(count >= 1, label + ': Secondary Action Bar 必须提供可见文字标签');
+  const metrics = await buttons.evaluateAll((elements) => elements.map((element) => {
+    const icon = element.querySelector('.ui-icon');
+    const label = element.querySelector('.placement-action-bar__label');
+    const buttonRect = element.getBoundingClientRect();
+    const iconRect = icon?.getBoundingClientRect();
+    const labelRect = label?.getBoundingClientRect();
+    const labelStyle = label ? getComputedStyle(label) : null;
+    return {
+      aria: element.getAttribute('aria-label'),
+      button: { width: buttonRect.width, height: buttonRect.height },
+      icon: iconRect ? { x: iconRect.x, y: iconRect.y, width: iconRect.width, height: iconRect.height, bottom: iconRect.bottom } : null,
+      label: labelRect ? { x: labelRect.x, y: labelRect.y, width: labelRect.width, height: labelRect.height, top: labelRect.top, scrollWidth: label.scrollWidth, clientWidth: label.clientWidth } : null,
+      labelFontSize: labelStyle?.fontSize ?? '',
+    };
+  }));
+  for (const item of metrics) {
+    assert(item.icon && item.label, label + ': 每个可见按钮必须同时有图标和文字');
+    assert(Math.abs(item.button.height - 64) < 1, label + ': 二级按钮内部高度必须为 64px');
+    assert(Math.abs(item.button.width - 76) < 1, label + ': 带文字二级按钮宽度必须为 76px');
+    assert(Math.abs(item.icon.width - 24) < 1 && Math.abs(item.icon.height - 24) < 1, label + ': 图标必须使用 24px 主视觉尺寸');
+    assert(item.icon.bottom < item.label.top, label + ': 图标必须在文字上方');
+    const iconCenter = item.icon.x + item.icon.width / 2;
+    const labelCenter = item.label.x + item.label.width / 2;
+    assert(Math.abs(iconCenter - labelCenter) < 1.5, label + ': 图标与文字必须垂直居中对齐');
+    assert(item.label.scrollWidth <= item.label.clientWidth + 1, label + ': 二级菜单文字不得截断');
+    assert(item.labelFontSize === '11px', label + ': 二级菜单文字必须为 11px 次层级');
+  }
+  report.checks.push({ label: label + '/secondary-action-bar', barBox, metrics });
+}
 async function checkToolLayout(label) {
   const bar = await page.locator('.tool-action-bar').boundingBox();
   const panel = await page.locator('.gameplay-left-context-surface').boundingBox();
@@ -132,7 +173,9 @@ async function checkSelectEscape(label, focusOption) {
 try {
   await open('terrain-edit', '.terrain-edit-prototype');
   await checkPersistentHints('地形/抬高', 'terrain-raise');
+  await checkSecondaryActionBar('地形编辑', '.terrain-edit-toolbar-cluster .secondary-action-bar');
   await operationHintsShot('terrain');
+  await secondaryActionShot('terrain');
   const terrain = page.locator('.terrain-edit-toolbar-cluster');
   const firstWidth = (await terrain.boundingBox()).width;
   for (const name of ['抬高', '降低', '整平', '平滑', '坡面']) {
@@ -150,6 +193,7 @@ try {
 
   await open('building-position', '.building-placement-toolbar-cluster');
   await checkToolLayout('建筑放置');
+  await checkSecondaryActionBar('建筑放置', '.building-placement-toolbar-cluster .secondary-action-bar');
   await checkPlacementBottom('建筑放置');
   assert.equal(await page.locator('.building-placement-toolbar-cluster').getByRole('button', { name: '逆时针旋转', exact: true }).count(), 0, '建筑旋转不得继续留在中下主栏');
   const buildingRows = page.locator('.context-utility-toolbar[data-utility-context="building-placement"] .context-utility-toolbar__row');
@@ -160,19 +204,24 @@ try {
   assert(buildingSupportLabels.length > buildingActionLabels.length, '建筑 Placement 第二行图标必须严格多于第一行');
   await placementShot('placement-building-84');
   await placementShot('placement-building-utility-two-rows');
+  await secondaryActionShot('building-placement');
 
   await open('road-smart', '.road-placement-toolbar-cluster');
   await checkToolLayout('道路放置');
+  await checkSecondaryActionBar('道路放置', '.road-placement-toolbar-cluster .secondary-action-bar');
   await checkPlacementBottom('道路放置');
   assert.equal(await page.locator('.road-placement-toolbar-cluster').getByRole('button', { name: '反转道路方向', exact: true }).count(), 0, '道路反转不得继续留在中下主栏');
   await placementShot('placement-road-84');
+  await secondaryActionShot('road');
 
   await open('tree-brush', '.tree-placement-prototype');
   await checkToolLayout('树木/刷子');
+  await checkSecondaryActionBar('树木放置', '.tree-placement-toolbar-cluster .secondary-action-bar');
   await checkPersistentHints('树木/刷子', 'tree-brush');
   await checkPlacementBottom('树木/刷子');
   assert.equal(await page.getByRole('button', { name: '移动选中树木', exact: true }).count(), 0, '刷子模式不应强制展示单棵对象动作');
   await shot('tree-brush');
+  await secondaryActionShot('tree');
   await page.locator('.tree-placement-toolbar-cluster').getByRole('button', { name: '单棵', exact: true }).click(); await settle();
   await checkToolLayout('树木/单棵');
   await checkPlacementBottom('树木/单棵');
@@ -189,12 +238,14 @@ try {
 
   await open('city-wall-construction', '.city-wall-construction-toolbar-cluster');
   await checkToolLayout('城墙主体/范围');
+  await checkSecondaryActionBar('城墙主体', '.city-wall-construction-toolbar-cluster .secondary-action-bar');
   await checkPlacementBottom('城墙主体/范围');
   assert.equal(await page.getByRole('button', { name: '交换正反面', exact: true }).count(), 0, '范围模式没有正反面即时动作时不应伪造 Disabled Action');
   await page.locator('.city-wall-construction-toolbar-cluster').getByRole('button', { name: '定宽延伸', exact: true }).click(); await settle();
   assert.equal(await page.locator('.context-utility-toolbar__row').nth(0).getByRole('button', { name: '交换正反面', exact: true }).count(), 1);
   await checkPlacementBottom('城墙主体/定宽');
   await placementShot('placement-city-wall-84');
+  await secondaryActionShot('city-wall');
 
   for (const [review, selector, label] of [
     ['city-wall-gate-free', '.city-wall-gate-toolbar-cluster', '城门/自由'],
@@ -204,12 +255,15 @@ try {
   ]) {
     await open(review, selector);
     await checkToolLayout(label);
+    await checkSecondaryActionBar(label, selector + ' .secondary-action-bar');
     await checkPlacementBottom(label);
   }
 
   await open('color-tool-surface', '.color-tool-surface-panel');
   await checkPersistentHints('配色/表面', 'color-surface');
+  await checkSecondaryActionBar('配色工具', '.color-tool-toolbar-cluster .secondary-action-bar');
   await operationHintsShot('color-surface');
+  await secondaryActionShot('color');
   const colorBar = page.locator('.color-tool-toolbar-cluster');
   for (const [name, mode] of [['表面模式', 'surface'], ['灯光模式', 'lighting'], ['方案模式', 'scheme']]) {
     await colorBar.getByRole('button', { name, exact: true }).click(); await settle();

@@ -58,6 +58,13 @@ const leftContextPanel = await readFile('src/ui/LeftContextPanel.tsx', 'utf8');
 const buildingInspector = await readFile('src/selection/BuildingSelectionInspector.tsx', 'utf8');
 const schemeMode = await readFile('src/tools/color-tool/modes/scheme/SchemeModeOverlay.tsx', 'utf8');
 const placementControls = await readFile('src/tools/placement/placement-parameter-controls.css', 'utf8');
+const secondaryActionCss = await readFile('src/tools/secondary-action-bar.css', 'utf8');
+const placementActionCss = await readFile('src/tools/placement/placement-action-bar.css', 'utf8');
+const toolActionSource = await readFile('src/tools/ToolActionBar.tsx', 'utf8');
+const mainSource = await readFile('src/main.tsx', 'utf8');
+const terrainCss = await readFile('src/tools/terrain-edit/terrain-edit.css', 'utf8');
+const treeCss = await readFile('src/tools/tree-placement/tree-placement.css', 'utf8');
+const selectionCss = await readFile('src/selection/building-selection.css', 'utf8');
 const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
 
 assert(sharedControlsCss.includes('.ui-scroll-region'), '共享控件必须持有 ui-scroll-region');
@@ -73,7 +80,15 @@ assert(schemeMode.includes('density="standard"'), 'Building Scheme 做旧程度�
 assert(buildingParameters.includes('density="compact"'), 'Placement 参数必须显式使用 compact density');
 assert(!placementControls.includes('--ui-parameter-step-size') && !placementControls.includes('--ui-parameter-value-width'), 'Placement Feature 不得持有 Slider 内部列尺寸');
 assert(!placementControls.includes('.ui-slider{height:28px}'), 'Placement Feature 不得持有 Slider 内部高度');
-checks += 13;
+assert(mainSource.includes("import './tools/secondary-action-bar.css';"), 'Secondary Action Bar 必须拥有独立共享样式入口');
+assert(toolActionSource.includes('secondary-action-bar') && toolActionSource.includes('size={24}'), 'ToolActionBar 必须挂载共享 Secondary Action Bar 并使用 24px 图标');
+assert(secondaryActionCss.includes('height:var(--secondary-action-bar-height,84px)') && secondaryActionCss.includes('height:var(--secondary-action-control-height,64px)'), '所有二级中下栏必须统一 84px / 64px Geometry');
+assert(secondaryActionCss.includes('flex-direction:column') && secondaryActionCss.includes('font-size:var(--secondary-action-label-size,11px)'), 'Secondary Action Bar 必须使用上图标下文字且文字为 11px');
+assert(secondaryActionCss.includes('width:var(--secondary-action-button-width,76px)') && secondaryActionCss.includes('var(--secondary-action-icon-size,24px)'), 'Secondary Action Bar 必须使用 76px 按钮与 24px 主图标');
+assert(!placementActionCss.includes('placement-action-bar__button--labeled') && !placementActionCss.includes('height:60px'), 'Placement 不得再维护第二套按钮 Geometry');
+assert(!terrainCss.includes('terrain-edit-toolbar-cluster{') && !treeCss.includes('tree-placement-toolbar-cluster{'), 'Terrain / Tree 不得私有维护中下栏屏幕锚点');
+assert(!selectionCss.includes('building-selection-action-cluster{') && !selectionCss.includes('building-selection-secondary-action-bar{height:'), 'Building Selection 不得私有维护中下栏 Geometry');
+checks += 21;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');

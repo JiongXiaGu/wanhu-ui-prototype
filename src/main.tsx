@@ -21,6 +21,7 @@ import './gameplay/pause-layer.css';
 import './settings/settings-panel.css';
 import './settings/settings-bindings.css';
 import './fullscreen-actions.css';
+import './tools/secondary-action-bar.css';
 import './tools/placement/placement-action-bar.css';
 import './tools/placement/placement-context-panel.css';
 import './tools/building-placement/building-placement.css';

@@ -29,7 +29,7 @@ export function PlacementActionBar({
   return (
     <ToolActionBar
       ariaLabel={ariaLabel}
-      className="placement-main-action-bar placement-action-bar--placement"
+      className="secondary-action-bar--placement placement-main-action-bar placement-action-bar--placement"
       modeGroups={labeledModeGroups}
       completeLabel={confirmLabel}
       completeShortLabel={confirmShortLabel}
