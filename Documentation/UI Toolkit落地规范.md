@@ -265,9 +265,10 @@ Hover Card 第一版只读，不承载按钮；需要可交互内容时应新增
 Tooltip 与 Hover Card 共用 `hover-placement.ts`：
 
 - Tooltip 优先 top → bottom → right → left；
-- Hover Card 在 Workspace 中优先展开到整个 Workspace 外部；
-- 都必须遵守 Safe Edge 和屏幕 Clamp；
-- Hover Card 额外避让 Top Shell、Left Context、Main Dock、Tool Bar、Context Utility、Operation Hints；
+- Hover Card 默认 `placementMode = anchor`，优先 right → left → top → bottom，贴近当前条目；
+- 只有明确需要保护完整目录内容时使用 `placementMode = workspace-edge`，其候选顺序为 top → left → right → bottom，并把整个 Workspace 作为保护区域；
+- `auto` 允许框架同时评估条目贴附与 Workspace 外侧候选，但业务 Feature 不自行计算坐标；
+- 所有模式都必须遵守 Safe Edge 和屏幕 Clamp，并避让 Top Shell、Left Context、Main Dock、Tool Bar、Context Utility、Operation Hints；
 - Surface 锚定 UI Element，不跟随鼠标坐标漂移。
 
 ### Feature 边界
