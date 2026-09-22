@@ -86,6 +86,37 @@ try {
   await shot('building-selection-02-scheme-toggle-open');
   await page.screenshot({ path: out + '/operation-hints-selection-scheme.png' }); report.screenshots.push('operation-hints-selection-scheme');
 
+  const firstSchemeCard = page.locator('.building-scheme-workspace__card-apply').first();
+  await firstSchemeCard.hover();
+  await page.waitForTimeout(540);
+  const hoverCard = page.locator('.ui-hover-card[data-ready="true"]');
+  const [schemeCardBox, hoverBox, schemeWorkspaceBox] = await Promise.all([
+    firstSchemeCard.boundingBox(),
+    hoverCard.boundingBox(),
+    page.locator('.building-scheme-workspace').boundingBox(),
+  ]);
+  const hoverPlacement = await hoverCard.getAttribute('data-placement');
+  ok('scheme hover uses side anchor placement', Boolean(
+    schemeCardBox
+    && hoverBox
+    && (hoverPlacement === 'right' || hoverPlacement === 'left')
+    && (
+      hoverBox.x >= schemeCardBox.x + schemeCardBox.width - 1
+      || hoverBox.x + hoverBox.width <= schemeCardBox.x + 1
+    )
+  ));
+  ok('scheme hover stays local to workspace', Boolean(
+    hoverBox
+    && schemeWorkspaceBox
+    && hoverBox.x < schemeWorkspaceBox.x + schemeWorkspaceBox.width
+    && hoverBox.x + hoverBox.width > schemeWorkspaceBox.x
+    && hoverBox.y < schemeWorkspaceBox.y + schemeWorkspaceBox.height
+    && hoverBox.y + hoverBox.height > schemeWorkspaceBox.y
+  ));
+  await page.screenshot({ path: out + '/hover-building-scheme-anchor.png' }); report.screenshots.push('hover-building-scheme-anchor');
+  await page.mouse.move(1700, 120);
+  await page.waitForTimeout(120);
+
   await page.getByRole('button', { name: '应用建筑配色方案 粉墙黛瓦', exact: true }).click();
   await page.waitForTimeout(100);
   ok('applied scheme rebinds left panel', await page.getByText('粉墙黛瓦', { exact: true }).count() >= 1);
