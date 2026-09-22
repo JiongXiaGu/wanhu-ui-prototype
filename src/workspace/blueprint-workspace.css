@@ -1,0 +1,173 @@
+/* Blueprint Workspace ---------------------------------------------------------
+   Shared shell / rail / filter / pager geometry comes from WorkspaceCatalog.
+   Blueprint owns only the image-first 4×1 content-card variant. */
+
+.gameplay-screen .workspace--blueprint{
+  width:1240px;
+}
+
+.gameplay-screen .workspace--blueprint .blueprint-workspace__stage{
+  height:154px;
+  padding:4px 0 8px;
+}
+
+.gameplay-screen .workspace--blueprint .blueprint-workspace__rows{
+  gap:0;
+}
+
+.gameplay-screen .workspace--blueprint .blueprint-workspace__row{
+  height:142px;
+  gap:10px;
+}
+
+.gameplay-screen .workspace--blueprint .blueprint-workspace__row>*{
+  flex:0 0 calc((100% - 30px)/4);
+}
+
+.blueprint-workspace__card{
+  height:142px;
+  padding:0;
+  display:block;
+  overflow:hidden;
+  border-radius:10px;
+  background:#202824;
+  isolation:isolate;
+}
+
+.blueprint-workspace__card:hover,
+.blueprint-workspace__card:focus-visible{
+  background:#202824;
+  box-shadow:inset 0 0 0 1px rgba(238,233,223,.075),0 8px 22px rgba(4,7,6,.14);
+}
+
+.blueprint-workspace__card:active{
+  background:#202824;
+  transform:scale(.995);
+}
+
+.blueprint-workspace__card .workspace-item-card__state-line{
+  top:14px;
+  bottom:14px;
+  z-index:6;
+}
+
+.blueprint-workspace__preview{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:block;
+  background-repeat:no-repeat;
+  filter:brightness(.79) saturate(.72) contrast(.98);
+  transform:scale(1.015);
+  transition-property:filter,transform;
+  transition-duration:var(--wanhu-motion-surface,160ms),var(--wanhu-motion-space,200ms);
+  transition-timing-function:ease,var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
+}
+
+.blueprint-workspace__card:hover .blueprint-workspace__preview,
+.blueprint-workspace__card:focus-visible .blueprint-workspace__preview{
+  filter:brightness(.90) saturate(.82) contrast(1);
+  transform:scale(1.03);
+}
+
+.blueprint-workspace__shade{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(8,12,10,.05) 0%,rgba(8,12,10,.02) 42%,rgba(8,12,10,.78) 100%),
+    linear-gradient(90deg,rgba(8,12,10,.14),transparent 42%,rgba(8,12,10,.05));
+}
+
+.blueprint-workspace__shade::after{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(238,233,223,.14) 20%,rgba(238,233,223,.05) 76%,transparent);
+  opacity:.65;
+}
+
+.blueprint-workspace__caption{
+  position:absolute;
+  z-index:3;
+  left:14px;
+  right:13px;
+  bottom:11px;
+  min-width:0;
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  pointer-events:none;
+}
+
+.blueprint-workspace__caption>b{
+  min-width:0;
+  flex:1 1 auto;
+  overflow:hidden;
+  color:#ebe5d9;
+  font-size:13.5px;
+  font-weight:620;
+  line-height:1.2;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  text-shadow:0 2px 8px rgba(4,7,6,.58);
+}
+
+.blueprint-workspace__caption>span{
+  flex:0 0 auto;
+  color:#b9b8b0;
+  font-size:var(--wanhu-type-caption,10px);
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 2px 7px rgba(4,7,6,.64);
+}
+
+.blueprint-workspace__source{
+  position:absolute;
+  z-index:4;
+  right:9px;
+  top:9px;
+  padding:3px 6px;
+  border:1px solid rgba(238,233,223,.08);
+  border-radius:6px;
+  background:rgba(17,23,20,.68);
+  color:#aaa9a2;
+  font-size:var(--wanhu-type-micro,9.5px);
+  line-height:1.1;
+  pointer-events:none;
+  backdrop-filter:blur(5px);
+}
+
+.blueprint-workspace__source.is-workshop{color:#a9b8bb}
+.blueprint-workspace__source.is-mine{color:#c2ad82}
+
+.blueprint-workspace__empty{
+  flex-direction:column;
+  gap:5px;
+}
+
+.blueprint-workspace__empty>.ui-icon{
+  width:18px;
+  height:18px;
+  opacity:.66;
+}
+
+.blueprint-workspace__empty>b{
+  color:#a6aaa5;
+  font-size:var(--wanhu-type-caption,10px);
+  font-weight:560;
+}
+
+.blueprint-workspace__empty>span{
+  color:#747a75;
+  font-size:var(--wanhu-type-micro,9.5px);
+}
+
+@media (max-width:1500px){
+  .gameplay-screen .workspace--blueprint{width:1160px}
+  .blueprint-workspace__caption>b{font-size:13px}
+}
