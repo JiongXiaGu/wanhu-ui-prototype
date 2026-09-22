@@ -632,9 +632,9 @@ Gameplay 一级中下 Main Dock 采用固定的 Main Dock V2 契约，用于“�
 
 - Main Dock 固定 **880×84px**，使用与 Secondary Action Bar / 双层 Utility 相同的 bottom=16px 基线；设计 8 类与蓝图 9 类切换时 Dock 宽度不得跳变；
 - “设计 / 蓝图”不再使用上下纯文字 Rail，而是横向两个稳定 Mode Button；单个约 **54×64px**，使用 **20px 图标在上 + 11px 文字在下**；
-- Mode 使用专属语义图标：设计使用设计/绘制语义，蓝图使用图纸/卷轴语义；Mode Active 以熟铜图标、弱背景和底部短 State Line 表达；
+- Mode 使用专属语义图标：设计使用设计/绘制语义，蓝图使用图纸/卷轴语义；Mode Active 以熟铜图标、熟铜文字和弱背景表达，不使用额外横线；
 - Category Strip 仍保持 Icon Top / Label Bottom，但提升为 **24px 主图标 + 11px 标签**，内部高度 64px；分类 Active 使用熟铜图标 + 顶部短 State Line，背景只弱提亮；
-- Mode 与 Category 属于不同层级：Mode 的状态线在底部，Category 的状态线在顶部；不得把两者做成完全同质的按钮；
+- Mode 与 Category 属于不同层级：Mode 依靠图标 / 文字 / 弱背景表达 Active，不使用状态线；Category 继续使用顶部短 State Line；不得把两者做成完全同质的按钮；
 - 设计 / 蓝图切换只重挂 Category Strip 并做轻微 opacity + translateY 过渡；Main Dock Shell、Mode Switch、Divider、宽高和屏幕锚点不参与 Layout Animation；
 - Main Dock 宽度固定，不根据 8 / 9 个分类动态收缩；分类列使用等分 Grid，自适应填满剩余空间；
 - Main Dock 的内部 Geometry / 状态视觉唯一所有者为 `src/gameplay/main-dock.css`；`styles.css` 与 `gameplay-refine.css` 不得重新定义 `.command-bar` / `.mode-rail` / `.category-row` Geometry；
