@@ -134,12 +134,11 @@
   padding:3px 6px;
   border:1px solid rgba(238,233,223,.08);
   border-radius:6px;
-  background:rgba(17,23,20,.68);
+  background:rgba(17,23,20,.86);
   color:#aaa9a2;
   font-size:var(--wanhu-type-micro,9.5px);
   line-height:1.1;
   pointer-events:none;
-  backdrop-filter:blur(5px);
 }
 
 .blueprint-workspace__source.is-workshop{color:#a9b8bb}
