@@ -67,8 +67,11 @@ const treeCss = await readFile('src/tools/tree-placement/tree-placement.css', 'u
 const selectionCss = await readFile('src/selection/building-selection.css', 'utf8');
 const mainDockCss = await readFile('src/gameplay/main-dock.css', 'utf8');
 const commandBarSource = await readFile('src/gameplay/CommandBar.tsx', 'utf8');
-const gameplayRefineCss = await readFile('src/gameplay-refine.css', 'utf8');
 const legacyStyles = await readFile('src/styles.css', 'utf8');
+const workspaceCss = await readFile('src/workspace.css', 'utf8');
+const operationHintsCss = await readFile('src/gameplay/operation-hints.css', 'utf8');
+const uiVisualCss = await readFile('src/ui/ui-visual-system.css', 'utf8');
+const migrationAudit = await readFile('scripts/audit-unity-migration.mjs', 'utf8');
 const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 
@@ -101,8 +104,15 @@ assert(mainDockCss.includes('--main-dock-category-icon-size,24px') && mainDockCs
 assert(mainDockCss.includes('flex-direction:row') && mainDockCss.includes('--main-dock-mode-button-width,54px'), '设计 / 蓝图 Mode 必须横向排列并使用 54px 按钮');
 assert(!commandBarSource.includes('<i className="main-dock__state-line" aria-hidden="true" />\n              <Icon size={20}'), '设计 / 蓝图 Mode 不得再挂底部 State Line');
 assert(!mainDockCss.includes('.main-dock__mode-button .main-dock__state-line') && mainDockCss.includes('.main-dock__category-button .main-dock__state-line'), '只删除 Mode 底线，Category 顶部状态线必须保留');
-assert(!legacyStyles.includes('.command-bar{position:absolute') && !gameplayRefineCss.includes('.mode-rail') && !gameplayRefineCss.includes('.category-row'), '旧 Main Dock Geometry 不得继续散落在 styles / gameplay-refine');
-checks += 30;
+assert(!legacyStyles.includes('.command-bar{position:absolute'), '旧 Main Dock Geometry 不得继续散落在 styles.css');
+assert(!legacyStyles.includes('/* Workspace base geometry.') && !legacyStyles.includes('.segment{'), 'styles.css 不得继续持有 Workspace / Segment 业务 Geometry');
+assert(workspaceCss.includes('position:absolute') && workspaceCss.includes('display:flex') && workspaceCss.includes('flex-direction:column'), 'Workspace Shell 结构必须由 workspace.css 自己持有');
+assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
+assert(!operationHintsCss.includes('backdrop-filter') && !operationHintsCss.includes('box-shadow:'), 'Operation Hints 组件样式不得持有 Surface 材质');
+assert(!uiVisualCss.includes('.gameplay-screen .workspace,') && !uiVisualCss.includes('.bottom-command-surface{'), 'ui-visual-system 不得重复持有 Gameplay Surface 材质');
+assert(!mainDockCss.includes('display:grid') && mainDockCss.includes('display:flex') && mainDockCss.includes('flex:1 1 0'), 'Main Dock Category Strip 必须使用 Flex 而不是新增长期 Grid 债务');
+assert(migrationAudit.includes('SHARED_CONTROL_INTERNAL_OWNER_FILES') && migrationAudit.includes('SHARED_SURFACE_MATERIAL_OWNER_FILES'), 'Unity migration audit 必须包含 Shared Control / Surface Ownership Guard');
+checks += 37;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');

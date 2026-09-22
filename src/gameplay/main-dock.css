@@ -109,9 +109,7 @@
   min-width:0;
   height:var(--main-dock-control-height,64px);
   flex:1;
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:minmax(0,1fr);
+  display:flex;
   gap:2px;
   animation:main-dock-categories-in var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
 }
@@ -119,6 +117,7 @@
 .gameplay-screen .main-dock__category-button{
   position:relative;
   min-width:0;
+  flex:1 1 0;
   height:var(--main-dock-control-height,64px);
   padding:7px 4px 6px;
   border:0;

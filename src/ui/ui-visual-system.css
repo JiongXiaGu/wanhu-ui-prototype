@@ -19,27 +19,8 @@
   --ui-footer-backdrop:blur(10px) saturate(.82) brightness(1.00);
 }
 
-/* Gameplay glass surfaces keep a jade tone of their own, then let a softened world image show through.
-   Brightness is raised slightly so night scenes do not turn every surface into a black block. */
-.gameplay-screen .workspace,
-.gameplay-screen .gameplay-context-panel{
-  border-color:var(--hud-border-strong,rgba(239,233,221,.14));
-  box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
-  backdrop-filter:var(--hud-glass-filter,blur(14px) saturate(.86) brightness(1.05));
-  -webkit-backdrop-filter:var(--hud-glass-filter,blur(14px) saturate(.86) brightness(1.05));
-}
-
-.gameplay-screen .gameplay-top-status,
-.gameplay-screen .gameplay-top-navigation,
-.gameplay-screen .gameplay-top-map-panel{
-  backdrop-filter:var(--hud-glass-filter-soft,blur(11px) saturate(.88) brightness(1.04));
-  -webkit-backdrop-filter:var(--hud-glass-filter-soft,blur(11px) saturate(.88) brightness(1.04));
-}
-
-.bottom-command-surface{
-  backdrop-filter:blur(var(--command-blur,12px)) saturate(.86) brightness(1.05);
-  -webkit-backdrop-filter:blur(var(--command-blur,12px)) saturate(.86) brightness(1.05);
-}
+/* Gameplay Surface material is owned by wanhu-surface-system.css.
+   This file keeps control / action foreground language only. */
 
 /* Shared segmented-control language.
    The whole group reads as one clickable control bed; individual options appear on Hover / Active. */

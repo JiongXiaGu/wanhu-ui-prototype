@@ -10,10 +10,7 @@ const APPROVED_BACKDROP_FILES=new Set([
   'src/gameplay/gameplay-top-shell.css',
   'src/gameplay/city-management.css',
   'src/gameplay/management-panel-skin.css',
-  'src/gameplay-refine.css',
   'src/gameplay/weather-mist-glass.css',
-  'src/gameplay/operation-hints-refined.css',
-  'src/operation-hints.css',
   'src/new-game/new-game-space.css',
   'src/loading/loading-space.css',
   'src/ui/asset-inspector/asset-inspector.css',
@@ -21,6 +18,22 @@ const APPROVED_BACKDROP_FILES=new Set([
   'src/ui/ui-visual-system.css',
   'src/ui/wanhu-surface-system.css',
 ]);
+
+const SHARED_CONTROL_INTERNAL_OWNER_FILES=new Set([
+  'src/ui/ui-control-system.css',
+  // Temporary migration bridge; Phase 2 will reduce this to shared variables only.
+  'src/gameplay/gameplay-context-panel.css',
+]);
+const SHARED_CONTROL_INTERNAL_SELECTOR=/\.(?:ui-slider__track|ui-slider__thumb|ui-stepper-button|ui-select__menu)\b|\.ui-toggle\s*>\s*i\b/;
+
+const SHARED_SURFACE_MATERIAL_OWNER_FILES=new Set([
+  'src/ui/wanhu-surface-system.css',
+  // Existing Workspace legacy material owners are frozen until their dedicated cleanup pass.
+  'src/workspace.css',
+  'src/workspace/workspace-world-first-glass.css',
+]);
+const SHARED_SURFACE_ROOT_SELECTOR=/\.(?:bottom-command-surface(?:--(?:lg|md|sm))?|gameplay-left-context-surface|workspace--catalog)\b/;
+const SHARED_SURFACE_MATERIAL_PROPERTY=/(?:background(?:-color|-image)?|box-shadow|(?:-webkit-)?backdrop-filter)\s*:/;
 
 async function walk(dir){
   const entries=await readdir(dir,{withFileTypes:true});
@@ -144,6 +157,19 @@ for(const file of files){
   }
 
   if(file.endsWith('.css')){
+    if(SHARED_CONTROL_INTERNAL_SELECTOR.test(text) && !SHARED_CONTROL_INTERNAL_OWNER_FILES.has(file)){
+      errors.push(`${file}: shared Slider / Stepper / Select / Toggle internals must be owned by ui-control-system.css. Use semantic variables or an approved shared adapter instead.`);
+    }
+
+    if(
+      SHARED_SURFACE_ROOT_SELECTOR.test(text)
+      && SHARED_SURFACE_MATERIAL_PROPERTY.test(text)
+      && !SHARED_SURFACE_MATERIAL_OWNER_FILES.has(file)
+      && !file.startsWith('src/review/')
+    ){
+      errors.push(`${file}: shared Workspace / Context / Bottom Command material must be owned by wanhu-surface-system.css. Feature CSS may own geometry and foreground only.`);
+    }
+
     const hasHits=lineHits(text,/:has\(/);
     for(const hit of hasHits)errors.push(`${file}:${hit.line} CSS :has() is forbidden in runtime prototype structure.`);
 

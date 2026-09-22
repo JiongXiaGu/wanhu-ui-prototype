@@ -1,19 +1,20 @@
-/* Context shortcut rail — read-only tertiary surface, never styled like clickable controls.
-   Geometry is owned by gameplay-hud-layout.css. */
+/* Persistent Operation Hints — geometry + read-only foreground only.
+   Screen anchor is owned by gameplay-hud-layout.css; material is owned by wanhu-surface-system.css. */
 .gameplay-operation-hints{
+  position:absolute;
   box-sizing:border-box;
   width:232px;
   z-index:34;
   pointer-events:none;
+  overflow:hidden;
   height:auto;
   min-height:0;
   max-height:none;
   padding:8px 10px 9px;
-  border:1px solid rgba(239,233,221,.045);
+  border:1px solid transparent;
   border-radius:var(--hud-radius-md,14px);
-  background:linear-gradient(180deg,var(--hud-surface-tertiary-top,rgba(20,27,24,.62)),var(--hud-surface-tertiary-bottom,rgba(17,23,20,.54)));
-  box-shadow:0 8px 22px rgba(5,8,7,.10);
-  backdrop-filter:blur(6px);
+  transition-property:opacity,transform,visibility;
+  transition-duration:var(--wanhu-motion-control,120ms);
 }
 
 .operation-hints__task{

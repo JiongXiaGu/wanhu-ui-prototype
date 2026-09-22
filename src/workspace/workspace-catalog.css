@@ -58,8 +58,7 @@
 
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__page>button{
-  /* Reset the legacy .workspace-body aside button { flex:1 } rule from
-     styles.css. Catalog Rail items own a fixed row height. */
+  /* Catalog Rail items own a fixed row height independent of other Workspace variants. */
   flex:0 0 29px;
   height:29px;
   min-height:29px;
