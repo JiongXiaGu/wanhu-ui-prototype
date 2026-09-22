@@ -134,6 +134,90 @@
 
 /* Top HUD tooltips are rendered by the global Hover Overlay. */
 
+/* Control Tray geometry. Surface/material/state colors are owned by
+   ui/wanhu-surface-system.css; keep this block layout-only. */
+.gameplay-top-navigation{
+  position:relative;
+  z-index:1;
+  width:var(--top-nav-width);
+  height:38px;
+  flex:0 0 38px;
+  margin-top:-2px;
+  padding:0 6px;
+  display:grid;
+  grid-template-columns:84px 1px minmax(0,1fr) 1px 44px;
+  align-items:stretch;
+  pointer-events:auto;
+  border:1px solid transparent;
+  border-top:0;
+  border-radius:0 0 12px 12px;
+}
+.gameplay-top-navigation::before{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  top:-2px;
+  height:3px;
+  pointer-events:none;
+  z-index:0;
+}
+.gameplay-top-navigation__view,
+.gameplay-top-navigation__management,
+.gameplay-top-navigation__scene{
+  position:relative;
+  z-index:1;
+  min-width:0;
+  height:100%;
+  display:flex;
+  align-items:stretch;
+}
+.gameplay-top-navigation__view{justify-content:center}
+.gameplay-top-navigation__management{justify-content:center}
+.gameplay-top-navigation__scene{justify-content:center;align-items:center;gap:0}
+
+.gameplay-top-navigation__button{
+  position:relative;
+  min-width:0;
+  padding:0;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition-property:background,color,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
+  transition-timing-function:ease,ease,ease;
+}
+.gameplay-top-navigation__view .gameplay-top-navigation__button{width:42px;flex:0 0 42px}
+.gameplay-top-navigation__management .gameplay-top-navigation__button{width:50px;flex:0 0 50px}
+.gameplay-top-navigation__scene .gameplay-top-navigation__button{width:42px;flex:0 0 42px}
+.gameplay-top-navigation__button .ui-icon{width:18px;height:18px;pointer-events:none}
+.gameplay-top-navigation__button:active{transform:translateY(1px)}
+.gameplay-top-navigation__button.is-active::before{
+  content:'';
+  position:absolute;
+  left:27%;
+  right:27%;
+  bottom:-1px;
+  height:2px;
+}
+.gameplay-top-navigation__separator{
+  width:1px;
+  height:18px;
+  align-self:center;
+  margin:0;
+}
+.gameplay-top-navigation__dot{
+  position:absolute;
+  right:7px;
+  top:7px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+}
+
 .gameplay-top-map-panel{
   position:absolute;
   right:calc((100% - var(--top-nav-width))/2);
