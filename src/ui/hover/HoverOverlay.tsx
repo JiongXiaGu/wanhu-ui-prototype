@@ -266,38 +266,43 @@ export function HoverOverlayHost() {
       return;
     }
 
+    const activeHost = host;
+    const activeSurface = surface;
+    const activeAnchor = anchor;
+    const activeDefinition = definition;
+
     let frame = 0;
-    const workspace = definition.kind === 'card' && definition.preferOutsideWorkspace !== false
-      ? anchor.closest<HTMLElement>('.workspace--catalog')
+    const workspace = activeDefinition.kind === 'card' && activeDefinition.preferOutsideWorkspace !== false
+      ? activeAnchor.closest<HTMLElement>('.workspace--catalog')
       : null;
 
     function reposition() {
       frame = 0;
-      if (!anchor.isConnected || anchor.getClientRects().length === 0) {
+      if (!activeAnchor.isConnected || activeAnchor.getClientRects().length === 0) {
         clear();
         return;
       }
 
-      const hostRect = host.getBoundingClientRect();
-      const sx = hostRect.width / Math.max(1, host.clientWidth);
-      const sy = hostRect.height / Math.max(1, host.clientHeight);
+      const hostRect = activeHost.getBoundingClientRect();
+      const sx = hostRect.width / Math.max(1, activeHost.clientWidth);
+      const sy = hostRect.height / Math.max(1, activeHost.clientHeight);
       if (sx <= 0 || sy <= 0) return;
 
-      const bounds = { width: host.clientWidth, height: host.clientHeight };
-      const root = host.closest<HTMLElement>('.game-canvas') ?? host;
-      const avoid = definition.kind === 'card'
+      const bounds = { width: activeHost.clientWidth, height: activeHost.clientHeight };
+      const root = activeHost.closest<HTMLElement>('.game-canvas') ?? activeHost;
+      const avoid = activeDefinition.kind === 'card'
         ? [...root.querySelectorAll<HTMLElement>(
           '.gameplay-top-shell, .gameplay-left-context-surface, .command-bar, .tool-bottom-cluster, .context-utility-toolbar, .gameplay-operation-hints',
         )]
-          .filter((element) => element !== anchor && element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden')
-          .map((element) => toLogicalRect(element, host, hostRect, sx, sy))
+          .filter((element) => element !== activeAnchor && element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden')
+          .map((element) => toLogicalRect(element, activeHost, hostRect, sx, sy))
         : [];
 
       const next = placeHoverSurface({
-        kind: definition.kind,
-        anchor: toLogicalRect(anchor, host, hostRect, sx, sy),
-        workspace: workspace ? toLogicalRect(workspace, host, hostRect, sx, sy) : undefined,
-        size: { width: surface.offsetWidth, height: surface.offsetHeight },
+        kind: activeDefinition.kind,
+        anchor: toLogicalRect(activeAnchor, activeHost, hostRect, sx, sy),
+        workspace: workspace ? toLogicalRect(workspace, activeHost, hostRect, sx, sy) : undefined,
+        size: { width: activeSurface.offsetWidth, height: activeSurface.offsetHeight },
         bounds,
         avoid,
       });
@@ -320,9 +325,9 @@ export function HoverOverlayHost() {
 
     reposition();
     const resize = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(schedulePosition) : null;
-    resize?.observe(surface);
-    resize?.observe(anchor);
-    resize?.observe(host);
+    resize?.observe(activeSurface);
+    resize?.observe(activeAnchor);
+    resize?.observe(activeHost);
     if (workspace) resize?.observe(workspace);
 
     window.addEventListener('resize', schedulePosition);
