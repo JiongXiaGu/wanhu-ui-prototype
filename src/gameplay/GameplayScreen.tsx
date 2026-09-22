@@ -62,6 +62,15 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
     && (space === 'gameplay' || space === 'workspace')
     && state.tool === 'none'
     && state.selection === null;
+  const placementUtilityStacked = !state.paused && (
+    state.tool === 'building-placement'
+    || state.tool === 'road-placement'
+    || state.tool === 'tree-placement'
+    || state.tool === 'city-wall-construction'
+    || state.tool === 'city-wall-gate'
+    || state.tool === 'city-wall-access-stair'
+    || state.tool === 'city-wall-transition-stair'
+  );
   const buildingSelectionActive = !state.paused && !state.worldDemolitionMode && space === 'gameplay' && state.tool === 'none' && state.workspace === 'none' && state.management === 'none' && state.contextPanel === 'none' && !state.mapPanelOpen;
   const selectedBuilding = state.selection?.kind === 'building' && !removedBuildingIds.has(state.selection.entityId)
     ? getBuildingSelectionDefinition(state.selection.entityId)
@@ -213,7 +222,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
   return (
     <section
-      className={`screen gameplay-screen gameplay-screen--${space} ${isNight ? 'is-night' : 'is-day'} ${worldUtilityStacked ? 'has-world-utility-stack' : ''} ${state.worldDemolitionMode ? 'is-world-demolition-mode' : ''}`}
+      className={`screen gameplay-screen gameplay-screen--${space} ${isNight ? 'is-night' : 'is-day'} ${worldUtilityStacked ? 'has-world-utility-stack' : ''} ${placementUtilityStacked ? 'has-placement-utility-stack' : ''} ${state.worldDemolitionMode ? 'is-world-demolition-mode' : ''}`}
       data-time-of-day={isNight ? 'night' : 'day'}
       data-world-demolition={state.worldDemolitionMode ? 'active' : 'inactive'}
       style={{ backgroundImage: `url(${sceneBackground})` }}
@@ -262,8 +271,11 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           terrainContours={state.terrainContours}
           terrainSlopeView={state.terrainSlopeView}
           terrainProtectBuilt={state.terrainProtectBuilt}
+          treePlacementMode={state.treePlacementMode}
+          treeSingleSelected={state.treeSingleSelected}
           treeAvoidBuildings={state.treeAvoidBuildings}
           treeAvoidRoads={state.treeAvoidRoads}
+          cityWallConstructionMode={state.cityWallConstructionMode}
           cityWallTopLine={state.cityWallTopLine}
           cityWallNodes={state.cityWallNodes}
           cityWallGatePlacementMode={state.cityWallGatePlacementMode}
@@ -292,6 +304,20 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             else if (id === 'palette') dispatch({ type: 'ENTER_COLOR_TOOL' });
             else if (id === 'selection-focus-building') setSelectionFocusPulse((value) => value + 1);
             else if (id === 'selection-remove-building') requestRemoveSelectedBuilding();
+            else if (id === 'city-wall-flip-facing') dispatch({ type: 'FLIP_CITY_WALL_FACING' });
+            else if (id === 'city-wall-gate-rotate-left') dispatch({ type: 'ROTATE_CITY_WALL_GATE', direction: 'left' });
+            else if (id === 'city-wall-gate-rotate-right') dispatch({ type: 'ROTATE_CITY_WALL_GATE', direction: 'right' });
+            else if (id === 'city-wall-gate-flip-facing') dispatch({ type: 'FLIP_CITY_WALL_GATE_FACING' });
+            else if (id === 'city-wall-access-stair-rotate-left') dispatch({ type: 'ROTATE_CITY_WALL_ACCESS_STAIR', direction: 'left' });
+            else if (id === 'city-wall-access-stair-rotate-right') dispatch({ type: 'ROTATE_CITY_WALL_ACCESS_STAIR', direction: 'right' });
+            else if (id === 'city-wall-access-stair-flip-direction') dispatch({ type: 'FLIP_CITY_WALL_ACCESS_STAIR_DIRECTION' });
+            else if (id === 'city-wall-transition-stair-rotate-left') dispatch({ type: 'ROTATE_CITY_WALL_TRANSITION_STAIR', direction: 'left' });
+            else if (id === 'city-wall-transition-stair-rotate-right') dispatch({ type: 'ROTATE_CITY_WALL_TRANSITION_STAIR', direction: 'right' });
+            else if (id === 'city-wall-transition-stair-flip-direction') dispatch({ type: 'FLIP_CITY_WALL_TRANSITION_STAIR_DIRECTION' });
+            else if (id === 'tree-move-selection') dispatch({ type: 'TOGGLE_TREE_SINGLE_MOVED' });
+            else if (id === 'tree-rotate-selection-left') dispatch({ type: 'ROTATE_TREE_SINGLE', direction: 'left' });
+            else if (id === 'tree-rotate-selection-right') dispatch({ type: 'ROTATE_TREE_SINGLE', direction: 'right' });
+            else if (id === 'tree-delete-selection') dispatch({ type: 'DELETE_TREE_SINGLE' });
             else if (state.tool !== 'none') dispatch({ type: 'MARK_HISTORY_DIRTY' });
           }}
         />
@@ -452,7 +478,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             onClose={exitTool}
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
-          <CityWallAccessStairDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+          <CityWallAccessStairDock motionPhase={toolPresence.phase} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 
@@ -468,7 +494,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
             onClose={exitTool}
             onDirty={() => dispatch({ type: 'MARK_HISTORY_DIRTY' })}
           />
-          <CityWallTransitionStairDock state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onComplete={exitTool} onCancel={exitTool} />
+          <CityWallTransitionStairDock motionPhase={toolPresence.phase} onComplete={exitTool} onCancel={exitTool} />
         </>
       )}
 

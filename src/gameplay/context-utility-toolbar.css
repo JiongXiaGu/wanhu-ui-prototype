@@ -1,10 +1,14 @@
 /* 右下单一辅助工具 Host。保持屏幕锚点和隐藏后重绑，只强化组间留白。 */
 .gameplay-screen > .context-utility-toolbar.command-utility{position:absolute;left:auto;z-index:23;height:var(--hud-utility-tools-height,var(--command-height-sm,56px));padding:6px;display:flex;align-items:center;justify-content:center;gap:0;opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);transition-property:opacity,transform;transition-duration:var(--wanhu-motion-surface,160ms);transition-timing-function:var(--wanhu-motion-ease-out,ease)}
-.gameplay-screen > .context-utility-toolbar.is-world-stacked{height:var(--hud-world-tools-stacked-height,84px);padding:4px 6px;flex-direction:column;gap:4px}
+.gameplay-screen > .context-utility-toolbar.is-world-stacked,
+.gameplay-screen > .context-utility-toolbar.is-placement-stacked{height:var(--placement-utility-height,var(--hud-world-tools-stacked-height,84px));padding:var(--placement-utility-padding-y,4px) 6px;flex-direction:column;gap:var(--placement-utility-row-gap,4px)}
 .context-utility-toolbar__row{width:100%;height:42px;display:flex;align-items:center;justify-content:center;gap:0}
-.gameplay-screen > .context-utility-toolbar.is-world-stacked .context-utility-toolbar__row{height:36px}
-.gameplay-screen > .context-utility-toolbar.is-world-stacked .context-utility-toolbar__button{width:36px;height:36px;flex-basis:36px}
-.gameplay-screen > .context-utility-toolbar.is-world-stacked .context-utility-toolbar__separator{height:22px}
+.gameplay-screen > .context-utility-toolbar.is-world-stacked .context-utility-toolbar__row,
+.gameplay-screen > .context-utility-toolbar.is-placement-stacked .context-utility-toolbar__row{height:var(--placement-utility-row-height,36px)}
+.gameplay-screen > .context-utility-toolbar.is-world-stacked .context-utility-toolbar__button,
+.gameplay-screen > .context-utility-toolbar.is-placement-stacked .context-utility-toolbar__button{width:var(--placement-utility-button-size,36px);height:var(--placement-utility-button-size,36px);flex-basis:var(--placement-utility-button-size,36px)}
+.gameplay-screen > .context-utility-toolbar.is-world-stacked .context-utility-toolbar__separator,
+.gameplay-screen > .context-utility-toolbar.is-placement-stacked .context-utility-toolbar__separator{height:22px}
 .context-utility-toolbar__row[data-utility-row="1"]{position:relative}
 .context-utility-toolbar__row[data-utility-row="1"]::after{content:'';position:absolute;left:18px;right:18px;bottom:-1px;height:1px;background:rgba(238,233,223,.032);pointer-events:none}
 .gameplay-screen > .context-utility-toolbar.is-exiting{opacity:0;pointer-events:none;transform:translateY(6px);transition-duration:var(--wanhu-motion-fast,100ms);transition-timing-function:var(--wanhu-motion-ease-in,ease-in)}

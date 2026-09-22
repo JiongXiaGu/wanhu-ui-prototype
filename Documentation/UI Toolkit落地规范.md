@@ -88,7 +88,7 @@ ColorParameterField 仍采用 Label + Button，其中包含 ColorPreview 和可�
 
 优先级保持 `Pause > Tool > Workspace > Management > Gameplay`。输入使用 New Input System，世界操作和 UI 操作不能在同一次输入里重复消费。
 
-Main Dock、Placement Action Bar、Context Utility 仍是同一个 L / M / S 家族。右下只有一个 Utility Host，随 World / Building / Road 等 Definition 重绑；Width 在隐藏阶段切换，不做 Layout Animation。
+Main Dock、Placement Action Bar、Context Utility 仍是同一个 L / M / S 家族。右下只有一个 Utility Host，随 World / Selection / Placement Definition 重绑；Width 在隐藏阶段切换，不做 Layout Animation。真实 Placement 的 Definition 明确声明两行：Action Row 与 Toggle / History / optional Danger Row；两行语义由数据定义和稳定 UXML 容器表达，不通过元素 ID 或 USS 位置猜测。中下 Placement Main Action Bar 只持有主模式与完成/取消。
 
 Presence 仍为 entering / steady / exiting / hidden。业务状态立即生效，退出开始即关闭 Pointer / Keyboard Interaction；C# 控制 PickingMode、延迟隐藏、Focus 交还和 Rebind，USS 表达 opacity / translate。
 
@@ -115,3 +115,18 @@ Runtime CSS 禁止 :has()。新私有 backdrop-filter、未声明属性的 Trans
 第一条 Unity 验证链继续采用 Top Shell → Main Dock → Design Workspace → Context Utility → Building Placement → Shared Dialog / Tooltip / Motion，再覆盖 Settings / Archive / Management 与其他 Tool。
 
 Web Build、UI Review、实际审图与 Unity Player 验收是不同证据。当前仓库能验证前者；后者需在真正的 Unity 6.6 工程验证字体、输入、URP 配置、原生滤镜、批次、性能和焦点。
+
+
+## Placement Bottom Command Architecture V2
+
+真实 Placement 页统一使用同一底部空间契约：
+
+- 中下 Placement Main Action Bar：只承担放置主模式、完成与退出；高度 84px，bottom=16px。模式与流程动作使用 20px 图标 + 12px 短中文文字，额外高度用于 60px 操作命中区和呼吸感，不放大图标。
+- 右下 Placement Utility：高度 84px，bottom=16px，固定两行。第一行只放直接操作当前对象的 Action；第二行只放 Toggle / History / 可选 Danger。
+- Utility 两行均为 36px，按钮 36×36，行间距 4px，上下 padding 4px，图标 20px。
+- Undo / Redo 固定在第二行相邻 History Group；Danger 只有存在真实删除/拆除能力时才挂载，并固定第二行最右。没有业务能力时不显示 Disabled Trash。
+- Building 的旋转 / 镜像、Road 的方向动作、城墙 / Gate / Stair 的正反面、旋转和方向动作均由右下第一行表达，不再复制到中下主栏。
+- Tree 的刷子 / 单棵属于中下主模式；单棵对象存在时，移动 / 旋转在右下第一行，删除在第二行最右 Danger；刷子或对象不存在时这些组直接隐藏。
+- Terrain Edit、Color Tool、Building Selection 等非 Placement 空间不机械套用此规则。
+
+ContextUtilityToolbar 的 Definition 自身持有 layout + rows + role + groups，不允许依靠按钮 ID 或 CSS DOM 顺序推断行职责。迁移到 UI Toolkit 时对应稳定 UXML Row 容器；业务状态由 Controller / ViewModel 提供。

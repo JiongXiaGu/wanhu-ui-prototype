@@ -12,7 +12,6 @@ export interface ToolModeItem {
   disabled?: boolean;
   onClick: () => void;
 }
-
 export interface ToolModeGroup {
   id: string;
   label: string;
@@ -20,7 +19,6 @@ export interface ToolModeGroup {
   presentation?: 'icon-only' | 'icon-label';
   items: ToolModeItem[];
 }
-
 export interface ToolQuickAction {
   id: string;
   label: string;
@@ -28,9 +26,9 @@ export interface ToolQuickAction {
   disabled?: boolean;
   onClick: () => void;
 }
-
 interface ToolActionBarProps {
   ariaLabel: string;
+  className?: string;
   modeGroups: ToolModeGroup[];
   quickActions?: ToolQuickAction[];
   completeLabel?: string;
@@ -38,20 +36,22 @@ interface ToolActionBarProps {
   /** exit 仅结束即时编辑工具，不表示提交或回退一批修改。 */
   completeKind?: 'commit' | 'exit';
   cancelLabel?: string;
+  cancelShortLabel?: string;
   commitGroupLabel?: string;
   showCancel?: boolean;
   onComplete: () => void;
   onCancel?: () => void;
 }
-
 export function ToolActionBar({
   ariaLabel,
+  className = '',
   modeGroups,
   quickActions = [],
   completeLabel = '完成',
   completeShortLabel,
   completeKind = 'commit',
   cancelLabel = '取消',
+  cancelShortLabel,
   commitGroupLabel = '工具任务',
   showCancel = false,
   onComplete,
@@ -59,7 +59,7 @@ export function ToolActionBar({
 }: ToolActionBarProps) {
   const CompleteIcon = completeKind === 'exit' ? LogOut : Check;
   return (
-    <div className="tool-action-bar placement-action-bar bottom-command-surface bottom-command-surface--md" aria-label={ariaLabel}>
+    <div className={`tool-action-bar placement-action-bar bottom-command-surface bottom-command-surface--md ${className}`.trim()} aria-label={ariaLabel}>
       {modeGroups.map((group, groupIndex) => (
         <div className="placement-action-bar__section" key={group.id}>
           {groupIndex > 0 && <i className="placement-action-bar__divider" aria-hidden="true" />}
@@ -84,7 +84,6 @@ export function ToolActionBar({
           </div>
         </div>
       ))}
-
       {quickActions.length > 0 && (
         <div className="placement-action-bar__section">
           <i className="placement-action-bar__divider" aria-hidden="true" />
@@ -97,9 +96,8 @@ export function ToolActionBar({
           </div>
         </div>
       )}
-
       <div className="placement-action-bar__section placement-action-bar__section--commit">
-        <i className="placement-action-bar__divider" aria-hidden="true" />
+        {(modeGroups.length > 0 || quickActions.length > 0) && <i className="placement-action-bar__divider" aria-hidden="true" />}
         <div className="placement-action-bar__commit-group" role="group" aria-label={commitGroupLabel}>
           <button
             type="button"
@@ -114,8 +112,15 @@ export function ToolActionBar({
             {completeShortLabel && <span className="placement-action-bar__label" aria-hidden="true">{completeShortLabel}</span>}
           </button>
           {showCancel && onCancel && (
-            <button type="button" className="placement-action-bar__button placement-action-bar__button--cancel" aria-label={cancelLabel} data-tooltip={cancelLabel} onClick={onCancel}>
+            <button
+              type="button"
+              className={`placement-action-bar__button placement-action-bar__button--cancel ${cancelShortLabel ? 'placement-action-bar__button--labeled' : ''}`}
+              aria-label={cancelLabel}
+              data-tooltip={cancelLabel}
+              onClick={onCancel}
+            >
               <X aria-hidden="true" />
+              {cancelShortLabel && <span className="placement-action-bar__label" aria-hidden="true">{cancelShortLabel}</span>}
             </button>
           )}
         </div>

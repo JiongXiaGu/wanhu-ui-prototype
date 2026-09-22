@@ -52,6 +52,12 @@
 
   --hud-core-width:940px;
   --hud-bottom-panel-height:84px;
+  --placement-main-bar-height:var(--hud-bottom-panel-height);
+  --placement-utility-height:var(--hud-bottom-panel-height);
+  --placement-utility-row-height:36px;
+  --placement-utility-button-size:36px;
+  --placement-utility-row-gap:4px;
+  --placement-utility-padding-y:4px;
   --hud-command-height:var(--hud-bottom-panel-height);
   --hud-world-tools-width:458px;
   --hud-world-tools-stacked-width:356px;
@@ -112,13 +118,22 @@
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-connected"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-access-stair"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-transition-stair"]{width:var(--hud-tool-tools-width)}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="building-placement"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="tree-placement"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-construction"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-free"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-connected"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-access-stair"],
+.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-transition-stair"]{height:var(--placement-utility-height)}
 .gameplay-screen > .context-utility-toolbar[data-utility-context="color-tool"]{width:108px}
 
 .gameplay-screen .gameplay-operation-hints{
   right:var(--hud-edge);
   bottom:calc(var(--hud-edge) + var(--hud-utility-tools-height) + var(--hud-gap-md));
 }
-.gameplay-screen.has-world-utility-stack .gameplay-operation-hints{
+.gameplay-screen.has-world-utility-stack .gameplay-operation-hints,
+.gameplay-screen.has-placement-utility-stack .gameplay-operation-hints{
   bottom:var(--hud-bottom-safe-offset);
 }
 .gameplay-screen.is-world-demolition-mode{cursor:crosshair}

@@ -550,3 +550,18 @@ Review Study 放在：
 只由 Review URL 动态加载，不加入正常 Runtime cascade。
 
 详见：`Documentation/代码审查/2026-09-17-统一皮肤与可维护性审查.md`。
+
+
+## Placement Bottom Command Architecture V2
+
+真实 Placement 页统一使用同一底部空间契约：
+
+- 中下 Placement Main Action Bar：只承担放置主模式、完成与退出；高度 84px，bottom=16px。模式与流程动作使用 20px 图标 + 12px 短中文文字，额外高度用于 60px 操作命中区和呼吸感，不放大图标。
+- 右下 Placement Utility：高度 84px，bottom=16px，固定两行。第一行只放直接操作当前对象的 Action；第二行只放 Toggle / History / 可选 Danger。
+- Utility 两行均为 36px，按钮 36×36，行间距 4px，上下 padding 4px，图标 20px。
+- Undo / Redo 固定在第二行相邻 History Group；Danger 只有存在真实删除/拆除能力时才挂载，并固定第二行最右。没有业务能力时不显示 Disabled Trash。
+- Building 的旋转 / 镜像、Road 的方向动作、城墙 / Gate / Stair 的正反面、旋转和方向动作均由右下第一行表达，不再复制到中下主栏。
+- Tree 的刷子 / 单棵属于中下主模式；单棵对象存在时，移动 / 旋转在右下第一行，删除在第二行最右 Danger；刷子或对象不存在时这些组直接隐藏。
+- Terrain Edit、Color Tool、Building Selection 等非 Placement 空间不机械套用此规则。
+
+ContextUtilityToolbar 的 Definition 自身持有 layout + rows + role + groups，不允许依靠按钮 ID 或 CSS DOM 顺序推断行职责。迁移到 UI Toolkit 时对应稳定 UXML Row 容器；业务状态由 Controller / ViewModel 提供。

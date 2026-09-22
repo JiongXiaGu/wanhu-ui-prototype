@@ -87,7 +87,17 @@ assert(utilityCss.includes('is-world-stacked .context-utility-toolbar__button{wi
 assert(hudLayoutCss.includes('--hud-bottom-safe-offset:calc(var(--hud-bottom-safe-line) + var(--hud-gap-md))'), 'Workspace / Hints 必须消费统一安全间距');
 assert(hudLayoutCss.includes('.gameplay-screen--workspace.has-world-utility-stack .workspace'), 'Workspace 必须有双层 Utility 安全线覆盖');
 assert(gameplayScreen.includes("(space === 'gameplay' || space === 'workspace')"), 'Workspace 打开时 World Utility 必须继续保持双层');
-checks += 8;
+assert(hudLayoutCss.includes('--placement-main-bar-height:var(--hud-bottom-panel-height)'), 'Placement Main Bar 必须复用 84px Bottom HUD 高度');
+assert(hudLayoutCss.includes('--placement-utility-height:var(--hud-bottom-panel-height)'), 'Placement Utility 必须复用 84px Bottom HUD 高度');
+assert(utilityCss.includes('.is-placement-stacked'), 'Placement Utility 必须拥有显式双层 Variant');
+const utilitySource = await readFile('src/gameplay/ContextUtilityToolbar.tsx', 'utf8');
+assert(utilitySource.includes("layout: 'placement-stacked'"), 'Placement 行语义必须由 Definition 表达');
+assert(utilitySource.includes('data-utility-row-role={row.role}'), 'Runtime 必须输出显式 Utility 行语义');
+const buildingDock = await readFile('src/tools/building-placement/BuildingPlacementDock.tsx', 'utf8');
+assert(!buildingDock.includes('quickActions') && !buildingDock.includes('RotateCcw'), '建筑旋转/镜像必须移出中下 Placement Main Bar');
+const roadDock = await readFile('src/tools/road-placement/RoadPlacementDock.tsx', 'utf8');
+assert(!roadDock.includes('quickActions') && !roadDock.includes('reverse-direction'), '道路对象动作必须移出中下 Placement Main Bar');
+checks += 15;
 
 // 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {

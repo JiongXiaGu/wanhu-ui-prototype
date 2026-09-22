@@ -17,6 +17,36 @@ async function open(review, selector) {
   await page.waitForSelector(selector); await settle();
 }
 async function shot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/usability-${name}.png` }); report.screenshots.push(name); }
+async function placementShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/${name}.png` }); report.screenshots.push(name); }
+async function checkPlacementBottom(label) {
+  const main = page.locator('.placement-main-action-bar');
+  const utility = page.locator('.context-utility-toolbar.is-placement-stacked');
+  const [mainBox, utilityBox] = await Promise.all([main.boundingBox(), utility.boundingBox()]);
+  assert(mainBox && utilityBox, label + ': 缺少 Placement 底部菜单');
+  assert(Math.abs(mainBox.height - 84) < 1, label + ': 中下主栏必须为 84px');
+  assert(Math.abs(utilityBox.height - 84) < 1, label + ': 右下 Utility 必须为 84px');
+  assert(Math.abs((mainBox.y + mainBox.height) - (utilityBox.y + utilityBox.height)) < 1, label + ': 中下与右下必须同底边');
+  assert(overlap(mainBox, utilityBox) < 1, label + ': 中下与右下不得重叠');
+  const rows = utility.locator('.context-utility-toolbar__row');
+  assert.equal(await rows.count(), 2, label + ': Placement Utility 必须固定两行');
+  assert.equal(await rows.nth(0).getAttribute('data-utility-row-role'), 'action', label + ': 第一行必须表达 Action');
+  assert.equal(await rows.nth(1).getAttribute('data-utility-row-role'), 'support', label + ': 第二行必须表达 Support');
+  const firstKinds = await rows.nth(0).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('data-utility-kind')));
+  assert(firstKinds.every(kind => kind === 'action'), label + ': 第一行只能出现 Action');
+  const secondMeta = await rows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => ({
+    label: button.getAttribute('aria-label'), kind: button.getAttribute('data-utility-kind'),
+    danger: button.getAttribute('data-utility-danger'), right: button.getBoundingClientRect().right,
+  })));
+  assert(secondMeta.every(item => item.kind === 'toggle' || item.kind === 'history' || item.danger === 'true'), label + ': 第二行只能出现 Toggle / History / Danger');
+  const undoIndex = secondMeta.findIndex(item => item.label === '撤销 · Ctrl+Z');
+  const redoIndex = secondMeta.findIndex(item => item.label === '重做 · Ctrl+Y');
+  assert(undoIndex >= 0 && redoIndex === undoIndex + 1, label + ': Undo / Redo 必须固定相邻且在第二行');
+  const danger = secondMeta.find(item => item.danger === 'true');
+  if (danger) assert(secondMeta.every(item => item === danger || danger.right >= item.right - 1), label + ': Danger 必须位于第二行最右');
+  const labels = await main.locator('.placement-action-bar__label').evaluateAll(elements => elements.map(element => ({ text: element.textContent, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth })));
+  assert(labels.length > 0 && labels.every(row => row.scrollWidth <= row.clientWidth + 1), label + ': 中下中文标签不得截断');
+  report.checks.push({ label, mainBox, utilityBox, firstKinds, secondMeta, labels });
+}
 const overlap = (a, b) => Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
 async function checkToolLayout(label) {
   const bar = await page.locator('.tool-action-bar').boundingBox();
@@ -85,13 +115,57 @@ try {
   await page.waitForSelector('.terrain-edit-prototype', { state: 'detached' });
   report.checks.push({ label: '地形结束返回原空间' });
 
+  await open('building-position', '.building-placement-toolbar-cluster');
+  await checkToolLayout('建筑放置');
+  await checkPlacementBottom('建筑放置');
+  assert.equal(await page.locator('.building-placement-toolbar-cluster').getByRole('button', { name: '逆时针旋转', exact: true }).count(), 0, '建筑旋转不得继续留在中下主栏');
+  const buildingActionLabels = await page.locator('.context-utility-toolbar__row').nth(0).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+  assert.deepEqual(buildingActionLabels.slice(0, 3), ['逆时针旋转', '顺时针旋转', '镜像建筑']);
+  await placementShot('placement-building-84');
+  await placementShot('placement-building-utility-two-rows');
+
+  await open('road-smart', '.road-placement-toolbar-cluster');
+  await checkToolLayout('道路放置');
+  await checkPlacementBottom('道路放置');
+  assert.equal(await page.locator('.road-placement-toolbar-cluster').getByRole('button', { name: '反转道路方向', exact: true }).count(), 0, '道路反转不得继续留在中下主栏');
+  await placementShot('placement-road-84');
+
   await open('tree-brush', '.tree-placement-prototype');
-  await checkToolLayout('树木/刷子'); await shot('tree-brush');
+  await checkToolLayout('树木/刷子');
+  await checkPlacementBottom('树木/刷子');
+  assert.equal(await page.getByRole('button', { name: '移动选中树木', exact: true }).count(), 0, '刷子模式不应强制展示单棵对象动作');
+  await shot('tree-brush');
   await page.locator('.tree-placement-toolbar-cluster').getByRole('button', { name: '单棵', exact: true }).click(); await settle();
-  await checkToolLayout('树木/单棵'); await shot('tree-single');
+  await checkToolLayout('树木/单棵');
+  await checkPlacementBottom('树木/单棵');
+  assert.equal(await page.getByRole('button', { name: '移动选中树木', exact: true }).count(), 1);
+  assert.equal(await page.getByRole('button', { name: '删除选中树木', exact: true }).count(), 1);
+  await placementShot('placement-tree-84');
+  await shot('tree-single');
   await page.getByRole('button', { name: '删除选中树木', exact: true }).click(); await settle();
-  assert(await page.getByRole('button', { name: '移动选中树木', exact: true }).isDisabled());
-  await shot('tree-disabled-actions');
+  assert.equal(await page.getByRole('button', { name: '移动选中树木', exact: true }).count(), 0, '删除单棵对象后 Action Group 应直接隐藏');
+  assert.equal(await page.getByRole('button', { name: '删除选中树木', exact: true }).count(), 0, '无真实对象时 Danger Group 应直接隐藏');
+  await shot('tree-empty-actions');
+
+  await open('city-wall-construction', '.city-wall-construction-toolbar-cluster');
+  await checkToolLayout('城墙主体/范围');
+  await checkPlacementBottom('城墙主体/范围');
+  assert.equal(await page.getByRole('button', { name: '交换正反面', exact: true }).count(), 0, '范围模式没有正反面即时动作时不应伪造 Disabled Action');
+  await page.locator('.city-wall-construction-toolbar-cluster').getByRole('button', { name: '定宽延伸', exact: true }).click(); await settle();
+  assert.equal(await page.locator('.context-utility-toolbar__row').nth(0).getByRole('button', { name: '交换正反面', exact: true }).count(), 1);
+  await checkPlacementBottom('城墙主体/定宽');
+  await placementShot('placement-city-wall-84');
+
+  for (const [review, selector, label] of [
+    ['city-wall-gate-free', '.city-wall-gate-toolbar-cluster', '城门/自由'],
+    ['city-wall-gate-connected', '.city-wall-gate-toolbar-cluster', '城门/连接'],
+    ['city-wall-access-stair', '.city-wall-access-stair-toolbar-cluster', '登城梯'],
+    ['city-wall-transition-stair', '.city-wall-transition-stair-toolbar-cluster', '高差楼梯'],
+  ]) {
+    await open(review, selector);
+    await checkToolLayout(label);
+    await checkPlacementBottom(label);
+  }
 
   await open('color-tool-surface', '.color-tool-surface-panel');
   const colorBar = page.locator('.color-tool-toolbar-cluster');

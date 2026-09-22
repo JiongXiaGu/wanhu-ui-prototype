@@ -63,3 +63,18 @@
 .placement-action-bar__button[data-tooltip]:hover:not(:disabled)::after,
 .placement-action-bar__button[data-tooltip]:focus-visible::after{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:var(--wanhu-tooltip-delay,320ms)}
 @media (prefers-reduced-motion:reduce){.placement-action-bar__button,.placement-action-bar__button[data-tooltip]::after{transition:none}}
+
+
+/* Placement Bottom Command Architecture V2.
+   只有真实 Placement 使用 84px 主操作栏；Terrain / Color 等普通 Tool 继续使用既有 M 档。 */
+.gameplay-screen .placement-main-action-bar{
+  height:var(--placement-main-bar-height,var(--hud-bottom-panel-height,84px));
+  min-height:var(--placement-main-bar-height,var(--hud-bottom-panel-height,84px));
+  padding:12px 10px;
+}
+.gameplay-screen .placement-main-action-bar .placement-action-bar__section,
+.gameplay-screen .placement-main-action-bar .placement-action-bar__mode-group,
+.gameplay-screen .placement-main-action-bar .placement-action-bar__commit-group{height:60px}
+.gameplay-screen .placement-main-action-bar .placement-action-bar__button{height:60px;min-height:60px}
+.gameplay-screen .placement-main-action-bar .placement-action-bar__button--labeled{width:auto;min-width:88px;padding:0 16px;gap:8px}
+.gameplay-screen .placement-main-action-bar .placement-action-bar__button[data-tooltip]::after{bottom:68px}

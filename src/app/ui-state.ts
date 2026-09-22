@@ -87,6 +87,9 @@ export interface GameplayUiState {
   treeSpeciesId: string;
   treeSpeciesName: string;
   treeVariant: number;
+  treeSingleSelected: boolean;
+  treeSingleMoved: boolean;
+  treeSingleRotation: number;
   treeAvoidBuildings: boolean;
   treeAvoidRoads: boolean;
   cityWallConstructionMode: CityWallConstructionMode;
@@ -142,6 +145,9 @@ export const initialGameplayUiState: GameplayUiState = {
   treeSpeciesId: 'tree-pine',
   treeSpeciesName: '油松',
   treeVariant: 0,
+  treeSingleSelected: true,
+  treeSingleMoved: false,
+  treeSingleRotation: 0,
   treeAvoidBuildings: true,
   treeAvoidRoads: true,
   cityWallConstructionMode: 'range',
@@ -209,6 +215,9 @@ export type GameplayUiAction =
   | { type: 'TOGGLE_TERRAIN_PROTECTION' }
   | { type: 'SET_TREE_PLACEMENT_MODE'; mode: TreePlacementMode }
   | { type: 'SET_TREE_VARIANT'; variant: number }
+  | { type: 'TOGGLE_TREE_SINGLE_MOVED' }
+  | { type: 'ROTATE_TREE_SINGLE'; direction: 'left' | 'right' }
+  | { type: 'DELETE_TREE_SINGLE' }
   | { type: 'TOGGLE_TREE_AVOID_BUILDINGS' }
   | { type: 'TOGGLE_TREE_AVOID_ROADS' }
   | { type: 'SET_CITY_WALL_CONSTRUCTION_MODE'; mode: CityWallConstructionMode }
@@ -393,6 +402,9 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         treeSpeciesId: action.speciesId,
         treeSpeciesName: action.speciesName,
         treeVariant: 0,
+        treeSingleSelected: true,
+        treeSingleMoved: false,
+        treeSingleRotation: 0,
         canUndo: false,
         canRedo: false,
       };
@@ -637,9 +649,30 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
     case 'TOGGLE_TERRAIN_PROTECTION':
       return { ...state, terrainProtectBuilt: !state.terrainProtectBuilt };
     case 'SET_TREE_PLACEMENT_MODE':
-      return { ...state, treePlacementMode: action.mode, treeVariant: action.mode === 'single' && state.treeVariant === 0 ? 1 : state.treeVariant };
+      return {
+        ...state,
+        treePlacementMode: action.mode,
+        treeVariant: action.mode === 'single' && state.treeVariant === 0 ? 1 : state.treeVariant,
+        treeSingleSelected: action.mode === 'single' ? true : state.treeSingleSelected,
+      };
     case 'SET_TREE_VARIANT':
-      return { ...state, treeVariant: Math.max(0, Math.min(4, action.variant)) };
+      return {
+        ...state,
+        treeVariant: Math.max(0, Math.min(4, action.variant)),
+        treeSingleSelected: state.treePlacementMode === 'single' ? true : state.treeSingleSelected,
+      };
+    case 'TOGGLE_TREE_SINGLE_MOVED':
+      return state.treePlacementMode === 'single' && state.treeSingleSelected
+        ? { ...state, treeSingleMoved: !state.treeSingleMoved, canUndo: true, canRedo: false }
+        : state;
+    case 'ROTATE_TREE_SINGLE':
+      return state.treePlacementMode === 'single' && state.treeSingleSelected
+        ? { ...state, treeSingleRotation: state.treeSingleRotation + (action.direction === 'right' ? 15 : -15), canUndo: true, canRedo: false }
+        : state;
+    case 'DELETE_TREE_SINGLE':
+      return state.treePlacementMode === 'single' && state.treeSingleSelected
+        ? { ...state, treeSingleSelected: false, treeSingleMoved: false, canUndo: true, canRedo: false }
+        : state;
     case 'TOGGLE_TREE_AVOID_BUILDINGS':
       return { ...state, treeAvoidBuildings: !state.treeAvoidBuildings };
     case 'TOGGLE_TREE_AVOID_ROADS':
