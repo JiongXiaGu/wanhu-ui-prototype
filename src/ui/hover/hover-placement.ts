@@ -2,7 +2,7 @@
 export interface HoverRect { left: number; top: number; width: number; height: number }
 export type HoverPlacement = 'right' | 'left' | 'bottom' | 'top';
 export type HoverSurfaceKind = 'tooltip' | 'card';
-export type HoverCardPlacementMode = 'anchor' | 'workspace-edge' | 'auto';
+export type HoverCardPlacementMode = 'anchor' | 'workspace-edge';
 
 interface HoverPlacementInput {
   kind: HoverSurfaceKind;
@@ -70,9 +70,7 @@ export function placeHoverSurface({
 
   const cardCandidates = placementMode === 'workspace-edge' && workspace
     ? workspaceCardCandidates
-    : placementMode === 'auto' && workspace
-      ? [...anchorCardCandidates, ...workspaceCardCandidates]
-      : anchorCardCandidates;
+    : anchorCardCandidates;
 
   const candidates = kind === 'tooltip' ? tooltipCandidates : cardCandidates;
   const blocked = kind === 'card' && placementMode === 'workspace-edge' && workspace
