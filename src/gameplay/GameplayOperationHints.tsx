@@ -301,7 +301,10 @@ function workspacePreset(workspace: Workspace, category: DockCategory | null): H
   const task = blueprint
     ? blueprintWorkspaceLabels[category ?? 'all'] ?? '蓝图目录'
     : workspaceLabels[category ?? 'building'] ?? '设计目录';
-  return { id: 'workspace-' + workspace + '-' + (category ?? 'none'), task, rows: [
+  const id = blueprint
+    ? 'workspace-blueprint-' + (category ?? 'all')
+    : 'workspace-' + (category ?? 'design');
+  return { id, task, rows: [
     { binding: '鼠标左键', description: blueprint ? '选择蓝图' : '选择项目', primary: true },
     { binding: '鼠标滚轮', description: '浏览目录' },
     { binding: 'Esc', description: '关闭目录' },
