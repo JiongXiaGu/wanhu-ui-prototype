@@ -1,7 +1,7 @@
 .ui-modal-layer{
   position:absolute;
   inset:0;
-  z-index:200;
+  z-index:var(--ui-layer-modal,200);
   display:grid;
   place-items:center;
   pointer-events:auto;
@@ -351,7 +351,7 @@
 
 .notification-host{
   position:absolute;
-  z-index:190;
+  z-index:var(--ui-layer-notification,190);
   left:50%;
   top:200px;
   width:460px;

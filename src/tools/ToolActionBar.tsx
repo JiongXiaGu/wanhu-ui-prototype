@@ -1,6 +1,7 @@
 import { Check, LogOut, X } from '../ui/icons/runtime-icons.generated';
 import { UiIconGlyph } from '../ui/icons/UiIcon';
 import type { UiIconSource } from '../ui/icons/icon-types';
+import { tooltipFromLabel, useHoverOverlay } from '../ui/hover/HoverOverlay';
 
 export interface ToolModeItem {
   id: string;
@@ -64,6 +65,7 @@ export function ToolActionBar({
   onComplete,
   onCancel,
 }: ToolActionBarProps) {
+  const hover = useHoverOverlay();
   const CompleteIcon = completeKind === 'exit' ? LogOut : Check;
   return (
     <div className={`tool-action-bar secondary-action-bar placement-action-bar bottom-command-surface bottom-command-surface--md ${className}`.trim()} aria-label={ariaLabel}>
@@ -79,7 +81,7 @@ export function ToolActionBar({
                 aria-label={label}
                 aria-pressed={active}
                 data-mode-id={id}
-                data-tooltip={label}
+                {...hover.bind(tooltipFromLabel(label))}
                 disabled={disabled}
                 onClick={onClick}
               >
@@ -102,7 +104,7 @@ export function ToolActionBar({
                 className={`placement-action-bar__button placement-action-bar__button--quick ${quickActionPresentation === 'icon-label' ? 'placement-action-bar__button--labeled' : ''} ${active ? 'is-active' : ''}`}
                 aria-label={label}
                 aria-pressed={pressed}
-                data-tooltip={label}
+                {...hover.bind(tooltipFromLabel(label))}
                 disabled={disabled}
                 onClick={onClick}
               >
@@ -122,7 +124,7 @@ export function ToolActionBar({
             className={`placement-action-bar__button placement-action-bar__button--${completeKind === 'exit' ? 'exit' : 'confirm'} ${completeShortLabel ? 'placement-action-bar__button--labeled' : ''}`}
             aria-label={completeLabel}
             data-action-kind={completeKind}
-            data-tooltip={completeKind === 'exit' ? `${completeLabel}（结束工具）` : completeLabel}
+            {...hover.bind(tooltipFromLabel(completeKind === 'exit' ? `${completeLabel}（结束工具）` : completeLabel))}
             onClick={onComplete}
           >
             {completeKind === 'commit' && <i className="placement-action-bar__state-line" aria-hidden="true" />}
@@ -134,7 +136,7 @@ export function ToolActionBar({
               type="button"
               className={`placement-action-bar__button placement-action-bar__button--cancel ${cancelShortLabel ? 'placement-action-bar__button--labeled' : ''}`}
               aria-label={cancelLabel}
-              data-tooltip={cancelLabel}
+              {...hover.bind(tooltipFromLabel(cancelLabel))}
               onClick={onCancel}
             >
               <X size={24} aria-hidden="true" />

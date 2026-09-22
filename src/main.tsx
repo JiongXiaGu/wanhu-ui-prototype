@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { DialogProvider } from './ui/dialog/DialogSystem';
+import { HoverOverlayProvider } from './ui/hover/HoverOverlay';
 import './styles.css';
 import './workspace.css';
 import './workspace/workspace-catalog.css';
@@ -10,7 +11,6 @@ import './backgrounds.css';
 import './gameplay/bottom-command-system.css';
 import './gameplay/main-dock.css';
 import './workspace/design-workspace.css';
-import './ui/asset-inspector/asset-inspector.css';
 import './archive/archive-panel.css';
 import './archive/save-game-space.css';
 import './gameplay/gameplay-context-panel.css';
@@ -60,6 +60,7 @@ import './ui/wanhu-edge-elevation.css';
 import './ui/wanhu-character.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
+import './ui/hover/hover-overlay.css';
 
 /* Formal material owner for Workspace, Context Panels and persistent Gameplay HUD. */
 import './ui/wanhu-surface-system.css';
@@ -79,7 +80,9 @@ async function bootstrap() {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       <DialogProvider>
-        <App />
+        <HoverOverlayProvider>
+          <App />
+        </HoverOverlayProvider>
       </DialogProvider>
     </React.StrictMode>,
   );

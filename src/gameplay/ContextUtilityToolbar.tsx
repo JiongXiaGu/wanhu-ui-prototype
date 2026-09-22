@@ -5,6 +5,7 @@ import {
   Palette, Redo2, RotateCcw, RotateCw, Route, Ruler, ScanLine, ShieldCheck, Trash2, Undo2,
 } from '../ui/icons/runtime-icons.generated';
 import type { CityWallConstructionMode, CityWallGatePlacementMode, Tool, TreePlacementMode, WorldSelection } from '../app/ui-state';
+import { tooltipFromLabel, useHoverOverlay } from '../ui/hover/HoverOverlay';
 
 export type UtilityContext = 'world' | 'building-selection' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate-free' | 'city-wall-gate-connected' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
 type UtilityKind = 'toggle' | 'action' | 'history';
@@ -173,6 +174,7 @@ export function ContextUtilityToolbar({
   onToggleCityWallTopLine, onToggleCityWallNodes, onToggleCityWallGateConnections, onToggleCityWallGateClearance,
   onToggleCityWallAccessStairClearance, onToggleCityWallTransitionStairClearance, onToolAction,
 }: ContextUtilityToolbarProps) {
+  const hover = useHoverOverlay();
   const requestedContext = contextForState(tool, cityWallGatePlacementMode, selection);
   const [displayedContext, setDisplayedContext] = useState<UtilityContext>(requestedContext);
   const [phase, setPhase] = useState<'steady' | 'exiting' | 'entering'>('steady');
@@ -258,7 +260,7 @@ export function ContextUtilityToolbar({
                       className={`context-utility-toolbar__button ${state.active ? 'is-active' : ''} ${item.danger ? 'is-danger' : ''}`}
                       data-utility-kind={item.kind}
                       data-utility-danger={item.danger ? 'true' : undefined}
-                      data-tooltip={item.label}
+                      {...hover.bind(tooltipFromLabel(item.label))}
                       aria-label={item.label}
                       aria-pressed={item.kind === 'toggle' ? state.pressed : undefined}
                       disabled={state.disabled || phase !== 'steady'}

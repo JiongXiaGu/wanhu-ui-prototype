@@ -79,3 +79,13 @@
 - Mode Active 不使用横线，只使用熟铜图标 / 文字与弱背景；Category Active 保留顶部短 State Line，避免一级模式与分类同质化；
 - `src/gameplay/main-dock.css` 是 Main Dock 内部 Geometry / visual hierarchy 的唯一权威；`styles.css` / `gameplay-refine.css` 不得恢复旧 `.command-bar` / `.mode-rail` / `.category-row` Geometry；
 - 正式 UI Review 必须分别截图并检查 Design 与 Blueprint 两态，验证 880×84、双行 Mode Rail、68×30 Mode、18px Mode 图标、分类 8/9 项、24px 分类图标、11px 标签和 Mode 切换不跳宽。
+
+
+### Global Hover Surface 护栏
+
+- UI Tooltip / Hover Card 必须使用 `src/ui/hover/` 全局框架；Feature 不得新增 `data-tooltip + ::after`、原生 `title` Tooltip 或私有 Portal；
+- Tooltip 用于简短控件解释；Hover Card 用于详细对象阅读；可交互浮层另建 Popover，不向 Hover Card 塞按钮；
+- 全局层级为普通 UI < Hover < Notification < Modal；Modal 打开必须清空 Hover；
+- Hover Surface 必须 `pointer-events:none` / UIToolkit `PickingMode.Ignore`；
+- Workspace Rich Hover 必须锚定条目 Element，不跟随鼠标位置，并优先避让整个 Workspace；
+- Hover 定位与 Delay 只允许由 Hover Framework 持有，Feature 只提交 HoverDefinition。

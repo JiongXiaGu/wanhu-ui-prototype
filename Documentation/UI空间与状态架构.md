@@ -641,3 +641,90 @@ Gameplay 一级中下 Main Dock 采用固定的 Main Dock V2 契约，用于“�
 - Screen Anchor（居中、880px 宽、bottom=16px）继续由 `gameplay-hud-layout.css` 负责；`CommandBar.tsx` 只持有 Mode / Category 数据与交互。
 
 Unity UI Toolkit 迁移时对应稳定的 `MainDock.uxml / MainDock.uss`：Shell、ModeSwitch、Divider、CategoryStrip 为固定结构，模式切换只重绑 Category Definition，不重建整个 Dock。
+
+
+## Global Hover Surface Framework
+
+Gameplay / Global UI 的悬浮提示统一使用一个全局 Hover Overlay，不允许 Feature 继续通过 CSS pseudo-element、原生 `title` 或私有 Portal 各自实现一套 Tooltip。
+
+稳定结构：
+
+```text
+GameCanvas
+├ Screen Layer
+├ Hover Overlay Host
+│  └ 当前唯一 Hover Surface
+├ Notification Host
+└ Modal Host
+```
+
+层级语义：
+
+- 普通 HUD / Workspace / Tool 位于基础层；
+- Hover Overlay 使用 `--ui-layer-hover: 180`；
+- Notification 使用 `--ui-layer-notification: 190`；
+- Modal 使用 `--ui-layer-modal: 200`；
+- Hover 永远位于当前普通 UI 上方，但 Modal 打开时必须立即清空，不能覆盖阻塞式弹窗。
+
+Hover Surface 分为两种：
+
+### Tooltip
+
+用于解释按钮、纯图标、Toggle 或快捷动作。
+
+数据契约：
+
+- title；
+- description（可选）；
+- shortcut（可选）。
+
+默认 Hover 延迟约 320ms；Focus 立即显示。Tooltip 为只读 Surface，`pointer-events / PickingMode = Ignore`。
+
+### Hover Card
+
+用于 Workspace Item、建筑 / 物资 / 方案等需要更多说明的数据对象。
+
+数据契约：
+
+- title；
+- subtitle（可选）；
+- facts（可选，label / value / accent）；
+- description（可选）；
+- media（可选）。
+
+默认 Hover 延迟约 460ms；Focus 立即显示。同一 Hover Group 中从 A 移到 B 时，如果 Surface 已经打开，内容直接热切换，不重新等待完整延迟。
+
+Hover Card 第一版只读，不承载按钮；需要可交互内容时应新增 Popover 类型，不能把 Hover Card 逐步变成菜单。
+
+### Placement / Layer
+
+Tooltip 与 Hover Card 共用 `hover-placement.ts`：
+
+- Tooltip 优先 top → bottom → right → left；
+- Hover Card 在 Workspace 中优先展开到整个 Workspace 外部；
+- 都必须遵守 Safe Edge 和屏幕 Clamp；
+- Hover Card 额外避让 Top Shell、Left Context、Main Dock、Tool Bar、Context Utility、Operation Hints；
+- Surface 锚定 UI Element，不跟随鼠标坐标漂移。
+
+### Feature 边界
+
+Feature 只提供：
+
+- Anchor；
+- HoverDefinition；
+- Tooltip / Card 类型。
+
+Timer、Pointer / Focus 生命周期、热切换、Portal/Overlay、定位、Safe Edge、Escape、Modal suppression 全部由 Global Hover Framework 持有。
+
+Unity UI Toolkit 映射：
+
+```text
+UIDocument Root
+├ GameplayRoot
+├ HoverOverlayRoot        PickingMode.Ignore
+│  └ HoverSurface
+├ NotificationLayer
+└ ModalLayer
+```
+
+C# 对应 `HoverController + HoverTargetManipulator + HoverDefinition / HoverCardDefinition`。Feature Controller 不自行启动延迟计时器，不自行 BringToFront，不自行计算屏幕边界。

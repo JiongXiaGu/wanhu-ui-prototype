@@ -262,8 +262,8 @@ await page.screenshot({ path: outDir + '/city-wall-13-waterside-gate.png' });
 
 const watersideGateCard = cityWallWorkspace.getByRole('button', { name: /拱券水门洞/ });
 await watersideGateCard.hover();
-await page.waitForTimeout(340);
-const cityWallInspector = page.locator('#design-asset-inspector');
+await page.waitForTimeout(540);
+const cityWallInspector = page.locator('#ui-hover-surface[data-hover-kind="card"]');
 for (const fact of ['所属体系', '构件类型', '营造方式']) {
   if ((await cityWallInspector.getByText(fact, { exact: true }).count()) !== 1) {
     throw new Error('City wall inspector missing fact: ' + fact);

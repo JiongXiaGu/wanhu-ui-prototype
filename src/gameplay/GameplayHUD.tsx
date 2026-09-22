@@ -17,6 +17,7 @@ import {
 } from '../ui/icons/runtime-icons.generated';
 import type { ContextPanel, ManagementView, MapView, Speed } from '../app/ui-state';
 import { usePresence } from '../ui/motion';
+import { tooltipFromLabel, useHoverOverlay } from '../ui/hover/HoverOverlay';
 import { MANAGEMENT_PRIMARY_NAV, MANAGEMENT_STATUS_QUICK_ENTRIES } from './management/management-navigation';
 
 interface MapViewItem {
@@ -86,6 +87,7 @@ export function GameplayHUD({
   onMapViewChange,
   onSpeedChange,
 }: GameplayHUDProps) {
+  const hover = useHoverOverlay();
   const trayPresence = usePresence(showControlTray, { enterDelayMs: controlTrayEnterDelayMs });
   return (
     <div className={`gameplay-top-shell ${trayPresence.mounted ? 'has-navigation' : ''}`}>
@@ -108,7 +110,7 @@ export function GameplayHUD({
                   type="button"
                   className="gameplay-top-resource-shortcut"
                   aria-label={`${item.label} ${item.value}，打开${item.targetLabel}`}
-                  data-tooltip={tooltip}
+                  {...hover.bind(tooltipFromLabel(tooltip))}
                   onClick={() => onManagementChange(item.id)}
                 >
                   <Icon />
@@ -126,7 +128,7 @@ export function GameplayHUD({
               type="button"
               className={`gameplay-top-speed-button ${speed === value ? 'is-active' : ''}`}
               aria-label={label}
-              data-tooltip={label}
+              {...hover.bind(tooltipFromLabel(label))}
               onClick={() => onSpeedChange(value)}
             >
               <Icon />
@@ -142,7 +144,7 @@ export function GameplayHUD({
               type="button"
               className={`gameplay-top-navigation__button ${contextPanel === 'camera' ? 'is-active' : ''}`}
               aria-label="相机"
-              data-tooltip="相机"
+              {...hover.bind(tooltipFromLabel("相机"))}
               onClick={() => onContextPanelChange('camera')}
             >
               <Camera />
@@ -151,7 +153,7 @@ export function GameplayHUD({
               type="button"
               className={`gameplay-top-navigation__button ${contextPanel === 'weather' ? 'is-active' : ''}`}
               aria-label="环境控制"
-              data-tooltip="环境控制"
+              {...hover.bind(tooltipFromLabel("环境控制"))}
               onClick={() => onContextPanelChange('weather')}
             >
               <CloudSun />
@@ -169,7 +171,7 @@ export function GameplayHUD({
                   type="button"
                   className={`gameplay-top-navigation__button ${management === item.id ? 'is-active' : ''}`}
                   aria-label={item.label}
-                  data-tooltip={item.label}
+                  {...hover.bind(tooltipFromLabel(item.label))}
                   onClick={() => onManagementChange(item.id)}
                 >
                   <Icon />
@@ -185,7 +187,7 @@ export function GameplayHUD({
               type="button"
               className={`gameplay-top-navigation__button gameplay-top-navigation__map ${mapPanelOpen || mapView !== 'default' ? 'is-active' : ''}`}
               aria-label="信息视图"
-              data-tooltip="信息视图"
+              {...hover.bind(tooltipFromLabel("信息视图"))}
               onClick={onToggleMapPanel}
             >
               <Layers3 />

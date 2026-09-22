@@ -10,6 +10,7 @@ import { NewGameSpace } from './new-game/NewGameSpace';
 import { SettingsPanel } from './settings/SettingsPanel';
 import { DialogHost, NotificationHost, useDialogSystem } from './ui/dialog/DialogSystem';
 import { useKeyedTransition } from './ui/motion';
+import { HoverOverlayHost } from './ui/hover/HoverOverlay';
 
 const MAIN_BG = '/assets/wanhu-main-menu.png';
 const GAME_BG = '/assets/wanhu-gameplay-city.png';
@@ -87,6 +88,7 @@ export default function App() {
           {renderScreen(screenMotion.active)}
         </div>
 
+        <HoverOverlayHost />
         <NotificationHost />
         <DialogHost />
       </main>

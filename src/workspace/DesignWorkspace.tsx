@@ -1,9 +1,6 @@
 import { useMemo, useRef, useState, type WheelEvent } from 'react';
 import { X } from '../ui/icons/runtime-icons.generated';
-import {
-  AssetInspectorPopover,
-  useAssetInspector,
-} from '../ui/asset-inspector/AssetInspector';
+import { useHoverOverlay, type HoverCardDefinition, type HoverFact } from '../ui/hover/HoverOverlay';
 import type { DesignWorkspaceDefinition, DesignWorkspaceItem } from './design-workspace-model';
 import type { MotionPhase } from '../ui/motion';
 
@@ -26,11 +23,7 @@ interface WheelPagingState {
   lockedUntil: number;
 }
 
-interface InspectorFact {
-  label: string;
-  value: string;
-  accent?: boolean;
-}
+type InspectorFact = HoverFact;
 
 const COST_BY_PRIMARY: Record<string, Record<string, string>> = {
   road: {
@@ -224,7 +217,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
   const [contentPage, setContentPage] = useState(0);
   const categoryWheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
   const contentWheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
-  const inspector = useAssetInspector<DesignWorkspaceItem>({ openDelay: 280, closeDelay: 90 });
+  const hover = useHoverOverlay();
 
   const categoryPageCount = Math.max(1, Math.ceil(definition.primaryCategories.length / CATEGORY_PAGE_SIZE));
   const visibleCategories = definition.primaryCategories.slice(
@@ -248,7 +241,6 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
   const contentRows = [pageItems.slice(0, 4), pageItems.slice(4, 8)].filter((row) => row.length > 0);
   const HeaderIcon = definition.icon;
   const buildingCompatibilityClass = definition.id === 'building' ? 'workspace--building' : '';
-  const inspectorFacts = inspector.item ? getInspectorFacts(definition, inspector.item) : [];
 
   function runWheelPaging(
     event: WheelEvent<HTMLElement>,
@@ -271,12 +263,12 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
     const direction = wheelState.current.accumulated > 0 ? 1 : -1;
     wheelState.current.accumulated = 0;
     wheelState.current.lockedUntil = now + WHEEL_LOCK_MS;
-    inspector.clear();
+    hover.clear();
     setPage((page) => Math.min(pageCount - 1, Math.max(0, page + direction)));
   }
 
   function resetContentPosition() {
-    inspector.clear();
+    hover.clear();
     setContentPage(0);
   }
 
@@ -291,8 +283,25 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
   }
 
   function selectItem(item: DesignWorkspaceItem) {
-    inspector.clear();
+    hover.clear();
     onSelectItem?.(item);
+  }
+
+  function closeWorkspace() {
+    hover.clear();
+    onClose();
+  }
+
+  function hoverCardFor(item: DesignWorkspaceItem): HoverCardDefinition {
+    return {
+      kind: 'card',
+      id: `design-${definition.id}-${item.id}`,
+      title: item.name,
+      subtitle: `${definition.title} · ${item.meta}`,
+      facts: getInspectorFacts(definition, item),
+      description: getInspectorDescription(definition, item),
+      preferOutsideWorkspace: true,
+    };
   }
 
   return (
@@ -303,7 +312,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
             <HeaderIcon size={18} aria-hidden="true" />
             <b>{definition.title}</b>
           </div>
-          <button className="icon-button" onClick={onClose} aria-label={`关闭${definition.title}目录`}><X /></button>
+          <button className="icon-button" onClick={closeWorkspace} aria-label={`关闭${definition.title}目录`}><X /></button>
         </header>
 
         <div className="workspace-body">
@@ -323,7 +332,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                       className={categoryPage === index ? 'is-active' : ''}
                       aria-label={`切换到第 ${index + 1} 组${definition.title}分类`}
                       onClick={() => {
-                        inspector.clear();
+                        hover.clear();
                         setCategoryPage(index);
                       }}
                     >
@@ -385,21 +394,14 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                   <div className="workspace-content-row" key={`row-${rowIndex}`}>
                     {row.map((item) => {
                       const buildingCompatibilityCardClass = definition.id === 'building' ? 'building-card' : '';
-                      const inspectorOpenForItem = inspector.item?.id === item.id;
+                      const hoverDefinition = hoverCardFor(item);
                       return (
                         <button
                           type="button"
                           className={`workspace-item-card design-item-card ${buildingCompatibilityCardClass}`.trim()}
                           key={item.id}
                           data-item-id={item.id}
-                          aria-describedby={inspectorOpenForItem ? 'design-asset-inspector' : undefined}
-                          onPointerEnter={(event) => {
-                            if (event.pointerType === 'touch') return;
-                            inspector.showPointer(item, event.currentTarget);
-                          }}
-                          onPointerLeave={(event) => inspector.hidePointer(event.currentTarget)}
-                          onFocus={(event) => inspector.showFocus(item, event.currentTarget)}
-                          onBlur={(event) => inspector.hideFocus(event.currentTarget)}
+                          {...hover.bind(hoverDefinition)}
                           onClick={() => selectItem(item)}
                         >
                           <i className="workspace-item-card__state-line" aria-hidden="true" />
@@ -425,7 +427,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                     className={safeContentPage === page ? 'is-active' : ''}
                     aria-label={`切换到第 ${page + 1} 组${definition.title}`}
                     onClick={() => {
-                      inspector.clear();
+                      hover.clear();
                       setContentPage(page);
                     }}
                   >
@@ -440,33 +442,6 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
         </div>
       </section>
 
-      <AssetInspectorPopover
-        id="design-asset-inspector"
-        open={inspector.item !== null}
-        anchor={inspector.anchor}
-        ariaLabel={inspector.item ? `${inspector.item.name}详细信息` : undefined}
-        className="design-asset-inspector"
-      >
-        {inspector.item && (
-          <>
-            <div className="asset-inspector__header">
-              <h3 className="asset-inspector__title">{inspector.item.name}</h3>
-              <div className="asset-inspector__meta">{definition.title} · {inspector.item.meta}</div>
-            </div>
-            <div className="asset-inspector__divider" />
-            <dl className="asset-inspector__facts">
-              {inspectorFacts.map((fact) => (
-                <div key={fact.label} className="asset-inspector__fact-row">
-                  <dt>{fact.label}</dt>
-                  <dd className={fact.accent ? 'is-accent' : ''}>{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-            <div className="asset-inspector__divider" />
-            <p className="asset-inspector__description">{getInspectorDescription(definition, inspector.item)}</p>
-          </>
-        )}
-      </AssetInspectorPopover>
     </>
   );
 }

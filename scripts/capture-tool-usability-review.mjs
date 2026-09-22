@@ -175,15 +175,15 @@ async function checkToolLayout(label) {
   assert(labels.length > 1 && labels.every(row => row.scrollWidth <= row.clientWidth + 1), label + ': 短标签不得截断');
   report.checks.push({ label, bar, labels });
 }
-async function checkInspector(label) {
-  await page.waitForSelector('.asset-inspector-popover[data-ready="true"]'); await settle();
-  const popup = await page.locator('.asset-inspector-popover').boundingBox();
+async function checkHoverCard(label) {
+  await page.waitForSelector('.ui-hover-card[data-ready="true"]'); await settle();
+  const popup = await page.locator('.ui-hover-card').boundingBox();
   const workspace = await page.locator('.workspace--catalog').boundingBox();
   const viewport = page.viewportSize();
   assert(popup && workspace && viewport);
   assert(overlap(popup, workspace) < 1, label + ': 浮层遮挡目录');
   assert(popup.x >= 0 && popup.y >= 0 && popup.x + popup.width <= viewport.width + 1 && popup.y + popup.height <= viewport.height + 1, label + ': 浮层超出屏幕');
-  report.checks.push({ label, placement: await page.locator('.asset-inspector-popover').getAttribute('data-placement'), popup, workspace });
+  report.checks.push({ label, placement: await page.locator('.ui-hover-card').getAttribute('data-placement'), popup, workspace });
 }
 async function checkSettings(label) {
   const geometry = await page.locator('.settings-space__content').evaluate(root => {
@@ -331,23 +331,23 @@ try {
   assert(count >= 4, '建筑目录需要足够的条目用于两排避让检查');
   for (const index of [...new Set([0, Math.min(3, count - 1), Math.min(4, count - 1), count - 1])]) {
     await page.keyboard.press('Tab'); await cards.nth(index).focus();
-    await checkInspector('建筑条目/' + index); await shot('inspector-building-' + index);
+    await checkHoverCard('建筑条目/' + index); await shot('inspector-building-' + index);
   }
   await page.keyboard.press('Escape');
   await page.waitForSelector('.workspace--catalog', { state: 'detached' });
-  assert.equal(await page.locator('.asset-inspector-popover:visible').count(), 0, '关闭目录不能残留详情');
+  assert.equal(await page.locator('.ui-hover-surface:visible').count(), 0, '关闭目录不能残留 Hover Surface');
   report.checks.push({ label: '关闭目录清理浮层' });
 
   await open('workspace-city-wall', '.workspace--catalog');
   const wallCards = page.locator('.design-item-card');
   assert(await wallCards.count());
-  await wallCards.first().hover(); await page.waitForTimeout(400);
-  await checkInspector('城墙悬停');
-  const before = await page.locator('.asset-inspector-popover').boundingBox();
+  await wallCards.first().hover(); await page.waitForTimeout(540);
+  await checkHoverCard('城墙悬停');
+  const before = await page.locator('.ui-hover-card').boundingBox();
   await wallCards.first().hover({ position: { x: 15, y: 15 } }); await page.waitForTimeout(80);
-  const after = await page.locator('.asset-inspector-popover').boundingBox();
+  const after = await page.locator('.ui-hover-card').boundingBox();
   assert(before && after && Math.abs(before.x - after.x) < 1 && Math.abs(before.y - after.y) < 1, '浮层不能随同一条目内鼠标移动');
-  await page.screenshot({ path: `${out}/usability-inspector-wall-hover.png` }); report.screenshots.push('inspector-wall-hover');
+  await page.screenshot({ path: `${out}/hover-card-workspace.png` }); report.screenshots.push('hover-card-workspace');
 
   await open('settings', '.settings-space');
   await checkSettings('菜单设置/显示'); await shot('settings-display');
@@ -378,7 +378,7 @@ try {
   for (const [width, height] of [[2560, 1440], [3840, 2160]]) {
     await page.setViewportSize({ width, height });
     await open('workspace-building', '.workspace--catalog');
-    await page.locator('.design-item-card').last().focus(); await checkInspector('缩放/' + height); await shot('inspector-' + height);
+    await page.locator('.design-item-card').last().focus(); await checkHoverCard('缩放/' + height); await shot('inspector-' + height);
     await open('terrain-edit', '.terrain-edit-prototype'); await checkToolLayout('缩放地形/' + height); await shot('terrain-' + height);
     await open('settings', '.settings-space'); await checkSettings('缩放设置/' + height); await shot('settings-' + height);
   }
@@ -391,7 +391,7 @@ try {
   await time.focus(); await time.press('End'); await page.waitForSelector('.gameplay-screen[data-time-of-day="night"]');
   await page.keyboard.press('Escape'); await page.waitForSelector('.gameplay-left-context-surface', { state: 'detached' });
   await page.getByRole('button', { name: '建筑', exact: true }).click(); await page.waitForSelector('.workspace--catalog');
-  await page.locator('.design-item-card').first().focus(); await checkInspector('夜景目录'); await shot('inspector-night');
+  await page.locator('.design-item-card').first().focus(); await checkHoverCard('夜景目录'); await shot('inspector-night');
 
   await open('management-finance', '.management-space--finance');
   await checkPersistentHints('城市财政', 'management-finance', false);
@@ -413,13 +413,19 @@ try {
   await mainDockSwitch.getByRole('button', { name: '设计', exact: true }).click(); await settle();
   await checkMainDock('Main Dock/返回设计', 'design', 8);
   const metric = page.locator('.gameplay-top-resource-shortcut').first();
-  await page.keyboard.press('Tab'); await metric.focus(); await page.waitForTimeout(450);
-  const tooltip = await metric.evaluate(element => ({ visible: getComputedStyle(element, '::after').visibility, focused: element.matches(':focus-visible') }));
-  assert(tooltip.visible === 'visible' && tooltip.focused); report.checks.push({ label: '顶部指标键盘提示', ...tooltip });
-  await page.screenshot({ path: `${out}/usability-hud-focus.png` }); report.screenshots.push('hud-focus');
+  await page.keyboard.press('Tab'); await metric.focus(); await page.waitForTimeout(80);
+  const topTooltip = page.locator('.ui-tooltip-surface[data-ready="true"]');
+  assert.equal(await topTooltip.count(), 1, '顶部指标 Focus 必须使用全局 Tooltip');
+  assert.equal(await page.locator('.ui-hover-overlay-host').getAttribute('data-ui-layer'), 'hover');
+  await page.screenshot({ path: `${out}/hover-tooltip-top-resource.png` }); report.screenshots.push('hover-tooltip-top-resource');
+  report.checks.push({ label: '顶部指标键盘提示', text: await topTooltip.textContent() });
 
   const worldToolbar = page.locator('.context-utility-toolbar[data-utility-context="world"]');
   await worldToolbar.waitFor();
+  const firstUtilityButton = worldToolbar.getByRole('button').first();
+  await firstUtilityButton.hover(); await page.waitForTimeout(380);
+  assert.equal(await page.locator('.ui-tooltip-surface[data-ready="true"]').count(), 1, 'Context Utility Hover 必须使用全局 Tooltip');
+  await page.screenshot({ path: `${out}/hover-tooltip-utility.png` }); report.screenshots.push('hover-tooltip-utility');
   assert(await worldToolbar.evaluate(element => element.classList.contains('is-world-stacked')), '主游玩 World Utility 应使用双层结构');
   const rows = worldToolbar.locator('.context-utility-toolbar__row');
   assert.equal(await rows.count(), 2, '主游玩 World Utility 必须只有两行');

@@ -6,9 +6,9 @@ import sharp from 'sharp';
 import { CUSTOM_ICON_PATHS, renderCustomIcon } from './icons/custom-icon-sources.mjs';
 
 // CI 使用 Node 22；只剥离这个纯几何模块的类型，不依赖 typescript 包的编译器 API 导出形态。
-const source = await readFile('src/ui/asset-inspector/inspector-placement.ts', 'utf8');
+const source = await readFile('src/ui/hover/hover-placement.ts', 'utf8');
 const compiled = stripTypeScriptTypes(source, { mode: 'strip' });
-const { placeInspector } = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
+const { placeHoverSurface } = await import('data:text/javascript;base64,' + Buffer.from(compiled).toString('base64'));
 const bounds = { width: 1920, height: 1080 };
 const workspace = { left: 420, top: 650, width: 1080, height: 310 };
 const size = { width: 320, height: 230 };
@@ -17,7 +17,7 @@ let checks = 0;
 for (const left of [440, 700, 1000, 1270]) {
   for (const top of [730, 850]) {
     const anchor = { left, top, width: 180, height: 64 };
-    const placed = placeInspector({ anchor, size, bounds, workspace });
+    const placed = placeHoverSurface({ kind: 'card', anchor, size, bounds, workspace });
     assert.equal(placed.placement, 'top');
     assert(!intersects({ ...placed, ...size }, workspace), '整张目录都必须避让，而不是只避让当前条目');
     assert(placed.left >= 16 && placed.top >= 16 && placed.left + size.width <= 1904 && placed.top + size.height <= 1064);
@@ -25,11 +25,11 @@ for (const left of [440, 700, 1000, 1270]) {
   }
 }
 const highWorkspace = { left: 700, top: 24, width: 640, height: 750 };
-const fallback = placeInspector({ anchor: { left: 720, top: 250, width: 120, height: 64 }, size, bounds, workspace: highWorkspace });
+const fallback = placeHoverSurface({ kind: 'card', anchor: { left: 720, top: 250, width: 120, height: 64 }, size, bounds, workspace: highWorkspace });
 assert(!intersects({ ...fallback, ...size }, highWorkspace), '上方放不下时应选择目录外侧');
 checks++;
 for (const anchor of [{ left: 16, top: 16, width: 30, height: 30 }, { left: 1870, top: 1000, width: 30, height: 30 }]) {
-  const result = placeInspector({ anchor, size, bounds });
+  const result = placeHoverSurface({ kind: 'card', anchor, size, bounds });
   assert(result.left >= 16 && result.top >= 16 && result.left + size.width <= 1904 && result.top + size.height <= 1064);
   checks++;
 }
@@ -72,6 +72,12 @@ const workspaceCss = await readFile('src/workspace.css', 'utf8');
 const operationHintsCss = await readFile('src/gameplay/operation-hints.css', 'utf8');
 const uiVisualCss = await readFile('src/ui/ui-visual-system.css', 'utf8');
 const migrationAudit = await readFile('scripts/audit-unity-migration.mjs', 'utf8');
+const hoverOverlaySource = await readFile('src/ui/hover/HoverOverlay.tsx', 'utf8');
+const hoverCss = await readFile('src/ui/hover/hover-overlay.css', 'utf8');
+const toolActionSourceForHover = await readFile('src/tools/ToolActionBar.tsx', 'utf8');
+const utilitySourceForHover = await readFile('src/gameplay/ContextUtilityToolbar.tsx', 'utf8');
+const gameplayHudSourceForHover = await readFile('src/gameplay/GameplayHUD.tsx', 'utf8');
+const designWorkspaceSourceForHover = await readFile('src/workspace/DesignWorkspace.tsx', 'utf8');
 const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 
@@ -116,7 +122,15 @@ assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRoo
 assert(!uiVisualCss.includes('.gameplay-screen .workspace,') && !uiVisualCss.includes('.bottom-command-surface{'), 'ui-visual-system 不得重复持有 Gameplay Surface 材质');
 assert(!mainDockCss.includes('display:grid') && mainDockCss.includes('display:flex') && mainDockCss.includes('flex:1 1 0'), 'Main Dock Category Strip 必须使用 Flex 而不是新增长期 Grid 债务');
 assert(migrationAudit.includes('SHARED_CONTROL_INTERNAL_OWNER_FILES') && migrationAudit.includes('SHARED_SURFACE_MATERIAL_OWNER_FILES'), 'Unity migration audit 必须包含 Shared Control / Surface Ownership Guard');
-checks += 41;
+assert(hoverOverlaySource.includes('HoverOverlayProvider') && hoverOverlaySource.includes('HoverOverlayHost') && hoverOverlaySource.includes("kind === 'tooltip'") && hoverOverlaySource.includes("kind === 'card'"), 'Global Hover Framework 必须同时支持 Tooltip / Hover Card');
+assert(hoverOverlaySource.includes('if (dialog) clear()') && hoverOverlaySource.includes("event.key === 'Escape'"), 'Hover Framework 必须在 Modal / Escape 时清理');
+assert(hoverCss.includes('--ui-layer-hover,180') && hoverCss.includes('pointer-events:none'), 'Hover Overlay 必须位于全局 Hover Layer 且不截断底层 Pointer');
+assert(!toolActionSourceForHover.includes('data-tooltip=') && toolActionSourceForHover.includes('hover.bind'), 'Secondary Action Bar 必须迁移到全局 Tooltip');
+assert(!utilitySourceForHover.includes('data-tooltip=') && utilitySourceForHover.includes('hover.bind'), 'Context Utility 必须迁移到全局 Tooltip');
+assert(!gameplayHudSourceForHover.includes('data-tooltip=') && gameplayHudSourceForHover.includes('hover.bind'), 'Top HUD Tooltip 必须迁移到全局 Tooltip');
+assert(!designWorkspaceSourceForHover.includes('AssetInspector') && designWorkspaceSourceForHover.includes("kind: 'card'") && designWorkspaceSourceForHover.includes('hover.bind'), 'Design Workspace 必须使用通用 Hover Card');
+
+checks += 48;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');

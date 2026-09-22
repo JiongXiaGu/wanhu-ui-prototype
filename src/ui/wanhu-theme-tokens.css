@@ -17,6 +17,12 @@
   --wanhu-color-brass-soft:rgba(169,132,75,.105);
   --wanhu-color-cinnabar:#985447;
 
+  /* Global overlay layer semantics. Unity maps these to stable VisualElement child order. */
+  --ui-layer-hud:20;
+  --ui-layer-hover:180;
+  --ui-layer-notification:190;
+  --ui-layer-modal:200;
+
   /* 操作区与阅读区分档；不通过整体缩放改变既有屏幕布局。 */
   --wanhu-type-micro:11px;
   --wanhu-type-caption:11px;
