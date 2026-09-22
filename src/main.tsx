@@ -9,6 +9,7 @@ import './menu-refine.css';
 import './backgrounds.css';
 import './gameplay/bottom-command-system.css';
 import './gameplay-refine.css';
+import './gameplay/main-dock.css';
 import './workspace/design-workspace.css';
 import './ui/asset-inspector/asset-inspector.css';
 import './operation-hints.css';

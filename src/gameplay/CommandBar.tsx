@@ -4,12 +4,20 @@ import {
   BookOpen,
   Bridge,
   Building2,
-  Castle,  Fence,  Hammer,
+  Castle,
+  Fence,
+  Hammer,
   House,
   Landmark,
-  Layers3,  Palette,  Route,  Shield,
+  Layers3,
+  Palette,
+  Pencil,
+  Route,
+  ScrollText,
+  Shield,
   Store,
-  Trees,} from '../ui/icons/runtime-icons.generated';
+  Trees,
+} from '../ui/icons/runtime-icons.generated';
 import type { DockCategory, DockMode } from '../app/ui-state';
 import type { MotionPhase } from '../ui/motion';
 
@@ -43,6 +51,11 @@ const MAIN_DOCK_ITEMS: Record<DockMode, readonly MainDockItem[]> = {
   ],
 };
 
+const MAIN_DOCK_MODES: ReadonlyArray<{ id: DockMode; label: string; icon: UiIconComponent }> = [
+  { id: 'design', label: '设计', icon: Pencil },
+  { id: 'blueprint', label: '蓝图', icon: ScrollText },
+];
+
 interface CommandBarProps {
   mode: DockMode;
   motionPhase?: MotionPhase;
@@ -55,38 +68,53 @@ export function CommandBar({ mode, motionPhase = 'steady', activeCategory, onMod
   const items = MAIN_DOCK_ITEMS[mode];
 
   return (
-    <div className={`command-bar bottom-command-surface bottom-command-surface--lg motion-bottom-surface is-${motionPhase}`} data-dock-mode={mode} aria-busy={motionPhase !== 'steady'}>
-      <div className="mode-rail" aria-label="建造模式">
-        <button
-          type="button"
-          className={mode === 'design' ? 'is-active' : ''}
-          aria-pressed={mode === 'design'}
-          onClick={() => onModeChange('design')}
-        >
-          设计
-        </button>
-        <button
-          type="button"
-          className={mode === 'blueprint' ? 'is-active' : ''}
-          aria-pressed={mode === 'blueprint'}
-          onClick={() => onModeChange('blueprint')}
-        >
-          蓝图
-        </button>
+    <div
+      className={`command-bar main-dock bottom-command-surface bottom-command-surface--lg motion-bottom-surface is-${motionPhase}`}
+      data-dock-mode={mode}
+      aria-label="建造主工具栏"
+      aria-busy={motionPhase !== 'steady'}
+    >
+      <div className="mode-rail main-dock__mode-switch" role="group" aria-label="建造模式">
+        {MAIN_DOCK_MODES.map(({ id, label, icon: Icon }) => {
+          const active = mode === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              className={`main-dock__mode-button ${active ? 'is-active' : ''}`}
+              data-mode-id={id}
+              aria-label={label}
+              aria-pressed={active}
+              onClick={() => onModeChange(id)}
+            >
+              <i className="main-dock__state-line" aria-hidden="true" />
+              <Icon size={20} />
+              <span>{label}</span>
+            </button>
+          );
+        })}
       </div>
-      <i aria-hidden="true" />
-      <div className="category-row" aria-label={mode === 'design' ? '设计分类' : '蓝图分类'}>
+
+      <i className="main-dock__divider" aria-hidden="true" />
+
+      <div
+        key={mode}
+        className="category-row main-dock__categories"
+        aria-label={mode === 'design' ? '设计分类' : '蓝图分类'}
+      >
         {items.map(({ id, label, icon: Icon }) => {
           const selected = activeCategory === id;
           return (
             <button
               key={id}
               type="button"
-              className={selected ? 'is-active' : ''}
+              className={`main-dock__category-button ${selected ? 'is-active' : ''}`}
+              aria-label={label}
               aria-pressed={selected}
               onClick={() => onCategoryChange(id)}
             >
-              <Icon />
+              <i className="main-dock__state-line" aria-hidden="true" />
+              <Icon size={24} />
               <span>{label}</span>
             </button>
           );

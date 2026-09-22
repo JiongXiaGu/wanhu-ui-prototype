@@ -57,7 +57,13 @@
   --secondary-action-icon-size:24px;
   --secondary-action-label-size:11px;
 
-  --hud-core-width:940px;
+  --hud-core-width:880px;
+  --main-dock-mode-width:112px;
+  --main-dock-mode-button-width:54px;
+  --main-dock-control-height:64px;
+  --main-dock-category-icon-size:24px;
+  --main-dock-mode-icon-size:20px;
+  --main-dock-label-size:11px;
   --hud-bottom-panel-height:84px;
   --placement-main-bar-height:var(--hud-bottom-panel-height);
   --placement-utility-height:var(--hud-bottom-panel-height);
@@ -104,8 +110,11 @@
 }
 
 .gameplay-screen .command-bar{
-  width:var(--hud-core-width);
+  position:absolute;
+  left:50%;
   bottom:var(--hud-edge);
+  width:var(--hud-core-width);
+  transform:translateX(-50%);
 }
 
 .gameplay-screen > .context-utility-toolbar.command-utility{

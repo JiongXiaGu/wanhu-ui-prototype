@@ -20,6 +20,7 @@ async function shot(name) { await page.mouse.move(20, 200); await page.screensho
 async function placementShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/${name}.png` }); report.screenshots.push(name); }
 async function operationHintsShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/operation-hints-${name}.png` }); report.screenshots.push('operation-hints-' + name); }
 async function secondaryActionShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/secondary-action-${name}.png` }); report.screenshots.push('secondary-action-' + name); }
+async function mainDockShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/main-dock-${name}.png` }); report.screenshots.push('main-dock-' + name); }
 async function checkPersistentHints(label, expectedContext, utilityExpected = true) {
   const hints = page.locator('.gameplay-operation-hints');
   assert.equal(await hints.count(), 1, label + ': 非 Pause Gameplay 必须恰好存在一个 Operation Hints Host');
@@ -34,6 +35,38 @@ async function checkPersistentHints(label, expectedContext, utilityExpected = tr
     assert(gap >= 11 && gap <= 13, label + ': Operation Hints 与 Utility 应保持约 12px 间距');
   }
   report.checks.push({ label: label + '/operation-hints', expectedContext, hintsBox });
+}
+async function checkMainDock(label, expectedMode, expectedCategoryCount) {
+  const dock = page.locator('.main-dock');
+  const dockBox = await dock.boundingBox();
+  const viewport = page.viewportSize();
+  assert(dockBox && viewport, label + ': Main Dock 必须可测量');
+  assert(Math.abs(dockBox.width - 880) < 1, label + ': Main Dock 固定宽度必须为 880px');
+  assert(Math.abs(dockBox.height - 84) < 1, label + ': Main Dock 必须保持 84px 高');
+  assert(Math.abs((dockBox.y + dockBox.height) - (viewport.height - 16)) < 1.5, label + ': Main Dock 必须保持 16px 底部安全边');
+  assert.equal(await dock.getAttribute('data-dock-mode'), expectedMode, label + ': Dock Mode 错误');
+
+  const modeButtons = dock.locator('.main-dock__mode-button');
+  assert.equal(await modeButtons.count(), 2, label + ': 设计 / 蓝图必须是两个稳定 Mode Button');
+  const modeMetrics = await modeButtons.evaluateAll((buttons) => buttons.map((button) => {
+    const icon = button.querySelector('.ui-icon')?.getBoundingClientRect();
+    const text = button.querySelector('span')?.getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
+    return { width: rect.width, height: rect.height, iconWidth: icon?.width, iconBottom: icon?.bottom, textTop: text?.top };
+  }));
+  assert(modeMetrics.every(item => Math.abs(item.width - 54) < 1 && Math.abs(item.height - 64) < 1 && Math.abs(item.iconWidth - 20) < 1 && item.iconBottom < item.textTop), label + ': Mode 必须为 54×64、20px 图标在上文字在下');
+
+  const categories = dock.locator('.main-dock__category-button');
+  assert.equal(await categories.count(), expectedCategoryCount, label + ': 分类数量错误');
+  const categoryMetrics = await categories.evaluateAll((buttons) => buttons.map((button) => {
+    const icon = button.querySelector('.ui-icon')?.getBoundingClientRect();
+    const text = button.querySelector('span')?.getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
+    const style = button.querySelector('span') ? getComputedStyle(button.querySelector('span')) : null;
+    return { height: rect.height, iconWidth: icon?.width, iconBottom: icon?.bottom, textTop: text?.top, fontSize: style?.fontSize };
+  }));
+  assert(categoryMetrics.every(item => Math.abs(item.height - 64) < 1 && Math.abs(item.iconWidth - 24) < 1 && item.iconBottom < item.textTop && item.fontSize === '11px'), label + ': 分类必须为 64px 高、24px 图标在上、11px 文字在下');
+  report.checks.push({ label: label + '/main-dock', dockBox, expectedMode, modeMetrics, categoryMetrics });
 }
 async function checkPlacementBottom(label) {
   const main = page.locator('.placement-main-action-bar');
@@ -357,6 +390,14 @@ try {
 
   await open('gameplay', '.gameplay-top-resource-shortcut');
   await checkPersistentHints('普通 Gameplay', 'world');
+  await checkMainDock('Main Dock/设计', 'design', 8);
+  await mainDockShot('design');
+  const mainDock = page.locator('.main-dock');
+  await mainDock.getByRole('button', { name: '蓝图', exact: true }).click(); await settle();
+  await checkMainDock('Main Dock/蓝图', 'blueprint', 9);
+  await mainDockShot('blueprint');
+  await mainDock.getByRole('button', { name: '设计', exact: true }).click(); await settle();
+  await checkMainDock('Main Dock/返回设计', 'design', 8);
   const metric = page.locator('.gameplay-top-resource-shortcut').first();
   await page.keyboard.press('Tab'); await metric.focus(); await page.waitForTimeout(450);
   const tooltip = await metric.evaluate(element => ({ visible: getComputedStyle(element, '::after').visibility, focused: element.matches(':focus-visible') }));

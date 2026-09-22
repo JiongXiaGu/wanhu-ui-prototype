@@ -1,0 +1,167 @@
+/* Main Dock V2 ---------------------------------------------------------------
+   First-level Build / Blueprint navigation. Screen anchoring lives in
+   gameplay-hud-layout.css; this file owns internal geometry and hierarchy.
+   Unity target: MainDock.uxml + MainDock.uss.
+------------------------------------------------------------------------------- */
+
+.gameplay-screen .main-dock{
+  height:var(--hud-bottom-panel-height,84px);
+  min-height:var(--hud-bottom-panel-height,84px);
+  padding:10px;
+  z-index:12;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+}
+
+.gameplay-screen .main-dock__mode-switch{
+  width:var(--main-dock-mode-width,112px);
+  flex:0 0 var(--main-dock-mode-width,112px);
+  height:var(--main-dock-control-height,64px);
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:4px;
+}
+
+.gameplay-screen .main-dock__mode-button{
+  position:relative;
+  width:var(--main-dock-mode-button-width,54px);
+  min-width:var(--main-dock-mode-button-width,54px);
+  height:var(--main-dock-control-height,64px);
+  padding:7px 5px 6px;
+  border:0;
+  border-radius:var(--command-control-radius,10px);
+  background:transparent;
+  color:var(--command-icon,#8a8d87);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  cursor:pointer;
+  transition-property:background,color,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
+}
+
+.gameplay-screen .main-dock__mode-button .ui-icon{
+  width:var(--main-dock-mode-icon-size,20px);
+  height:var(--main-dock-mode-icon-size,20px);
+  flex:0 0 var(--main-dock-mode-icon-size,20px);
+}
+
+.gameplay-screen .main-dock__mode-button span,
+.gameplay-screen .main-dock__category-button span{
+  color:#999d97;
+  font-size:var(--main-dock-label-size,11px);
+  font-weight:520;
+  line-height:1.15;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+
+.gameplay-screen .main-dock__mode-button:hover,
+.gameplay-screen .main-dock__category-button:hover{
+  background:var(--command-hover,rgba(255,255,255,.030));
+  color:var(--command-icon-hover,#d8d3ca);
+}
+.gameplay-screen .main-dock__mode-button:hover span,
+.gameplay-screen .main-dock__category-button:hover span{color:#b9b9b3}
+.gameplay-screen .main-dock__mode-button:active,
+.gameplay-screen .main-dock__category-button:active{transform:translateY(1px)}
+.gameplay-screen .main-dock__mode-button:focus-visible,
+.gameplay-screen .main-dock__category-button:focus-visible{
+  outline:1px solid var(--wanhu-control-focus,#d1b47a);
+  outline-offset:2px;
+}
+
+.gameplay-screen .main-dock__state-line{
+  position:absolute;
+  height:2px;
+  border-radius:2px;
+  background:var(--command-active-line,rgba(169,132,75,.84));
+  opacity:0;
+  pointer-events:none;
+}
+
+.gameplay-screen .main-dock__mode-button .main-dock__state-line{
+  left:14px;
+  right:14px;
+  bottom:0;
+}
+.gameplay-screen .main-dock__category-button .main-dock__state-line{
+  left:30%;
+  right:30%;
+  top:0;
+}
+
+.gameplay-screen .main-dock__mode-button.is-active{
+  color:var(--command-icon-active,#bd9959);
+  background:linear-gradient(180deg,rgba(169,132,75,.060),rgba(169,132,75,.016));
+}
+.gameplay-screen .main-dock__mode-button.is-active span{
+  color:#bea76f;
+}
+.gameplay-screen .main-dock__mode-button.is-active .main-dock__state-line{opacity:.95}
+
+.gameplay-screen .main-dock__divider{
+  width:1px;
+  height:30px;
+  flex:0 0 1px;
+  margin:0 8px;
+  background:var(--command-divider,rgba(238,233,223,.052));
+}
+
+.gameplay-screen .main-dock__categories{
+  min-width:0;
+  height:var(--main-dock-control-height,64px);
+  flex:1;
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(0,1fr);
+  gap:2px;
+  animation:main-dock-categories-in var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
+}
+
+.gameplay-screen .main-dock__category-button{
+  position:relative;
+  min-width:0;
+  height:var(--main-dock-control-height,64px);
+  padding:7px 4px 6px;
+  border:0;
+  border-radius:var(--command-control-radius,10px);
+  background:transparent;
+  color:var(--command-icon,#8a8d87);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  cursor:pointer;
+  transition-property:background,color,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
+}
+
+.gameplay-screen .main-dock__category-button .ui-icon{
+  width:var(--main-dock-category-icon-size,24px);
+  height:var(--main-dock-category-icon-size,24px);
+  flex:0 0 var(--main-dock-category-icon-size,24px);
+}
+
+.gameplay-screen .main-dock__category-button.is-active{
+  color:var(--command-icon-active,#bd9959);
+  background:linear-gradient(180deg,rgba(169,132,75,.048),rgba(169,132,75,.010));
+}
+.gameplay-screen .main-dock__category-button.is-active span{color:#b9a46f}
+.gameplay-screen .main-dock__category-button.is-active .main-dock__state-line{opacity:.92}
+
+@keyframes main-dock-categories-in{
+  from{opacity:.52;transform:translateY(3px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .gameplay-screen .main-dock__categories{animation:none}
+  .gameplay-screen .main-dock__mode-button,
+  .gameplay-screen .main-dock__category-button{transition:none}
+}

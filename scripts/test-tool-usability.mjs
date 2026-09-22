@@ -65,6 +65,10 @@ const mainSource = await readFile('src/main.tsx', 'utf8');
 const terrainCss = await readFile('src/tools/terrain-edit/terrain-edit.css', 'utf8');
 const treeCss = await readFile('src/tools/tree-placement/tree-placement.css', 'utf8');
 const selectionCss = await readFile('src/selection/building-selection.css', 'utf8');
+const mainDockCss = await readFile('src/gameplay/main-dock.css', 'utf8');
+const commandBarSource = await readFile('src/gameplay/CommandBar.tsx', 'utf8');
+const gameplayRefineCss = await readFile('src/gameplay-refine.css', 'utf8');
+const legacyStyles = await readFile('src/styles.css', 'utf8');
 const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
 
 assert(sharedControlsCss.includes('.ui-scroll-region'), '共享控件必须持有 ui-scroll-region');
@@ -88,7 +92,14 @@ assert(secondaryActionCss.includes('width:var(--secondary-action-button-width,76
 assert(!placementActionCss.includes('placement-action-bar__button--labeled') && !placementActionCss.includes('height:60px'), 'Placement 不得再维护第二套按钮 Geometry');
 assert(!terrainCss.includes('terrain-edit-toolbar-cluster{') && !treeCss.includes('tree-placement-toolbar-cluster{'), 'Terrain / Tree 不得私有维护中下栏屏幕锚点');
 assert(!selectionCss.includes('building-selection-action-cluster{') && !selectionCss.includes('building-selection-secondary-action-bar{height:'), 'Building Selection 不得私有维护中下栏 Geometry');
-checks += 21;
+assert(mainSource.includes("import './gameplay/main-dock.css';"), 'Main Dock 必须拥有独立共享样式入口');
+assert(hudLayoutCss.includes('--hud-core-width:880px') && hudLayoutCss.includes('--main-dock-control-height:64px'), 'Main Dock 必须固定 880×84 并共享 64px 内部控制高度');
+assert(commandBarSource.includes('Pencil') && commandBarSource.includes('ScrollText') && commandBarSource.includes('main-dock__mode-button'), '设计 / 蓝图必须使用带图标的横向 Mode Switch');
+assert(commandBarSource.includes('key={mode}') && commandBarSource.includes('main-dock__category-button'), '分类内容切换必须只重挂 Category Strip');
+assert(mainDockCss.includes('--main-dock-category-icon-size,24px') && mainDockCss.includes('--main-dock-label-size,11px'), 'Main Dock 分类必须使用 24px 图标 + 11px 文字');
+assert(mainDockCss.includes('flex-direction:row') && mainDockCss.includes('--main-dock-mode-button-width,54px'), '设计 / 蓝图 Mode 必须横向排列并使用 54px 按钮');
+assert(!legacyStyles.includes('.command-bar{position:absolute') && !gameplayRefineCss.includes('.mode-rail') && !gameplayRefineCss.includes('.category-row'), '旧 Main Dock Geometry 不得继续散落在 styles / gameplay-refine');
+checks += 28;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');

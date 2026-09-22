@@ -1,114 +1,6 @@
-/* Gameplay bottom command system refinement.
-   Geometry tokens live in gameplay/gameplay-hud-layout.css.
-   Main Dock, Placement Action Bar and World Utility Toolbar share the Bottom Command Visual System. */
-
-/* Main Dock is the large tier of the command family: mode selector + current category band. */
-.gameplay-screen .command-bar{
-  height:var(--hud-bottom-panel-height,84px);
-  min-height:var(--hud-bottom-panel-height,84px);
-  padding:6px 7px;
-  z-index:12;
-}
-
-/* Design / Blueprint remains a first-level selector, but no longer looks like a nested card. */
-.gameplay-screen .command-bar>.mode-rail{
-  width:96px;
-  flex:0 0 96px;
-  margin:0;
-  padding:2px;
-  overflow:hidden;
-  border-radius:var(--command-control-radius,10px);
-  background:transparent;
-}
-.gameplay-screen .mode-rail button{
-  position:relative;
-  flex:1;
-  min-height:0;
-  border:0;
-  border-radius:8px;
-  background:transparent;
-  color:var(--command-icon,#8a8d87);
-  cursor:pointer;
-  font-size:10px;
-  font-weight:520;
-  letter-spacing:.06em;
-  transition:background .13s ease,color .13s ease;
-}
-.gameplay-screen .mode-rail button+button{border-top:1px solid var(--command-divider,rgba(238,233,223,.052))}
-.gameplay-screen .mode-rail button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d8d3ca)}
-.gameplay-screen .mode-rail button.is-active{
-  color:var(--command-icon-active,#bd9959);
-  background:linear-gradient(90deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
-}
-.gameplay-screen .mode-rail button.is-active::before{
-  content:'';
-  position:absolute;
-  left:0;
-  top:8px;
-  bottom:8px;
-  width:2px;
-  border-radius:0 2px 2px 0;
-  background:var(--command-active-line,rgba(169,132,75,.84));
-}
-.gameplay-screen .command-bar>i{
-  width:1px;
-  height:var(--command-divider-height,24px);
-  align-self:center;
-  flex:0 0 1px;
-  margin:0 8px;
-  background:var(--command-divider,rgba(238,233,223,.052));
-}
-.gameplay-screen .category-row{
-  min-width:0;
-  flex:1;
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:minmax(0,1fr);
-  gap:2px;
-  padding-right:1px;
-  animation:main-dock-categories-in .15s ease-out;
-}
-.gameplay-screen .category-row button{
-  position:relative;
-  min-width:0;
-  padding:0 4px;
-  border:0;
-  border-radius:var(--command-control-radius,10px);
-  background:transparent;
-  color:var(--command-icon,#8a8d87);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  cursor:pointer;
-  font-size:10px;
-  font-weight:470;
-  letter-spacing:.022em;
-  transition:background .13s ease,color .13s ease,transform .09s ease;
-}
-.gameplay-screen .category-row button .ui-icon{width:21px;height:21px;}
-.gameplay-screen .category-row button:hover{background:var(--command-hover,rgba(255,255,255,.030));color:var(--command-icon-hover,#d8d3ca)}
-.gameplay-screen .category-row button:active{transform:translateY(1px)}
-.gameplay-screen .category-row button.is-active{
-  color:var(--command-icon-active,#bd9959);
-  background:linear-gradient(180deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
-}
-.gameplay-screen .category-row button.is-active::before{
-  content:'';
-  position:absolute;
-  left:30%;
-  right:30%;
-  top:0;
-  height:2px;
-  border-radius:0 0 2px 2px;
-  background:var(--command-active-line,rgba(169,132,75,.84));
-}
-
-@keyframes main-dock-categories-in{
-  from{opacity:.55;transform:translateY(2px)}
-  to{opacity:1;transform:translateY(0)}
-}
+/* Gameplay workspace refinements.
+   Main Dock geometry and visual hierarchy moved to gameplay/main-dock.css.
+   Bottom second-level actions live in tools/secondary-action-bar.css. */
 
 /* Workspace uses two transparency tiers inside one shell:
    the Header is Context so more world remains visible, while the browsing Body is Work for stable card readability. */
@@ -144,17 +36,6 @@
 .gameplay-screen .card-thumb{border-radius:9px}
 .gameplay-screen .workspace-search__field,
 .gameplay-screen .workspace-search__trigger{border-radius:9px 9px 0 0}
-
-/* Placement tool clusters reuse the same centered bottom slot; their material lives in placement-action-bar.css. */
-.tool-bottom-cluster{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:24;
-  display:flex;
-  align-items:stretch;
-  gap:8px;
-}
 
 /* Workspace-space bottom geometry is owned by gameplay-hud-layout.css.
    This file intentionally does not override --hud-bottom-safe-offset. */

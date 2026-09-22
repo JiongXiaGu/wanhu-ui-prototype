@@ -64,3 +64,14 @@ Gameplay 二级中下菜单是图标主导型控件，使用独立的稳定层�
 - Tooltip 仍使用共享 12px Tooltip 文字，不因可见标签变小而同步缩小。
 
 此规则只约束 Secondary Bottom Action Bar；右下 Utility 继续使用 20px 图标，普通正文 / Label 继续遵守既有 12px 基线。
+
+
+## Main Dock 字号与图标
+
+一级 Main Dock 与二级 Secondary Action Bar 使用相同“图标主导、文字说明”的视觉语言，但保留层级差异：
+
+- Category：24px 图标 + 11px 标签；
+- Design / Blueprint Mode：20px 图标 + 11px 标签；
+- 两类按钮都使用 Icon Top / Label Bottom，不再使用纯文字 Mode Rail；
+- Category Active 使用顶部状态线；Mode Active 使用底部状态线；
+- Main Dock 总高 84px，分类 / Mode 内部高度 64px；图标和标签不得因 Active 改变尺寸。
