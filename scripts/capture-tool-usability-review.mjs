@@ -175,15 +175,24 @@ async function checkToolLayout(label) {
   assert(labels.length > 1 && labels.every(row => row.scrollWidth <= row.clientWidth + 1), label + ': 短标签不得截断');
   report.checks.push({ label, bar, labels });
 }
-async function checkHoverCard(label) {
+async function checkHoverCard(label, anchor) {
   await page.waitForSelector('.ui-hover-card[data-ready="true"]'); await settle();
-  const popup = await page.locator('.ui-hover-card').boundingBox();
-  const workspace = await page.locator('.workspace--catalog').boundingBox();
+  const surface = page.locator('.ui-hover-card');
+  const [popup, anchorBox, workspace] = await Promise.all([
+    surface.boundingBox(),
+    anchor.boundingBox(),
+    page.locator('.workspace--catalog').boundingBox(),
+  ]);
   const viewport = page.viewportSize();
-  assert(popup && workspace && viewport);
-  assert(overlap(popup, workspace) < 1, label + ': 浮层遮挡目录');
+  const placement = await surface.getAttribute('data-placement');
+  assert(popup && anchorBox && workspace && viewport);
+  assert(overlap(popup, anchorBox) < 1, label + ': Rich Hover 不得遮挡当前 Anchor');
   assert(popup.x >= 0 && popup.y >= 0 && popup.x + popup.width <= viewport.width + 1 && popup.y + popup.height <= viewport.height + 1, label + ': 浮层超出屏幕');
-  report.checks.push({ label, placement: await page.locator('.ui-hover-card').getAttribute('data-placement'), popup, workspace });
+  if (placement === 'right') assert(popup.x >= anchorBox.x + anchorBox.width - 1, label + ': right 必须位于 Anchor 右侧');
+  if (placement === 'left') assert(popup.x + popup.width <= anchorBox.x + 1, label + ': left 必须位于 Anchor 左侧');
+  if (placement === 'top') assert(popup.y + popup.height <= anchorBox.y + 1, label + ': top 必须位于 Anchor 上方');
+  if (placement === 'bottom') assert(popup.y >= anchorBox.y + anchorBox.height - 1, label + ': bottom 必须位于 Anchor 下方');
+  report.checks.push({ label, placement, popup, anchor: anchorBox, workspace, overlapsWorkspace: overlap(popup, workspace) > 0 });
 }
 async function checkSettings(label) {
   const geometry = await page.locator('.settings-space__content').evaluate(root => {
@@ -311,6 +320,18 @@ try {
   await checkSecondaryActionBar('配色工具', '.color-tool-toolbar-cluster .secondary-action-bar');
   await operationHintsShot('color-surface');
   await secondaryActionShot('color');
+
+  await page.getByRole('button', { name: '打开材质方案库', exact: true }).click();
+  await page.waitForSelector('.material-preset-workspace');
+  await settle();
+  const materialCards = page.locator('.material-preset-workspace__card-apply');
+  assert(await materialCards.count() > 0, '材质方案 Workspace 必须存在可悬浮条目');
+  await materialCards.first().hover(); await page.waitForTimeout(540);
+  await checkHoverCard('材质方案锚定', materialCards.first());
+  await page.screenshot({ path: `${out}/hover-material-preset-anchor.png` }); report.screenshots.push('hover-material-preset-anchor');
+  await page.getByRole('button', { name: '关闭材质方案工作区', exact: true }).click();
+  await page.waitForSelector('.material-preset-workspace', { state: 'detached' });
+
   const colorBar = page.locator('.color-tool-toolbar-cluster');
   for (const [name, mode] of [['表面模式', 'surface'], ['灯光模式', 'lighting'], ['方案模式', 'scheme']]) {
     await colorBar.getByRole('button', { name, exact: true }).click(); await settle();
@@ -328,10 +349,10 @@ try {
   await operationHintsShot('workspace-building');
   const cards = page.locator('.design-item-card');
   const count = await cards.count();
-  assert(count >= 4, '建筑目录需要足够的条目用于两排避让检查');
+  assert(count >= 4, '建筑目录需要足够的条目用于多位置锚定检查');
   for (const index of [...new Set([0, Math.min(3, count - 1), Math.min(4, count - 1), count - 1])]) {
     await page.keyboard.press('Tab'); await cards.nth(index).focus();
-    await checkHoverCard('建筑条目/' + index); await shot('inspector-building-' + index);
+    await checkHoverCard('建筑条目/' + index, cards.nth(index)); await shot('inspector-building-' + index);
   }
   await page.keyboard.press('Escape');
   await page.waitForSelector('.workspace--catalog', { state: 'detached' });
@@ -342,12 +363,12 @@ try {
   const wallCards = page.locator('.design-item-card');
   assert(await wallCards.count());
   await wallCards.first().hover(); await page.waitForTimeout(540);
-  await checkHoverCard('城墙悬停');
+  await checkHoverCard('城墙悬停', wallCards.first());
   const before = await page.locator('.ui-hover-card').boundingBox();
   await wallCards.first().hover({ position: { x: 15, y: 15 } }); await page.waitForTimeout(80);
   const after = await page.locator('.ui-hover-card').boundingBox();
   assert(before && after && Math.abs(before.x - after.x) < 1 && Math.abs(before.y - after.y) < 1, '浮层不能随同一条目内鼠标移动');
-  await page.screenshot({ path: `${out}/hover-card-workspace.png` }); report.screenshots.push('hover-card-workspace');
+  await page.screenshot({ path: `${out}/hover-design-workspace-anchor.png` }); report.screenshots.push('hover-design-workspace-anchor');
 
   await open('settings', '.settings-space');
   await checkSettings('菜单设置/显示'); await shot('settings-display');
@@ -378,7 +399,7 @@ try {
   for (const [width, height] of [[2560, 1440], [3840, 2160]]) {
     await page.setViewportSize({ width, height });
     await open('workspace-building', '.workspace--catalog');
-    await page.locator('.design-item-card').last().focus(); await checkHoverCard('缩放/' + height); await shot('inspector-' + height);
+    const scaledCard = page.locator('.design-item-card').last(); await scaledCard.focus(); await checkHoverCard('缩放/' + height, scaledCard); await shot('inspector-' + height);
     await open('terrain-edit', '.terrain-edit-prototype'); await checkToolLayout('缩放地形/' + height); await shot('terrain-' + height);
     await open('settings', '.settings-space'); await checkSettings('缩放设置/' + height); await shot('settings-' + height);
   }
@@ -391,7 +412,7 @@ try {
   await time.focus(); await time.press('End'); await page.waitForSelector('.gameplay-screen[data-time-of-day="night"]');
   await page.keyboard.press('Escape'); await page.waitForSelector('.gameplay-left-context-surface', { state: 'detached' });
   await page.getByRole('button', { name: '建筑', exact: true }).click(); await page.waitForSelector('.workspace--catalog');
-  await page.locator('.design-item-card').first().focus(); await checkHoverCard('夜景目录'); await shot('inspector-night');
+  const nightCard = page.locator('.design-item-card').first(); await nightCard.focus(); await checkHoverCard('夜景目录', nightCard); await shot('inspector-night');
 
   await open('management-finance', '.management-space--finance');
   await checkPersistentHints('城市财政', 'management-finance', false);
