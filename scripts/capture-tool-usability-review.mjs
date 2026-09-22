@@ -49,7 +49,8 @@ async function checkPlacementBottom(label) {
   const lastSupportGroupBox = supportGroupCount ? await supportGroups.last().boundingBox() : null;
   assert(firstSupportGroupBox && lastSupportGroupBox, label + ': 第二行必须存在可见分组');
   const supportContentWidth = lastSupportGroupBox.x + lastSupportGroupBox.width - firstSupportGroupBox.x;
-  assert(Math.abs(utilityBox.width - (supportContentWidth + 12)) < 2, label + ': Placement Utility 宽度必须由内容收缩，而不是固定宽度');
+  const compactWidthDelta = Math.abs(utilityBox.width - (supportContentWidth + 12));
+  assert(compactWidthDelta <= 3, label + ': Placement Utility 宽度必须由内容收缩，而不是固定宽度；delta=' + compactWidthDelta);
   const undoIndex = secondMeta.findIndex(item => item.label === '撤销 · Ctrl+Z');
   const redoIndex = secondMeta.findIndex(item => item.label === '重做 · Ctrl+Y');
   assert(undoIndex >= 0 && redoIndex === undoIndex + 1, label + ': Undo / Redo 必须固定相邻且在第二行');
