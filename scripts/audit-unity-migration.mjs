@@ -32,7 +32,7 @@ const SHARED_SURFACE_MATERIAL_OWNER_FILES=new Set([
   'src/workspace.css',
   'src/workspace/workspace-world-first-glass.css',
 ]);
-const SHARED_SURFACE_ROOT_SELECTOR=/\.(?:bottom-command-surface(?:--(?:lg|md|sm))?|gameplay-left-context-surface|workspace--catalog)\b/;
+const SHARED_SURFACE_ROOT_SELECTOR=/(?:^|,)\s*(?:\.gameplay-screen[^,{]*\s+)?\.(?:bottom-command-surface(?:--(?:lg|md|sm))?|gameplay-left-context-surface|workspace--catalog)\s*(?:$|,)/;
 const SHARED_SURFACE_MATERIAL_PROPERTY=/(?:background(?:-color|-image)?|box-shadow|(?:-webkit-)?backdrop-filter)\s*:/;
 
 async function walk(dir){
