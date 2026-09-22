@@ -343,21 +343,32 @@ Main Dock = 模式选择器 + 当前模式分类带。
 - 不记忆两个模式上一次分类；
 - 只有玩家明确点击分类才 Selected；
 - 设计八类进入同一个 Design Workspace；
+- 蓝图九类进入同一个 Blueprint Workspace；
 - 当前分类再次点击 / Close / Esc 关闭 Workspace 并清分类；
-- Workspace 打开时点击另一个设计分类直接替换 Definition；
+- Workspace 打开时点击同模式的另一个分类直接替换 Definition / Category；
 - Workspace 打开时 Main Dock 与双层 World Utility 都保持可见，并与 Workspace 通过统一 Bottom HUD Safe Line 分离。
 
-Blueprint Workspace 尚未实现。
+### Blueprint Workspace
+
+Blueprint 与 Design 共享 Catalog Workspace Shell，但 Content 使用 image-first Variant：
+
+- Main Dock Category：`全部 / 民居 / 商业 / 工坊 / 管理 / 科学 / 信仰 / 军事 / 宫殿`；
+- Primary Rail：`全部 / 小型 / 中型 / 大型`；
+- Context Filter：`全部 / 系统内置 / 创意工坊 / 我的蓝图`；
+- 每页 4 Item，单行大图 Card；
+- Preview 覆盖整张 Card，左下名称、右下占地；
+- Rich Hover 承载构件数量、预计造价、规模与说明；
+- Web V1 只验证目录与选择入口，真实 Blueprint Placement 生命周期后续接入。
 
 ### Design Workspace
 
 共享结构：
 
-`Header + Primary Rail + Context Filter + Search + 4×2 Content Grid + Pager`
+`Header + Primary Rail + Context Filter + 4×2 Content Grid + Pager`
 
 稳定基线：
 
-- Workspace 约 `1240×370`；
+- Workspace 约 `1240×280`；
 - Primary Rail 约 `146px`；
 - 8 Item / Page；
 - Preview `64×64`；
@@ -591,15 +602,15 @@ Gameplay Operation Hints 是 Gameplay 级常驻 HUD Host，不属于某一个 To
 稳定规则：
 
 - 除 Pause 外，只要仍处于 Gameplay Screen，就必须恰好挂载一个 Operation Hints Host；
-- World、Design Workspace、World Selection、Selection 内 Workspace、Terrain / Tree / Color / Placement Tool、Camera / Weather Context、Management 都只允许 Rebind Context，不允许自行隐藏 Host；
+- World、Catalog Workspace（Design / Blueprint）、World Selection、Selection 内 Workspace、Terrain / Tree / Color / Placement Tool、Camera / Weather Context、Management 都只允许 Rebind Context，不允许自行隐藏 Host；
 - Feature 不得通过 `selection === null`、`tool !== xxx`、`space !== management` 等条件决定 Operation Hints 是否存在；
-- Context Resolver 优先级为 Tool → Selection Workspace → Selection → Design Workspace → Management → Context Panel → Information View → World Mode → Default World；
+- Context Resolver 优先级为 Tool → Selection Workspace → Selection → Catalog Workspace → Management → Context Panel → Information View → World Mode → Default World；
 - Hints 只描述当前真实输入语义，不因为界面上存在按钮就虚构键盘快捷键；
 - 右侧槽位与 Context Utility 共用 16px Safe Edge：Utility 存在时 Hints 位于其上方并保留约 12px 间距；没有 Utility 的 Management 中，Hints 直接落到底部 Safe Edge；
 - Management Blocking Panel 仍为主要操作面，Hints 位于其右侧外部，不覆盖 Blocking Surface；
 - Pause 会截断世界与二级界面输入，因此隐藏 Hints；恢复后按当前 Context 重新绑定。
 
-当前已定义的 Context 包括 Default World / Demolition、Design Workspace、Building Selection / Building Scheme、Building / Road / Tree / City Wall / Gate / Stair Placement、Terrain 五模式、Color Surface / Lighting / Scheme、Camera / Weather、Information View 和 Management。
+当前已定义的 Context 包括 Default World / Demolition、Design / Blueprint Workspace、Building Selection / Building Scheme、Building / Road / Tree / City Wall / Gate / Stair Placement、Terrain 五模式、Color Surface / Lighting / Scheme、Camera / Weather、Information View 和 Management。
 
 Unity UI Toolkit 迁移时保留单一稳定 UXML Host，由 Gameplay HUD Controller 提供 HintContext / rows ViewModel；切换 Context 只更新内容，不销毁再创建 Host，也不允许 Feature Controller 直接控制其 Display。
 
