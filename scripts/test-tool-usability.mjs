@@ -30,9 +30,10 @@ assert(!intersects({ ...fallback, ...size }, highWorkspace), '上方放不下时
 checks++;
 const attachedAnchor = { left: 440, top: 730, width: 180, height: 64 };
 const attached = placeHoverSurface({ kind: 'card', anchor: attachedAnchor, size, bounds, workspace });
-assert.equal(attached.placement, 'right', 'Anchor 模式优先贴在条目右侧');
-assert(!intersects({ ...attached, ...size }, attachedAnchor), 'Anchor 模式不能遮住当前条目');
-assert(intersects({ ...attached, ...size }, workspace), 'Anchor 模式允许在目录内部贴近条目，而不是强制跳到 Workspace 上方');
+assert.equal(attached.placement, 'top', 'Catalog Workspace 的 Rich Hover 必须固定显示在当前条目上方');
+assert(attached.top + size.height <= attachedAnchor.top - 12 + 1, 'Workspace Hover 顶部定位必须保留 Anchor Gap');
+assert(!intersects({ ...attached, ...size }, attachedAnchor), 'Workspace Hover 不能遮住当前条目');
+assert(intersects({ ...attached, ...size }, workspace), 'Workspace Hover 可以覆盖相邻目录内容，不要求整张目录避让');
 checks++;
 for (const anchor of [{ left: 16, top: 16, width: 30, height: 30 }, { left: 1870, top: 1000, width: 30, height: 30 }]) {
   const result = placeHoverSurface({ kind: 'card', anchor, size, bounds });
@@ -139,7 +140,7 @@ assert(!gameplayHudSourceForHover.includes('data-tooltip=') && gameplayHudSource
 assert(!designWorkspaceSourceForHover.includes('AssetInspector') && designWorkspaceSourceForHover.includes("kind: 'card'") && designWorkspaceSourceForHover.includes('hover.bind'), 'Design Workspace 必须使用通用 Hover Card');
 assert(materialWorkspaceSourceForHover.includes("kind: 'card'") && materialWorkspaceSourceForHover.includes('hover.bind'), 'Material Preset Workspace 必须使用通用 Hover Card');
 assert(buildingSchemeWorkspaceSourceForHover.includes("kind: 'card'") && buildingSchemeWorkspaceSourceForHover.includes('hover.bind'), 'Building Scheme Workspace 必须使用通用 Hover Card');
-assert(hoverOverlaySource.includes('placementMode?: HoverCardPlacementMode') && hoverOverlaySource.includes("placementMode ?? 'anchor'"), 'Hover Card 必须由框架统一持有 Placement Mode，默认 Anchor');
+assert(hoverOverlaySource.includes('placementMode?: HoverCardPlacementMode') && hoverOverlaySource.includes("placementMode ?? 'anchor'"), 'Hover Card 必须由框架统一持有 Placement Mode；Catalog Workspace 默认由框架固定在 Anchor 上方');
 assert(!source.includes("'auto'"), 'Hover Placement 不保留无消费者的 auto 模式');
 assert(!designWorkspaceSourceForHover.includes('placementMode:') && !materialWorkspaceSourceForHover.includes('placementMode:') && !buildingSchemeWorkspaceSourceForHover.includes('placementMode:'), '当前三个 Catalog Workspace 都必须直接消费默认 Anchor，不声明 Feature 私有定位模式');
 assert(hoverOverlaySource.includes('looksLikeShortcut') && hoverOverlaySource.includes('detailIsShortcut'), 'Tooltip label adapter 必须区分快捷键与普通描述');
