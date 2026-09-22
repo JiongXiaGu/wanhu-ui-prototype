@@ -292,3 +292,8 @@ UIDocument Root
 ```
 
 C# 对应 `HoverController + HoverTargetManipulator + HoverDefinition / HoverCardDefinition`。Feature Controller 不自行启动延迟计时器，不自行 BringToFront，不自行计算屏幕边界。
+
+
+### Hover Framework 当前验证覆盖
+
+当前 Web Prototype 已用同一 Hover Card Primitive 验证 DesignWorkspace、MaterialPresetWorkspace、BuildingSchemeWorkspace 三类数据目录；用同一 Tooltip Primitive 验证 Top HUD、Context Utility、Secondary Action Bar。后续新增目录只能提交 HoverDefinition / HoverCardDefinition，不再新增专用 Inspector 组件。
