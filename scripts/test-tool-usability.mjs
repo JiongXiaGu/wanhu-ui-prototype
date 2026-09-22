@@ -91,6 +91,10 @@ const buildingParameters = await readFile('src/tools/building-common/BuildingPar
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 const topShellCss = await readFile('src/gameplay/gameplay-top-shell.css', 'utf8');
 const surfaceSystemCss = await readFile('src/ui/wanhu-surface-system.css', 'utf8');
+const uiStateSource = await readFile('src/app/ui-state.ts', 'utf8');
+const blueprintWorkspaceSource = await readFile('src/workspace/BlueprintWorkspace.tsx', 'utf8');
+const blueprintWorkspaceModel = await readFile('src/workspace/blueprint-workspace-model.ts', 'utf8');
+const blueprintWorkspaceCss = await readFile('src/workspace/blueprint-workspace.css', 'utf8');
 
 assert(sharedControlsCss.includes('.ui-scroll-region'), '共享控件必须持有 ui-scroll-region');
 assert(sharedControlsCss.includes('.ui-numeric-slider-field.is-standard'), '共享控件必须定义 standard density');
@@ -131,6 +135,14 @@ assert(topShellCss.includes('.gameplay-top-navigation__scene .gameplay-top-navig
 assert(topShellCss.includes('border:0;') && topShellCss.includes('background:transparent;') && topShellCss.includes('.gameplay-top-navigation__button .ui-icon{width:18px;height:18px;pointer-events:none}'), 'Top Control Tray Button 必须保留浏览器样式 Reset 与 18px 图标 Geometry');
 assert(!topShellCss.includes('[data-tooltip]::after') && surfaceSystemCss.includes('.gameplay-screen .gameplay-top-navigation__button.is-active::before') && surfaceSystemCss.includes('.gameplay-screen .gameplay-top-navigation__dot'), 'Top Control Tray 旧伪元素 Tooltip 不得恢复，状态材质必须由 Surface System 持有');
 assert(workspaceCss.includes('position:absolute') && workspaceCss.includes('display:flex') && workspaceCss.includes('flex-direction:column'), 'Workspace Shell 结构必须由 workspace.css 自己持有');
+assert(uiStateSource.includes("export type Workspace = 'none' | 'design' | 'blueprint'") && uiStateSource.includes('isBlueprintDockCategory') && uiStateSource.includes("mode === 'blueprint'"), 'Blueprint Dock Category 必须打开共享 Workspace Space');
+assert(mainSource.includes("import './workspace/blueprint-workspace.css';"), 'Blueprint Workspace 必须拥有独立业务 Card Variant 样式入口');
+assert(blueprintWorkspaceSource.includes("const PAGE_SIZE = 4") && blueprintWorkspaceSource.includes("id: 'all', label: '全部'") && blueprintWorkspaceSource.includes("id: 'small', label: '小型'") && blueprintWorkspaceSource.includes("id: 'medium', label: '中型'") && blueprintWorkspaceSource.includes("id: 'large', label: '大型'"), 'Blueprint 左 Rail 必须固定为 全部 / 小型 / 中型 / 大型，每页 4 张');
+assert(blueprintWorkspaceSource.includes("id: 'system', label: '系统内置'") && blueprintWorkspaceSource.includes("id: 'workshop', label: '创意工坊'") && blueprintWorkspaceSource.includes("id: 'mine', label: '我的蓝图'"), 'Blueprint 顶部筛选必须按来源浏览');
+assert(blueprintWorkspaceSource.includes('blueprint-workspace__preview') && blueprintWorkspaceSource.includes('workspace-item-card blueprint-workspace__card') && blueprintWorkspaceSource.includes('hover.bind(hoverDefinition)'), 'Blueprint Card 必须使用共享 Card / Hover 框架并以 Preview 为主体');
+assert(blueprintWorkspaceCss.includes('.blueprint-workspace__row') && blueprintWorkspaceCss.includes('height:142px') && blueprintWorkspaceCss.includes('flex:0 0 calc((100% - 30px)/4)') && blueprintWorkspaceCss.includes('.blueprint-workspace__preview'), 'Blueprint Workspace 必须使用 4×1 大图 Card Geometry');
+assert(blueprintWorkspaceModel.includes("previewAsset: '/assets/wanhu-gameplay-city.png'") && blueprintWorkspaceModel.includes("category: 'residential'") && blueprintWorkspaceModel.includes("size: 'large'"), 'Blueprint 原型数据必须包含真实场景预览资产与规模元数据');
+checks += 7;
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
 const operationHintsRootRule = operationHintsCss.match(/\.gameplay-operation-hints\s*\{([^}]*)\}/s)?.[1] ?? '';
 assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRootRule.includes('box-shadow:') && !operationHintsRootRule.includes('background:'), 'Operation Hints Root 不得持有 Surface 材质');
