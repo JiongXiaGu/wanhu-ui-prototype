@@ -76,6 +76,6 @@
 - 一级 Main Dock 固定 880×84px，设计 / 蓝图切换不得改变外层宽高；
 - 设计 / 蓝图必须是横向双 Mode Button：54×64px、20px 图标在上、11px 文字在下；
 - Category 使用 24px 图标 + 11px 标签、64px 内部高度；设计 8 项、蓝图 9 项；
-- Mode Active 使用底部短 State Line，Category Active 使用顶部短 State Line，避免一级模式与分类同质化；
+- Mode Active 不使用横线，只使用熟铜图标 / 文字与弱背景；Category Active 保留顶部短 State Line，避免一级模式与分类同质化；
 - `src/gameplay/main-dock.css` 是 Main Dock 内部 Geometry / visual hierarchy 的唯一权威；`styles.css` / `gameplay-refine.css` 不得恢复旧 `.command-bar` / `.mode-rail` / `.category-row` Geometry；
 - 正式 UI Review 必须分别截图并检查 Design 与 Blueprint 两态，验证 880×84、Mode 2 项、分类 8/9 项、24px 分类图标、11px 标签和 Mode 切换不跳宽。
