@@ -21,7 +21,7 @@ async function placementShot(name) { await page.mouse.move(20, 200); await page.
 async function operationHintsShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/operation-hints-${name}.png` }); report.screenshots.push('operation-hints-' + name); }
 async function secondaryActionShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/secondary-action-${name}.png` }); report.screenshots.push('secondary-action-' + name); }
 async function mainDockShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/main-dock-${name}.png` }); report.screenshots.push('main-dock-' + name); }
-async function blueprintWorkspaceShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/blueprint-workspace-${name}.png` }); report.screenshots.push('blueprint-workspace-' + name); }
+async function blueprintWorkspaceShot(name) { await page.screenshot({ path: `${out}/blueprint-workspace-${name}.png` }); report.screenshots.push('blueprint-workspace-' + name); }
 async function topControlTrayShot() { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/top-control-tray.png` }); report.screenshots.push('top-control-tray'); }
 async function checkPersistentHints(label, expectedContext, utilityExpected = true) {
   const hints = page.locator('.gameplay-operation-hints');
