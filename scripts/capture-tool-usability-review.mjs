@@ -21,6 +21,7 @@ async function placementShot(name) { await page.mouse.move(20, 200); await page.
 async function operationHintsShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/operation-hints-${name}.png` }); report.screenshots.push('operation-hints-' + name); }
 async function secondaryActionShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/secondary-action-${name}.png` }); report.screenshots.push('secondary-action-' + name); }
 async function mainDockShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/main-dock-${name}.png` }); report.screenshots.push('main-dock-' + name); }
+async function topControlTrayShot() { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/top-control-tray.png` }); report.screenshots.push('top-control-tray'); }
 async function checkPersistentHints(label, expectedContext, utilityExpected = true) {
   const hints = page.locator('.gameplay-operation-hints');
   assert.equal(await hints.count(), 1, label + ': 非 Pause Gameplay 必须恰好存在一个 Operation Hints Host');
@@ -36,6 +37,46 @@ async function checkPersistentHints(label, expectedContext, utilityExpected = tr
   }
   report.checks.push({ label: label + '/operation-hints', expectedContext, hintsBox });
 }
+async function checkTopControlTray() {
+  const tray = page.locator('.gameplay-top-navigation');
+  const [trayBox, display, sceneButtons, managementButtons, viewButtons] = await Promise.all([
+    tray.boundingBox(),
+    tray.evaluate((node) => getComputedStyle(node).display),
+    tray.locator('.gameplay-top-navigation__scene .gameplay-top-navigation__button').count(),
+    tray.locator('.gameplay-top-navigation__management .gameplay-top-navigation__button').count(),
+    tray.locator('.gameplay-top-navigation__view .gameplay-top-navigation__button').count(),
+  ]);
+  assert(trayBox, 'Top Control Tray 必须可测量');
+  assert(Math.abs(trayBox.width - 400) < 1 && Math.abs(trayBox.height - 38) < 1, 'Top Control Tray 必须保持 400×38');
+  assert.equal(display, 'grid', 'Top Control Tray 必须保持单行 Grid，而不是退化为 Block');
+  assert.equal(sceneButtons, 2, 'Top Control Tray Scene Group 必须有 2 个按钮');
+  assert.equal(managementButtons, 5, 'Top Control Tray Management Group 必须有 5 个按钮');
+  assert.equal(viewButtons, 1, 'Top Control Tray View Group 必须有 1 个按钮');
+
+  const buttonMetrics = await tray.locator('.gameplay-top-navigation__button').evaluateAll((buttons) => buttons.map((button) => {
+    const style = getComputedStyle(button);
+    const icon = button.querySelector('.ui-icon')?.getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
+    return {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      borderTopWidth: style.borderTopWidth,
+      backgroundColor: style.backgroundColor,
+      iconWidth: icon?.width,
+    };
+  }));
+  assert.equal(buttonMetrics.length, 8, 'Top Control Tray 必须一共显示 8 个导航按钮');
+  assert(buttonMetrics.every(item => item.borderTopWidth === '0px'), 'Top Control Tray Button 不得恢复浏览器默认边框');
+  assert(buttonMetrics.every(item => item.backgroundColor === 'rgba(0, 0, 0, 0)' || item.backgroundColor === 'transparent'), 'Top Control Tray 默认按钮背景必须透明');
+  assert(buttonMetrics.every(item => Math.abs(item.iconWidth - 18) < 1), 'Top Control Tray 图标必须保持 18px');
+  const rowTop = Math.min(...buttonMetrics.map(item => item.y));
+  const rowBottom = Math.max(...buttonMetrics.map(item => item.y));
+  assert(rowBottom - rowTop < 11, 'Top Control Tray 按钮必须保持同一横向行，不得退化成 2 / 5 / 1 三行');
+
+  report.checks.push({ label: 'Top Control Tray Geometry', trayBox, display, sceneButtons, managementButtons, viewButtons, buttonMetrics });
+}
+
 async function checkMainDock(label, expectedMode, expectedCategoryCount) {
   const dock = page.locator('.main-dock');
   const dockBox = await dock.boundingBox();
@@ -426,6 +467,8 @@ try {
 
   await open('gameplay', '.gameplay-top-resource-shortcut');
   await checkPersistentHints('普通 Gameplay', 'world');
+  await checkTopControlTray();
+  await topControlTrayShot();
   await checkMainDock('Main Dock/设计', 'design', 8);
   await mainDockShot('design');
   const mainDockSwitch = page.locator('.main-dock');
