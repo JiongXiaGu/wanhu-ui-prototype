@@ -91,8 +91,9 @@ async function assertTreeShell(label, mode) {
     if (await panel.getByRole('button', { name: '随机混合四种树形', exact: true }).count()) throw new Error(label + ': single mode must use a concrete variant.');
     if ((await page.locator('.tree-single-preview').count()) !== 1) throw new Error(label + ': single preview missing.');
     for (const action of ['移动选中树木', '逆时针旋转', '顺时针旋转', '删除选中树木']) {
-      if ((await bar.getByRole('button', { name: action, exact: true }).count()) !== 1) throw new Error(label + ': single action missing ' + action);
+      if ((await utility.getByRole('button', { name: action, exact: true }).count()) !== 1) throw new Error(label + ': single utility action missing ' + action);
     }
+    if ((await bar.getByRole('button', { name: '移动选中树木', exact: true }).count()) !== 0) throw new Error(label + ': object actions must not remain in the Placement Main Action Bar.');
   }
 }
 
