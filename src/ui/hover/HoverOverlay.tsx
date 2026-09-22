@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useDialogSystem } from '../dialog/DialogSystem';
-import { placeHoverSurface, type HoverPlacement, type HoverRect, type HoverSurfaceKind } from './hover-placement';
+import { placeHoverSurface, type HoverCardPlacementMode, type HoverPlacement, type HoverRect, type HoverSurfaceKind } from './hover-placement';
 
 export interface HoverFact {
   label: string;
@@ -42,7 +42,7 @@ export interface HoverCardDefinition extends HoverBaseDefinition {
   facts?: readonly HoverFact[];
   mediaSrc?: string;
   mediaAlt?: string;
-  preferOutsideWorkspace?: boolean;
+  placementMode?: HoverCardPlacementMode;
 }
 
 export type HoverDefinition = TooltipDefinition | HoverCardDefinition;
@@ -277,7 +277,10 @@ export function HoverOverlayHost() {
     const activeDefinition = definition;
 
     let frame = 0;
-    const workspace = activeDefinition.kind === 'card' && activeDefinition.preferOutsideWorkspace !== false
+    const placementMode = activeDefinition.kind === 'card'
+      ? activeDefinition.placementMode ?? 'anchor'
+      : undefined;
+    const workspace = activeDefinition.kind === 'card'
       ? activeAnchor.closest<HTMLElement>('.workspace--catalog')
       : null;
 
@@ -307,6 +310,7 @@ export function HoverOverlayHost() {
         kind: activeDefinition.kind,
         anchor: toLogicalRect(activeAnchor, activeHost, hostRect, sx, sy),
         workspace: workspace ? toLogicalRect(workspace, activeHost, hostRect, sx, sy) : undefined,
+        placementMode,
         size: { width: activeSurface.offsetWidth, height: activeSurface.offsetHeight },
         bounds,
         avoid,
