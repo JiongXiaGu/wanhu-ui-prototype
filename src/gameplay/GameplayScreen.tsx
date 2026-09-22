@@ -1,8 +1,9 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import type { GameplayUiState } from '../app/ui-state';
-import { gameplayUiReducer, isDesignDockCategory, selectGameplaySpace } from '../app/ui-state';
+import { gameplayUiReducer, isBlueprintDockCategory, isDesignDockCategory, selectGameplaySpace } from '../app/ui-state';
 import { DesignWorkspace } from '../workspace/DesignWorkspace';
 import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
+import { BlueprintWorkspace } from '../workspace/BlueprintWorkspace';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
 import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
@@ -82,6 +83,14 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
     ? DESIGN_WORKSPACES[state.dockCategory]
     : null;
+  const blueprintWorkspaceCategory = state.workspace === 'blueprint' && isBlueprintDockCategory(state.dockCategory)
+    ? state.dockCategory
+    : null;
+  const activeWorkspace = designWorkspace
+    ? { kind: 'design' as const, definition: designWorkspace }
+    : blueprintWorkspaceCategory
+      ? { kind: 'blueprint' as const, category: blueprintWorkspaceCategory }
+      : null;
 
   const previousSpaceRef = useRef(space);
   const transitionFromRef = useRef(space);
@@ -95,7 +104,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
   const mainDockVisible = (space === 'gameplay' || space === 'workspace') && state.selection === null;
   const mainDockPresence = usePresence(mainDockVisible, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
-  const workspacePresence = usePresence(designWorkspace !== null, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
+  const workspacePresence = usePresence(activeWorkspace !== null, { enterDelayMs: enteringFromTool ? MOTION_MS.fast : 0 });
   const toolPresence = usePresence(toolOpen && !state.paused, { enterDelayMs: enteringTool ? MOTION_MS.fast : 0 });
   const contextPresence = usePresence(showContextPanel);
   const selectionPresence = usePresence(selectionOpen);
@@ -103,8 +112,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const managementPresence = usePresence(space === 'management' && state.management !== 'none', { exitMs: MOTION_MS.fast });
   const pausePresence = usePresence(state.paused, { exitMs: MOTION_MS.fast });
 
-  const lastWorkspaceRef = useRef(designWorkspace);
-  if (designWorkspace) lastWorkspaceRef.current = designWorkspace;
+  const lastWorkspaceRef = useRef(activeWorkspace);
+  if (activeWorkspace) lastWorkspaceRef.current = activeWorkspace;
   const lastToolRef = useRef(state.tool);
   if (state.tool !== 'none') lastToolRef.current = state.tool;
   const lastContextPanelRef = useRef(state.contextPanel);
@@ -116,7 +125,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const lastPauseViewRef = useRef(state.pauseView);
   if (state.paused) lastPauseViewRef.current = state.pauseView;
 
-  const renderedWorkspace = designWorkspace ?? lastWorkspaceRef.current;
+  const renderedWorkspace = activeWorkspace ?? lastWorkspaceRef.current;
   const renderedTool = state.tool !== 'none' ? state.tool : lastToolRef.current;
   const renderedContextPanel = state.contextPanel !== 'none' ? state.contextPanel : lastContextPanelRef.current;
   const renderedSelection = state.selection ?? lastSelectionRef.current;
@@ -333,33 +342,44 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         />
       )}
 
-      {workspacePresence.mounted && renderedWorkspace && (
+      {workspacePresence.mounted && renderedWorkspace?.kind === 'design' && (
         <DesignWorkspace
-          key={renderedWorkspace.id}
-          definition={renderedWorkspace}
+          key={renderedWorkspace.definition.id}
+          definition={renderedWorkspace.definition}
           motionPhase={workspacePresence.phase}
           onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
           onSelectItem={(item) => {
-            if (renderedWorkspace.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
-            if (renderedWorkspace.id === 'road') dispatch({ type: 'ENTER_ROAD_PLACEMENT' });
-            if (renderedWorkspace.id === 'tree') dispatch({ type: 'ENTER_TREE_PLACEMENT', speciesId: item.id, speciesName: item.name });
-            if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-construction') {
-              const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
+            const definition = renderedWorkspace.definition;
+            if (definition.id === 'building') dispatch({ type: 'ENTER_BUILDING_PLACEMENT' });
+            if (definition.id === 'road') dispatch({ type: 'ENTER_ROAD_PLACEMENT' });
+            if (definition.id === 'tree') dispatch({ type: 'ENTER_TREE_PLACEMENT', speciesId: item.id, speciesName: item.name });
+            if (definition.id === 'city-wall' && item.toolType === 'city-wall-construction') {
+              const systemName = definition.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
               dispatch({ type: 'ENTER_CITY_WALL_CONSTRUCTION', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
             }
-            if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-gate') {
-              const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
+            if (definition.id === 'city-wall' && item.toolType === 'city-wall-gate') {
+              const systemName = definition.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
               dispatch({ type: 'ENTER_CITY_WALL_GATE', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
             }
-            if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-access-stair') {
-              const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
+            if (definition.id === 'city-wall' && item.toolType === 'city-wall-access-stair') {
+              const systemName = definition.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
               dispatch({ type: 'ENTER_CITY_WALL_ACCESS_STAIR', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
             }
-            if (renderedWorkspace.id === 'city-wall' && item.toolType === 'city-wall-transition-stair') {
-              const systemName = renderedWorkspace.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
+            if (definition.id === 'city-wall' && item.toolType === 'city-wall-transition-stair') {
+              const systemName = definition.primaryCategories.find((entry) => entry.key === item.primary)?.label ?? '城墙';
               dispatch({ type: 'ENTER_CITY_WALL_TRANSITION_STAIR', moduleId: item.id, moduleName: item.name, systemId: item.primary, systemName });
             }
           }}
+        />
+      )}
+
+      {workspacePresence.mounted && renderedWorkspace?.kind === 'blueprint' && (
+        <BlueprintWorkspace
+          key={renderedWorkspace.category}
+          category={renderedWorkspace.category}
+          motionPhase={workspacePresence.phase}
+          onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
+          onSelectItem={(item) => dialogs.toast('蓝图“' + item.name + '”的放置流程将在下一阶段接入。')}
         />
       )}
 
