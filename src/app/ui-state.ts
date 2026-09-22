@@ -2,7 +2,7 @@ export type Screen = 'menu' | 'newGame' | 'load' | 'settings' | 'loading' | 'gam
 export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
-export type Workspace = 'none' | 'design';
+export type Workspace = 'none' | 'design' | 'blueprint';
 export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
@@ -57,8 +57,24 @@ const DESIGN_DOCK_CATEGORIES: readonly DesignDockCategory[] = [
   'tree',
 ];
 
+const BLUEPRINT_DOCK_CATEGORIES: readonly BlueprintDockCategory[] = [
+  'all',
+  'residential',
+  'commercial',
+  'workshop',
+  'administration',
+  'science',
+  'faith',
+  'military',
+  'palace',
+];
+
 export function isDesignDockCategory(category: DockCategory | null): category is DesignDockCategory {
   return category !== null && DESIGN_DOCK_CATEGORIES.includes(category as DesignDockCategory);
+}
+
+export function isBlueprintDockCategory(category: DockCategory | null): category is BlueprintDockCategory {
+  return category !== null && BLUEPRINT_DOCK_CATEGORIES.includes(category as BlueprintDockCategory);
 }
 
 export interface GameplayUiState {
@@ -248,7 +264,9 @@ function togglePanel<T>(current: T, requested: T, closed: T): T {
 }
 
 function workspaceForDockSelection(mode: DockMode, category: DockCategory | null): Workspace {
-  return mode === 'design' && isDesignDockCategory(category) ? 'design' : 'none';
+  if (mode === 'design' && isDesignDockCategory(category)) return 'design';
+  if (mode === 'blueprint' && isBlueprintDockCategory(category)) return 'blueprint';
+  return 'none';
 }
 
 function captureToolOrigin(state: GameplayUiState): ToolOrigin {
@@ -294,7 +312,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       return {
         ...state,
         workspace: 'none',
-        dockCategory: state.workspace === 'design' ? null : state.dockCategory,
+        dockCategory: state.workspace !== 'none' ? null : state.dockCategory,
       };
     case 'SELECT_BUILDING':
       return {
@@ -574,7 +592,7 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         buildingSchemeOpen: opening ? false : state.buildingSchemeOpen,
         worldDemolitionMode: opening ? false : state.worldDemolitionMode,
         workspace: opening ? 'none' : state.workspace,
-        dockCategory: opening && state.workspace === 'design' ? null : state.dockCategory,
+        dockCategory: opening && state.workspace !== 'none' ? null : state.dockCategory,
         management: opening ? 'none' : state.management,
         mapPanelOpen: opening ? false : state.mapPanelOpen,
         mapView: opening ? 'default' : state.mapView,
