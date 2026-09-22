@@ -300,7 +300,6 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
       subtitle: `${definition.title} · ${item.meta}`,
       facts: getInspectorFacts(definition, item),
       description: getInspectorDescription(definition, item),
-      placementMode: 'workspace-edge',
     };
   }
 
