@@ -84,11 +84,6 @@
   pointer-events:none;
 }
 
-.gameplay-screen .main-dock__mode-button .main-dock__state-line{
-  left:14px;
-  right:14px;
-  bottom:0;
-}
 .gameplay-screen .main-dock__category-button .main-dock__state-line{
   left:30%;
   right:30%;
@@ -102,8 +97,6 @@
 .gameplay-screen .main-dock__mode-button.is-active span{
   color:#bea76f;
 }
-.gameplay-screen .main-dock__mode-button.is-active .main-dock__state-line{opacity:.95}
-
 .gameplay-screen .main-dock__divider{
   width:1px;
   height:30px;
