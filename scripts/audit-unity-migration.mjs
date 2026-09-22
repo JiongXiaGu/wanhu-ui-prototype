@@ -161,13 +161,16 @@ for(const file of files){
       errors.push(`${file}: shared Slider / Stepper / Select / Toggle internals must be owned by ui-control-system.css. Use semantic variables or an approved shared adapter instead.`);
     }
 
-    if(
-      SHARED_SURFACE_ROOT_SELECTOR.test(text)
-      && SHARED_SURFACE_MATERIAL_PROPERTY.test(text)
-      && !SHARED_SURFACE_MATERIAL_OWNER_FILES.has(file)
-      && !file.startsWith('src/review/')
-    ){
-      errors.push(`${file}: shared Workspace / Context / Bottom Command material must be owned by wanhu-surface-system.css. Feature CSS may own geometry and foreground only.`);
+    if(!SHARED_SURFACE_MATERIAL_OWNER_FILES.has(file) && !file.startsWith('src/review/')){
+      const cssForRules=text.replace(/\/\*[\s\S]*?\*\//g,(comment)=>comment.replace(/[^\n]/g,' '));
+      for(const match of cssForRules.matchAll(/([^{}]+)\{([^{}]*)\}/g)){
+        const selector=match[1].trim();
+        const body=match[2];
+        if(SHARED_SURFACE_ROOT_SELECTOR.test(selector) && SHARED_SURFACE_MATERIAL_PROPERTY.test(body)){
+          const line=cssForRules.slice(0,match.index).split('\n').length;
+          errors.push(`${file}:${line} shared Workspace / Context / Bottom Command material must be owned by wanhu-surface-system.css. Feature CSS may own geometry and foreground only.`);
+        }
+      }
     }
 
     const hasHits=lineHits(text,/:has\(/);
