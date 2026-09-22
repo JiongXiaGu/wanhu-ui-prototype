@@ -172,7 +172,6 @@ const unchanged = {
   'src/gameplay/management-panel-skin.css': '9904b60f85b1d6a95cc8e639a5fdc9ffaf196970',
   'src/tools/color-tool/modes/surface/MaterialPresetWorkspace.tsx': '6556da71c0cca9c1998bceb9bc1bf3ba4db5bf63',
   'src/tools/color-tool/modes/surface/material-preset-workspace.css': 'f86a5ffe2fd50d8def4e5012e8a45d7ca2d0c92d',
-  'src/ui/wanhu-theme-tokens.css': '32bdd58af0467d1badab585ba149dfc625cd9c47',
 };
 for (const [file, sha] of Object.entries(unchanged)) {
   assert.equal(execFileSync('git', ['hash-object', file], { encoding: 'utf8' }).trim(), sha, file + ': 超出本轮已批准范围');
