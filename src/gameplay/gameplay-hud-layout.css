@@ -58,11 +58,12 @@
   --secondary-action-label-size:11px;
 
   --hud-core-width:880px;
-  --main-dock-mode-width:112px;
-  --main-dock-mode-button-width:54px;
+  --main-dock-mode-width:76px;
+  --main-dock-mode-button-width:68px;
+  --main-dock-mode-button-height:30px;
   --main-dock-control-height:64px;
   --main-dock-category-icon-size:24px;
-  --main-dock-mode-icon-size:20px;
+  --main-dock-mode-icon-size:18px;
   --main-dock-label-size:11px;
   --hud-bottom-panel-height:84px;
   --placement-main-bar-height:var(--hud-bottom-panel-height);

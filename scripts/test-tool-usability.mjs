@@ -98,10 +98,13 @@ assert(!terrainCss.includes('terrain-edit-toolbar-cluster{') && !treeCss.include
 assert(!selectionCss.includes('building-selection-action-cluster{') && !selectionCss.includes('building-selection-secondary-action-bar{height:'), 'Building Selection 不得私有维护中下栏 Geometry');
 assert(mainSource.includes("import './gameplay/main-dock.css';"), 'Main Dock 必须拥有独立共享样式入口');
 assert(hudLayoutCss.includes('--hud-core-width:880px') && hudLayoutCss.includes('--main-dock-control-height:64px'), 'Main Dock 必须固定 880×84 并共享 64px 内部控制高度');
-assert(commandBarSource.includes('Pencil') && commandBarSource.includes('ScrollText') && commandBarSource.includes('main-dock__mode-button'), '设计 / 蓝图必须使用带图标的横向 Mode Switch');
+assert(hudLayoutCss.includes('--main-dock-mode-width:76px') && hudLayoutCss.includes('--main-dock-mode-button-width:68px') && hudLayoutCss.includes('--main-dock-mode-button-height:30px'), 'Main Dock Mode Rail 必须使用 76px Rail 与 68×30px 双行按钮');
+assert(commandBarSource.includes('Pencil') && commandBarSource.includes('ScrollText') && commandBarSource.includes('main-dock__mode-button'), '设计 / 蓝图必须使用带图标的独立 Mode Rail');
+assert(commandBarSource.includes('<Icon size={18} />'), '设计 / 蓝图 Mode 图标必须使用 18px');
 assert(commandBarSource.includes('key={mode}') && commandBarSource.includes('main-dock__category-button'), '分类内容切换必须只重挂 Category Strip');
 assert(mainDockCss.includes('--main-dock-category-icon-size,24px') && mainDockCss.includes('--main-dock-label-size,11px'), 'Main Dock 分类必须使用 24px 图标 + 11px 文字');
-assert(mainDockCss.includes('flex-direction:row') && mainDockCss.includes('--main-dock-mode-button-width,54px'), '设计 / 蓝图 Mode 必须横向排列并使用 54px 按钮');
+assert(mainDockCss.includes('.main-dock__mode-switch') && mainDockCss.includes('flex-direction:column') && mainDockCss.includes('--main-dock-mode-button-width,68px'), '设计 / 蓝图必须使用上下两行 Mode Rail');
+assert(mainDockCss.includes('.main-dock__mode-button') && mainDockCss.includes('flex-direction:row') && mainDockCss.includes('--main-dock-mode-button-height,30px'), 'Mode Rail 单行必须为图标左 / 文字右的 68×30px 横向按钮');
 assert(!commandBarSource.includes('<i className="main-dock__state-line" aria-hidden="true" />\n              <Icon size={20}'), '设计 / 蓝图 Mode 不得再挂底部 State Line');
 assert(!mainDockCss.includes('.main-dock__mode-button .main-dock__state-line') && mainDockCss.includes('.main-dock__category-button .main-dock__state-line'), '只删除 Mode 底线，Category 顶部状态线必须保留');
 assert(!legacyStyles.includes('.command-bar{position:absolute'), '旧 Main Dock Geometry 不得继续散落在 styles.css');
@@ -113,7 +116,7 @@ assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRoo
 assert(!uiVisualCss.includes('.gameplay-screen .workspace,') && !uiVisualCss.includes('.bottom-command-surface{'), 'ui-visual-system 不得重复持有 Gameplay Surface 材质');
 assert(!mainDockCss.includes('display:grid') && mainDockCss.includes('display:flex') && mainDockCss.includes('flex:1 1 0'), 'Main Dock Category Strip 必须使用 Flex 而不是新增长期 Grid 债务');
 assert(migrationAudit.includes('SHARED_CONTROL_INTERNAL_OWNER_FILES') && migrationAudit.includes('SHARED_SURFACE_MATERIAL_OWNER_FILES'), 'Unity migration audit 必须包含 Shared Control / Surface Ownership Guard');
-checks += 37;
+checks += 41;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');

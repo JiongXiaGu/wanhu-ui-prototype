@@ -87,7 +87,7 @@ export function CommandBar({ mode, motionPhase = 'steady', activeCategory, onMod
               aria-pressed={active}
               onClick={() => onModeChange(id)}
             >
-              <Icon size={20} />
+              <Icon size={18} />
               <span className="main-dock__label">{label}</span>
             </button>
           );

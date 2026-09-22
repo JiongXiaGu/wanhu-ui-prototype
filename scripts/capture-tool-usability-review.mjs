@@ -52,9 +52,23 @@ async function checkMainDock(label, expectedMode, expectedCategoryCount) {
     const icon = button.querySelector('.ui-icon')?.getBoundingClientRect();
     const text = button.querySelector('.main-dock__label')?.getBoundingClientRect();
     const rect = button.getBoundingClientRect();
-    return { width: rect.width, height: rect.height, iconWidth: icon?.width, iconBottom: icon?.bottom, textTop: text?.top };
+    return {
+      width: rect.width,
+      height: rect.height,
+      iconWidth: icon?.width,
+      iconCenterY: icon ? icon.y + icon.height / 2 : null,
+      textCenterY: text ? text.y + text.height / 2 : null,
+      iconRight: icon?.right,
+      textLeft: text?.left,
+    };
   }));
-  assert(modeMetrics.every(item => Math.abs(item.width - 54) < 1 && Math.abs(item.height - 64) < 1 && Math.abs(item.iconWidth - 20) < 1 && item.iconBottom < item.textTop), label + ': Mode 必须为 54×64、20px 图标在上文字在下');
+  assert(modeMetrics.every(item =>
+    Math.abs(item.width - 68) < 1
+    && Math.abs(item.height - 30) < 1
+    && Math.abs(item.iconWidth - 18) < 1
+    && item.iconRight < item.textLeft
+    && Math.abs(item.iconCenterY - item.textCenterY) < 1.5
+  ), label + ': Mode Rail 必须上下两行，每行 68×30，18px 图标在左、11px 文字在右');
 
   const categories = dock.locator('.main-dock__category-button');
   assert.equal(await categories.count(), expectedCategoryCount, label + ': 分类数量错误');

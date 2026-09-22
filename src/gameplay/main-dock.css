@@ -15,39 +15,41 @@
 }
 
 .gameplay-screen .main-dock__mode-switch{
-  width:var(--main-dock-mode-width,112px);
-  flex:0 0 var(--main-dock-mode-width,112px);
+  width:var(--main-dock-mode-width,76px);
+  flex:0 0 var(--main-dock-mode-width,76px);
   height:var(--main-dock-control-height,64px);
   display:flex;
-  flex-direction:row;
+  flex-direction:column;
   align-items:center;
+  justify-content:center;
   gap:4px;
 }
 
 .gameplay-screen .main-dock__mode-button{
   position:relative;
-  width:var(--main-dock-mode-button-width,54px);
-  min-width:var(--main-dock-mode-button-width,54px);
-  height:var(--main-dock-control-height,64px);
-  padding:7px 5px 6px;
+  width:var(--main-dock-mode-button-width,68px);
+  min-width:var(--main-dock-mode-button-width,68px);
+  height:var(--main-dock-mode-button-height,30px);
+  min-height:var(--main-dock-mode-button-height,30px);
+  padding:0 9px;
   border:0;
-  border-radius:var(--command-control-radius,10px);
+  border-radius:8px;
   background:transparent;
   color:var(--command-icon,#8a8d87);
   display:flex;
-  flex-direction:column;
+  flex-direction:row;
   align-items:center;
-  justify-content:center;
-  gap:6px;
+  justify-content:flex-start;
+  gap:7px;
   cursor:pointer;
   transition-property:background,color,transform;
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
 }
 
 .gameplay-screen .main-dock__mode-button .ui-icon{
-  width:var(--main-dock-mode-icon-size,20px);
-  height:var(--main-dock-mode-icon-size,20px);
-  flex:0 0 var(--main-dock-mode-icon-size,20px);
+  width:var(--main-dock-mode-icon-size,18px);
+  height:var(--main-dock-mode-icon-size,18px);
+  flex:0 0 var(--main-dock-mode-icon-size,18px);
 }
 
 .gameplay-screen .main-dock__mode-button span,
@@ -99,7 +101,7 @@
 }
 .gameplay-screen .main-dock__divider{
   width:1px;
-  height:30px;
+  height:44px;
   flex:0 0 1px;
   margin:0 8px;
   background:var(--command-divider,rgba(238,233,223,.052));
