@@ -21,6 +21,7 @@ async function placementShot(name) { await page.mouse.move(20, 200); await page.
 async function operationHintsShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/operation-hints-${name}.png` }); report.screenshots.push('operation-hints-' + name); }
 async function secondaryActionShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/secondary-action-${name}.png` }); report.screenshots.push('secondary-action-' + name); }
 async function mainDockShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/main-dock-${name}.png` }); report.screenshots.push('main-dock-' + name); }
+async function blueprintWorkspaceShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/blueprint-workspace-${name}.png` }); report.screenshots.push('blueprint-workspace-' + name); }
 async function topControlTrayShot() { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/top-control-tray.png` }); report.screenshots.push('top-control-tray'); }
 async function checkPersistentHints(label, expectedContext, utilityExpected = true) {
   const hints = page.locator('.gameplay-operation-hints');
@@ -400,6 +401,45 @@ try {
   await page.waitForSelector('.workspace--catalog', { state: 'detached' });
   assert.equal(await page.locator('.ui-hover-surface:visible').count(), 0, '关闭目录不能残留 Hover Surface');
   report.checks.push({ label: '关闭目录清理浮层' });
+
+  await open('workspace-blueprint-all', '.workspace--blueprint');
+  await checkPersistentHints('蓝图目录', 'workspace-blueprint-all');
+  const blueprintWorkspace = page.locator('.workspace--blueprint');
+  const blueprintRailLabels = await blueprintWorkspace.locator('.blueprint-workspace__rail .workspace-primary-rail__page>button').evaluateAll(buttons => buttons.map(button => button.textContent?.trim()));
+  assert.deepEqual(blueprintRailLabels, ['全部', '小型', '中型', '大型'], '蓝图左 Rail 必须固定为 全部 / 小型 / 中型 / 大型');
+  const blueprintSourceLabels = await blueprintWorkspace.locator('.blueprint-workspace__source-filter button').evaluateAll(buttons => buttons.map(button => button.textContent?.trim()));
+  assert.deepEqual(blueprintSourceLabels, ['全部', '系统内置', '创意工坊', '我的蓝图'], '蓝图顶部筛选必须按来源显示');
+
+  const blueprintCards = blueprintWorkspace.locator('.blueprint-workspace__card');
+  assert.equal(await blueprintCards.count(), 4, '蓝图第一页必须显示 4 张大图 Card');
+  const blueprintMetrics = await blueprintCards.evaluateAll((cards) => cards.map((card) => {
+    const rect = card.getBoundingClientRect();
+    const preview = card.querySelector('.blueprint-workspace__preview')?.getBoundingClientRect();
+    return {
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      previewWidth: preview?.width,
+      previewHeight: preview?.height,
+      backgroundImage: preview ? getComputedStyle(card.querySelector('.blueprint-workspace__preview')).backgroundImage : '',
+    };
+  }));
+  assert(blueprintMetrics.every(item => Math.abs(item.height - 142) < 1), '蓝图 Card 必须保持约 142px 高');
+  assert(Math.max(...blueprintMetrics.map(item => item.y)) - Math.min(...blueprintMetrics.map(item => item.y)) < 1, '蓝图 4 张 Card 必须保持单行');
+  assert(blueprintMetrics.every(item => Math.abs(item.previewWidth - item.width) < 1 && Math.abs(item.previewHeight - item.height) < 1 && item.backgroundImage.includes('/assets/')), '蓝图 Preview 必须覆盖整张 Card 并使用场景示例图');
+  report.checks.push({ label: 'Blueprint Workspace 4×1 image cards', blueprintRailLabels, blueprintSourceLabels, blueprintMetrics });
+  await blueprintWorkspaceShot('all');
+
+  const firstBlueprintCard = blueprintCards.first();
+  await firstBlueprintCard.hover();
+  await page.waitForTimeout(540);
+  await checkHoverCard('蓝图卡片', firstBlueprintCard);
+  await blueprintWorkspaceShot('hover');
+  await page.mouse.move(20, 200);
+  await blueprintWorkspace.locator('.blueprint-workspace__rail').getByRole('button', { name: '小型', exact: true }).click();
+  await settle();
+  assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-size'), 'small', '蓝图规模筛选必须绑定到 Workspace 状态');
 
   await open('workspace-city-wall', '.workspace--catalog');
   const wallCards = page.locator('.design-item-card');
