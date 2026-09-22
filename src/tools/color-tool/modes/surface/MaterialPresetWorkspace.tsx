@@ -173,7 +173,7 @@ function SchemeCard({
       : preset.source === 'workshop'
         ? '来自创意工坊的材质参数方案；应用后会覆盖当前表面参数。'
         : '系统内置材质参数方案；用于快速建立稳定的表面材质基线。',
-    preferOutsideWorkspace: true,
+    placementMode: 'workspace-edge',
   };
 
   return (
