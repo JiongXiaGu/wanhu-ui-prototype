@@ -133,7 +133,6 @@ function SchemeCard({
       { label: '点缀', value: scheme.colors[2] },
     ],
     description: '用于快速替换当前建筑的整套配色关系；应用后仍可继续调整做旧程度等建筑外观参数。',
-    placementMode: 'anchor',
   };
   return (
     <article className={'building-scheme-workspace__card ' + (selected ? 'is-selected' : '')}>
