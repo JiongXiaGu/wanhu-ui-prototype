@@ -17,7 +17,7 @@ let checks = 0;
 for (const left of [440, 700, 1000, 1270]) {
   for (const top of [730, 850]) {
     const anchor = { left, top, width: 180, height: 64 };
-    const placed = placeHoverSurface({ kind: 'card', anchor, size, bounds, workspace });
+    const placed = placeHoverSurface({ kind: 'card', anchor, size, bounds, workspace, placementMode: 'workspace-edge' });
     assert.equal(placed.placement, 'top');
     assert(!intersects({ ...placed, ...size }, workspace), '整张目录都必须避让，而不是只避让当前条目');
     assert(placed.left >= 16 && placed.top >= 16 && placed.left + size.width <= 1904 && placed.top + size.height <= 1064);
@@ -25,8 +25,14 @@ for (const left of [440, 700, 1000, 1270]) {
   }
 }
 const highWorkspace = { left: 700, top: 24, width: 640, height: 750 };
-const fallback = placeHoverSurface({ kind: 'card', anchor: { left: 720, top: 250, width: 120, height: 64 }, size, bounds, workspace: highWorkspace });
+const fallback = placeHoverSurface({ kind: 'card', anchor: { left: 720, top: 250, width: 120, height: 64 }, size, bounds, workspace: highWorkspace, placementMode: 'workspace-edge' });
 assert(!intersects({ ...fallback, ...size }, highWorkspace), '上方放不下时应选择目录外侧');
+checks++;
+const attachedAnchor = { left: 440, top: 730, width: 180, height: 64 };
+const attached = placeHoverSurface({ kind: 'card', anchor: attachedAnchor, size, bounds, workspace, placementMode: 'anchor' });
+assert.equal(attached.placement, 'right', 'Anchor 模式优先贴在条目右侧');
+assert(!intersects({ ...attached, ...size }, attachedAnchor), 'Anchor 模式不能遮住当前条目');
+assert(intersects({ ...attached, ...size }, workspace), 'Anchor 模式允许在目录内部贴近条目，而不是强制跳到 Workspace 上方');
 checks++;
 for (const anchor of [{ left: 16, top: 16, width: 30, height: 30 }, { left: 1870, top: 1000, width: 30, height: 30 }]) {
   const result = placeHoverSurface({ kind: 'card', anchor, size, bounds });
@@ -133,9 +139,12 @@ assert(!gameplayHudSourceForHover.includes('data-tooltip=') && gameplayHudSource
 assert(!designWorkspaceSourceForHover.includes('AssetInspector') && designWorkspaceSourceForHover.includes("kind: 'card'") && designWorkspaceSourceForHover.includes('hover.bind'), 'Design Workspace 必须使用通用 Hover Card');
 assert(materialWorkspaceSourceForHover.includes("kind: 'card'") && materialWorkspaceSourceForHover.includes('hover.bind'), 'Material Preset Workspace 必须使用通用 Hover Card');
 assert(buildingSchemeWorkspaceSourceForHover.includes("kind: 'card'") && buildingSchemeWorkspaceSourceForHover.includes('hover.bind'), 'Building Scheme Workspace 必须使用通用 Hover Card');
+assert(hoverOverlaySource.includes('placementMode?: HoverCardPlacementMode') && hoverOverlaySource.includes("placementMode ?? 'anchor'"), 'Hover Card 必须由框架统一持有显式 Placement Mode，默认 Anchor');
+assert(designWorkspaceSourceForHover.includes("placementMode: 'workspace-edge'") && materialWorkspaceSourceForHover.includes("placementMode: 'workspace-edge'"), 'Design / Material Workspace 保留显式 Workspace Edge 模式');
+assert(buildingSchemeWorkspaceSourceForHover.includes("placementMode: 'anchor'"), 'Building Scheme Hover Card 必须使用条目锚定模式');
 assert(hoverOverlaySource.includes('looksLikeShortcut') && hoverOverlaySource.includes('detailIsShortcut'), 'Tooltip label adapter 必须区分快捷键与普通描述');
 
-checks += 51;
+checks += 54;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
