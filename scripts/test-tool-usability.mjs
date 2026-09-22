@@ -70,6 +70,7 @@ const commandBarSource = await readFile('src/gameplay/CommandBar.tsx', 'utf8');
 const gameplayRefineCss = await readFile('src/gameplay-refine.css', 'utf8');
 const legacyStyles = await readFile('src/styles.css', 'utf8');
 const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
+const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 
 assert(sharedControlsCss.includes('.ui-scroll-region'), '共享控件必须持有 ui-scroll-region');
 assert(sharedControlsCss.includes('.ui-numeric-slider-field.is-standard'), '共享控件必须定义 standard density');
@@ -102,7 +103,6 @@ assert(!legacyStyles.includes('.command-bar{position:absolute') && !gameplayRefi
 checks += 28;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
-const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
 const operationHintsSource = await readFile('src/gameplay/GameplayOperationHints.tsx', 'utf8');
 const selectionActionBarSource = await readFile('src/selection/BuildingSelectionActionBar.tsx', 'utf8');
