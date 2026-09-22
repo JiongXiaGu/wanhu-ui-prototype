@@ -3,6 +3,8 @@
 .gameplay-operation-hints{
   box-sizing:border-box;
   width:232px;
+  z-index:34;
+  pointer-events:none;
   height:auto;
   min-height:0;
   max-height:none;

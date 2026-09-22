@@ -39,8 +39,10 @@ async function assertTerrainShell(label) {
   if ((await page.locator('.terrain-brush-preview__outer').count()) !== 1) {
     throw new Error(`${label}: terrain world preview should retain one outer brush ring.`);
   }
-  if (await page.locator('.gameplay-operation-hints').count()) {
-    throw new Error(`${label}: terrain tool should not keep the persistent text-heavy operation-hints panel.`);
+  const hints = page.locator('.gameplay-operation-hints');
+  if ((await hints.count()) !== 1) throw new Error(`${label}: terrain must keep exactly one persistent Operation Hints host.`);
+  if ((await hints.getAttribute('data-hint-context')) !== 'terrain-' + label) {
+    throw new Error(`${label}: terrain Operation Hints did not rebind to the active mode.`);
   }
 
   const utility = page.locator('.context-utility-toolbar[data-utility-context="terrain-edit"]');
@@ -82,7 +84,9 @@ async function assertTreeShell(label, mode) {
   const bar = page.locator('.tree-placement-toolbar-cluster .tool-action-bar');
   if ((await bar.locator('.placement-action-bar__button--mode').count()) !== 2) throw new Error(label + ': expected brush and single modes.');
   if ((await bar.getByRole('button', { name: '完成树木放置', exact: true }).count()) !== 1) throw new Error(label + ': complete action missing.');
-  if (await page.locator('.gameplay-operation-hints').count()) throw new Error(label + ': persistent operation hints should be hidden.');
+  const hints = page.locator('.gameplay-operation-hints');
+  if ((await hints.count()) !== 1) throw new Error(label + ': tree must keep exactly one persistent Operation Hints host.');
+  if ((await hints.getAttribute('data-hint-context')) !== 'tree-' + mode) throw new Error(label + ': tree Operation Hints context mismatch.');
 
   if (mode === 'brush') {
     if ((await panel.getByRole('button', { name: '随机混合四种树形', exact: true }).count()) !== 1) throw new Error(label + ': random mix missing.');

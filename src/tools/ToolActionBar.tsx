@@ -22,7 +22,10 @@ export interface ToolModeGroup {
 export interface ToolQuickAction {
   id: string;
   label: string;
+  shortLabel?: string;
   icon: UiIconSource;
+  active?: boolean;
+  pressed?: boolean;
   disabled?: boolean;
   onClick: () => void;
 }
@@ -31,10 +34,12 @@ interface ToolActionBarProps {
   className?: string;
   modeGroups: ToolModeGroup[];
   quickActions?: ToolQuickAction[];
+  quickActionPresentation?: 'icon-only' | 'icon-label';
   completeLabel?: string;
   completeShortLabel?: string;
   /** exit 仅结束即时编辑工具，不表示提交或回退一批修改。 */
   completeKind?: 'commit' | 'exit';
+  completeIcon?: UiIconSource;
   cancelLabel?: string;
   cancelShortLabel?: string;
   commitGroupLabel?: string;
@@ -47,9 +52,11 @@ export function ToolActionBar({
   className = '',
   modeGroups,
   quickActions = [],
+  quickActionPresentation = 'icon-only',
   completeLabel = '完成',
   completeShortLabel,
   completeKind = 'commit',
+  completeIcon,
   cancelLabel = '取消',
   cancelShortLabel,
   commitGroupLabel = '工具任务',
@@ -87,10 +94,21 @@ export function ToolActionBar({
       {quickActions.length > 0 && (
         <div className="placement-action-bar__section">
           <i className="placement-action-bar__divider" aria-hidden="true" />
-          <div className="placement-action-bar__quick-group" role="group" aria-label="快速操作">
-            {quickActions.map(({ id, label, icon, disabled, onClick }) => (
-              <button key={id} type="button" className="placement-action-bar__button placement-action-bar__button--quick" aria-label={label} data-tooltip={label} disabled={disabled} onClick={onClick}>
+          <div className={`placement-action-bar__quick-group ${quickActionPresentation === 'icon-label' ? 'is-labeled' : ''}`} role="group" aria-label="快速操作">
+            {quickActions.map(({ id, label, shortLabel, icon, active, pressed, disabled, onClick }) => (
+              <button
+                key={id}
+                type="button"
+                className={`placement-action-bar__button placement-action-bar__button--quick ${quickActionPresentation === 'icon-label' ? 'placement-action-bar__button--labeled' : ''} ${active ? 'is-active' : ''}`}
+                aria-label={label}
+                aria-pressed={pressed}
+                data-tooltip={label}
+                disabled={disabled}
+                onClick={onClick}
+              >
+                <i className="placement-action-bar__state-line" aria-hidden="true" />
                 <UiIconGlyph icon={icon} size={20} />
+                {quickActionPresentation === 'icon-label' && <span className="placement-action-bar__label" aria-hidden="true">{shortLabel ?? label}</span>}
               </button>
             ))}
           </div>
@@ -108,7 +126,7 @@ export function ToolActionBar({
             onClick={onComplete}
           >
             {completeKind === 'commit' && <i className="placement-action-bar__state-line" aria-hidden="true" />}
-            <CompleteIcon aria-hidden="true" />
+            {completeIcon ? <UiIconGlyph icon={completeIcon} size={20} /> : <CompleteIcon aria-hidden="true" />}
             {completeShortLabel && <span className="placement-action-bar__label" aria-hidden="true">{completeShortLabel}</span>}
           </button>
           {showCancel && onCancel && (

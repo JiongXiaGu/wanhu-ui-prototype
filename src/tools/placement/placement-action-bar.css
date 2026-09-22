@@ -44,6 +44,11 @@
 .placement-action-bar__button--mode.is-active>.placement-action-bar__state-line,
 .placement-action-bar__button--confirm>.placement-action-bar__state-line{opacity:.9}
 .placement-action-bar__button--quick{color:var(--command-icon,#8a8d87)}
+.placement-action-bar__button--quick.is-active{
+  background:linear-gradient(180deg,var(--command-active-top,rgba(169,132,75,.070)),var(--command-active-bottom,rgba(169,132,75,.018)));
+  color:var(--command-icon-active,#bd9959);
+}
+.placement-action-bar__button--quick.is-active>.placement-action-bar__state-line{opacity:.9}
 .placement-action-bar__button--confirm{
   color:var(--command-icon-active,#bd9959);
   background:linear-gradient(180deg,var(--command-primary-top,rgba(169,132,75,.095)),var(--command-primary-bottom,rgba(169,132,75,.030)));

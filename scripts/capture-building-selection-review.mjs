@@ -31,6 +31,9 @@ try {
   ok('selection exposes move', await page.getByRole('button', { name: '移动建筑', exact: true }).count() === 1);
   ok('selection exposes scheme toggle', await page.getByRole('button', { name: '配色', exact: true }).count() === 1);
   ok('selection exposes close', await page.getByRole('button', { name: '关闭建筑选择', exact: true }).count() === 1);
+  const selectionHints = page.locator('.gameplay-operation-hints');
+  ok('selection keeps persistent operation hints', await selectionHints.count() === 1);
+  ok('selection operation hints context', await selectionHints.getAttribute('data-hint-context') === 'building-selection');
   ok('left panel scheme field', await page.getByRole('button', { name: '打开当前建筑配色方案', exact: true }).count() === 1);
   ok('left panel current scheme', await page.getByText('墨瓦沉木', { exact: true }).count() === 1);
   ok('left panel weathering', await page.getByText('48%', { exact: true }).count() >= 1);
@@ -60,6 +63,7 @@ try {
   }
   ok('right utility has no color action', await utility.getByRole('button', { name: '配色所选建筑', exact: true }).count() === 0);
   await shot('building-selection-01-selected-appearance');
+  await page.screenshot({ path: out + '/operation-hints-selection.png' }); report.screenshots.push('operation-hints-selection');
 
   const schemeToggle = page.getByRole('button', { name: '配色', exact: true });
   await schemeToggle.click();
@@ -67,7 +71,9 @@ try {
   await page.waitForTimeout(180);
   ok('scheme toggle pressed', await schemeToggle.getAttribute('aria-pressed') === 'true');
   ok('scheme workspace open', await page.getByRole('button', { name: '应用建筑配色方案 粉墙黛瓦', exact: true }).count() === 1);
+  ok('scheme workspace keeps operation hints', await selectionHints.getAttribute('data-hint-context') === 'building-scheme');
   await shot('building-selection-02-scheme-toggle-open');
+  await page.screenshot({ path: out + '/operation-hints-selection-scheme.png' }); report.screenshots.push('operation-hints-selection-scheme');
 
   await page.getByRole('button', { name: '应用建筑配色方案 粉墙黛瓦', exact: true }).click();
   await page.waitForTimeout(100);
@@ -92,6 +98,7 @@ try {
   await page.waitForSelector('.context-utility-toolbar[data-utility-context="building-placement"]');
   await page.waitForTimeout(220);
   ok('move reuses placement utility', await page.locator('.context-utility-toolbar[data-utility-context="building-placement"]').getByRole('button', { name: '对齐最近道路', exact: true }).count() === 1);
+  ok('move rebinds operation hints', await selectionHints.getAttribute('data-hint-context') === 'building-placement-move');
   await shot('building-selection-04-move');
 
   await page.getByRole('button', { name: '完成移动', exact: true }).click();

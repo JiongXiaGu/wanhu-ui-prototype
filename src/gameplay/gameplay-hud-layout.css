@@ -129,6 +129,8 @@
   right:var(--hud-edge);
   bottom:calc(var(--hud-edge) + var(--hud-utility-tools-height) + var(--hud-gap-md));
 }
+.gameplay-screen .gameplay-operation-hints.is-standalone{bottom:var(--hud-edge)}
+.gameplay-screen--management .gameplay-operation-hints.is-standalone{width:202px}
 .gameplay-screen.has-world-utility-stack .gameplay-operation-hints,
 .gameplay-screen.has-placement-utility-stack .gameplay-operation-hints{
   bottom:var(--hud-bottom-safe-offset);

@@ -18,6 +18,22 @@ async function open(review, selector) {
 }
 async function shot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/usability-${name}.png` }); report.screenshots.push(name); }
 async function placementShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/${name}.png` }); report.screenshots.push(name); }
+async function operationHintsShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/operation-hints-${name}.png` }); report.screenshots.push('operation-hints-' + name); }
+async function checkPersistentHints(label, expectedContext, utilityExpected = true) {
+  const hints = page.locator('.gameplay-operation-hints');
+  assert.equal(await hints.count(), 1, label + ': 非 Pause Gameplay 必须恰好存在一个 Operation Hints Host');
+  assert.equal(await hints.getAttribute('data-hint-context'), expectedContext, label + ': Operation Hints Context Rebind 错误');
+  const hintsBox = await hints.boundingBox();
+  assert(hintsBox, label + ': Operation Hints 必须可测量');
+  assert(Math.abs((hintsBox.x + hintsBox.width) - (1920 - 16)) < 1.5, label + ': Operation Hints 必须固定在 16px 右安全边');
+  if (utilityExpected) {
+    const utilityBox = await page.locator('.context-utility-toolbar').boundingBox();
+    assert(utilityBox && overlap(hintsBox, utilityBox) < 1, label + ': Operation Hints 不得覆盖 Context Utility');
+    const gap = utilityBox.y - (hintsBox.y + hintsBox.height);
+    assert(gap >= 11 && gap <= 13, label + ': Operation Hints 与 Utility 应保持约 12px 间距');
+  }
+  report.checks.push({ label: label + '/operation-hints', expectedContext, hintsBox });
+}
 async function checkPlacementBottom(label) {
   const main = page.locator('.placement-main-action-bar');
   const utility = page.locator('.context-utility-toolbar.is-placement-stacked');
@@ -115,6 +131,8 @@ async function checkSelectEscape(label, focusOption) {
 
 try {
   await open('terrain-edit', '.terrain-edit-prototype');
+  await checkPersistentHints('地形/抬高', 'terrain-raise');
+  await operationHintsShot('terrain');
   const terrain = page.locator('.terrain-edit-toolbar-cluster');
   const firstWidth = (await terrain.boundingBox()).width;
   for (const name of ['抬高', '降低', '整平', '平滑', '坡面']) {
@@ -122,6 +140,8 @@ try {
     await checkToolLayout('地形/' + name);
     assert.equal((await terrain.boundingBox()).width, firstWidth, '切换模式不能改变工具栏宽度');
     assert.equal(await terrain.getByRole('button', { name, exact: true }).getAttribute('aria-pressed'), 'true');
+    const expectedTerrainContext = ({ '抬高': 'terrain-raise', '降低': 'terrain-lower', '整平': 'terrain-flatten', '平滑': 'terrain-smooth', '坡面': 'terrain-slope' })[name];
+    await checkPersistentHints('地形/' + name, expectedTerrainContext);
     await shot('terrain-' + name);
   }
   await terrain.getByRole('button', { name: '完成地形编辑', exact: true }).click();
@@ -149,12 +169,15 @@ try {
 
   await open('tree-brush', '.tree-placement-prototype');
   await checkToolLayout('树木/刷子');
+  await checkPersistentHints('树木/刷子', 'tree-brush');
   await checkPlacementBottom('树木/刷子');
   assert.equal(await page.getByRole('button', { name: '移动选中树木', exact: true }).count(), 0, '刷子模式不应强制展示单棵对象动作');
   await shot('tree-brush');
   await page.locator('.tree-placement-toolbar-cluster').getByRole('button', { name: '单棵', exact: true }).click(); await settle();
   await checkToolLayout('树木/单棵');
   await checkPlacementBottom('树木/单棵');
+  await checkPersistentHints('树木/单棵', 'tree-single');
+  await operationHintsShot('tree-single');
   assert.equal(await page.getByRole('button', { name: '移动选中树木', exact: true }).count(), 1);
   assert.equal(await page.getByRole('button', { name: '删除选中树木', exact: true }).count(), 1);
   await placementShot('placement-tree-84');
@@ -185,10 +208,14 @@ try {
   }
 
   await open('color-tool-surface', '.color-tool-surface-panel');
+  await checkPersistentHints('配色/表面', 'color-surface');
+  await operationHintsShot('color-surface');
   const colorBar = page.locator('.color-tool-toolbar-cluster');
   for (const [name, mode] of [['表面模式', 'surface'], ['灯光模式', 'lighting'], ['方案模式', 'scheme']]) {
     await colorBar.getByRole('button', { name, exact: true }).click(); await settle();
-    await checkToolLayout('配色/' + mode); await shot('color-' + mode);
+    await checkToolLayout('配色/' + mode);
+    await checkPersistentHints('配色/' + mode, 'color-' + mode);
+    await shot('color-' + mode);
   }
   assert.equal(await colorBar.getByRole('button', { name: '取消配色', exact: true }).count(), 0, '不应展示并不存在的回退操作');
   await colorBar.getByRole('button', { name: '完成配色', exact: true }).click();
@@ -196,6 +223,8 @@ try {
   report.checks.push({ label: '配色只有真实的结束动作，未新增提交/回退' });
 
   await open('workspace-building', '.workspace--catalog');
+  await checkPersistentHints('建筑目录', 'workspace-building');
+  await operationHintsShot('workspace-building');
   const cards = page.locator('.design-item-card');
   const count = await cards.count();
   assert(count >= 4, '建筑目录需要足够的条目用于两排避让检查');
@@ -254,6 +283,8 @@ try {
   }
   await page.setViewportSize({ width: 1920, height: 1080 });
   await open('weather', '.gameplay-context-panel--weather');
+  await checkPersistentHints('环境控制', 'context-weather');
+  await operationHintsShot('weather');
   await page.getByRole('button', { name: '场景模拟', exact: true }).click();
   const time = page.getByRole('slider', { name: '日内时间', exact: true });
   await time.focus(); await time.press('End'); await page.waitForSelector('.gameplay-screen[data-time-of-day="night"]');
@@ -261,7 +292,17 @@ try {
   await page.getByRole('button', { name: '建筑', exact: true }).click(); await page.waitForSelector('.workspace--catalog');
   await page.locator('.design-item-card').first().focus(); await checkInspector('夜景目录'); await shot('inspector-night');
 
+  await open('management-finance', '.management-space--finance');
+  await checkPersistentHints('城市财政', 'management-finance', false);
+  const [managementHintsBox, managementPanelBox] = await Promise.all([
+    page.locator('.gameplay-operation-hints').boundingBox(),
+    page.locator('.management-space__panel').boundingBox(),
+  ]);
+  assert(managementHintsBox && managementPanelBox && overlap(managementHintsBox, managementPanelBox) < 1, 'Management Operation Hints 必须放在 Blocking Panel 外侧');
+  await operationHintsShot('management-finance');
+
   await open('gameplay', '.gameplay-top-resource-shortcut');
+  await checkPersistentHints('普通 Gameplay', 'world');
   const metric = page.locator('.gameplay-top-resource-shortcut').first();
   await page.keyboard.press('Tab'); await metric.focus(); await page.waitForTimeout(450);
   const tooltip = await metric.evaluate(element => ({ visible: getComputedStyle(element, '::after').visibility, focused: element.matches(':focus-visible') }));

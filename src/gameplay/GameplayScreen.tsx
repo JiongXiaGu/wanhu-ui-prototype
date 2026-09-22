@@ -521,15 +521,26 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <TreePlacementTool state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onExit={exitTool} />
       )}
 
-      {space !== 'management' && !state.paused && state.selection === null && state.tool !== 'terrain-edit' && state.tool !== 'tree-placement' && state.tool !== 'color-tool' && (
+      {!state.paused && (
         <GameplayOperationHints
           tool={state.tool}
+          workspace={state.workspace}
+          dockCategory={state.dockCategory}
+          selection={state.selection}
+          buildingSchemeOpen={state.buildingSchemeOpen}
+          management={state.management}
+          contextPanel={state.contextPanel}
+          mapView={state.mapView}
+          mapPanelOpen={state.mapPanelOpen}
           worldDemolitionMode={state.worldDemolitionMode}
           buildingPlacementIntent={state.buildingPlacementIntent}
           roadDrawMode={state.roadDrawMode}
           terrainEditMode={state.terrainEditMode}
+          treePlacementMode={state.treePlacementMode}
+          colorToolMode={state.colorToolMode}
           cityWallConstructionMode={state.cityWallConstructionMode}
           cityWallGatePlacementMode={state.cityWallGatePlacementMode}
+          utilityPresent={showContextUtilityToolbar}
         />
       )}
 

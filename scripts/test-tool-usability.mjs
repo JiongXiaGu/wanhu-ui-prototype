@@ -78,6 +78,8 @@ checks += 13;
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
+const operationHintsSource = await readFile('src/gameplay/GameplayOperationHints.tsx', 'utf8');
+const selectionActionBarSource = await readFile('src/selection/BuildingSelectionActionBar.tsx', 'utf8');
 assert(hudLayoutCss.includes('--hud-bottom-panel-height:84px'), 'Main Dock 与双层 Utility 必须共用 84px 高度');
 assert(!hudLayoutCss.includes('--hud-main-dock-lift'), '统一同高后不得继续抬高 Main Dock');
 assert(hudLayoutCss.includes('bottom:var(--hud-edge);'), 'Main Dock 与 Utility 必须共用 16px 底边');
@@ -87,6 +89,11 @@ assert(utilityCss.includes('--placement-utility-button-size,36px') && utilityCss
 assert(hudLayoutCss.includes('--hud-bottom-safe-offset:calc(var(--hud-bottom-safe-line) + var(--hud-gap-md))'), 'Workspace / Hints 必须消费统一安全间距');
 assert(hudLayoutCss.includes('.gameplay-screen--workspace.has-world-utility-stack .workspace'), 'Workspace 必须有双层 Utility 安全线覆盖');
 assert(gameplayScreen.includes("(space === 'gameplay' || space === 'workspace')"), 'Workspace 打开时 World Utility 必须继续保持双层');
+assert(gameplayScreen.includes("{!state.paused && (") && !gameplayScreen.includes("state.selection === null && state.tool !== 'terrain-edit'"), 'Operation Hints 必须由 Gameplay 非 Pause 常驻 Host 挂载，Feature 不得自行隐藏');
+for (const context of ['building-selection', 'building-scheme', 'tree-brush', 'tree-single', 'color-surface', 'color-lighting', 'color-scheme', 'context-weather', 'management-']) {
+  assert(operationHintsSource.includes(context), 'Operation Hints Resolver 缺少上下文: ' + context);
+}
+assert(selectionActionBarSource.includes('ToolActionBar') && selectionActionBarSource.includes('quickActionPresentation="icon-label"'), 'Building Selection 必须消费共享 Secondary ToolActionBar 家族');
 assert(hudLayoutCss.includes('--placement-main-bar-height:var(--hud-bottom-panel-height)'), 'Placement Main Bar 必须复用 84px Bottom HUD 高度');
 assert(hudLayoutCss.includes('--placement-utility-height:var(--hud-bottom-panel-height)'), 'Placement Utility 必须复用 84px Bottom HUD 高度');
 assert(utilityCss.includes('.is-placement-stacked'), 'Placement Utility 必须拥有显式双层 Variant');
@@ -101,7 +108,7 @@ const buildingDock = await readFile('src/tools/building-placement/BuildingPlacem
 assert(!buildingDock.includes('quickActions') && !buildingDock.includes('RotateCcw'), '建筑旋转/镜像必须移出中下 Placement Main Bar');
 const roadDock = await readFile('src/tools/road-placement/RoadPlacementDock.tsx', 'utf8');
 assert(!roadDock.includes('quickActions') && !roadDock.includes('reverse-direction'), '道路对象动作必须移出中下 Placement Main Bar');
-checks += 19;
+checks += 30;
 
 // 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {
