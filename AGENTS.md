@@ -30,7 +30,7 @@
 - 详情浮层避让整个 Workspace；不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
 - 世界对象选中属于 Gameplay Selection，不新增 Selection Tool。V1 只实现 Building Consumer；UI State 只持有 kind + entityId，经营数据由 Selection Presenter / ViewModel 提供。
 - Building Selection 中下主操作为“移动 / 配色(toggle) / 关闭”，不提供单独“编辑建筑”。配色直接开关 Selection 内 BuildingSchemeWorkspace，不进入顶层 Color Tool；右下只保留聚焦 / Undo / Redo / 移除，移除必须使用共享危险确认 Dialog。Building Move 与 Building New 共用 Building Placement（intent=new|move）。
-- World Utility 保持两行：第一行固定地图解锁 / 区域 / 地形 / 配色，第二行放网格 / 范围动作 / Undo / Redo / 批量摧毁。普通 Gameplay 与 Design Workspace 都保持双层；Main Dock 与双层 Utility 统一为 84px 高、bottom=16px，同高同底边。真实 Placement 同样使用 84px 中下主栏 + 84px 右下双层 Utility：第一行只放对象 Action，第二行放 Toggle / History / optional Danger；Terrain / Color / Building Selection 不机械套用 Placement 结构。Workspace / Operation Hints 统一消费 112px Bottom HUD Safe Offset。
+- World Utility 保持两行：第一行固定地图解锁 / 区域 / 地形 / 配色，第二行放网格 / 范围动作 / Undo / Redo / 批量摧毁。普通 Gameplay 与 Design Workspace 都保持双层；Main Dock 与双层 Utility 统一为 84px 高、bottom=16px，同高同底边。真实 Placement 同样使用 84px 中下主栏 + 84px 右下双层 Utility：第一行只放 Primary Object Action，第二行按 Toggle / Secondary Action / History / optional Danger 组织；Placement Utility 宽度必须随可见内容收缩、第二行固定右对齐，并且每个真实 Placement 状态都必须满足“第二行可见图标数严格多于第一行”。Terrain / Color / Building Selection 不机械套用 Placement 结构。Workspace / Operation Hints 统一消费 112px Bottom HUD Safe Offset。
 
 ## 开发与交付
 

@@ -90,14 +90,18 @@ assert(gameplayScreen.includes("(space === 'gameplay' || space === 'workspace')"
 assert(hudLayoutCss.includes('--placement-main-bar-height:var(--hud-bottom-panel-height)'), 'Placement Main Bar 必须复用 84px Bottom HUD 高度');
 assert(hudLayoutCss.includes('--placement-utility-height:var(--hud-bottom-panel-height)'), 'Placement Utility 必须复用 84px Bottom HUD 高度');
 assert(utilityCss.includes('.is-placement-stacked'), 'Placement Utility 必须拥有显式双层 Variant');
+assert(utilityCss.includes('.is-placement-stacked .context-utility-toolbar__row[data-utility-row="2"]{justify-content:flex-end}'), 'Placement 第二行必须固定右对齐');
+assert(hudLayoutCss.includes('.context-utility-toolbar.is-placement-stacked') && hudLayoutCss.includes('width:auto;'), 'Placement Utility 必须按内容自适应宽度，不能继续使用固定工具宽度');
 const utilitySource = await readFile('src/gameplay/ContextUtilityToolbar.tsx', 'utf8');
 assert(utilitySource.includes("layout: 'placement-stacked'"), 'Placement 行语义必须由 Definition 表达');
 assert(utilitySource.includes('data-utility-row-role={row.role}'), 'Runtime 必须输出显式 Utility 行语义');
+assert(utilitySource.includes('data-utility-item-count={visibleItemCount}'), 'Runtime 必须输出每行可见图标数，供结构审查');
+assert(utilitySource.includes("id: 'building-support'") && utilitySource.includes("id: 'building-align-road'") && utilitySource.includes("id: 'building-calibrate-footprint'"), '建筑对齐道路 / 校准基底必须属于第二行 support 定义');
 const buildingDock = await readFile('src/tools/building-placement/BuildingPlacementDock.tsx', 'utf8');
 assert(!buildingDock.includes('quickActions') && !buildingDock.includes('RotateCcw'), '建筑旋转/镜像必须移出中下 Placement Main Bar');
 const roadDock = await readFile('src/tools/road-placement/RoadPlacementDock.tsx', 'utf8');
 assert(!roadDock.includes('quickActions') && !roadDock.includes('reverse-direction'), '道路对象动作必须移出中下 Placement Main Bar');
-checks += 15;
+checks += 19;
 
 // 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {

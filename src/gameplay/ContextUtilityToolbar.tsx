@@ -63,10 +63,15 @@ const DEFINITIONS: Record<UtilityContext, UtilityDefinition> = {
     { id: 'building-actions', role: 'action', groups: [[
       { id: 'building-rotate-left', label: '逆时针旋转', icon: RotateCcw, kind: 'action' }, { id: 'building-rotate-right', label: '顺时针旋转', icon: RotateCw, kind: 'action' },
       { id: 'building-mirror', label: '镜像建筑', icon: ArrowLeftRight, kind: 'action' },
-    ], [
-      { id: 'building-align-road', label: '对齐最近道路', icon: Route, kind: 'action' }, { id: 'building-calibrate-footprint', label: '校准建筑基底', icon: Building2, kind: 'action' },
     ]]},
-    { id: 'building-support', role: 'support', groups: [gridGroup, historyGroup] },
+    { id: 'building-support', role: 'support', groups: [
+      gridGroup,
+      [
+        { id: 'building-align-road', label: '对齐最近道路', icon: Route, kind: 'action' },
+        { id: 'building-calibrate-footprint', label: '校准建筑基底', icon: Building2, kind: 'action' },
+      ],
+      historyGroup,
+    ] },
   ]},
   'road-placement': { layout: 'placement-stacked', rows: [
     { id: 'road-actions', role: 'action', groups: [[{ id: 'road-reverse-direction', label: '反转道路方向', icon: ArrowLeftRight, kind: 'action' }], [
@@ -231,8 +236,15 @@ export function ContextUtilityToolbar({
     >
       {rows.map((row, rowIndex) => {
         const visibleGroups = row.groups.map((group) => group.filter(itemVisible)).filter((group) => group.length > 0);
+        const visibleItemCount = visibleGroups.reduce((count, group) => count + group.length, 0);
         return (
-          <div className="context-utility-toolbar__row" data-utility-row={rowIndex + 1} data-utility-row-role={row.role} key={row.id}>
+          <div
+            className="context-utility-toolbar__row"
+            data-utility-row={rowIndex + 1}
+            data-utility-row-role={row.role}
+            data-utility-item-count={visibleItemCount}
+            key={row.id}
+          >
             {visibleGroups.map((group, groupIndex) => (
               <span className="context-utility-toolbar__group" key={group[0].id}>
                 {groupIndex > 0 && <i className="context-utility-toolbar__separator" aria-hidden="true" />}

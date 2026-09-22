@@ -122,11 +122,27 @@ Web Build、UI Review、实际审图与 Unity Player 验收是不同证据。当
 真实 Placement 页统一使用同一底部空间契约：
 
 - 中下 Placement Main Action Bar：只承担放置主模式、完成与退出；高度 84px，bottom=16px。模式与流程动作使用 20px 图标 + 12px 短中文文字，额外高度用于 60px 操作命中区和呼吸感，不放大图标。
-- 右下 Placement Utility：高度 84px，bottom=16px，固定两行。第一行只放直接操作当前对象的 Action；第二行只放 Toggle / History / 可选 Danger。
+- 右下 Placement Utility：高度 84px，bottom=16px，固定两行。第一行只放 Primary Object Action；第二行放 Toggle / Secondary Action / History / 可选 Danger。
 - Utility 两行均为 36px，按钮 36×36，行间距 4px，上下 padding 4px，图标 20px。
 - Undo / Redo 固定在第二行相邻 History Group；Danger 只有存在真实删除/拆除能力时才挂载，并固定第二行最右。没有业务能力时不显示 Disabled Trash。
-- Building 的旋转 / 镜像、Road 的方向动作、城墙 / Gate / Stair 的正反面、旋转和方向动作均由右下第一行表达，不再复制到中下主栏。
+- Building 第一行只保留旋转左 / 旋转右 / 镜像；对齐道路 / 校准基底下移第二行。Road、城墙 / Gate / Stair 的主要对象变换保持第一行。
 - Tree 的刷子 / 单棵属于中下主模式；单棵对象存在时，移动 / 旋转在右下第一行，删除在第二行最右 Danger；刷子或对象不存在时这些组直接隐藏。
 - Terrain Edit、Color Tool、Building Selection 等非 Placement 空间不机械套用此规则。
 
 ContextUtilityToolbar 的 Definition 自身持有 layout + rows + role + groups，不允许依靠按钮 ID 或 CSS DOM 顺序推断行职责。迁移到 UI Toolkit 时对应稳定 UXML Row 容器；业务状态由 Controller / ViewModel 提供。
+
+
+### Placement Utility 紧凑布局不变量
+
+所有真实 Placement 的右下 Utility 必须同时满足以下不变量：
+
+- 高度固定 84px，两行均使用 36px 命中区，行间距 4px；
+- 面板宽度由当前可见内容决定，不使用统一固定宽度；按钮少的工具必须自然缩短；
+- 第二行整体向右对齐，右边缘与 Utility 内容区右边缘对齐；
+- **第二行可见图标数量必须严格多于第一行**，这是所有 Placement 状态的硬性结构规则，而不是视觉建议；
+- 第一行只放 Primary Object Action；第二行按“Toggle → Secondary Action → Undo / Redo → optional Danger”的顺序组织；
+- Undo / Redo 固定相邻；Danger 若存在必须最右；没有真实危险动作时不显示占位或 Disabled Trash；
+- Building Placement 第一行固定为左转 / 右转 / 镜像；对齐道路 / 校准基底下移到第二行，位于 Toggle 之后、Undo / Redo 之前；
+- 状态切换后仍必须重新满足“第二行图标数 > 第一行”，例如 Tree Brush、Tree Single、City Wall Range / Fixed Width、Gate Free / Connected 都要独立验证。
+
+Web Prototype 可以使用绝对定位元素的内容收缩验证该视觉结果；迁移 Unity UI Toolkit 时不得复制固定像素宽度，应由共享 Placement Utility Host 根据两行可见项的 preferred width 取较大值。行语义与图标计数来自 Definition / ViewModel，不从 USS 位置反推业务状态。

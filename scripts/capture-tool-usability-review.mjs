@@ -32,12 +32,24 @@ async function checkPlacementBottom(label) {
   assert.equal(await rows.nth(0).getAttribute('data-utility-row-role'), 'action', label + ': 第一行必须表达 Action');
   assert.equal(await rows.nth(1).getAttribute('data-utility-row-role'), 'support', label + ': 第二行必须表达 Support');
   const firstKinds = await rows.nth(0).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('data-utility-kind')));
-  assert(firstKinds.every(kind => kind === 'action'), label + ': 第一行只能出现 Action');
+  assert(firstKinds.every(kind => kind === 'action'), label + ': 第一行只能出现 Primary Action');
   const secondMeta = await rows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => ({
     label: button.getAttribute('aria-label'), kind: button.getAttribute('data-utility-kind'),
     danger: button.getAttribute('data-utility-danger'), right: button.getBoundingClientRect().right,
   })));
-  assert(secondMeta.every(item => item.kind === 'toggle' || item.kind === 'history' || item.danger === 'true'), label + ': 第二行只能出现 Toggle / History / Danger');
+  assert(secondMeta.every(item => item.kind === 'toggle' || item.kind === 'action' || item.kind === 'history'), label + ': 第二行只能出现 Toggle / Secondary Action / History / Danger');
+  assert(secondMeta.length > firstKinds.length, label + ': 第二行可见图标数必须严格多于第一行');
+  const secondRowBox = await rows.nth(1).boundingBox();
+  const secondButtons = rows.nth(1).getByRole('button');
+  const lastSecondButtonBox = await secondButtons.last().boundingBox();
+  assert(secondRowBox && lastSecondButtonBox && Math.abs((lastSecondButtonBox.x + lastSecondButtonBox.width) - (secondRowBox.x + secondRowBox.width)) < 1.5, label + ': 第二行必须向右对齐');
+  const supportGroups = rows.nth(1).locator(':scope > .context-utility-toolbar__group');
+  const supportGroupCount = await supportGroups.count();
+  const firstSupportGroupBox = supportGroupCount ? await supportGroups.first().boundingBox() : null;
+  const lastSupportGroupBox = supportGroupCount ? await supportGroups.last().boundingBox() : null;
+  assert(firstSupportGroupBox && lastSupportGroupBox, label + ': 第二行必须存在可见分组');
+  const supportContentWidth = lastSupportGroupBox.x + lastSupportGroupBox.width - firstSupportGroupBox.x;
+  assert(Math.abs(utilityBox.width - (supportContentWidth + 12)) < 2, label + ': Placement Utility 宽度必须由内容收缩，而不是固定宽度');
   const undoIndex = secondMeta.findIndex(item => item.label === '撤销 · Ctrl+Z');
   const redoIndex = secondMeta.findIndex(item => item.label === '重做 · Ctrl+Y');
   assert(undoIndex >= 0 && redoIndex === undoIndex + 1, label + ': Undo / Redo 必须固定相邻且在第二行');
@@ -119,8 +131,12 @@ try {
   await checkToolLayout('建筑放置');
   await checkPlacementBottom('建筑放置');
   assert.equal(await page.locator('.building-placement-toolbar-cluster').getByRole('button', { name: '逆时针旋转', exact: true }).count(), 0, '建筑旋转不得继续留在中下主栏');
-  const buildingActionLabels = await page.locator('.context-utility-toolbar__row').nth(0).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
-  assert.deepEqual(buildingActionLabels.slice(0, 3), ['逆时针旋转', '顺时针旋转', '镜像建筑']);
+  const buildingRows = page.locator('.context-utility-toolbar[data-utility-context="building-placement"] .context-utility-toolbar__row');
+  const buildingActionLabels = await buildingRows.nth(0).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+  const buildingSupportLabels = await buildingRows.nth(1).getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label')));
+  assert.deepEqual(buildingActionLabels, ['逆时针旋转', '顺时针旋转', '镜像建筑']);
+  assert.deepEqual(buildingSupportLabels, ['网格吸附', '网格显示', '对齐最近道路', '校准建筑基底', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']);
+  assert(buildingSupportLabels.length > buildingActionLabels.length, '建筑 Placement 第二行图标必须严格多于第一行');
   await placementShot('placement-building-84');
   await placementShot('placement-building-utility-two-rows');
 

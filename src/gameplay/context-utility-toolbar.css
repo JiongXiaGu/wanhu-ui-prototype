@@ -9,6 +9,7 @@
 .gameplay-screen > .context-utility-toolbar.is-placement-stacked .context-utility-toolbar__button{width:var(--placement-utility-button-size,36px);height:var(--placement-utility-button-size,36px);flex-basis:var(--placement-utility-button-size,36px)}
 .gameplay-screen > .context-utility-toolbar.is-world-stacked .context-utility-toolbar__separator,
 .gameplay-screen > .context-utility-toolbar.is-placement-stacked .context-utility-toolbar__separator{height:22px}
+.gameplay-screen > .context-utility-toolbar.is-placement-stacked .context-utility-toolbar__row[data-utility-row="2"]{justify-content:flex-end}
 .context-utility-toolbar__row[data-utility-row="1"]{position:relative}
 .context-utility-toolbar__row[data-utility-row="1"]::after{content:'';position:absolute;left:18px;right:18px;bottom:-1px;height:1px;background:rgba(238,233,223,.032);pointer-events:none}
 .gameplay-screen > .context-utility-toolbar.is-exiting{opacity:0;pointer-events:none;transform:translateY(6px);transition-duration:var(--wanhu-motion-fast,100ms);transition-timing-function:var(--wanhu-motion-ease-in,ease-in)}

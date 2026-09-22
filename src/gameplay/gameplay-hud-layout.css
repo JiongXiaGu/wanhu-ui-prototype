@@ -109,15 +109,12 @@
 .gameplay-screen > .context-utility-toolbar[data-utility-context="world"]{width:var(--hud-world-tools-width)}
 .gameplay-screen > .context-utility-toolbar[data-utility-context="world"].is-world-stacked{width:var(--hud-world-tools-stacked-width);height:var(--hud-world-tools-stacked-height)}
 .gameplay-screen > .context-utility-toolbar[data-utility-context="building-selection"]{width:218px}
-.gameplay-screen > .context-utility-toolbar[data-utility-context="building-placement"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="terrain-edit"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="tree-placement"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-construction"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-free"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-gate-connected"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-access-stair"],
-.gameplay-screen > .context-utility-toolbar[data-utility-context="city-wall-transition-stair"]{width:var(--hud-tool-tools-width)}
+.gameplay-screen > .context-utility-toolbar[data-utility-context="terrain-edit"]{width:var(--hud-tool-tools-width)}
+.gameplay-screen > .context-utility-toolbar.is-placement-stacked{
+  width:auto;
+  min-width:0;
+  max-width:calc(100% - (var(--hud-edge) * 2));
+}
 .gameplay-screen > .context-utility-toolbar[data-utility-context="building-placement"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="road-placement"],
 .gameplay-screen > .context-utility-toolbar[data-utility-context="tree-placement"],
