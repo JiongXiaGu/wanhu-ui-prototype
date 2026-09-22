@@ -58,6 +58,7 @@
 - 1080p 共享文字：Metadata / Caption 11px，Label / Body 12px，Reading 13px，Subheading 14px，Panel / Workspace Title 16 / 18px。图标仍为 14 / 16 / 18 / 20 / 24px。
 - Feature 不重写共享控件基础字号与状态。Numeric Slider 内部尺寸只通过 shared `standard / compact` density 选择；Scrollbar 统一消费 `ui-scroll-region`，Feature 只负责 overflow / max-height。禁止用更小文字、transform scale 或额外空白列掩盖布局问题。
 - Hover 中性提亮，Selected / On 熟铜，Focus 独立轮廓；选中与焦点必须可以并存。
+- Top Control Tray 的 Geometry 唯一 Owner 是 `src/gameplay/gameplay-top-shell.css`：400×38、`84 / 1 / flexible / 1 / 44` 单行 Grid、2 / 5 / 1 三组按钮。`wanhu-surface-system.css` 只持有其 Surface / 状态材质；迁移 Tooltip 或清理 USS 时不得连带删除 Control Tray Geometry。
 - 不新增末尾美化覆盖文件；在 Theme、Surface、Control 或对应组件的现有所有者中修改。
 
 正式文档记录稳定职责、边界、生命周期、不变量与 Unity 映射，不重复实现。阶段性记录放在 Documentation/开发记录，不创建额外 _AI 文档层。
