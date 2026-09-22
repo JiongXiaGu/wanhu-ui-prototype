@@ -83,7 +83,7 @@ assert(!hudLayoutCss.includes('--hud-main-dock-lift'), '统一同高后不得继
 assert(hudLayoutCss.includes('bottom:var(--hud-edge);'), 'Main Dock 与 Utility 必须共用 16px 底边');
 assert(hudLayoutCss.includes('--hud-bottom-safe-line:calc(var(--hud-edge) + var(--hud-bottom-panel-height))'), 'Bottom HUD Safe Line 必须由统一底部面板高度定义');
 const utilityCss = await readFile('src/gameplay/context-utility-toolbar.css', 'utf8');
-assert(utilityCss.includes('is-world-stacked .context-utility-toolbar__button{width:36px;height:36px;flex-basis:36px}'), '84px 双层 Utility 必须使用 36px 命中区');
+assert(utilityCss.includes('--placement-utility-button-size,36px') && utilityCss.includes('.is-placement-stacked .context-utility-toolbar__button'), '84px World / Placement 双层 Utility 必须共用 36px 命中区');
 assert(hudLayoutCss.includes('--hud-bottom-safe-offset:calc(var(--hud-bottom-safe-line) + var(--hud-gap-md))'), 'Workspace / Hints 必须消费统一安全间距');
 assert(hudLayoutCss.includes('.gameplay-screen--workspace.has-world-utility-stack .workspace'), 'Workspace 必须有双层 Utility 安全线覆盖');
 assert(gameplayScreen.includes("(space === 'gameplay' || space === 'workspace')"), 'Workspace 打开时 World Utility 必须继续保持双层');
