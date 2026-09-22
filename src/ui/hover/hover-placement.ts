@@ -61,6 +61,10 @@ export function placeHoverSurface({
     { placement: 'bottom', left: cx - w / 2, top: anchor.top + anchor.height + gap },
   ];
 
+  const workspaceAnchorCandidates: Array<{ placement: HoverPlacement; left: number; top: number }> = [
+    { placement: 'top', left: cx - w / 2, top: anchor.top - gap - h },
+  ];
+
   const workspaceCardCandidates: Array<{ placement: HoverPlacement; left: number; top: number }> = [
     { placement: 'top', left: cx - w / 2, top: workspaceFrame.top - gap - h },
     { placement: 'left', left: workspaceFrame.left - gap - w, top: cy - h / 2 },
@@ -70,7 +74,9 @@ export function placeHoverSurface({
 
   const cardCandidates = placementMode === 'workspace-edge' && workspace
     ? workspaceCardCandidates
-    : anchorCardCandidates;
+    : workspace
+      ? workspaceAnchorCandidates
+      : anchorCardCandidates;
 
   const candidates = kind === 'tooltip' ? tooltipCandidates : cardCandidates;
   const blocked = kind === 'card' && placementMode === 'workspace-edge' && workspace
