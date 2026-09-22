@@ -69,7 +69,7 @@
 Hover 详情：
 
 - Card 复用全局 Rich Hover Card，不建立材质专用详情浮层；
-- 使用框架默认 `anchor`，优先 right → left → top → bottom；
+- 作为 Catalog Workspace，固定显示在当前 Material Card 上方并水平居中；
 - Feature 不声明私有 `placementMode`，也不把整个 Workspace 当成默认避让区；
 - Hover Card 不覆盖当前 Card，但允许覆盖相邻目录条目；拖拽开始时必须清理 Hover，管理菜单仍保持独立可交互 Popover 语义。
 
