@@ -349,8 +349,8 @@ if ((await wallPanel.getAttribute('data-wall-construction-mode')) !== 'fixed-wid
 if ((await wallPanel.getAttribute('data-wall-facing')) !== 'right') {
   throw new Error('Fixed-width mode should default Front to path right side.');
 }
-if ((await wallBar.getByRole('button', { name: '交换正反面', exact: true }).count()) !== 1) {
-  throw new Error('Fixed-width mode must expose facing flip.');
+if ((await wallUtility.getByRole('button', { name: '交换正反面', exact: true }).count()) !== 1) {
+  throw new Error('Fixed-width mode must expose facing flip in Placement Utility row 1.');
 }
 for (const text of ['定宽延伸', '当前路径']) {
   if ((await wallPanel.getByText(text, { exact: true }).count()) !== 1) {
@@ -374,7 +374,7 @@ if ((await page.getByText('城墙 · 定宽延伸', { exact: true }).count()) !=
   throw new Error('City wall operation hints should rebind to fixed-width mode.');
 }
 
-await wallBar.getByRole('button', { name: '交换正反面', exact: true }).click();
+await wallUtility.getByRole('button', { name: '交换正反面', exact: true }).click();
 await page.waitForTimeout(100);
 if ((await wallPanel.getAttribute('data-wall-facing')) !== 'left') {
   throw new Error('City wall facing should flip from path right to path left.');
@@ -433,13 +433,18 @@ for (const mode of ['自由放置', '城墙连接']) {
     throw new Error('City wall gate placement mode missing: ' + mode);
   }
 }
-for (const action of ['城门左转', '城门右转', '交换正反面', '完成城墙门洞放置', '取消城墙门洞放置']) {
+for (const action of ['完成城墙门洞放置', '取消城墙门洞放置']) {
   if ((await gateBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
-    throw new Error('City wall gate free action missing: ' + action);
+    throw new Error('City wall gate flow action missing: ' + action);
   }
 }
 
 const gateFreeUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-gate-free"]');
+for (const action of ['城门左转', '城门右转', '交换正反面']) {
+  if ((await gateFreeUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall gate object action missing from Placement Utility: ' + action);
+  }
+}
 for (const action of ['网格吸附', '网格显示', '门洞净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
   if ((await gateFreeUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
     throw new Error('City wall gate free utility missing: ' + action);
@@ -471,16 +476,15 @@ for (const redundant of ['放置状态', '当前连接', '城墙体系', '墙体
     throw new Error('Connected gate left panel should keep only editable parameters: ' + redundant);
   }
 }
+const gateConnectedUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-gate-connected"]');
 for (const retiredAction of ['城门左转', '城门右转']) {
-  if (await gateBar.getByRole('button', { name: retiredAction, exact: true }).count()) {
+  if (await gateConnectedUtility.getByRole('button', { name: retiredAction, exact: true }).count()) {
     throw new Error('Wall-connected gate should hide free rotation action: ' + retiredAction);
   }
 }
-if ((await gateBar.getByRole('button', { name: '交换正反面', exact: true }).count()) !== 1) {
-  throw new Error('Wall-connected gate should retain semantic facing flip.');
+if ((await gateConnectedUtility.getByRole('button', { name: '交换正反面', exact: true }).count()) !== 1) {
+  throw new Error('Wall-connected gate should retain semantic facing flip in Placement Utility.');
 }
-
-const gateConnectedUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-gate-connected"]');
 for (const action of ['网格显示', '墙体连接点', '门洞净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
   if ((await gateConnectedUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
     throw new Error('Connected gate utility missing: ' + action);
@@ -504,7 +508,7 @@ if ((await page.getByText('城门 · 城墙连接', { exact: true }).count()) !=
 }
 await page.screenshot({ path: outDir + '/city-wall-gate-19-connected.png' });
 
-await gateBar.getByRole('button', { name: '交换正反面', exact: true }).click();
+await gateConnectedUtility.getByRole('button', { name: '交换正反面', exact: true }).click();
 await page.waitForTimeout(100);
 if ((await gatePanel.getAttribute('data-gate-facing-flipped')) !== 'true') {
   throw new Error('Gate facing semantic should flip independently from transform rotation.');
@@ -552,13 +556,18 @@ const accessStairBar = page.locator('.city-wall-access-stair-toolbar-cluster .to
 if ((await accessStairBar.locator('.placement-action-bar__button--mode').count()) !== 0) {
   throw new Error('City wall access stair should not expose placement mode buttons in the first version.');
 }
-for (const action of ['登城梯左转', '登城梯右转', '交换上下端', '完成登城梯放置', '取消登城梯放置']) {
+for (const action of ['完成登城梯放置', '取消登城梯放置']) {
   if ((await accessStairBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
-    throw new Error('City wall access stair action missing: ' + action);
+    throw new Error('City wall access stair flow action missing: ' + action);
   }
 }
 
 const accessStairUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-access-stair"]');
+for (const action of ['登城梯左转', '登城梯右转', '交换上下端']) {
+  if ((await accessStairUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall access stair object action missing from Placement Utility: ' + action);
+  }
+}
 for (const action of ['网格吸附', '网格显示', '楼梯净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
   if ((await accessStairUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
     throw new Error('City wall access stair utility missing: ' + action);
@@ -575,8 +584,8 @@ if ((await page.getByText('登城梯 · 自由放置', { exact: true }).count())
 }
 await page.screenshot({ path: outDir + '/city-wall-access-stair-22-free.png' });
 
-await accessStairBar.getByRole('button', { name: '登城梯右转', exact: true }).click();
-await accessStairBar.getByRole('button', { name: '交换上下端', exact: true }).click();
+await accessStairUtility.getByRole('button', { name: '登城梯右转', exact: true }).click();
+await accessStairUtility.getByRole('button', { name: '交换上下端', exact: true }).click();
 await page.waitForTimeout(120);
 if ((await accessStairPanel.getAttribute('data-stair-rotation')) !== '90') {
   throw new Error('City wall access stair should rotate by explicit player action.');
@@ -627,13 +636,18 @@ const transitionStairBar = page.locator('.city-wall-transition-stair-toolbar-clu
 if ((await transitionStairBar.locator('.placement-action-bar__button--mode').count()) !== 0) {
   throw new Error('City wall transition stair should not expose placement mode buttons in the first version.');
 }
-for (const action of ['高差楼梯左转', '高差楼梯右转', '交换上下端', '完成高差楼梯放置', '取消高差楼梯放置']) {
+for (const action of ['完成高差楼梯放置', '取消高差楼梯放置']) {
   if ((await transitionStairBar.getByRole('button', { name: action, exact: true }).count()) !== 1) {
-    throw new Error('City wall transition stair action missing: ' + action);
+    throw new Error('City wall transition stair flow action missing: ' + action);
   }
 }
 
 const transitionStairUtility = page.locator('.context-utility-toolbar[data-utility-context="city-wall-transition-stair"]');
+for (const action of ['高差楼梯左转', '高差楼梯右转', '交换上下端']) {
+  if ((await transitionStairUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
+    throw new Error('City wall transition stair object action missing from Placement Utility: ' + action);
+  }
+}
 for (const action of ['网格吸附', '网格显示', '楼梯净空', '撤销 · Ctrl+Z', '重做 · Ctrl+Y']) {
   if ((await transitionStairUtility.getByRole('button', { name: action, exact: true }).count()) !== 1) {
     throw new Error('City wall transition stair utility missing: ' + action);
@@ -653,8 +667,8 @@ if ((await page.getByText('高差楼梯 · 自由放置', { exact: true }).count
 }
 await page.screenshot({ path: outDir + '/city-wall-transition-stair-25-free.png' });
 
-await transitionStairBar.getByRole('button', { name: '高差楼梯右转', exact: true }).click();
-await transitionStairBar.getByRole('button', { name: '交换上下端', exact: true }).click();
+await transitionStairUtility.getByRole('button', { name: '高差楼梯右转', exact: true }).click();
+await transitionStairUtility.getByRole('button', { name: '交换上下端', exact: true }).click();
 await page.waitForTimeout(120);
 if ((await transitionStairPanel.getAttribute('data-transition-stair-rotation')) !== '90') {
   throw new Error('City wall transition stair should rotate by explicit player action.');
