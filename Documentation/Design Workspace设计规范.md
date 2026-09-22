@@ -196,7 +196,7 @@ Hover Card 必须明显高于 Workspace Surface，而不是与 Workspace 混成�
 
 ### 定位
 
-Hover Card 根据内容实际尺寸与 Anchor 位置动态定位，统一消费框架默认 `anchor`：右侧 → 左侧 → 上方 → 下方，并 Clamp 到 `16px` Gameplay Safe Edge。允许覆盖相邻目录条目，但不得覆盖当前 Anchor。
+Hover Card 根据内容实际尺寸与 Anchor 位置动态定位。Catalog Workspace 固定显示在当前 Asset Card 上方，并以 Card 水平中心对齐；只做 Safe Edge / Clamp，不再在右 / 左 / 上 / 下之间跳转。允许覆盖相邻目录条目，但不得覆盖当前 Anchor。
 
 Web Prototype 使用 `getBoundingClientRect()` 与 Inspector 实际尺寸；最终 Unity UI Toolkit 使用 `worldBound / resolvedStyle` 完成同类定位。不要假定固定宽高后硬编码位置。
 
