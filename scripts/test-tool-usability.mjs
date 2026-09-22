@@ -89,6 +89,8 @@ const materialWorkspaceSourceForHover = await readFile('src/tools/color-tool/mod
 const buildingSchemeWorkspaceSourceForHover = await readFile('src/tools/color-tool/modes/scheme/BuildingSchemeWorkspace.tsx', 'utf8');
 const buildingParameters = await readFile('src/tools/building-common/BuildingParameterSections.tsx', 'utf8');
 const hudLayoutCss = await readFile('src/gameplay/gameplay-hud-layout.css', 'utf8');
+const topShellCss = await readFile('src/gameplay/gameplay-top-shell.css', 'utf8');
+const surfaceSystemCss = await readFile('src/ui/wanhu-surface-system.css', 'utf8');
 
 assert(sharedControlsCss.includes('.ui-scroll-region'), '共享控件必须持有 ui-scroll-region');
 assert(sharedControlsCss.includes('.ui-numeric-slider-field.is-standard'), '共享控件必须定义 standard density');
@@ -124,6 +126,10 @@ assert(!commandBarSource.includes('<i className="main-dock__state-line" aria-hid
 assert(!mainDockCss.includes('.main-dock__mode-button .main-dock__state-line') && mainDockCss.includes('.main-dock__category-button .main-dock__state-line'), '只删除 Mode 底线，Category 顶部状态线必须保留');
 assert(!legacyStyles.includes('.command-bar{position:absolute'), '旧 Main Dock Geometry 不得继续散落在 styles.css');
 assert(!legacyStyles.includes('/* Workspace base geometry.') && !legacyStyles.includes('.segment{'), 'styles.css 不得继续持有 Workspace / Segment 业务 Geometry');
+assert(topShellCss.includes('.gameplay-top-navigation{') && topShellCss.includes('grid-template-columns:84px 1px minmax(0,1fr) 1px 44px') && topShellCss.includes('height:38px'), 'Top Control Tray Geometry 必须由 gameplay-top-shell.css 持有');
+assert(topShellCss.includes('.gameplay-top-navigation__scene .gameplay-top-navigation__button{width:42px;flex:0 0 42px}') && topShellCss.includes('.gameplay-top-navigation__management .gameplay-top-navigation__button{width:50px;flex:0 0 50px}') && topShellCss.includes('.gameplay-top-navigation__view .gameplay-top-navigation__button{width:42px;flex:0 0 42px}'), 'Top Control Tray 必须保持 2×42 / 5×50 / 1×42 的稳定分组');
+assert(topShellCss.includes('border:0;') && topShellCss.includes('background:transparent;') && topShellCss.includes('.gameplay-top-navigation__button .ui-icon{width:18px;height:18px;pointer-events:none}'), 'Top Control Tray Button 必须保留浏览器样式 Reset 与 18px 图标 Geometry');
+assert(!topShellCss.includes('[data-tooltip]::after') && surfaceSystemCss.includes('.gameplay-screen .gameplay-top-navigation__button.is-active::before') && surfaceSystemCss.includes('.gameplay-screen .gameplay-top-navigation__dot'), 'Top Control Tray 旧伪元素 Tooltip 不得恢复，状态材质必须由 Surface System 持有');
 assert(workspaceCss.includes('position:absolute') && workspaceCss.includes('display:flex') && workspaceCss.includes('flex-direction:column'), 'Workspace Shell 结构必须由 workspace.css 自己持有');
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
 const operationHintsRootRule = operationHintsCss.match(/\.gameplay-operation-hints\s*\{([^}]*)\}/s)?.[1] ?? '';
@@ -145,7 +151,7 @@ assert(!source.includes("'auto'"), 'Hover Placement 不保留无消费者的 aut
 assert(!designWorkspaceSourceForHover.includes('placementMode:') && !materialWorkspaceSourceForHover.includes('placementMode:') && !buildingSchemeWorkspaceSourceForHover.includes('placementMode:'), '当前三个 Catalog Workspace 都必须直接消费默认 Anchor，不声明 Feature 私有定位模式');
 assert(hoverOverlaySource.includes('looksLikeShortcut') && hoverOverlaySource.includes('detailIsShortcut'), 'Tooltip label adapter 必须区分快捷键与普通描述');
 
-checks += 54;
+checks += 58;
 
 // Bottom HUD Safe Line：Main Dock 与双层 Utility 只做空间校准，不改功能分组。
 const gameplayScreen = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
