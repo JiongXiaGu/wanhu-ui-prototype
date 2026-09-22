@@ -286,14 +286,24 @@ const workspaceLabels: Partial<Record<DockCategory, string>> = {
   'city-wall': '城墙目录', wall: '围墙目录', decoration: '装饰目录', tree: '树木目录',
 };
 
+const blueprintWorkspaceLabels: Partial<Record<DockCategory, string>> = {
+  all: '全部蓝图', residential: '民居蓝图', commercial: '商业蓝图', workshop: '工坊蓝图',
+  administration: '管理蓝图', science: '科学蓝图', faith: '信仰蓝图', military: '军事蓝图', palace: '宫殿蓝图',
+};
+
 const managementLabels: Partial<Record<ManagementView, string>> = {
   city: '城市管理', population: '人口管理', finance: '城市财政', inventory: '库存管理',
   policy: '政策管理', commerce: '商业管理', governance: '治理管理', military: '军事管理',
 };
 
-function workspacePreset(category: DockCategory | null): HintPreset {
-  return { id: 'workspace-' + (category ?? 'design'), task: workspaceLabels[category ?? 'building'] ?? '设计目录', rows: [
-    { binding: '鼠标左键', description: '选择项目', primary: true }, { binding: '鼠标滚轮', description: '浏览目录' },
+function workspacePreset(workspace: Workspace, category: DockCategory | null): HintPreset {
+  const blueprint = workspace === 'blueprint';
+  const task = blueprint
+    ? blueprintWorkspaceLabels[category ?? 'all'] ?? '蓝图目录'
+    : workspaceLabels[category ?? 'building'] ?? '设计目录';
+  return { id: 'workspace-' + workspace + '-' + (category ?? 'none'), task, rows: [
+    { binding: '鼠标左键', description: blueprint ? '选择蓝图' : '选择项目', primary: true },
+    { binding: '鼠标滚轮', description: '浏览目录' },
     { binding: 'Esc', description: '关闭目录' },
   ]};
 }
@@ -363,7 +373,7 @@ export function GameplayOperationHints(props: Props) {
   else if (tool === 'color-tool') preset = colorPresets[colorToolMode];
   else if (buildingSchemeOpen && selection?.kind === 'building') preset = buildingSchemePreset;
   else if (selection?.kind === 'building') preset = buildingSelectionPreset;
-  else if (workspace === 'design') preset = workspacePreset(dockCategory);
+  else if (workspace !== 'none') preset = workspacePreset(workspace, dockCategory);
   else if (management !== 'none') preset = managementPreset(management);
   else if (contextPanel !== 'none') preset = contextPanelPresets[contextPanel];
   else if (mapPanelOpen || mapView !== 'default') preset = mapPreset(mapView, mapPanelOpen);
