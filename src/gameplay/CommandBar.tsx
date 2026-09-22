@@ -89,7 +89,7 @@ export function CommandBar({ mode, motionPhase = 'steady', activeCategory, onMod
             >
               <i className="main-dock__state-line" aria-hidden="true" />
               <Icon size={20} />
-              <span>{label}</span>
+              <span className="main-dock__label">{label}</span>
             </button>
           );
         })}
@@ -115,7 +115,7 @@ export function CommandBar({ mode, motionPhase = 'steady', activeCategory, onMod
             >
               <i className="main-dock__state-line" aria-hidden="true" />
               <Icon size={24} />
-              <span>{label}</span>
+              <span className="main-dock__label">{label}</span>
             </button>
           );
         })}

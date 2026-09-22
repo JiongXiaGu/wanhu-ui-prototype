@@ -50,7 +50,7 @@ async function checkMainDock(label, expectedMode, expectedCategoryCount) {
   assert.equal(await modeButtons.count(), 2, label + ': 设计 / 蓝图必须是两个稳定 Mode Button');
   const modeMetrics = await modeButtons.evaluateAll((buttons) => buttons.map((button) => {
     const icon = button.querySelector('.ui-icon')?.getBoundingClientRect();
-    const text = button.querySelector('span')?.getBoundingClientRect();
+    const text = button.querySelector('.main-dock__label')?.getBoundingClientRect();
     const rect = button.getBoundingClientRect();
     return { width: rect.width, height: rect.height, iconWidth: icon?.width, iconBottom: icon?.bottom, textTop: text?.top };
   }));
@@ -60,9 +60,9 @@ async function checkMainDock(label, expectedMode, expectedCategoryCount) {
   assert.equal(await categories.count(), expectedCategoryCount, label + ': 分类数量错误');
   const categoryMetrics = await categories.evaluateAll((buttons) => buttons.map((button) => {
     const icon = button.querySelector('.ui-icon')?.getBoundingClientRect();
-    const text = button.querySelector('span')?.getBoundingClientRect();
+    const text = button.querySelector('.main-dock__label')?.getBoundingClientRect();
     const rect = button.getBoundingClientRect();
-    const style = button.querySelector('span') ? getComputedStyle(button.querySelector('span')) : null;
+    const style = button.querySelector('.main-dock__label') ? getComputedStyle(button.querySelector('.main-dock__label')) : null;
     return { height: rect.height, iconWidth: icon?.width, iconBottom: icon?.bottom, textTop: text?.top, fontSize: style?.fontSize };
   }));
   assert(categoryMetrics.every(item => Math.abs(item.height - 64) < 1 && Math.abs(item.iconWidth - 24) < 1 && item.iconBottom < item.textTop && item.fontSize === '11px'), label + ': 分类必须为 64px 高、24px 图标在上、11px 文字在下');
