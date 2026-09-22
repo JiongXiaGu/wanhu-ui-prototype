@@ -96,14 +96,11 @@ try {
     page.locator('.building-scheme-workspace').boundingBox(),
   ]);
   const hoverPlacement = await hoverCard.getAttribute('data-placement');
-  ok('scheme hover uses side anchor placement', Boolean(
+  ok('scheme hover stays above card', Boolean(
     schemeCardBox
     && hoverBox
-    && (hoverPlacement === 'right' || hoverPlacement === 'left')
-    && (
-      hoverBox.x >= schemeCardBox.x + schemeCardBox.width - 1
-      || hoverBox.x + hoverBox.width <= schemeCardBox.x + 1
-    )
+    && hoverPlacement === 'top'
+    && hoverBox.y + hoverBox.height <= schemeCardBox.y + 1
   ));
   ok('scheme hover stays local to workspace', Boolean(
     hoverBox
@@ -113,7 +110,7 @@ try {
     && hoverBox.y < schemeWorkspaceBox.y + schemeWorkspaceBox.height
     && hoverBox.y + hoverBox.height > schemeWorkspaceBox.y
   ));
-  await page.screenshot({ path: out + '/hover-building-scheme-anchor.png' }); report.screenshots.push('hover-building-scheme-anchor');
+  await page.screenshot({ path: out + '/hover-building-scheme-top.png' }); report.screenshots.push('hover-building-scheme-top');
   await page.mouse.move(1700, 120);
   await page.waitForTimeout(120);
 
