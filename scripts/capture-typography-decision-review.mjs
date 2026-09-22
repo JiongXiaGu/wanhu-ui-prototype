@@ -85,7 +85,7 @@ try {
   await shot('readability-archive-toggle-changed');
 
   await open('gameplay', '.gameplay-top-navigation');
-  await page.getByRole('button', { name: '库存', exact: true }).click();
+  await page.getByRole('button', { name: '库存', exact: true }).click({ force: true });
   await page.waitForSelector('.management-space--inventory');
   await settle();
   await assertFont('.inventory-resource-row:not(.inventory-resource-row--head)>b', 13, '库存资源名称');
@@ -106,7 +106,7 @@ try {
 
   await page.keyboard.press('Escape');
   await page.waitForSelector('.management-space', { state: 'detached' });
-  await page.getByRole('button', { name: '城市', exact: true }).click();
+  await page.getByRole('button', { name: '城市', exact: true }).click({ force: true });
   await page.waitForSelector('.management-space--city');
   await settle();
   await assertFont('.management-task-row>span b', 13, '城市任务正文');
