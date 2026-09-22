@@ -186,6 +186,7 @@ async function checkHoverCard(label, anchor) {
   const viewport = page.viewportSize();
   const placement = await surface.getAttribute('data-placement');
   assert(popup && anchorBox && workspace && viewport);
+  assert.equal(placement, 'top', label + ': Catalog Workspace Rich Hover 必须固定在 Card 上方');
   assert(overlap(popup, anchorBox) < 1, label + ': Rich Hover 不得遮挡当前 Anchor');
   assert(popup.x >= 0 && popup.y >= 0 && popup.x + popup.width <= viewport.width + 1 && popup.y + popup.height <= viewport.height + 1, label + ': 浮层超出屏幕');
   if (placement === 'right') assert(popup.x >= anchorBox.x + anchorBox.width - 1, label + ': right 必须位于 Anchor 右侧');
