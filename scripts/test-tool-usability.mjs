@@ -144,8 +144,21 @@ assert(blueprintWorkspaceSource.includes("id: 'system', label: '系统内置'") 
 assert(blueprintWorkspaceSource.includes('blueprint-workspace__preview') && blueprintWorkspaceSource.includes('workspace-item-card blueprint-workspace__card') && blueprintWorkspaceSource.includes('hover.bind(hoverDefinition)'), 'Blueprint Card 必须使用共享 Card / Hover 框架并以 Preview 为主体');
 assert(blueprintWorkspaceCss.includes('.blueprint-workspace__row') && blueprintWorkspaceCss.includes('aspect-ratio:4 / 3') && blueprintWorkspaceCss.includes('height:330px') && blueprintWorkspaceCss.includes('flex:0 0 calc((100% - 30px)/4)') && blueprintWorkspaceCss.includes('.blueprint-workspace__preview'), 'Blueprint Workspace 必须使用 4×1、4:3 大图 Card Geometry');
 assert(blueprintWorkspaceModel.includes("previewAsset: '/assets/wanhu-gameplay-city.png'") && blueprintWorkspaceModel.includes("category: 'residential'") && blueprintWorkspaceModel.includes("size: 'large'"), 'Blueprint 原型数据必须包含真实场景预览资产与规模元数据');
-assert(workspaceCatalogCss.includes('.workspace-rail-pager button span') && workspaceCatalogCss.includes('width:14px') && workspaceCatalogCss.includes('height:3px') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active span'), 'Catalog Rail / Content Pager 必须共享 14×3 横线 Marker');
-assert(workspaceCatalogCss.includes('background:var(--wanhu-color-paper-primary)') && !workspaceCatalogCss.includes('neutral dots'), 'Catalog Pager 当前页必须使用 Paper White 横线，不恢复圆点 / 熟铜高亮');
+assert(
+  workspaceCatalogCss.includes('.workspace-rail-pager button span')
+  && workspaceCatalogCss.includes('.workspace-rail-pager button.is-active span')
+  && workspaceCatalogCss.includes('width:3px')
+  && workspaceCatalogCss.includes('height:14px'),
+  'Rail Pager 必须使用当前页 3×14 竖线 + 未选中 3×3 圆点',
+);
+assert(
+  workspaceCatalogCss.includes('.workspace-content-pager button span')
+  && workspaceCatalogCss.includes('.workspace-content-pager button.is-active span')
+  && workspaceCatalogCss.includes('width:14px')
+  && workspaceCatalogCss.includes('border-radius:50%'),
+  'Content Pager 必须使用当前页 14×3 横线 + 未选中 3×3 圆点',
+);
+assert(workspaceCatalogCss.includes('background:var(--wanhu-color-paper-primary)'), 'Catalog Pager 当前页必须使用 Paper White，不恢复熟铜高亮');
 assert(
   workspaceWorldFirstCss.includes('.workspace-content-pager button.is-active span,')
   && workspaceWorldFirstCss.includes('.workspace-rail-pager button.is-active span{')
@@ -153,8 +166,8 @@ assert(
   && !/workspace-(?:content|rail)-pager[^}]*is-active[^}]*\{[^}]*background:var\(--workspace-gold\)/s.test(workspaceWorldFirstCss),
   'Workspace Material Owner 不得把 Pager Active 覆盖回熟铜或非 Paper White',
 );
-assert(workspaceCatalogCss.includes('.workspace-content-pager button,') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active') && workspaceCatalogCss.includes('width:20px'), 'Content Pager Active 不得通过改变按钮宽度造成 Marker 跳位');
-checks += 11;
+assert(workspaceCatalogCss.includes('.workspace-content-pager button,') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active') && workspaceCatalogCss.includes('width:20px'), 'Content Pager Button 命中区必须保持等宽，只有内部 Marker 改变形状');
+checks += 12;
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
 const operationHintsRootRule = operationHintsCss.match(/\.gameplay-operation-hints\s*\{([^}]*)\}/s)?.[1] ?? '';
 assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRootRule.includes('box-shadow:') && !operationHintsRootRule.includes('background:'), 'Operation Hints Root 不得持有 Surface 材质');
