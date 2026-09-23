@@ -146,7 +146,13 @@ assert(blueprintWorkspaceCss.includes('.blueprint-workspace__row') && blueprintW
 assert(blueprintWorkspaceModel.includes("previewAsset: '/assets/wanhu-gameplay-city.png'") && blueprintWorkspaceModel.includes("category: 'residential'") && blueprintWorkspaceModel.includes("size: 'large'"), 'Blueprint 原型数据必须包含真实场景预览资产与规模元数据');
 assert(workspaceCatalogCss.includes('.workspace-rail-pager button span') && workspaceCatalogCss.includes('width:14px') && workspaceCatalogCss.includes('height:3px') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active span'), 'Catalog Rail / Content Pager 必须共享 14×3 横线 Marker');
 assert(workspaceCatalogCss.includes('background:var(--wanhu-color-paper-primary)') && !workspaceCatalogCss.includes('neutral dots'), 'Catalog Pager 当前页必须使用 Paper White 横线，不恢复圆点 / 熟铜高亮');
-assert(workspaceWorldFirstCss.includes('.workspace-content-pager button.is-active span,') && workspaceWorldFirstCss.includes('background:var(--wanhu-color-paper-primary)') && !workspaceWorldFirstCss.includes('background:var(--workspace-gold)'), 'Workspace Material Owner 不得把 Pager Active 覆盖回熟铜或非 Paper White');
+assert(
+  workspaceWorldFirstCss.includes('.workspace-content-pager button.is-active span,')
+  && workspaceWorldFirstCss.includes('.workspace-rail-pager button.is-active span{')
+  && workspaceWorldFirstCss.includes('background:var(--wanhu-color-paper-primary)')
+  && !/workspace-(?:content|rail)-pager[^}]*is-active[^}]*\{[^}]*background:var\(--workspace-gold\)/s.test(workspaceWorldFirstCss),
+  'Workspace Material Owner 不得把 Pager Active 覆盖回熟铜或非 Paper White',
+);
 assert(workspaceCatalogCss.includes('.workspace-content-pager button,') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active') && workspaceCatalogCss.includes('width:20px'), 'Content Pager Active 不得通过改变按钮宽度造成 Marker 跳位');
 checks += 11;
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
