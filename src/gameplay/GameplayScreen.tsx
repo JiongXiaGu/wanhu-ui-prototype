@@ -64,9 +64,10 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   ));
   const space = selectGameplaySpace(state);
   const toolOpen = state.tool !== 'none';
-  const showControlTray = space === 'gameplay' || space === 'management' || space === 'workspace';
-  const showContextUtilityToolbar = space === 'gameplay' || space === 'workspace' || space === 'tool';
-  const showCompassHud = !state.paused && space !== 'management';
+  const blueprintPhotographyActive = state.tool === 'blueprint-photography';
+  const showControlTray = !blueprintPhotographyActive && (space === 'gameplay' || space === 'management' || space === 'workspace');
+  const showContextUtilityToolbar = !blueprintPhotographyActive && (space === 'gameplay' || space === 'workspace' || space === 'tool');
+  const showCompassHud = !state.paused && space !== 'management' && !blueprintPhotographyActive;
   const showContextPanel = !state.paused && space === 'gameplay' && state.contextPanel !== 'none';
   const selectionOpen = !state.paused && space === 'gameplay' && state.selection !== null;
   const worldUtilityStacked = !state.paused
@@ -371,23 +372,25 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       />
 
       {showCompassHud && <GameplayCompassHud buildMode={toolOpen} />}
-      {!state.paused && <GameplaySystemMenuButton onClick={() => dispatch({ type: 'SET_PAUSED', paused: true })} />}
+      {!state.paused && !blueprintPhotographyActive && <GameplaySystemMenuButton onClick={() => dispatch({ type: 'SET_PAUSED', paused: true })} />}
 
-      <GameplayHUD
-        contextPanel={state.contextPanel}
-        dayTime={dayTime}
-        management={state.management}
-        mapView={state.mapView}
-        mapPanelOpen={state.mapPanelOpen}
-        speed={state.speed}
-        showControlTray={showControlTray}
-        controlTrayEnterDelayMs={enteringFromTool ? MOTION_MS.fast : 0}
-        onContextPanelChange={(panel) => dispatch({ type: 'SET_CONTEXT_PANEL', panel })}
-        onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
-        onToggleMapPanel={() => dispatch({ type: 'TOGGLE_MAP_PANEL' })}
-        onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
-        onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
-      />
+      {!blueprintPhotographyActive && (
+        <GameplayHUD
+          contextPanel={state.contextPanel}
+          dayTime={dayTime}
+          management={state.management}
+          mapView={state.mapView}
+          mapPanelOpen={state.mapPanelOpen}
+          speed={state.speed}
+          showControlTray={showControlTray}
+          controlTrayEnterDelayMs={enteringFromTool ? MOTION_MS.fast : 0}
+          onContextPanelChange={(panel) => dispatch({ type: 'SET_CONTEXT_PANEL', panel })}
+          onManagementChange={(management) => dispatch({ type: 'SET_MANAGEMENT', management })}
+          onToggleMapPanel={() => dispatch({ type: 'TOGGLE_MAP_PANEL' })}
+          onMapViewChange={(mapView) => dispatch({ type: 'SET_MAP_VIEW', mapView })}
+          onSpeedChange={(speed) => dispatch({ type: 'SET_SPEED', speed })}
+        />
+      )}
 
       {showContextUtilityToolbar && (
         <ContextUtilityToolbar
@@ -670,6 +673,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       {toolPresence.mounted && renderedTool === 'blueprint-photography' && blueprintCaptureSession && (
         <BlueprintPhotographyTool
           sceneAsset={sceneBackground}
+          motionPhase={toolPresence.phase}
           onCancel={cancelBlueprintPhotography}
           onCapture={completeBlueprintPhotography}
         />
