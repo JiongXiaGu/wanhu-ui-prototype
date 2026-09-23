@@ -42,6 +42,9 @@ const SHARED_MODAL_STYLE_OWNER_FILES=new Set([
 ]);
 const SHARED_MODAL_STYLE_HOOK=/\.ui-modal-(?:backdrop|surface)\b|--wanhu-dialog-/;
 
+const SHARED_WORKSPACE_CARD_CHROME_OWNER='src/workspace.css';
+const SHARED_WORKSPACE_CARD_CHROME_SELECTOR=/\.(?:workspace-item-card__source|workspace-item-menu-trigger|workspace-item-menu)\b/;
+
 async function walk(dir){
   const entries=await readdir(dir,{withFileTypes:true});
   const files=[];
@@ -168,6 +171,10 @@ for(const file of files){
   }
 
   if(file.endsWith('.css')){
+    if(file !== SHARED_WORKSPACE_CARD_CHROME_OWNER && SHARED_WORKSPACE_CARD_CHROME_SELECTOR.test(text)){
+      errors.push(`${file}: shared Workspace Item Card source badge / menu chrome must be owned by src/workspace.css. Feature CSS may own only Compact/Media content geometry and business states.`);
+    }
+
     if(!SHARED_MODAL_STYLE_OWNER_FILES.has(file) && SHARED_MODAL_STYLE_HOOK.test(text)){
       errors.push(`${file}: shared Modal backdrop / surface material must remain owned by dialog.css + wanhu-surface-system.css + theme tokens. Feature CSS may own modal geometry and content layout only.`);
     }

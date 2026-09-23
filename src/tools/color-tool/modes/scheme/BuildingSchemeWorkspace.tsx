@@ -120,6 +120,7 @@ function SchemeCard({
   onApply: (schemeId: string) => void;
 }) {
   const hover = useHoverOverlay();
+  const sourceTone = scheme.source === 'player' ? 'is-user' : scheme.source === 'workshop' ? 'is-workshop' : 'is-system';
   const hoverDefinition: HoverCardDefinition = {
     kind: 'card',
     id: 'building-scheme-' + scheme.id,
@@ -135,10 +136,10 @@ function SchemeCard({
     description: '用于快速替换当前建筑的整套配色关系；应用后仍可继续调整做旧程度等建筑外观参数。',
   };
   return (
-    <article className={'building-scheme-workspace__card ' + (selected ? 'is-selected' : '')}>
+    <article className={'workspace-item-card-shell building-scheme-workspace__card ' + (selected ? 'is-selected' : '')}>
       <button
         type="button"
-        className="workspace-item-card building-scheme-workspace__card-apply"
+        className={'workspace-item-card building-scheme-workspace__card-apply ' + (selected ? 'is-selected' : '')}
         aria-label={'应用建筑配色方案 ' + scheme.name}
         aria-pressed={selected}
         {...hover.bind(hoverDefinition)}
@@ -148,13 +149,13 @@ function SchemeCard({
         <div className="workspace-item-card__copy building-scheme-workspace__card-copy">
           <div className="building-scheme-workspace__card-head">
             <b className="workspace-item-card__title">{scheme.name}</b>
-            <span className={'building-scheme-workspace__source is-' + scheme.source}>{SOURCE_LABELS[scheme.source]}</span>
           </div>
           <span className="workspace-item-card__meta building-scheme-workspace__card-meta">
             <i className="building-scheme-workspace__palette-line" aria-hidden="true">
               {scheme.colors.map((color, index) => <i key={index} style={{ backgroundColor: color }} />)}
             </i>
             <span>{STYLE_LABELS[scheme.style]}</span>
+            <span className={'workspace-item-card__source is-compact ' + sourceTone}>{SOURCE_LABELS[scheme.source]}</span>
           </span>
         </div>
       </button>
