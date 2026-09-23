@@ -79,16 +79,19 @@
 }
 
 .blueprint-editor__rephoto{
-  align-self:flex-start;
+  position:absolute;
+  z-index:2;
+  right:9px;
+  bottom:8px;
   height:30px;
   padding:0 9px;
   display:inline-flex;
   align-items:center;
   gap:6px;
-  border:0;
+  border:1px solid rgba(238,233,223,.08);
   border-radius:7px;
-  background:rgba(255,255,255,.03);
-  color:#aeb1ac;
+  background:rgba(8,12,10,.66);
+  color:#c0c2bd;
   font:inherit;
   font-size:var(--wanhu-type-caption,11px);
   cursor:pointer;

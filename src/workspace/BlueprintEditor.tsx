@@ -93,15 +93,15 @@ export function BlueprintEditor({ draft, onCancel, onRephotograph, onSave }: Blu
               aria-label="蓝图预览图"
             >
               <span>4:3</span>
+              <button
+                type="button"
+                className="blueprint-editor__rephoto"
+                onClick={() => onRephotograph(workingDraft)}
+              >
+                <Camera size={15} aria-hidden="true" />
+                <span>重新拍摄</span>
+              </button>
             </div>
-            <button
-              type="button"
-              className="blueprint-editor__rephoto"
-              onClick={() => onRephotograph(workingDraft)}
-            >
-              <Camera size={15} aria-hidden="true" />
-              <span>重新拍摄</span>
-            </button>
           </div>
 
           <div className="blueprint-editor__form">

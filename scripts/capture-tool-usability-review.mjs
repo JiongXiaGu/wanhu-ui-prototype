@@ -544,6 +544,16 @@ try {
   const editorPreview = page.locator('.blueprint-editor__preview');
   const editorPreviewBox = await editorPreview.boundingBox();
   assert(editorPreviewBox && Math.abs(editorPreviewBox.width / editorPreviewBox.height - 4 / 3) < .02, '蓝图编辑窗口必须保留摄影所得 4:3 Preview');
+  const rephotoButton = createEditorSurface.getByRole('button', { name: '重新拍摄', exact: true });
+  const rephotoBox = await rephotoButton.boundingBox();
+  assert(
+    editorPreviewBox && rephotoBox
+      && rephotoBox.x >= editorPreviewBox.x
+      && rephotoBox.y >= editorPreviewBox.y
+      && Math.abs((editorPreviewBox.x + editorPreviewBox.width) - (rephotoBox.x + rephotoBox.width) - 9) < 2
+      && Math.abs((editorPreviewBox.y + editorPreviewBox.height) - (rephotoBox.y + rephotoBox.height) - 8) < 2,
+    '重新拍摄必须固定在蓝图预览图内部右下角',
+  );
   await page.screenshot({ path: `${out}/blueprint-workflow-editor.png` }); report.screenshots.push('blueprint-workflow-editor');
 
   const createBlueprintEditor = page.locator('.blueprint-editor[data-blueprint-editor="create"]');
