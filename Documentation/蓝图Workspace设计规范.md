@@ -1,205 +1,82 @@
 # 蓝图 Workspace 设计规范
 
-蓝图 Workspace 用于浏览和选择一整套可复用的城市组合。它与 Design Workspace 共享 Catalog Workspace 外壳，但 Card 的主要任务不是阅读构件名称，而是快速判断“这套组合最终看起来是什么样”。
+蓝图 Workspace 浏览可复用的城市组合，与 Design 共用 Catalog 外壳。Design 主要说明“构件是什么”，Blueprint 的 Media Card 主要说明“整套组合看起来怎样”。共享样式不要求二者相同比例或阅读顺序。
 
-## 入口与分类
+## 入口与筛选
 
-Main Dock 的蓝图模式固定提供：
+Main Dock 蓝图模式分类为 `全部 / 民居 / 商业 / 工坊 / 管理 / 科学 / 信仰 / 军事 / 宫殿`。切到蓝图模式不自动打开目录；明确点击分类后进入同一个 BlueprintWorkspace。再次点击当前分类、关闭按钮或 Esc 关闭目录并清空分类。
 
-`全部 / 民居 / 商业 / 工坊 / 管理 / 科学 / 信仰 / 军事 / 宫殿`
+目录结构为 `Header + Primary Rail + Context Filter + Content Stage + Pager`。Main Dock Category 表示用途；Rail 的 `全部 / 小型 / 中型 / 大型` 表示数据中声明的规模；顶部 `全部 / 系统内置 / 创意工坊 / 我的蓝图` 表示来源。规模不从占地数字临时猜测。
 
-切换到蓝图模式时不自动打开 Workspace；玩家明确点击一个分类后，进入同一个 Blueprint Workspace。再次点击当前分类、关闭按钮或 Esc 都关闭 Workspace 并清空当前分类。
+Rail 顶部另有独立“收藏”快捷入口。当前选择收藏会启用 favoriteOnly 并把规模恢复 all；选择普通规模会关闭 favoriteOnly。来源筛选继续独立有效，收藏不是第五种资源来源。
 
-`dockMode=blueprint` 且 `dockCategory` 属于蓝图分类时，`workspace=blueprint`。
+筛选改变时回到第一页，清理 Hover。Rail 单页仍保留 Paper White 竖线，Content 单页保留 Paper White 横线；多页为当前方向线 + 其余灰点。Pager 不使用熟铜；分类 Selected 才使用熟铜语义。
 
-## 共享框架
+## Media Card
 
-Blueprint Workspace 继续消费现有 Catalog Workspace：
+1080p 基线为 Workspace 约 1240×330，每页 4×1 张 4:3 Card。Preview 覆盖 Card，底部暗渐变只承载名称与名称后的收藏星，不在图片外另加大块文字区。占地/尺寸已退到 Rich Hover / 详情，右下不再常驻这项信息。
 
-`Header + Primary Rail + Context Filter + Content Stage + Pager`
+所有来源均显示左上 Source Badge，右上常驻 `···` 操作入口。名称后星不额外占用图片四角。来源 Badge、星和菜单的公共样式由 `src/workspace.css` 持有；业务图片、遮罩和 Caption 由 `src/workspace/blueprint-workspace.css` 持有。
 
-共享部分继续由以下 Owner 持有：
+来源 Badge 与菜单在默认状态保持低权重，Hover / Focus 才进一步提亮。当前 Media Badge 背景为 `rgba(17,23,20,.74)`、边缘纸色 .055，菜单 Trigger 默认 opacity .56；这些是组件 Chrome 的局部值，不是共享面板 Palette。
 
-- `workspace.css`：Workspace Shell 与基础结构；
-- `workspace/workspace-catalog.css`：紧凑 Catalog 的 Header / Rail / Filter / Content / Pager Geometry；
-- `workspace/workspace-world-first-glass.css` 与 `wanhu-surface-system.css`：Workspace 视觉和材质；
-- `src/ui/hover/`：Rich Hover 生命周期和定位。
+Card 是 Action Button：默认图片为主，Hover / Focus 提亮 Preview；整张 Card 不因 Hover 位移，Preview 可以保留已有的轻微缩放；Focus 使用共享状态线，Pressed 短暂反馈，不保存持续 Selected。
 
-Blueprint 不复制新的 Workspace Shell，也不建立独立 Tooltip / Inspector。
+Web 示例仍是 Gameplay 场景图的不同裁切，用于构图验证，不是最终蓝图截图资产。正式 Preview 由对应 Capture / 资源系统提供，不能把裁切参数误认为真实蓝图对象内容。
 
-## Primary Rail
+## 所有来源的操作菜单
 
-蓝图左 Rail 固定表达规模，不重复 Main Dock 已经提供的业务类别：
+System / Workshop / mine 都有常驻入口，默认可“收藏 / 取消收藏”。菜单是否有入口与资源是否可编辑是两件事。
 
-- 全部
-- 小型
-- 中型
-- 大型
+只有 `source=mine` 的当前用户蓝图增加“编辑 / 删除”。系统和创意工坊定义保持只读，但这不妨碍保存本地收藏元数据。不要恢复“只有我的蓝图显示菜单”的旧规则。
 
-规模是 Blueprint 数据属性，不从占地数字临时推断。切换规模会回到第一页，并清理当前 Rich Hover。
+编辑打开 Blueprint Editor，可修改名称、分类并重新拍摄；规模、占地、构件数量和预计造价来自蓝图内容数据，只读。删除必须经过共享 Danger Confirm，只删除 Definition / Template，不反向移除已放在城市里的对象。
 
-当前只需要一组 4 项，因此 Rail 仍保留共享单页 Pager Marker；因为 Rail 是纵向分页轴，单页 Marker 使用约 `3×14px` Paper White 竖线。未来出现多页 Rail 时，当前页继续使用竖线，未选中页使用 `3×3px` 灰色圆点。
+Card 点击后的真实 Blueprint Placement Preview / Confirm / Cancel 仍未接入，不能为演示外观而伪造完成的放置系统。
 
-## Context Filter
+## 新建与摄影
 
-顶部筛选表达来源：
+来源栏右侧是“新建蓝图”。稳定流程为：
 
-`全部 / 系统内置 / 创意工坊 / 我的蓝图`
+`Blueprint Workspace → Photography Tool → 完成摄影 → Blueprint Editor → 保存到我的蓝图 → 返回 Workspace`
 
-Main Dock Category、规模 Rail、来源 Filter 是三个正交维度：
+摄影使用 `tool=blueprint-photography`，记录 `blueprint-workspace(category)` ToolOrigin。普通目录、Main Dock 和竞争 HUD 收起，复用标准 Tool Space：左侧 LeftContextPanel；中下 ToolActionBar；右下 GameplayOperationHints；中央为 4:3 Frame 与可选构图线。
 
-- Category：这套蓝图属于什么用途；
-- Size：整体规模；
-- Source：蓝图来自哪里。
+左面板约 360px，包含 FOV / 镜头高度 / 俯视角度和预览规格。中下栏使用共享 84px 结构，操作为恢复镜头、构图线、完成、取消；Hints 使用 Enter / G / R / Esc。构图线默认关闭。
 
-筛选结果变化时 Content Pager 回到第一页。Content Pager 与 Design Workspace 共用同一视觉契约：当前页为 `14×3px` Paper White 横线，未选中页为 `3×3px` 中性灰圆点；单页时只显示一根白色横线。
+Web 只验证比例与安全距离：1080p Frame 最大约 900×675，Top Safe 96px、Bottom Safe 116px、左右约 392px。没有拖动世界、滚轮缩放 Preview 或参数驱动真实 Camera 的实现，不重新制作独立摄影软件式 Header / Footer。
 
-## Image-first Card
+完成摄影只产生 Preview Capture，不直接存入 Catalog。取消普通新建摄影恢复原 Workspace；从 Editor 发起重拍时取消应恢复原 Editor Draft。
 
-Blueprint Card 是 Shared WorkspaceItemCard 的业务 Variant，但 Composition 与 Design Asset Card 不同。
+摄影只拥有 `previewAsset / previewPosition / previewSize`。Blueprint ObjectRefs、Bounds、Footprint、规模和构件列表来自内容/Capture 数据，不能从镜头里看到了什么反推。
 
-Design Card 主要表达“构件是什么”；Blueprint Card 主要表达“整套组合看起来是什么样”。
+## Blueprint Editor
 
-1080p 当前基线：
+Editor 是专用内容布局，但共用 `ui-modal-backdrop` / `ui-modal-surface` 材质：近黑高不透明遮罩、烟墨 Panel、无颗粒、无额外 Blur。不得另定义一套背景、边缘和投影。
 
-- Workspace：约 `1240 × 330px`；
-- Content：每页 `4 × 1`；
-- Blueprint Card：固定 `4:3`；
-- Preview：覆盖整张 Card；
-- Card 底部使用暗渐变保证文字阅读；
-- 左下：蓝图名称；
-- 右下：占地；
-- 右上：只有创意工坊 / 我的蓝图显示来源 Badge；系统内置不重复显示来源。
+左侧 4:3 Preview，右侧名称/分类与只读 Facts；提供重新拍摄及取消/保存动作。重拍保留 Metadata Draft，不丢弃已输入的名称与分类。重新拍摄动作依附 Preview 的已有布局，具体位置以当前 Editor 组件为准。
 
-Card 不在图片之外再增加大块文本区，不恢复 Design Card 的“64×64 Preview + 文字列”。
+从全部入口新建时，Editor 给出可修改的默认分类，保存必须属于真实业务类别；all 永远只是筛选项。保存后来源固定 mine。
 
-第一版 Web Prototype 暂时使用现有 Gameplay 场景图的不同裁切验证构图和信息层级。这些图片不是最终蓝图截图资产。正式资源应由 Blueprint Preview Capture 统一生成，保持稳定俯视角、焦距、主体居中、光照和输出比例。
-
-## Card 状态与“我的蓝图”管理
-
-Blueprint Card 仍是 Action Button：
-
-- Default：图片承担第一视觉层级；
-- Hover：示例图轻微提亮，不位移整张 Card；
-- Focus：使用共享左侧短状态线；
-- Pressed：极轻缩放反馈；
-- 不保存持续 Selected。
-
-只有 `source=mine` 的 Card 显示右上 `···` 管理 Popover。菜单固定为：
-
-`编辑 / 删除`
-
-“编辑”打开 Blueprint Editor，可修改名称、分类，并可进入“重新拍摄”；规模、占地、构件数和预计造价由蓝图内容数据提供，只读。“删除”使用共享 Danger Confirm，只删除 Blueprint Definition / Template，不反向删除已经放置到城市中的对象。
-
-系统内置与创意工坊蓝图保持只读，不显示管理菜单。点击 Card 的真实 Blueprint Placement Preview / Confirm / Cancel 仍属于后续 Blueprint Placement Tool。
-
-## 新建蓝图与摄影流程
-
-来源筛选栏右侧提供 `＋ 新建蓝图`，视觉和交互家族参考材质方案 Workspace 的保存动作，但业务流程不同：蓝图不能通过一个名称弹窗直接创建。
-
-稳定流程：
-
-```text
-Blueprint Workspace
-→ 新建蓝图
-→ Blueprint Photography Tool
-→ 完成摄影
-→ Blueprint Editor（带 4:3 Preview）
-→ 保存到“我的蓝图”
-→ 返回 Blueprint Workspace
-```
-
-### Photography
-
-摄影是独立 Tool：`tool=blueprint-photography`，进入时记录 `blueprint-workspace(category)` ToolOrigin。普通 Workspace / Main Dock / Control Tray / Compass / World Utility 收起，不再建立摄影专用顶部 / 底部长条，而是复用标准 Tool Space：
-
-- 左侧：共享 `LeftContextPanel`，显示摄影镜头参数与 4:3 预览规格；
-- 中下：共享 `ToolActionBar`，放“恢复镜头 / 构图线 / 完成 / 取消”；
-- 右下：共享 `GameplayOperationHints`，显示 Enter / G / R / Esc；
-- 中央：只保留 4:3 取景框与可选三分构图线。
-
-第一版 Web Prototype 只验证 UI 构图、4:3 比例和屏幕安全距离，不模拟世界镜头运动：
-
-- 1080p 取景框最大约 `900 × 675px`；
-- Top Safe Distance `96px`，Bottom Safe Distance `116px`，左右预留约 `392px` 给左 Context / 右 Hints；
-- 不实现鼠标拖动画面、滚轮缩放 Preview Crop；
-- 镜头参数控件用于验证最终 UIToolkit 参数面板，Web 中不驱动真实场景 Camera；
-- “构图线”只是 UI Toggle，默认关闭；
-- “完成摄影”只生成 Preview Capture，不直接保存 Blueprint；
-- Esc / 取消恢复原 Blueprint Workspace；
-- 从 Editor 发起“重新拍摄”时，取消摄影应回到原 Editor Draft。
-
-摄影只拥有 `previewAsset / previewPosition / previewSize`。它不能根据“镜头里看到了什么”推断 Blueprint ObjectRefs。真实蓝图内容、Bounds、Footprint、构件列表由 Blueprint Capture / Definition 数据提供，Preview 只是展示资产。
-
-### Blueprint Editor
-
-Photography 完成后打开专用 Blueprint Editor，而不是通用小型 Input Dialog。Editor 采用：
-
-- 左：较大的 4:3 Preview；
-- 右：蓝图名称、业务分类；
-- 只读 Facts：规模、占地、构件数、预计造价；
-- “重新拍摄”返回 Photography，但保留当前 Metadata Draft；
-- “取消 / 保存蓝图（或保存修改）”。
-
-从“全部蓝图”入口创建时，不提前强迫选择业务分类；Editor 默认给出一个可修改分类。玩家最终保存的 Blueprint 必须属于一个真实分类，`all` 永远只是浏览 Filter。
-
-保存后 Source 固定为 `mine`。Web Prototype 的 Custom Catalog 暂由 GameplayScreen 持有；正式 Unity 由 BlueprintCatalog / BlueprintDefinition + Create/Update/Delete Command 持有，Workspace 只消费数据和命令，不成为数据权威。
+Web Custom Catalog 暂由 GameplayScreen 持有；正式 Unity 应由 BlueprintCatalog / BlueprintDefinition 和 Create / Update / Delete Command 持有。Workspace 只发请求和消费结果，不成为蓝图数据权威。
 
 ## Rich Hover
 
-Blueprint Card 继续使用全局 Rich Hover，并遵守 Catalog Workspace 的固定定位规则：
+复用 `src/ui/hover/`：固定条目上方、水平居中、约 12px Gap，Safe Edge / Clamp，忽略 Pointer，相邻条目热切换，不随同一 Card 内鼠标漂移。
 
-- 固定在当前 Card 上方；
-- 水平居中；
-- Anchor Gap 约 12px；
-- Pointer Ignore；
-- 同一 Card 内不随鼠标漂移；
-- 相邻 Card 热切换；
-- Safe Edge / Clamp。
+占地、构件数、预计造价、规模和说明进入 Hover，不为这些信息扩展常驻 Caption。Hover 无可交互按钮；资源动作留在菜单。生命周期与默认延迟由全局框架负责。
 
-Hover 内容用于承载 Card 上故意省略的详细信息：
+## Unity 映射与所有权
 
-- 占地；
-- 构件数量；
-- 预计造价；
-- 规模；
-- 一段简短说明。
+| Owner | 职责 |
+| --- | --- |
+| `src/workspace.css` | Workspace 基础结构、共享 Card Chrome、Badge / Favorite / Menu |
+| `src/workspace/workspace-catalog.css` | Header / Rail / Filter / Pager 公共几何 |
+| `src/workspace/workspace-world-first-glass.css` | Catalog 前景与状态语言 |
+| `src/ui/wanhu-surface-system.css` | Workspace 和 Modal 的完整材质 |
+| `src/workspace/blueprint-workspace.css` | Media 比例、Preview / Shade / Caption |
+| `src/ui/hover/` | 全局只读详情与定位 |
 
-Card 本身不因为这些信息重新变回文字列表。
+UXML 复用 Catalog Header / Rail / Filter / Pager；Media Card 使用 Preview、Shade、Source Badge、Caption、Favorite、Focus Line 和 Item Menu 子结构。Preview 在 Unity 绑定 Texture2D / RenderTexture 资产，不照抄浏览器背景裁切充当正式资源管线。
 
-## 原型数据
-
-当前 Blueprint Workspace 数据只用于验证信息架构，包含：
-
-- Category；
-- Size；
-- Source；
-- Footprint；
-- ObjectCount；
-- EstimatedCost；
-- Description；
-- Preview Asset / Crop。
-
-正式 Unity 数据应由 Blueprint Definition / Catalog 提供。UI 不拥有真实建造对象列表、库存扣除、碰撞验证或放置生命周期。
-
-## Unity UI Toolkit 映射
-
-建议结构：
-
-`BlueprintWorkspace.uxml`
-- Shared Workspace Header
-- Shared Primary Rail
-- Shared Context Filter
-- Blueprint Card Row
-- Shared Pager
-
-`BlueprintCard.uxml`
-- Preview VisualElement
-- Shade Overlay
-- Optional Source Badge
-- Caption Row
-- Shared Focus State Line
-
-Web 的 `background-image / background-position` 只用于原型验证；Unity 侧 Preview 应绑定正式 Texture2D / RenderTexture 资产。
-
-Blueprint Workspace Controller 只负责 Category / Size / Source / Page 与 Card Definition 绑定，不直接控制世界放置。真实放置由后续 Blueprint Placement Controller 接管。
+Controller 持有分类、规模、来源、收藏筛选、分页与菜单状态；用户收藏由正式 Catalog/User Metadata 层持久化。当前 Web 收藏只是 UI 会话内状态验证。UI 不直接拥有库存扣除、碰撞、建造对象列表和放置生命周期。

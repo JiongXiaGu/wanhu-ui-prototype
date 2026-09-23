@@ -1,75 +1,34 @@
 # Documentation
 
-本目录用于长期维护《万户天工》UI Prototype 的稳定设计信息、关键决策、阶段开发记录和当前工作上下文。
+本目录维护《万户天工》UI Prototype 的稳定设计、职责契约、当前上下文与演进记录。代码是具体实现权威；文档不替代真实样式链和测试。
 
-## 新接手入口
+## 接手入口
 
-按以下顺序阅读：
+依次读取 [工作交接](<工作交接.md>)、[项目概览](<项目概览.md>)、[UI Toolkit 视觉总规范](<UI Toolkit视觉总规范.md>)，再读取本任务涉及的领域规范和代码。
 
-1. `工作交接.md`
-2. `项目概览.md`
-3. `UI设计原则.md`
-4. `Wanhu 烟墨熟铜视觉材质规范.md`
-5. `UI空间与状态架构.md`
-6. 当前任务相关的 `决策记录/`、组件 / Control 规范和代码
+| 领域 | 文档 | 职责 |
+| --- | --- | --- |
+| 视觉全貌 | [UI Toolkit 视觉总规范](<UI Toolkit视觉总规范.md>) | 页面家族、阅读顺序、状态区别、CSS 到 USS 的判读方法与现存例外 |
+| 配色与材质 | [烟墨熟铜视觉材质规范](<Wanhu 烟墨熟铜视觉材质规范.md>) | 当前 Theme Token、Root/Body/Backdrop 配方、局部前景与昼夜边界 |
+| 信息设计 | [UI设计原则](<UI设计原则.md>) | 减少冗余、空间与内容取舍；不重复维护色卡 |
+| 表面与操作语法 | [UI Surface与Control视觉规范](<UI Surface与Control视觉规范.md>) | Family、按钮、Segmented、全屏和底部命令组合 |
+| 字体与资源 | `UI Typography与Icon尺寸规范.md`、`UI图标资产管线.md` | 语义档位、PNG Runtime / SVG Source、字体与 Player 边界 |
+| 基础控件 | `UI基础Control视觉规范.md` | Slider / Numeric Field / Toggle / Select / Text Input |
+| 空间与动效 | `UI空间与状态架构.md`、`UI Motion System设计规范.md` | State、Input、Presence、Focus 与空间交接 |
+| Unity | `UI Toolkit落地规范.md`、`Unity 6.6视觉能力与回退规范.md` | UXML / USS / C# 所有权、实际版本能力与回退 |
+| 目录与建造 | `Design Workspace设计规范.md`、`蓝图Workspace设计规范.md`、各 Tool 规范 | 内容与交互契约，不各建独立皮肤 |
+| 全屏与管理 | Pause / Global Space / Management、Settings / Archive / Save / New Game 对应规范 | 保留不同页面的信息架构 |
 
-## 文档职责
+## 当前事实与历史隔离
 
-### 项目概览.md
+`工作交接.md` 只保留当前可执行规则。`历史/` 的快照、`开发记录/` 的阶段叙述、Study / Pass 实验说明不作为当前取色入口。旧内容若与代码和现行规范冲突，应追踪演进，不直接恢复旧实现。
 
-记录项目定位、技术栈、部署、核心空间和长期工作方式。
-
-### UI设计原则.md
-
-记录长期美术、信息密度、Surface、Typography、Tooltip 和视觉审查规则。
-
-### UI空间与状态架构.md
-
-记录 Gameplay / Workspace / Tool / Pause / Flyout / Global Space 的职责与状态边界。
-
-### Wanhu 烟墨熟铜视觉材质规范.md
-
-记录全游戏 UI 的权威 Palette、Smoked Graphite 材质身份、Ambient / Context / Work / Blocking / Elevated 关系、熟铜状态语义与昼夜规则。颜色或 Surface 美术方向调整优先修改此文档。
-
-### UI Surface与Control视觉规范.md
-
-记录 Surface Tier、Blur、Button、Segmented、Footer 等跨空间交互与层级语法；Palette 与材质身份不在这里重复维护。
-
-### UI基础Control视觉规范.md
-
-记录 Slider、Numeric Slider Field、Stepper、Value Field、Select、Toggle、Text Input 的共享视觉、使用边界和 Unity UI Toolkit 映射。基础控件迁移优先以此文档为准。
-
-### Bottom Command Visual System设计规范.md
-
-记录 Main Dock、Placement Action Bar、World Utility Toolbar 的 L / M / S 底部命令栏视觉系统。
-
-### 决策记录/
-
-记录已经确定、后续不应反复从零讨论的重要设计决策，以及为什么这样决定。
-
-### 开发记录/
-
-按日期记录阶段性修改、审图结论、原因和下一步。不是逐 commit 流水账。
-
-### 工作交接.md
-
-维护当前正在做什么、已经完成什么、下一步是什么、哪些地方不要回退。新对话优先读取。
-
-### 代码审查/
-
-按日期保存代码结构、逻辑风险、技术债务和优化建议，方便后续定位。
+本轮重要差异与读取范围见 [视觉语言与样式权威审查](<代码审查/2026-09-24-视觉语言与样式权威审查.md>)。原有 Edge / Character / HUD Glass 等专项材料仍可追溯意图，但其中的局部色值、旧选择器和引擎限制必须与当前代码、材质规范、6.6 专项规范交叉核对。
 
 ## 维护原则
 
-- 代码是具体实现的权威来源；
-- 文档记录稳定事实、职责边界、契约、关键不变量和设计原因；
-- 不建立 `_AI` 目录；
-- 正式设计文档不加入“文档状态、审核状态、核验时间”等机器式元数据；
-- 视觉或架构决策发生变化时，应更新对应正式文档和 `工作交接.md`；
-- 阶段完成后在 `开发记录/` 留下简明记录；
-- 不把每次 1～2 px CSS 微调写成开发日志。
+正式文档记录意图、职责、数据所有权、契约、不变量、生命周期和边界，不逐行重复实现，不创建 `_AI` 文档层，也不加入文档状态/审核状态/核验时间等机器式元数据。
 
+Theme 改色需同步材质规范；组件变体变化需同步对应领域规范。总规范只做跨域阅读入口，不再复制一套私有色卡。阶段过程放 `开发记录/`，结构与缺陷分析放带日期的 `代码审查/`。
 
-### Pause Blocking Space设计规范.md
-
-记录 Pause Blocking Overlay、中央 Command Surface、3+1 命令层级、Focus / Keyboard 行为、Esc 规则，以及 Pause → Save / Settings / Confirm Dialog 的空间关系。
+任何交付应分清源码审查、构建、截图下载、实际审图和 Unity Player 验证。历史 Actions 成功不能被写成本轮已经实际看图。

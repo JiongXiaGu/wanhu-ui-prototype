@@ -1,245 +1,63 @@
 # UI Surface 与 Control 视觉规范
 
-本规范定义《万户天工》跨空间 Surface 层级、Blur、圆角、通用状态与页面 Action 语义。具体 Palette 与材质身份以 `Documentation/Wanhu 烟墨熟铜视觉材质规范.md` 为权威来源；Slider / Toggle / Select / Text Input 的细节以 `Documentation/UI基础Control视觉规范.md` 为准。
+本文件维护跨空间表面、控件和动作的组合语义。视觉入口见 [UI Toolkit 视觉总规范](<UI Toolkit视觉总规范.md>)；所有精确颜色与背景配方见 [烟墨熟铜视觉材质规范](<Wanhu 烟墨熟铜视觉材质规范.md>)；基础控件内部结构见 `UI基础Control视觉规范.md`。
 
-## 1. 总原则
+## Surface 角色
 
-- 所有结构 Surface 使用同一 Smoked Graphite / 烟墨材质家族；
-- Surface 的职责差异主要由 Density、明度、Shadow、Local Occlusion 与信息密度表达，不靠明显换 Hue；
-- Context 更轻是“任务重量更轻”，不等于必须显著降低 Alpha；
-- 世界颜色可以作为环境信息透入，但不能把 UI 本身染成绿色或蓝色；
-- Paper White 保证阅读，Aged Brass 只用于 Selected / On / Focus / Primary；
-- 不给整个组件设置统一 `opacity` 来制造透明感；
-- Blur 只弱化世界细节，不替代 Surface Tint；
-- 昼夜不维护两套 Theme。
-
-一句话标准：
-
-> **同一块烟墨材料，根据任务强度形成 Ambient / Context / Work / Blocking / Elevated，而不是五套不同颜色的面板。**
-
-## 2. 圆角层级
-
-1080p 基线：
-
-- `8px`：小型 Option / Auxiliary Action；
-- `10px`：普通 Button、Segmented、Tooltip、小型输入控件；
-- `14px`：Top Shell、Command Surface；
-- `18px`：Workspace、Context Surface、Tool Parameter 等大型 Surface。
-
-圆角表达层级，不要求所有 Card 使用同一 Radius。
-
-## 3. Surface Tier
-
-| Tier | 语义 | 主要 Consumer |
+| Family | 职责 | 主要 Consumer |
 | --- | --- | --- |
-| Ambient | 低干扰常驻辅助 | Compass、System Menu、World Utility、Operation Hints |
-| Context | 临时观察 / 调整 | Environment、Camera、Workspace Header、轻 Selection |
-| Work | 持续浏览 / 执行任务 | Workspace Body、Main Dock、Placement Action Bar、Tool Parameter |
-| Blocking | 明显压住世界的重空间 | Management、Pause、Settings、Archive |
-| Elevated | 覆盖其它 UI | Inspector、Popover、Dialog |
+| Ambient | 低干扰常驻辅助 | System Menu、World Utility、Operation Hints 等 |
+| Context | 临时观察、调参和局部信息 | Camera、Environment、左侧 Context |
+| Work | 持续浏览与执行任务 | Catalog Workspace、Main Dock、Secondary Action Bar |
+| Blocking | 明显压住世界的完整任务 | Management、Pause、Settings、Archive |
+| Elevated | 覆盖其他 UI 的表面 | Hover、Popover、Dialog |
 
-### Ambient
+这些是任务角色，不是统一 Alpha 阶梯、固定 RGB 或全局 z-index 顺序。Dialog 可同时是 Elevated 外观与 Blocking 交互。Context 与 Work 属于同一低饱和烟墨家族，不要求字面上完全相同色相。
 
-- 最轻；
-- 世界感最强；
-- Foreground 仍保持可读；
-- 不把辅助层做成灰到消失。
+表面重量来自面积、底色、叠层、前景、投影和内容密度。不能只降低 Alpha 就称为“轻量”。常态半透明放在材质背景，不能把整个父节点连文字一起变淡。
 
-### Context
+## 圆角与边缘
 
-- 与 Work 完全同 Hue；
-- 视觉重量稍轻，但阅读稳定性接近 Work；
-- 不允许因为世界背景是绿色而读成“绿色面板”；
-- Environment / Camera 是左下 Context 母版。
+常用尺度包括小型选项 8px、普通控件/Tooltip 10px、Rich Hover 14px、Workspace/Context 18px；Modal 另有共享 12px Token。Card 与命令栏保留组件的具体几何，不能给全项目批量套同一圆角。
 
-### Work
+边缘是轮廓，不是金色装饰框。大工作区使用弱边、渐变与阴影；Hover 等浮层可保留更清楚的浅边及内部遮蔽。实际 Edge / Shadow 必须沿当前加载链核对，旧 Elevation Pass 不是所有属性的最后所有者。
 
-- 当前 Design Workspace 是视觉锚点；
-- 比 Context 更稳定、更适合高密度阅读；
-- Body 可以比 Header 更实，但两者仍是一种材料。
+## Blur 与背景弱化
 
-### Blocking
+Context / Work 的基础阅读来自自身 Tint，Blur 只弱化背景细节。Global Space、Pause 和 Management 分别保留自己的场景弱化与面板结构，不假定全都使用同一种滤镜。
 
-- 同一 Graphite Hue 的高密度版本；
-- 用于完整管理任务；
-- 不切换成另一套“菜单皮肤”。
+Unity 6.6 原生效果与回退见 `Unity 6.6视觉能力与回退规范.md`。优先验证共享 Surface 配方驱动的原生效果；共享 URP Scene Blur 是需要时的回退，不再强制所有表面使用自研 Pass。不能把本项目不使用某种 Blur 写成引擎不支持。
 
-### Elevated
+不为按钮、列表行和每个 Panel 各建一套私有 Blur。Dialog Backdrop / Panel 当前不加 Blur、Panel 无 Noise；Pause Panel 自身无 Blur，但 Pause 场景层仍有弱化滤镜。低画质应至少保持 Tint 与可读前景。
 
-- 同一 Hue；
-- 使用 Local Occlusion / Edge / Shadow 建立高度；
-- Dialog 属于 Elevated Blocking Surface：使用半透明 Smoked Graphite 自身保证可读性；
-- Dialog 本体避免可见颗粒 Noise，不做“磨砂脏玻璃”；
-- Dialog Header 只允许 Neutral / Warning / Danger 三种轻语义 Tone；
-- Warning = 弱熟铜 Header Tint + 顶部细线；Danger = 弱朱砂 Header Tint + 顶部细线；Body 始终中性；
-- UI-over-UI 不再次 Blur 已绘制 UI；Dialog Backdrop 只负责 Dim；
-- Popover / Inspector 如果覆盖其它 UI，也优先使用自身 Tint，而不是申请第二次实时 Blur。
+## Button 与状态
 
-## 4. Blur
+Secondary 用于返回、取消和普通流程动作；Utility 用于低频辅助操作；Primary 表达当前任务推进。它们共享中性 Hover、独立 Focus 和禁用反馈，Primary 允许弱熟铜 Surface 与强调前景，但不使用厚金边。
 
-### Gameplay Surface
+Selected / On 是持续状态，Pressed 是短暂反馈，Focus 是输入目标。不得为了让 Action Card“看起来有反馈”而留下假的 Selected，也不能删除 Focus 来消除普通 Hover 的边框。
 
-Context / Work 可以保留适量世界环境感，但基础可读性来自 Surface 自身。
+警告与危险通过共享 Dialog Tone 表达：Warning 使用熟铜 Header Tint 和细线；Danger 使用朱砂 Header Tint 和细线。Body 保持中性，不能整张窗口染色。
 
-### Blocking
+## Segmented、Toggle 与参数
 
-Pause / Settings / Archive / Management 更适合共享 Scene Blur / Dim，让世界整体先弱化。
+Segmented 适用于少量 2–5 项互斥模式，不替代一级导航、一次性动作、On/Off Toggle 或大量天气/分类目录。外壳是弱控件床，选项默认透明，Hover 中性、Active 弱熟铜；不额外加粗金框。
 
-### 禁止
+Numeric Parameter 使用 Label + Field 两列；Field 的 Stepper、Slider 和 ValueButton 尺寸由 Standard / Compact 共享密度决定。ValueButton 打开共享输入 Dialog。Slider 默认中性进度，Focus 使用熟铜；Toggle 保留普通 Track + Thumb。长内容由正确区域滚动，不靠缩小字体处理。
 
-- 每个 Button 自己 Blur；
-- 每个 Panel 建独立 RenderTexture；
-- UI-over-UI 申请第二次实时 Blur；
-- Dialog / Modal 依赖 `backdrop-filter` 才能成立；
-- 用 Blur 代替 Surface Tint。
+## 全屏与底部命令栏
 
-## 5. Segmented Control
+Settings / New Game / Load / Save 共用 `global-space-footer`，弱分隔、统一按钮家族，不形成额外的大黑条。允许 Settings 右側留白，不为对称虚构按钮。
 
-Segmented 表示 2–5 项局部互斥模式。
+Main Dock / Secondary Action Bar / World Utility 是 L / M / S 命令家族，材质不同于表单字段。共享尺寸与排列见 `Bottom Command Visual System设计规范.md` 和 Typography 规范；Mode 与 Category 不使用完全相同的按钮排列。
 
-适合：
+## 管理专题与目录内容色
 
-- Camera View Mode；
-- Weather Scene Mode；
-- Building Placement 局部模式；
-- New Game 少量互斥档位。
+Management 的 Topic Accent 只进入 Header、Bare Icon、图表或数据强调；Root / Body / Section 仍使用统一烟墨材质，交互状态仍使用共享 Controls。来源 Badge、收藏星和配色预览亦是内容语义，不建立另一套 Hover / Focus。
 
-不适合：
+Compact 与 Media Catalog Card 共享 Badge、菜单、分页和状态语言，但保留文本/图片主导的差异。不要以“少 Card”删除资源目录，也不要以“统一”给文字方案强加缩略图。
 
-- One-shot Action；
-- 页面主导航；
-- 大量分类浏览；
-- On / Off Toggle；
-- 7 个以上的天气预设列表。
+## 样式和 Unity 所有权
 
-视觉：
+Theme 持有语义值，Surface 持有完整背景与滤镜，Controls 持有内部结构与状态，Shared Component 持有公共布局，Feature 持有内容和必要业务差异。这是职责关系，不是 CSS 的实际加载顺序。
 
-- 外壳弱 Surface / Border；
-- Option 默认透明；
-- Hover 中性提亮；
-- Active 使用极弱熟铜 Tone + 熟铜前景；
-- 不额外叠加粗金边。
-
-## 6. Button 语义
-
-### Secondary
-
-返回、取消、普通次级流程：
-
-- 弱 Border / Surface；
-- Hover 提升前景；
-- 不常驻熟铜填充。
-
-### Primary
-
-当前页面唯一推进动作：
-
-- 比 Secondary 强一档；
-- 允许极弱熟铜 Surface / 状态线；
-- 不使用厚金边或 Glow。
-
-### Utility
-
-恢复默认、重命名、低频辅助动作：
-
-- 默认接近无框；
-- Hover 才出现 Tone；
-- 不长期占据视觉焦点。
-
-## Management Topic Header
-
-Management 是 Blocking Surface，但允许在统一 Graphite Body 上增加受控的专题身份。
-
-规则：
-
-- Root / Body / Section 仍使用统一 Smoked Graphite；
-- Topic Accent 只进入 Header Tint、顶部约 2px 状态线、Bare Icon 与图表主色；
-- 不允许整页换色，也不允许高饱和大色块标题栏；
-- Topic Accent 与交互状态分离：Selected / Focus / Primary 等状态仍使用共享 Control 规则；
-- 允许的 Topic：`overview / civic / economy / resource / governance / defense`；
-- 颜色必须低饱和，服务信息分区，不做“彩虹分类”。
-
-## 7. Full-screen Action Footer
-
-Settings / New Game / Load / Save 使用统一 `global-space-footer` 语义：
-
-- 同一烟墨 Graphite 家族；
-- 顶部弱 Rule；
-- 不形成独立大黑条；
-- Action 跟随页面 Content Safe Area；
-- Settings 允许右侧为空，不为了对称制造按钮。
-
-## 8. Bottom Command Visual System
-
-Main Dock / Placement Action Bar / World Utility 是同一 Command 家族：
-
-- Main Dock：Work；
-- Placement Action Bar：稳定 Work；
-- World Utility：Ambient。
-
-共享 Hue、Edge、Hover、Active、Divider、Tooltip；尺寸和 Shadow 用于区分 L / M / S。
-
-专用尺寸规则见 `Documentation/Bottom Command Visual System设计规范.md`。
-
-## 9. 代码所有权
-
-正式视觉层级：
-
-```text
-src/ui/wanhu-theme-tokens.css
-        ↓
-src/ui/wanhu-surface-system.css
-        ↓
-src/ui/ui-control-system.css
-        ↓
-Component Geometry CSS
-```
-
-- Theme：Palette / Material / State Tokens；
-- Surface：五档 Surface Recipe；
-- Control：基础交互控件视觉状态；
-- Component：Geometry / Typography / Layout。
-
-不要在 Component CSS 里重新发明另一套 Green / Blue / Gold Token。
-
-## 10. Unity UI Toolkit 映射
-
-建议正式 USS：
-
-```text
-UISurface.uss
-UIControls.uss
-BottomCommand.uss
-FullscreenActions.uss
-```
-
-概念 Class：
-
-```text
-.ui-surface--ambient
-.ui-surface--context
-.ui-surface--work
-.ui-surface--blocking
-.ui-surface--elevated
-
-.ui-button--primary
-.ui-button--secondary
-.ui-button--utility
-
-.ui-segmented
-.ui-segmented__option
-.ui-segmented__option--active
-```
-
-Scene Blur 使用共享 URP Fullscreen Pass；Surface VisualElement 只声明 Tint / Edge / Noise / Density。
-
-## 11. 审查清单
-
-- Surface 是否属于明确 Tier？
-- 是否仍使用中性 Smoked Graphite，而不是局部绿色 / 蓝色皮肤？
-- Context 是否只是视觉重量更轻，而不是透到被世界染色？
-- Workspace 与 Context 是否同一家族？
-- Hover / Active 是否清楚但克制？
-- 熟铜是否只表达语义状态？
-- 夜景是否保持同一 Palette？
-- 是否已有共享 Control / Surface 契约却又在业务 CSS 复制了一份？
+迁移时可按 UISurface、UIControls、BottomCommand、FullscreenActions 等职责组织 USS，但不是要求凭这些名称创建一套与现有框架并行的新系统。UXML 用真实元素表达状态线、Pager 和遮蔽层；C# 提供状态、Focus、输入和生命周期。不要复制层层历史 CSS Override 到正式 USS。

@@ -1,303 +1,141 @@
 # Wanhu 烟墨熟铜视觉材质规范
 
-本规范是《万户天工》UI 的**配色与材质权威来源**。它定义全游戏共享的基础色相、Surface 身份、前景层级与状态金属语言；具体页面的几何、信息架构和交互仍由各自组件规范负责。
+本文件维护《万户天工》UI 的共享色彩语义、材质配方与使用边界。整体视觉和页面家族见 [UI Toolkit 视觉总规范](<UI Toolkit视觉总规范.md>)；具体实现以源码为准，不能用文档里的概括覆盖组件的真实差异。
 
-Design Workspace 当前已经形成较稳定的视觉结果，因此后续 Gameplay Surface 统一以 **Workspace 的烟熏 Graphite / 雾面工作玻璃**作为 Work Surface 的视觉锚点。Environment、Camera、Placement、HUD、Inspector、Settings 等不再各自发展独立灰、绿、蓝皮肤。
+## 材质身份
 
-## 1. 核心身份：Smoked Graphite + Aged Brass
+主工作表面是低饱和烟墨灰，阅读前景为暖纸色浅字，熟铜负责状态与关键动作。世界画面和真实内容图像承担主要色彩。不是仿古卷轴、写实石纹、黑金手游，也不是所有元素都带发光边的玻璃皮肤。
 
-《万户天工》的 UI 不是仿古卷轴，也不是现代 SaaS 毛玻璃。目标是：
+“同一家族”不等于所有表面使用同一个 RGB。Context / Workspace 更中性、略暖；顶部常驻 HUD、Control Tray、Readout 仍有较轻、略冷的烟灰配方。不得据此扩大为整套蓝色科技风，也不得因旧文档禁止 `B > R` 就擅自重涂这些现存角色。
 
-> **烟墨石质的中性工作表面 + 暖纸前景 + 少量熟铜状态，形成克制、有重量、像仪器而不像网页的策略游戏 UI。**
+阅读密集区域应有自己的稳定 Tint，尤其不能因绿色植被透入就成为明显墨绿面板。任务重量通过面积、密度、遮挡、前景对比和阴影共同表达，不按 Surface 名称线性增加 Alpha。
 
-可以借鉴《冰汽时代》有效的“物理重量、仪表感、中性色与金属状态”，但不复制工业钢铁主题；《万户天工》使用更温和的烟墨、旧石、熟铜与纸白。
+## 色值的所有者
 
-稳定原则：
+共享 Token 在 `src/ui/wanhu-theme-tokens.css`，主要 Surface Consumer 在 `src/ui/wanhu-surface-system.css`。局部前景还由 Controls、Workspace Skin、Hover 等模块持有。先读 `src/main.tsx` 的加载顺序，再追踪目标元素的选择器和作用域。
 
-- 世界画面提供主要色彩，UI 本身主动退后；
-- 结构 Surface 使用**中性或略暖 Graphite**，不得肉眼读成青绿 / 墨绿 / 蓝灰主题；
-- Paper White 承担阅读，Aged Brass 只承担 Selected / Focus / On / Primary / Current；
-- Cinnabar 只用于真正 Warning / Danger；
-- 不用资源分类色给人口、金钱、库存等常驻 UI 分配不同 Hue；
-- 角色差异主要由 Surface Density、明度、Shadow、Local Occlusion 与信息密度表达，而不是换主题色；
-- Blur 只弱化世界细节，不负责基础可读性；
-- 昼夜使用同一套色彩语义，不维护独立 Night Theme。
+下面是当前源码原值，不是截图吸色，也不是可以忽略背景与叠层的最终像素。改动共享值时应同步此表。历史 `styles.css :root` 的 `--paper:#efe9dd`、`--gold:#c9a55f`、`--workspace:rgba(26,33,30,.95)` 不能作为新 USS 的默认配色；它们与当前 `--wanhu-*` 不是全仓库一一自动替换关系，部分旧消费者仍存在。
 
-## 2. Palette
+## 共享 Palette
 
-以下是视觉目标参考值，用于建立色相关系；最终 Web / Unity Token 可以在同屏 Review 中微调明度和 Alpha，但不得改变语义。
+以下 Token 均位于 `.game-canvas` 作用域。
 
-| Role | Reference | 用途 |
+| Token | 当前值 | 职责 |
 | --- | --- | --- |
-| Ink Deep | `#171A19` | 最深遮蔽 / Shadow 基底 |
-| Graphite Deep | `#242725` | 深层 Surface |
-| Graphite | `#2E312E` | 主烟墨材料 |
-| Smoke | `#3E413C` | 较轻 Header / Hover |
-| Paper Primary | `#EEE9DF` | 标题、核心数值 |
-| Paper Secondary | `#B9B5AB` | 普通正文、参数 |
-| Muted | `#8C8F89` | 次级标签、默认 Icon |
-| Aged Brass | `#A88752` | Selected / On / Focus |
-| Brass Highlight | `#C0A064` | 强状态 / Primary |
-| Cinnabar | `#985447` | Danger / Warning |
+| `--wanhu-color-ink-950` | `#171a19` | 深墨基础色 |
+| `--wanhu-color-ink-900` | `#242725` | 深层 Graphite 基础色 |
+| `--wanhu-color-ink-800` | `#2e312e` | Graphite 基础色；不是所有面板的实际背景 |
+| `--wanhu-color-paper-primary` | `#eee9df` | 核心文字与数值 |
+| `--wanhu-color-text-secondary` | `#d4cfc6` | 普通正文、参数等主要阅读前景 |
+| `--wanhu-color-paper-secondary` | `#c1bcb2` | 较弱的纸色前景 |
+| `--wanhu-color-text-muted` | `#afb0a9` | 辅助阅读前景 |
+| `--wanhu-color-paper-tertiary` | `#a2a49e` | 低优先级前景 |
+| `--wanhu-color-icon` | `#9ca099` | 默认图标 |
+| `--wanhu-color-icon-hover` | `#d8d3ca` | 中性提亮图标 |
+| `--wanhu-color-brass` | `#a9844b` | 熟铜基础填色、状态线 |
+| `--wanhu-color-brass-high` | `#c5a469` | 较强熟铜状态 |
+| `--wanhu-color-brass-text` | `#d1b47a` | 小字号熟铜文字、独立 Focus 语义 |
+| `--wanhu-color-brass-soft` | `rgba(169,132,75,.105)` | 弱熟铜染色 |
+| `--wanhu-color-cinnabar` | `#985447` | 危险语义基础色 |
 
-### 2.1 Surface Hue 不变量
+Paper Secondary 与 Text Secondary 是不同 Token，不能因为英文后缀相同就合并。Brass Text 也不是 Brass 的同义别名：小字需要更高亮度，不能直接使用较暗的填色值。
 
-结构性 Surface 的 R / G / B 应保持接近，允许非常轻的暖偏移，但不允许靠明显 `G > R` 或 `B > R` 建立身份。
+旧文档参考色 `#b9b5ab`、`#a88752`、`#c0a064` 已不代表当前对应 Token。共享表中不再列没有对应现行 Token 的“Smoke”色作为必须复制的数值。
 
-尤其在《万户天工》大量植被、农田、河岸背景下：
+## 主要 Surface 的原始底色与滤镜
 
-> **Surface 必须有足够自己的中性 Tint，不能让世界绿色透入后把面板整体染成绿色。**
+本表是默认/白天配方的入口，不是完整材质的替代。完整 Edge、Shadow、Highlight、Shade 和状态值继续由对应 Token 与 Consumer 持有。
 
-如果 Context Panel 在绿色世界背景上肉眼读成“墨绿 UI”，应优先调整 Surface 自身中性色与视觉密度，而不是继续降低 Alpha 或增加 Blur。
+| Consumer / Token | 原始底色 | 当前 Web Filter |
+| --- | --- | --- |
+| Top Status / `--wanhu-surface-info-bg` | `rgba(25,31,33,.50)` | `blur(20px) saturate(.92) brightness(.98)` |
+| Control Tray / `--wanhu-surface-control-bg` | `rgba(24,30,32,.41)` | `blur(20px) saturate(.93) brightness(.985)` |
+| Context / `--wanhu-surface-context-bg` | `rgba(45,47,44,.89)` | `blur(16px) saturate(.82) brightness(.99)` |
+| Catalog Root / `--wanhu-surface-work-sheet-bg` | `rgba(43,45,42,.78)` | `blur(20px) saturate(.86) brightness(.985)` |
+| Catalog Body / `--wanhu-surface-work-body-overlay` | `rgba(21,23,21,.22)`，叠在 Root 内 | 不单独再 Blur |
+| Main Dock L / `--wanhu-bottom-command-lg-bg` | `rgba(46,48,45,.58)` | `blur(20px) saturate(.86) brightness(.99)` |
+| Action Bar M / `--wanhu-bottom-command-md-bg` | `rgba(43,45,42,.80)` | `blur(18px) saturate(.84) brightness(.99)` |
+| Utility S / `--wanhu-bottom-command-sm-bg` | `rgba(48,50,46,.42)` | `blur(20px) saturate(.88) brightness(.995)` |
+| Readout / `--wanhu-surface-readout-bg` | `rgba(22,28,30,.45)` | `blur(20px) saturate(.93) brightness(.985)` |
+| Management / `--wanhu-management-surface-bg` | `rgba(39,41,39,.975)` | Panel 自身 `none` |
+| Pause Panel / `--wanhu-pause-surface-bg` | `rgba(40,42,39,.955)` | Panel 自身 `none` |
+| Global Space / `--wanhu-global-space-top` → `bottom` | `rgba(48,50,46,.94)` → `rgba(31,34,31,.965)` | `blur(7px) saturate(.78) brightness(.88)` |
+| Select Menu / `--wanhu-surface-blocking-menu` | `rgba(34,36,33,.98)` | 不增加私有 Blur |
 
-## 3. Workspace 是 Work Surface 视觉锚点
+Context 的 .89 大于 Work Root 的 .78，说明“Context 更轻”是任务与构图关系，不是 Alpha 数值关系。不能为了满足一个想象的透明度阶梯而改代码。
 
-当前 Design Workspace 的稳定观感作为后续统一参照：
+## Root、Body 与背景合成
 
-- Root / Header：较轻的烟熏 Graphite；
-- Body：更稳、更深的中性 Graphite；
-- Header 与 Body 属于同一 Hue，只用轻微明度 / Density 差建立层级；
-- 默认 Asset / Rail 不形成卡片海；
-- 暖金只出现在 Active / Current / Focus；
-- 世界仍可感知，但正文区域不被世界色彩污染。
+Context 实际组合为 Root 底色、Highlight / Shade 渐变、共享 Noise，再加 Header / Body / Footer 的局部叠层。Header 为 `rgba(255,249,238,.025)`，Body 使用 `rgba(8,10,9,.10)` 作为暗叠层端点。Section 默认透明，主要用留白、标题和弱分隔组织参数。
 
-“以 Workspace 为锚点”不是冻结某个具体 RGBA，而是冻结以下关系：
+Catalog Root 在底色之上使用极弱亮暗渐变与 Noise；Body 再叠 `rgba(21,23,21,.22)`。不能只拿 Root 的 RGBA 就宣称还原了正文区域，也不能把 Body Overlay 当成独立面板底色。
 
-> **中性略暖 Graphite + 克制透景 + 明暗分层 + 少量熟铜状态。**
+普通 Alpha 合成可以帮助理解叠加关系，但完整页面还包含渐变、滤镜、纹理和世界背景。这里不把多层结果压成一个承诺到处一致的 HEX。半透明应放在背景/材质节点；常态下不要用父节点整体 opacity 让文字、图标一同褪色。Presence 动画和 Disabled 是另外的语义。
 
-## 4. Surface Family
+## Edge、Noise 与 Shadow
 
-所有 Surface 共享同一 Smoked Graphite Hue。层级差来自视觉重量，不来自换色。
+边缘用于交代轮廓与前后关系，不是装饰金框。当前 Context Edge 为纸色 .095，Work Edge 为 .045，Top Status 为 .12；差异是有意义的，不能用一个统一 Border Alpha 覆盖所有 Consumer。
 
-### Ambient
+共享 Noise 源为 `/assets/ui/materials/glass-noise-soft.png`，典型铺设尺寸 256×256，只提供很弱的表面变化。是否使用 Noise 由材质 Recipe 决定，不是所有 Panel 都自动附加：Dialog、Pause Panel 当前不铺颗粒，Management Panel 的正式 Consumer 也未使用该 Noise。
 
-用于 Compass、System Menu、World Utility、Operation Hints 等低干扰常驻 UI。
+Shadow 与内高光必须查看最终 Consumer。`wanhu-edge-elevation.css` 比 `wanhu-surface-system.css` 更早加载；其中某个漂亮的旧阴影配方不一定仍是当前有效值。迁移时分别表达外投影、内高光与 Local Occlusion，不逐字把 CSS 多重 box-shadow 塞进一个 drop-shadow。
 
-- 世界感最强；
-- Surface 最轻；
-- 前景仍必须可读；
-- 不因为“轻”而让 Icon / Text 一起变透明。
+## Tooltip、Rich Hover、Popover 不共用一个背景值
 
-### Context
+| 对象 | 当前配方入口 | 重要差异 |
+| --- | --- | --- |
+| Tooltip | `--wanhu-command-tooltip-bg:rgba(25,26,24,.985)` | 深而实的小型只读解释；纸色弱边 |
+| Rich Hover | `hover-overlay.css` 的 `.ui-hover-card` | 较亮灰底 + 内部暗遮蔽 + 浅边 + 投影 |
+| Catalog Item Menu | `workspace.css` 的 `.workspace-item-menu` | `rgba(31,37,34,.985)`；可交互的局部菜单 |
+| Select Menu | 共享 Blocking Menu Token | 高实度读数选择菜单，不使用 Rich Hover 的配方 |
 
-用于 Environment、Camera、轻量 Selection / Scene Control。
+Rich Hover 当前底色为 `rgba(64,67,65,.88)`，有共享 Noise；内部 `.ui-hover-card__occlusion` 为 `rgba(18,21,20,.30)`，向内缩 2px；外边为 `rgba(255,255,255,.26)`，圆角 14px。标题 `#f0ede6`、正文 `#b7b4ad` 等由 Hover 样式持有。这不是普通 Modal 的背景、不是只改透明度就能替换的 Tooltip，也不能把外层灰底当成其最终中心像素。
 
-Context 是**轻量仪器面板**，不是绿色玻璃。
+## Modal 与 Pause
 
-- 与 Workspace 使用同一 Hue；
-- 视觉重量低于 Work，但阅读稳定性仍应接近 Work；
-- “更轻”不等于必须显著降低 Alpha；
-- 面板后方世界细节不能直接穿入正文区域；
-- Header 可比 Body 亮约一个轻微层级，Body 稳定承载参数。
+真正阻塞 Dialog 和 Blueprint Editor 复用 `ui-modal-backdrop` / `ui-modal-surface`，而不是各自维护一套背景。
 
-Context 相对 Work 的目标是：
+| Token | 当前值 |
+| --- | --- |
+| `--wanhu-dialog-backdrop` | `rgba(5,7,7,.89)` |
+| `--wanhu-dialog-radius` | `12px` |
+| `--wanhu-dialog-surface-bg` | `rgba(43,45,42,.95)` |
+| `--wanhu-dialog-surface-highlight` | `rgba(255,249,238,.018)` |
+| `--wanhu-dialog-surface-shade` | `rgba(8,10,9,.052)` |
+| `--wanhu-dialog-surface-edge` | `rgba(238,233,223,.085)` |
+| `--wanhu-dialog-surface-rule` | `rgba(238,233,223,.060)` |
+| `--wanhu-dialog-surface-shadow` | `0 30px 80px rgba(4,6,5,.44), inset 0 1px 0 rgba(255,255,255,.024)` |
 
-> **约 85–90% 的阅读稳定性，明显更轻的任务重量。**
+Backdrop 是高不透明近黑遮罩，不是纯黑屏；Panel 自身仍是烟墨灰。两个节点当前均不附加 backdrop Blur；Panel 不铺 Noise。不要用“以后引擎支持”作为重新添加多层磨砂的理由。
 
-这个比例是视觉关系，不是 CSS Alpha 公式。
+Pause 是独立 Screen Space，不套用小型 Dialog 的几何。默认 Pause 世界遮罩为 `rgba(12,14,13,.44)`，场景 Filter 为 `blur(8px) brightness(.70) saturate(.80)`；这是场景弱化，不是 Pause Panel 自己再 Blur。不能把“Pause Panel 无 Blur”写成“整个暂停画面没有 Blur”。
 
-### Work
+## 状态色与允许的内容色
 
-用于 Design Workspace、Main Dock、Placement 工作主控等持续操作区域。
+普通 Hover：`--wanhu-control-hover:rgba(255,255,255,.045)`。Selected / On：`--wanhu-control-active-bg:rgba(169,132,75,.075)`，状态线为 `rgba(169,132,75,.78)`；Focus 独立表达，不代替 Selected。
 
-- 当前 Workspace 是主要视觉母版；
-- 比 Context 更稳定；
-- Body 保证高密度阅读；
-- 不使用纯黑桌面应用窗口。
+Brass 服务 Current / Selected / On / Focus / Primary，以及已定义的警告和收藏等语义；不是所有可点击项、所有标题和所有边缘的默认色。
 
-### Blocking
+Dialog 的 Warning 与 Danger 不相同：
 
-用于 Management、Pause、Settings、Archive 等需要明显压住世界的重空间。
+- Warning：Header Tint `rgba(169,132,75,.070)`，顶部细线 `rgba(189,153,89,.78)`，图标 Brass High；
+- Danger：Header Tint `rgba(152,84,71,.075)`，顶部细线 `rgba(152,84,71,.86)`，图标局部前景 `#c87f73`；
+- Body 保持中性，普通确认不凭空加警告色，危险不做闪烁和震动。
 
-- 同一 Graphite Hue；
-- 更高密度；
-- 世界仍可作为环境上下文，但不干扰阅读；
-- 不切换成另一套菜单主题色。
+管理专题允许受控内容色：overview `#b3a07a`、civic `#b58d78`、economy `#b79255`、resource `#8f9c72`、governance `#8294a0`、defense `#aa6d62`。它们只进入 Header / 图表 / 数据强调，不改公共按钮和全页 Body。这些内容色不意味着另建六套 Theme。
 
-### Elevated
+Catalog 来源 Badge 也有共享局部前景：Compact Workshop 为 `#96a7aa`、User 为 `#b8a47d`；Media Workshop 为 `#a9b8bb`、User 为 `#c2ad82`。名称后的收藏星当前为 `#d3b86f`。这些由 `workspace.css` 持有，不把它们冒充全局 Brass / Focus Token。
 
-用于 Asset Inspector、Popover、Dialog 等覆盖其它 UI 的表面。
+## 昼夜
 
-- 同一 Hue；
-- 通过 Local Occlusion、Edge、Shadow 与较高实度建立高度；
-- 不依赖第二次 UI-over-UI Blur；
-- 不通过独立蓝 / 绿 / 黑皮肤表达“浮层”。
+昼夜保持同一色彩语义，不切换独立蓝色/绿色主题。Theme 中的夜景覆盖位于 `.gameplay-screen[data-time-of-day="night"]`；只有处于该作用域的 Consumer 才继承，不能声称任意顶层 Global Space 自动获得夜景覆盖。
 
-## 5. Context Panel 视觉母版
+当前夜景关键差异：Context 为 `rgba(49,51,48,.90)`；Work Root 为 `rgba(47,49,46,.80)`、Body 为 `rgba(23,25,23,.24)`；Bottom L / M / S 分别为 `rgba(50,52,49,.60)` / `rgba(47,49,46,.82)` / `rgba(52,54,50,.44)`。Filter、Edge 与 Pause / Global Space 的夜景值继续从同一 Token 文件读取，不靠统一加亮百分比推导。
 
-左下 Environment / Camera / Placement Parameter 等 Context Surface 后续统一遵循：
+## Unity 6.6 与维护边界
 
-### 5.1 Root / Header / Body
+优先在实际 Unity 6.6 + URP 屏幕空间 Panel 中验证原生 backdrop-filter / drop-shadow；共享 Scene Blur / URP Pass 从强制前置依赖调整为性能或效果不满足时的回退。当前 Modal 不使用 UI-over-UI Blur 是项目设计选择，不是引擎一概不支持。
 
-- Root 使用 18px 大 Surface 圆角语义；
-- Header 与 Body 不换 Hue；
-- Header 可比 Body轻微提亮约 4–6%；
-- Header / Body 之间只用弱 Rule，不做明显色条；
-- Body 可以比早期 Context 更实，优先保证参数稳定阅读；
-- Edge 只承担玻璃轮廓与方向性高光，不形成完整亮框。
+具体版本与限制见 [Unity 6.6 视觉能力与回退规范](<Unity 6.6视觉能力与回退规范.md>)。Web Filter 字符串是目标配方，不意味着 USS 所有语法、色彩处理和成本逐字相同；保留无 Blur 的稳定 Tint 回退，实际渲染需 Player 对照。
 
-### 5.2 Section
-
-- Section 默认透明；
-- 只通过间距、标题、极弱 Rule 分组；
-- 不为每个 Section 创建独立 Card；
-- 普通 Section 不使用暖金边线。
-
-### 5.3 Weather / Preset Choice
-
-Environment 的天气预设不应继续表现为一排持续存在的小玻璃 Card。
-
-默认：
-
-- Icon + Label；
-- 背景接近透明；
-- Hover 才出现极弱 Smoke Tone；
-- Current 使用熟铜文字 / Icon、短状态线或极弱暖金 Tone；
-- 不用七个独立圆角 Box 抢视觉焦点。
-
-大量选项不强行伪装成 Segmented Control；Segmented 仍只服务少量 2–5 项互斥模式。
-
-### 5.4 Parameter Controls
-
-参数控件继续消费共享 Control System。
-
-Context 高密度参数建议：
-
-- Empty Track：中性纸灰；
-- Progress：中性浅灰或极低饱和熟铜；
-- Thumb：Paper White；
-- Focus / Dragging：熟铜；
-- Stepper：低存在感烟墨按钮；
-- Value：稳定 Paper Secondary / Primary。
-
-一屏大量 Slider 时，不应让每条轨道长期呈现高亮金色。
-
-## 6. Edge / Noise / Shadow
-
-### Edge
-
-- 使用低对比暖纸灰；
-- 高透明 Surface 可稍增强轮廓；
-- 不使用粗完整亮边；
-- Elevated 可以比 Context / Work 更清楚，但仍克制。
-
-### Noise
-
-- 只提供极弱雾面材料感；
-- 不成为可识别颗粒图案；
-- 同一共享纹理服务整个家族，不按页面复制纹理方案。
-
-### Shadow / Local Occlusion
-
-- Ambient 最弱；
-- Context 轻；
-- Work 稳定；
-- Elevated 最明显；
-- UI-over-UI 浮层优先增加 Local Occlusion，而不是申请更强 Blur。
-
-## 7. 状态色
-
-### Default
-
-Paper / Neutral Gray。
-
-### Hover
-
-提高一档前景与极弱 Smoke Tone，不使用暖金证明“可点击”。
-
-### Selected / Current / On
-
-Aged Brass + 极弱暖金 Tone / 状态线。
-
-### Focus
-
-细熟铜 Ring / Line，必须服务键盘与手柄。
-
-### Primary
-
-Brass Highlight 只用于当前页面或任务唯一推进动作。
-
-### Danger
-
-Cinnabar 只用于不可逆或真正危险操作。
-
-一句话：
-
-> **熟铜表达状态，不表达“这是一个按钮”。**
-
-## 8. 昼夜
-
-昼夜不切换 Palette。
-
-夜景允许：
-
-- 小幅提高 Surface 自身亮度或密度；
-- 小幅增强 Edge；
-- 保持 Paper / Muted / Brass 对比关系。
-
-禁止：
-
-- 夜晚换一套蓝色 / 绿色 Theme；
-- 夜晚单纯降低 Panel Alpha；
-- 依赖背景刚好够亮来维持可读性。
-
-## 9. Blur
-
-正式 Unity 使用共享 URP Blur Service / Fullscreen Pass：
-
-```text
-World Camera
-↓
-Shared Scene Blur
-↓
-UI Toolkit Panel
-   ├ Surface Tint
-   ├ Edge
-   ├ Noise
-   └ Content
-```
-
-Blur Texture 默认只包含世界场景，不假设已经绘制的 UI 会再次进入 Blur。
-
-Surface 自己必须保证基础可读性；Blur 是环境增强，不是材质本体。
-
-## 10. 代码所有权
-
-长期目标：
-
-```text
-wanhu-theme-tokens.css
-        ↓
-wanhu-surface-system.css
-        ↓
-ui-control-system.css
-        ↓
-Component Geometry CSS
-```
-
-- Theme：Palette、材质 Token、状态色；
-- Surface：Ambient / Context / Work / Blocking / Elevated Recipe；
-- Control：Slider / Toggle / Select / Button 状态；
-- Component：尺寸、间距、布局与业务结构。
-
-组件 CSS 不重新定义自己的绿色 / 蓝色 / 金色 Theme。
-
-## 11. Review 门槛
-
-涉及 Gameplay Surface 的重要视觉调整，至少同时检查：
-
-- 白天 Workspace；
-- 白天 Environment / Camera Context；
-- 夜晚 Workspace；
-- 夜晚 Environment / Camera Context；
-- Main Dock / HUD 与以上 Surface 同屏关系；
-- Selected / Hover / Focus 是否仍只有少量熟铜；
-- 绿色植被背景下 Context 是否仍读成中性 Graphite。
-
-关键判断：
-
-1. Environment 与 Workspace 是否一眼属于同一家族？
-2. Context 是否更轻，但没有变成透明绿玻璃？
-3. Workspace 是否仍然是世界上的“工作玻璃”，而不是黑色窗口？
-4. Surface 身份是否来自 Density / Elevation，而不是 Hue？
-5. 世界是否仍是画面主体？
+共享颜色调整在 Theme，完整表面材质在 Surface，控件内部状态在 Controls，局部内容在对应组件。仍有历史局部硬编码和特殊前景，不能在文档中谎称全局已完全 Token 化，也不能新建一个末尾美化文件掩盖所有权问题。
