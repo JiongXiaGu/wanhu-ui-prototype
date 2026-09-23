@@ -271,6 +271,17 @@ const colorPresets: Record<ColorToolMode, HintPreset> = {
   ]},
 };
 
+const blueprintPhotographyPreset: HintPreset = {
+  id: 'blueprint-photography',
+  task: '蓝图摄影',
+  rows: [
+    { binding: '鼠标左键拖动', description: '调整构图', primary: true },
+    { binding: '鼠标滚轮', description: '缩放画面' },
+    { binding: '完成摄影', description: '进入蓝图编辑' },
+    { binding: 'Esc', description: '取消摄影' },
+  ],
+};
+
 const contextPanelPresets: Record<Exclude<ContextPanel, 'none'>, HintPreset> = {
   camera: { id: 'context-camera', task: '相机控制', rows: [
     { binding: '鼠标右键', description: '旋转镜头', primary: true }, { binding: 'W / A / S / D', description: '移动镜头' },
@@ -374,6 +385,7 @@ export function GameplayOperationHints(props: Props) {
   else if (tool === 'city-wall-access-stair') preset = cityWallAccessStairPreset;
   else if (tool === 'city-wall-transition-stair') preset = cityWallTransitionStairPreset;
   else if (tool === 'color-tool') preset = colorPresets[colorToolMode];
+  else if (tool === 'blueprint-photography') preset = blueprintPhotographyPreset;
   else if (buildingSchemeOpen && selection?.kind === 'building') preset = buildingSchemePreset;
   else if (selection?.kind === 'building') preset = buildingSelectionPreset;
   else if (workspace !== 'none') preset = workspacePreset(workspace, dockCategory);
