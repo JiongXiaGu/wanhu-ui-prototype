@@ -180,6 +180,20 @@ Phase 1 下一批继续按页面家族处理 HUD / Management / Loading 等债�
 
 Phase 1 后续继续把 Management 与 Loading 分开处理，不把专题内容色或外围空间颜色误并为共享 Brass。
 
+### Phase 1 进度：Batch 4 已完成
+
+第四批只处理 Management 页面家族的 Ratchet 旧共享色债务，不重做 Management UI，也不修改 Topic Accent / 图表业务色 / Management Surface Recipe：
+
+- `src/gameplay/city-management.css` 实际只剩两处退役共享色命中：Header 图标历史 Brass fallback，以及 Task Row 的旧金色 Hover；
+- Header fallback 改为当前 Brass Hue；最终生效的标题图标仍由后加载 `management-panel-skin.css` 使用 `--management-topic-accent`，因此 Civic / Economy / Resource / Governance / Defense 等专题身份不被抹平；
+- Task Row Hover 改为 `--wanhu-control-hover`；这与最终 Management Skin 的中性 Hover 一致，不再保留“鼠标经过就发金”的旧状态语言；
+- 财政收入图、税率 Slider、专题 Header Tint 等内容表达继续消费正式 Topic / Brass 语义，本批不把它们误判为旧共享主题色；
+- Ratchet 已从 Baseline 移除 `src/gameplay/city-management.css`。
+
+验证：使用与 `main` 应用源码一致的临时 PR，仅额外开启 UI Review 的 PR 触发；Build #1485 与 UI Review #461 均通过，`audit:visual` 在 Build 中通过。已实际查看 Management Finance 完整截图：暖棕财政 Topic Accent、收入图、税率 Slider 与数值强调保持可读；页面没有整体变灰，也没有恢复金色 Hover。临时 PR #8 已关闭，复用的 `tmp-*` 分支已恢复原 SHA。
+
+Phase 1 下一批单独处理 Loading / 外围空间债务；Management Topic Accent 不再纳入旧 Brass 清理。
+
 ## Phase 2：Semantic Token 收敛
 
 目标：Theme 管理“共享语义”，而不是收集所有 RGBA。
