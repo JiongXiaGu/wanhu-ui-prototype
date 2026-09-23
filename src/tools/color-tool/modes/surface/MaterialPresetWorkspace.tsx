@@ -318,6 +318,7 @@ export function MaterialPresetWorkspace({
   const [source, setSource] = useState<MaterialPresetWorkspaceSource>('all');
   const [favoriteOnly, setFavoriteOnly] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set([
+    'wood-walnut',
     'wall-plaster',
     'workshop-wood-smoked',
   ]));
