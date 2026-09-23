@@ -1003,7 +1003,8 @@ const firstSourceBadgeInMeta = await firstSourceBadge.evaluate(node => node.pare
 if (!firstSourceBadgeInMeta) {
   throw new Error('Material source badge must remain owned by the Compact Card metadata line rather than returning to the title row.');
 }
-if (Math.abs(firstMaterialCardBox.height - 64) > 1) {
+const firstMaterialCardBox = await schemeWorkspace.locator('.workspace-item-card').first().boundingBox();
+if (!firstMaterialCardBox || Math.abs(firstMaterialCardBox.height - 64) > 1) {
   throw new Error('Material Scheme Card must match shared WorkspaceItemCard 64px height. box=' + JSON.stringify(firstMaterialCardBox));
 }
 const firstMaterialCardStyle = await schemeWorkspace.locator('.workspace-item-card').first().evaluate((node) => getComputedStyle(node));
