@@ -77,6 +77,7 @@ const commandBarSource = await readFile('src/gameplay/CommandBar.tsx', 'utf8');
 const legacyStyles = await readFile('src/styles.css', 'utf8');
 const workspaceCss = await readFile('src/workspace.css', 'utf8');
 const workspaceCatalogCss = await readFile('src/workspace/workspace-catalog.css', 'utf8');
+const workspaceWorldFirstCss = await readFile('src/workspace/workspace-world-first-glass.css', 'utf8');
 const operationHintsCss = await readFile('src/gameplay/operation-hints.css', 'utf8');
 const uiVisualCss = await readFile('src/ui/ui-visual-system.css', 'utf8');
 const migrationAudit = await readFile('scripts/audit-unity-migration.mjs', 'utf8');
@@ -145,8 +146,9 @@ assert(blueprintWorkspaceCss.includes('.blueprint-workspace__row') && blueprintW
 assert(blueprintWorkspaceModel.includes("previewAsset: '/assets/wanhu-gameplay-city.png'") && blueprintWorkspaceModel.includes("category: 'residential'") && blueprintWorkspaceModel.includes("size: 'large'"), 'Blueprint 原型数据必须包含真实场景预览资产与规模元数据');
 assert(workspaceCatalogCss.includes('.workspace-rail-pager button span') && workspaceCatalogCss.includes('width:14px') && workspaceCatalogCss.includes('height:3px') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active span'), 'Catalog Rail / Content Pager 必须共享 14×3 横线 Marker');
 assert(workspaceCatalogCss.includes('background:var(--wanhu-color-paper-primary)') && !workspaceCatalogCss.includes('neutral dots'), 'Catalog Pager 当前页必须使用 Paper White 横线，不恢复圆点 / 熟铜高亮');
+assert(workspaceWorldFirstCss.includes('.workspace-content-pager button.is-active span,') && workspaceWorldFirstCss.includes('background:var(--wanhu-color-paper-primary)') && !workspaceWorldFirstCss.includes('background:var(--workspace-gold)'), 'Workspace Material Owner 不得把 Pager Active 覆盖回熟铜或非 Paper White');
 assert(workspaceCatalogCss.includes('.workspace-content-pager button,') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active') && workspaceCatalogCss.includes('width:20px'), 'Content Pager Active 不得通过改变按钮宽度造成 Marker 跳位');
-checks += 10;
+checks += 11;
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
 const operationHintsRootRule = operationHintsCss.match(/\.gameplay-operation-hints\s*\{([^}]*)\}/s)?.[1] ?? '';
 assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRootRule.includes('box-shadow:') && !operationHintsRootRule.includes('background:'), 'Operation Hints Root 不得持有 Surface 材质');
