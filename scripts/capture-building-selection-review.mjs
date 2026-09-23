@@ -81,7 +81,7 @@ try {
   await page.waitForSelector('.building-scheme-workspace');
   await page.waitForTimeout(180);
   ok('scheme toggle pressed', await schemeToggle.getAttribute('aria-pressed') === 'true');
-  ok('scheme workspace open', await page.getByRole('button', { name: '应用建筑配色方案 粉墙黛瓦', exact: true }).count() === 1);
+  ok('scheme workspace opens around current scheme', await page.getByRole('button', { name: '应用建筑配色方案 墨瓦沉木', exact: true }).count() === 1);
   ok('scheme workspace keeps operation hints', await selectionHints.getAttribute('data-hint-context') === 'building-scheme');
   await shot('building-selection-02-scheme-toggle-open');
   await page.screenshot({ path: out + '/operation-hints-selection-scheme.png' }); report.screenshots.push('operation-hints-selection-scheme');
@@ -118,9 +118,9 @@ try {
   await page.mouse.move(1700, 120);
   await page.waitForTimeout(120);
 
-  await page.getByRole('button', { name: '应用建筑配色方案 粉墙黛瓦', exact: true }).click();
+  await page.getByRole('button', { name: '应用建筑配色方案 皇家朱金', exact: true }).click();
   await page.waitForTimeout(100);
-  ok('applied scheme rebinds left panel', await page.getByText('粉墙黛瓦', { exact: true }).count() >= 1);
+  ok('applied scheme rebinds left panel', await page.getByText('皇家朱金', { exact: true }).count() >= 1);
   await shot('building-selection-03-scheme-applied');
 
   await schemeToggle.click();
