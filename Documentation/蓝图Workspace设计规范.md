@@ -111,14 +111,20 @@ Blueprint Workspace
 
 ### Photography
 
-摄影是独立 Tool：`tool=blueprint-photography`，进入时记录 `blueprint-workspace(category)` ToolOrigin。普通 Workspace / Main Dock / Control Tray 收起，摄影 Surface 作为全屏 Tool 接管构图。
+摄影是独立 Tool：`tool=blueprint-photography`，进入时记录 `blueprint-workspace(category)` ToolOrigin。普通 Workspace / Main Dock / Control Tray / Compass / World Utility 收起，不再建立摄影专用顶部 / 底部长条，而是复用标准 Tool Space：
 
-第一版 Web Prototype：
+- 左侧：共享 `LeftContextPanel`，显示摄影镜头参数与 4:3 预览规格；
+- 中下：共享 `ToolActionBar`，放“恢复镜头 / 构图线 / 完成 / 取消”；
+- 右下：共享 `GameplayOperationHints`，显示 Enter / G / R / Esc；
+- 中央：只保留 4:3 取景框与可选三分构图线。
 
-- 取景框固定 4:3；
-- 拖动调整 Preview Crop；
-- 滚轮缩放；
-- “恢复镜头”回到摄影默认构图；
+第一版 Web Prototype 只验证 UI 构图、4:3 比例和屏幕安全距离，不模拟世界镜头运动：
+
+- 1080p 取景框最大约 `900 × 675px`；
+- Top Safe Distance `96px`，Bottom Safe Distance `116px`，左右预留约 `392px` 给左 Context / 右 Hints；
+- 不实现鼠标拖动画面、滚轮缩放 Preview Crop；
+- 镜头参数控件用于验证最终 UIToolkit 参数面板，Web 中不驱动真实场景 Camera；
+- “构图线”只是 UI Toggle，默认关闭；
 - “完成摄影”只生成 Preview Capture，不直接保存 Blueprint；
 - Esc / 取消恢复原 Blueprint Workspace；
 - 从 Editor 发起“重新拍摄”时，取消摄影应回到原 Editor Draft。
