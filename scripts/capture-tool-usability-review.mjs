@@ -396,19 +396,31 @@ try {
   const designContentPagerMarks = page.locator('.workspace--design .workspace-content-pager button span');
   assert(await designRailPagerMarks.count() > 1, '建筑 Workspace 必须提供多页 Rail 用于 Pager 一致性审查');
   assert(await designContentPagerMarks.count() > 1, '建筑 Workspace 必须提供多页 Content Pager 用于一致性审查');
-  const designPagerMetrics = await page.locator('.workspace--design .workspace-rail-pager button span, .workspace--design .workspace-content-pager button span').evaluateAll((marks) => marks.map((mark) => {
+  const designRailPagerMetrics = await designRailPagerMarks.evaluateAll((marks) => marks.map((mark) => {
     const rect = mark.getBoundingClientRect();
     const style = getComputedStyle(mark);
     const active = Boolean(mark.closest('button')?.classList.contains('is-active'));
-    return { width: rect.width, height: rect.height, active, backgroundColor: style.backgroundColor, opacity: Number(style.opacity) };
+    return { width: rect.width, height: rect.height, active, backgroundColor: style.backgroundColor, opacity: Number(style.opacity), borderRadius: style.borderRadius };
   }));
-  assert(designPagerMetrics.every(item => Math.abs(item.width - 14) < 1 && Math.abs(item.height - 3) < 1), 'Design Rail / Content Pager 必须全部使用 14×3 横线');
-  const designActivePager = designPagerMetrics.filter(item => item.active);
-  const designInactivePager = designPagerMetrics.filter(item => !item.active);
-  assert(designActivePager.length >= 2 && designInactivePager.length >= 1, 'Design Pager 必须同时存在 Active / Inactive 横线');
-  assert(designActivePager.every(item => item.backgroundColor === 'rgb(238, 233, 223)' && item.opacity > .8), 'Design 当前页必须使用 Paper White 高亮');
-  assert(designInactivePager.every(item => item.opacity < .5), 'Design 非当前页必须使用低对比横线');
-  report.checks.push({ label: 'Design Workspace unified dash pagers', designPagerMetrics });
+  const designContentPagerMetrics = await designContentPagerMarks.evaluateAll((marks) => marks.map((mark) => {
+    const rect = mark.getBoundingClientRect();
+    const style = getComputedStyle(mark);
+    const active = Boolean(mark.closest('button')?.classList.contains('is-active'));
+    return { width: rect.width, height: rect.height, active, backgroundColor: style.backgroundColor, opacity: Number(style.opacity), borderRadius: style.borderRadius };
+  }));
+  const designRailActive = designRailPagerMetrics.filter(item => item.active);
+  const designRailInactive = designRailPagerMetrics.filter(item => !item.active);
+  const designContentActive = designContentPagerMetrics.filter(item => item.active);
+  const designContentInactive = designContentPagerMetrics.filter(item => !item.active);
+  assert(designRailActive.length === 1 && designRailInactive.length >= 1, 'Design Rail Pager 必须同时存在当前页竖线与未选中圆点');
+  assert(designRailActive.every(item => Math.abs(item.width - 3) < 1 && Math.abs(item.height - 14) < 1), 'Design Rail 当前页必须使用 3×14 竖线');
+  assert(designRailInactive.every(item => Math.abs(item.width - 3) < 1 && Math.abs(item.height - 3) < 1), 'Design Rail 未选中页必须使用 3×3 圆点');
+  assert(designContentActive.length === 1 && designContentInactive.length >= 1, 'Design Content Pager 必须同时存在当前页横线与未选中圆点');
+  assert(designContentActive.every(item => Math.abs(item.width - 14) < 1 && Math.abs(item.height - 3) < 1), 'Design Content 当前页必须使用 14×3 横线');
+  assert(designContentInactive.every(item => Math.abs(item.width - 3) < 1 && Math.abs(item.height - 3) < 1), 'Design Content 未选中页必须使用 3×3 圆点');
+  assert([...designRailActive, ...designContentActive].every(item => item.backgroundColor === 'rgb(238, 233, 223)' && item.opacity > .8), 'Design 当前页 Pager 必须使用 Paper White 高亮');
+  assert([...designRailInactive, ...designContentInactive].every(item => item.opacity < .5), 'Design 未选中页必须保持低对比圆点');
+  report.checks.push({ label: 'Design Workspace oriented pagers', designRailPagerMetrics, designContentPagerMetrics });
   await workspacePagerShot('design');
 
   const cards = page.locator('.design-item-card');
@@ -446,11 +458,16 @@ try {
     const active = Boolean(mark.closest('button')?.classList.contains('is-active'));
     return { width: rect.width, height: rect.height, active, backgroundColor: style.backgroundColor, opacity: Number(style.opacity) };
   }));
-  assert(Math.abs(blueprintSingleRailMetric.width - 14) < 1 && Math.abs(blueprintSingleRailMetric.height - 3) < 1, 'Blueprint 单页 Rail Marker 必须使用 14×3 横线');
+  assert(Math.abs(blueprintSingleRailMetric.width - 3) < 1 && Math.abs(blueprintSingleRailMetric.height - 14) < 1, 'Blueprint 单页 Rail Marker 必须使用 3×14 Paper White 竖线');
   assert(blueprintSingleRailMetric.backgroundColor === 'rgb(238, 233, 223)' && blueprintSingleRailMetric.opacity > .7, 'Blueprint 单页 Rail Marker 必须作为当前页使用 Paper White');
-  assert(blueprintContentPagerMetrics.every(item => Math.abs(item.width - 14) < 1 && Math.abs(item.height - 3) < 1), 'Blueprint Content Pager 必须全部使用 14×3 横线');
-  assert(blueprintContentPagerMetrics.filter(item => item.active).every(item => item.backgroundColor === 'rgb(238, 233, 223)' && item.opacity > .8), 'Blueprint 当前 Content Page 必须使用 Paper White 高亮');
-  report.checks.push({ label: 'Blueprint Workspace unified dash pagers', blueprintSingleRailMetric, blueprintContentPagerMetrics });
+  const blueprintContentActive = blueprintContentPagerMetrics.filter(item => item.active);
+  const blueprintContentInactive = blueprintContentPagerMetrics.filter(item => !item.active);
+  assert(blueprintContentActive.length === 1 && blueprintContentInactive.length >= 1, 'Blueprint Content Pager 必须同时存在当前页横线与未选中圆点');
+  assert(blueprintContentActive.every(item => Math.abs(item.width - 14) < 1 && Math.abs(item.height - 3) < 1), 'Blueprint 当前 Content Page 必须使用 14×3 横线');
+  assert(blueprintContentInactive.every(item => Math.abs(item.width - 3) < 1 && Math.abs(item.height - 3) < 1), 'Blueprint 未选中 Content Page 必须使用 3×3 圆点');
+  assert(blueprintContentActive.every(item => item.backgroundColor === 'rgb(238, 233, 223)' && item.opacity > .8), 'Blueprint 当前 Content Page 必须使用 Paper White 高亮');
+  assert(blueprintContentInactive.every(item => item.opacity < .5), 'Blueprint 未选中 Content Page 必须保持低对比圆点');
+  report.checks.push({ label: 'Blueprint Workspace oriented pagers', blueprintSingleRailMetric, blueprintContentPagerMetrics });
   await workspacePagerShot('blueprint');
 
   const blueprintCards = blueprintWorkspace.locator('.blueprint-workspace__card');
