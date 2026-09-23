@@ -76,11 +76,11 @@ Primary Rail 当前约 `146px`，必须支持最多 **6 个汉字**的常规分�
 Rail Pager 使用固定视觉槽位，并与 Category Selected 使用不同视觉语义：
 
 - Category Selected：继续使用熟铜色短竖线，表达“当前选择”；
-- Rail Pager：只使用中性灰圆点，表达“当前分类页”，不使用熟铜长竖线；
-- 只有一组分类时不隐藏槽位，显示一个低对比中性灰小圆点；
-- 多组分类时当前页约 `5×5px` 中性亮灰点，其它页约 `3×3px` 暗灰点；
+- Rail Pager：无论单页 / 多页都使用统一 `14×3px` 横线 `━`，不再使用圆点；
+- 当前页使用 Paper White 高亮；其它页使用低对比中性灰横线；Pager 不使用熟铜；
+- 只有一组分类时仍保留一个 Paper White 横线 Marker，因此布局不会因为页数变化而跳动；
 - Pager 与 Selected 保持现有几何位置，不为了规避重叠额外拆左右 Lane；
-- Pager Marker 与 Rail Item Selection Line 之间必须保留至少约 `12px` 的可见水平间隔；当前共享 Catalog 基线通过 `PrimaryRailContent padding-left:22px` + `Pager width:8px` 达成；
+- Pager Marker 与 Rail Item Selection Line 之间必须保留至少约 `12px` 的可见水平间隔；当前共享 Catalog 基线通过 `PrimaryRailContent padding-left:28px` + `Pager width:14px` 达成；
 - Shared Catalog 必须显式重置历史 `.workspace-body aside button` 的 `flex / padding`，避免旧全局 CSS 把 Pager 再次推向 Selected Line；
 - 切换分类或筛选不能因为 Pager 整体出现 / 消失而改变 Rail 内部几何；
 - Pager Marker 使用真实 DOM / VisualElement；最终 UI Toolkit 由 C# 更新 Marker 数量与 Active 状态。
@@ -130,11 +130,11 @@ Asset Card 是 **Action Button**，不是 Toggle / Exclusive Selector。它只�
 
 Content Pager 永远保留稳定视觉槽位，不因为筛选结果只有一页而整个消失：
 
-- 只有一页时显示低对比短横线 `━`，不可交互；
-- 多页时显示“当前长横线 + 其它点”；
-- 筛选、搜索导致页数变化时，Pager 的中心位置、高度和所在行不变化，只改变 Marker 数量与状态；
-- Marker 切换可以做约 `140–180ms` 的宽度、Opacity、Tone 过渡；
-- 当前页才允许使用旧金，其它页保持中性灰；
+- 单页 / 多页都只使用统一 `14×3px` 横线 `━`；
+- 当前页使用 Paper White 高亮，其它页保持低对比中性灰；
+- Active / Inactive Marker 宽度保持一致，切页只改变 Tone / Opacity，不通过伸长当前页造成布局抖动；
+- 筛选导致页数变化时，Pager 的中心位置、高度和所在行不变化，只改变 Marker 数量与状态；
+- Marker 切换可以做约 `140–180ms` 的 Opacity / Tone 过渡；
 - 最终 UI Toolkit 使用持久 Pager 容器和复用 Marker VisualElement，不通过重新创建整块 Footer 改变布局。
 
 Pager 是浏览状态指示器，不是新的 Footer Surface。
