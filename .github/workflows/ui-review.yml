@@ -64,6 +64,20 @@ jobs:
         run: node scripts/capture-input-dialog-system-review.mjs
       - name: Capture typography decision surfaces
         run: node scripts/capture-typography-decision-review.mjs
+      - name: Upload visual governance review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-governance-review
+          path: |
+            review-screenshots/readability-main-menu.png
+            review-screenshots/readability-new-game.png
+            review-screenshots/readability-settings.png
+            review-screenshots/readability-save.png
+            review-screenshots/readability-report.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 9
       - name: Capture tool usability and layout
         run: node scripts/capture-tool-usability-review.mjs
       - name: Capture building selection flow
