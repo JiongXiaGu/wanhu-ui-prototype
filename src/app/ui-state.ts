@@ -3,7 +3,7 @@ export type ContextPanel = 'none' | 'camera' | 'weather';
 export type ManagementView = 'none' | 'city' | 'population' | 'finance' | 'inventory' | 'policy' | 'commerce' | 'governance' | 'military';
 export type MapView = 'default' | 'land-value' | 'population' | 'commerce' | 'traffic' | 'security' | 'water';
 export type Workspace = 'none' | 'design' | 'blueprint';
-export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool';
+export type Tool = 'none' | 'building-placement' | 'road-placement' | 'terrain-edit' | 'tree-placement' | 'city-wall-construction' | 'city-wall-gate' | 'city-wall-access-stair' | 'city-wall-transition-stair' | 'color-tool' | 'blueprint-photography';
 export type BuildingTerrainMode = 'balanced-earthwork' | 'fill-only' | 'manual-elevation';
 export type TerrainEditMode = 'raise' | 'lower' | 'flatten' | 'smooth' | 'slope';
 export type TreePlacementMode = 'brush' | 'single';
@@ -44,6 +44,7 @@ export type DockCategory = DesignDockCategory | BlueprintDockCategory;
 export type ToolOrigin =
   | { kind: 'gameplay' }
   | { kind: 'design-workspace'; category: DesignDockCategory }
+  | { kind: 'blueprint-workspace'; category: BlueprintDockCategory }
   | { kind: 'selection'; selection: WorldSelectionTarget };
 
 const DESIGN_DOCK_CATEGORIES: readonly DesignDockCategory[] = [
@@ -213,6 +214,7 @@ export type GameplayUiAction =
   | { type: 'ENTER_CITY_WALL_ACCESS_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_CITY_WALL_TRANSITION_STAIR'; moduleId: string; moduleName: string; systemId: string; systemName: string }
   | { type: 'ENTER_TERRAIN_EDIT' }
+  | { type: 'ENTER_BLUEPRINT_PHOTOGRAPHY' }
   | { type: 'ENTER_COLOR_TOOL' }
   | { type: 'SET_COLOR_TOOL_MODE'; mode: ColorToolMode }
   | { type: 'EXIT_TOOL' }
@@ -273,6 +275,9 @@ function captureToolOrigin(state: GameplayUiState): ToolOrigin {
   if (state.selection) return { kind: 'selection', selection: state.selection };
   if (state.workspace === 'design' && isDesignDockCategory(state.dockCategory)) {
     return { kind: 'design-workspace', category: state.dockCategory };
+  }
+  if (state.workspace === 'blueprint' && isBlueprintDockCategory(state.dockCategory)) {
+    return { kind: 'blueprint-workspace', category: state.dockCategory };
   }
   return { kind: 'gameplay' };
 }
@@ -539,6 +544,22 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
       };
     case 'SET_COLOR_TOOL_MODE':
       return { ...state, colorToolMode: action.mode };
+    case 'ENTER_BLUEPRINT_PHOTOGRAPHY':
+      return {
+        ...state,
+        toolOrigin: captureToolOrigin(state),
+        selection: null,
+        buildingSchemeOpen: false,
+        worldDemolitionMode: false,
+        workspace: 'none',
+        tool: 'blueprint-photography',
+        management: 'none',
+        contextPanel: 'none',
+        mapView: 'default',
+        mapPanelOpen: false,
+        canUndo: false,
+        canRedo: false,
+      };
     case 'ENTER_TERRAIN_EDIT':
       return {
         ...state,
@@ -557,13 +578,21 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         canRedo: false,
       };
     case 'EXIT_TOOL': {
-      const returnCategory = state.toolOrigin?.kind === 'design-workspace'
+      const returnDesignCategory = state.toolOrigin?.kind === 'design-workspace'
+        ? state.toolOrigin.category
+        : null;
+      const returnBlueprintCategory = state.toolOrigin?.kind === 'blueprint-workspace'
         ? state.toolOrigin.category
         : null;
       const returnSelection = state.toolOrigin?.kind === 'selection'
         ? state.toolOrigin.selection
         : null;
-      const returningToWorkspace = returnCategory !== null;
+      const returnWorkspace: Workspace = returnDesignCategory
+        ? 'design'
+        : returnBlueprintCategory
+          ? 'blueprint'
+          : 'none';
+      const returnCategory = returnDesignCategory ?? returnBlueprintCategory;
       return {
         ...state,
         tool: 'none',
@@ -571,8 +600,8 @@ export function gameplayUiReducer(state: GameplayUiState, action: GameplayUiActi
         selection: returnSelection,
         buildingSchemeOpen: false,
         buildingPlacementIntent: 'new',
-        workspace: returningToWorkspace ? 'design' : 'none',
-        dockMode: returningToWorkspace ? 'design' : state.dockMode,
+        workspace: returnWorkspace,
+        dockMode: returnDesignCategory ? 'design' : returnBlueprintCategory ? 'blueprint' : state.dockMode,
         dockCategory: returnCategory,
         management: 'none',
         contextPanel: 'none',
