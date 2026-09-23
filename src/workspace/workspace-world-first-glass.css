@@ -123,9 +123,10 @@
     inset 0 0 0 1px rgba(255,255,255,.030);
 }
 
-/* Catalog Pager uses one shared dash language across Rail / Content.
-   Geometry lives in workspace-catalog.css; this material owner only supplies
-   neutral paper tones. Current page is Paper White, never brass. */
+/* Catalog Pager shares one state language but follows its paging axis:
+   Rail = active vertical line + inactive dots; Content = active horizontal line
+   + inactive dots. Geometry lives in workspace-catalog.css; this material owner
+   only supplies neutral paper tones. Current page is Paper White, never brass. */
 .gameplay-screen .workspace--catalog .workspace-content-pager button span,
 .gameplay-screen .workspace--catalog .workspace-rail-pager button span{
   background:var(--wanhu-color-paper-tertiary);
