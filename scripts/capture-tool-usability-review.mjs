@@ -527,8 +527,8 @@ try {
   assert.equal(await page.locator('.blueprint-photography-context-panel .ui-parameter-row').count(), 3, '蓝图摄影左栏必须展示 FOV / 高度 / 俯角三个镜头参数');
   assert.equal(await page.locator('.blueprint-photography__grid').count(), 0, '构图线默认应关闭，保持预览干净');
   await checkPersistentHints('蓝图摄影', 'blueprint-photography', false);
-  const hintsBox = await page.locator('.gameplay-operation-hints').boundingBox();
-  assert(hintsBox && Math.abs((hintsBox.y + hintsBox.height) - (1080 - 16)) < 1.5, '蓝图摄影 Operation Hints 必须落在右下 16px Safe Edge');
+  const photographyHintsBox = await page.locator('.gameplay-operation-hints').boundingBox();
+  assert(photographyHintsBox && Math.abs((photographyHintsBox.y + photographyHintsBox.height) - (1080 - 16)) < 1.5, '蓝图摄影 Operation Hints 必须落在右下 16px Safe Edge');
   assert.equal(await page.locator('.workspace--blueprint').count(), 0, '进入摄影模式并完成退出 Motion 后 Blueprint Workspace 必须卸载');
 
   await page.screenshot({ path: `${out}/blueprint-workflow-photography.png` }); report.screenshots.push('blueprint-workflow-photography');
