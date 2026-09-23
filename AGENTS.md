@@ -26,7 +26,7 @@
 ## 已确认的设计边界
 
 - 材质方案和建筑配色方案的文字列表是有意设计，保留现有结构；不增加缩略图，不改为视觉目录，也不将其记录为待补的美术欠缺。
-- Blueprint Workspace 复用 Catalog Workspace 外壳，但 Card 是 image-first 4×1 Variant：左 Rail 固定 `全部 / 小型 / 中型 / 大型`，顶部按 `全部 / 系统内置 / 创意工坊 / 我的蓝图` 筛选；Card Preview 固定 4:3，示例图覆盖 Card，名称与占地只放底部，详细参数进入共享 Rich Hover。
+- Blueprint Workspace 复用 Catalog Workspace 外壳，但 Card 是 image-first 4×1 Variant：左 Rail 固定 `全部 / 小型 / 中型 / 大型`，顶部按 `全部 / 系统内置 / 创意工坊 / 我的蓝图` 筛选；Card Preview 固定 4:3，示例图覆盖 Card，名称与占地只放底部，详细参数进入共享 Rich Hover。来源栏右侧固定“新建蓝图”；创建必须经过 Blueprint Photography → 带 4:3 Preview 的 Blueprint Editor，再保存到“我的蓝图”。只有 `mine` Card 显示 `··· → 编辑 / 删除`，摄影只负责 Preview，不拥有蓝图对象内容。
 - 库存和管理页暂缓优化，包括资源图标与详情面板；除非用户另行批准，不混入工具和设置布局任务。
 - Gameplay 二级中下栏统一使用 Secondary Bottom Action Bar：84px 总高；带文字按钮 76×64px；24px 图标在上、11px 短标签在下，图标为第一视觉层级。Building Selection、Terrain、Color 与全部 Placement 必须复用同一 Primitive；Mode / Quick / Complete / Cancel 不得各自使用另一套横排 Geometry。右下 Utility 继续保持纯图标。
 - 所有当前 Catalog Workspace 的 Rich Hover 固定显示在当前 Card 上方并水平居中；Feature 不声明私有定位模式。Catalog Pager 必须服从分页轴：Rail 当前页=`3×14` Paper White 竖线、未选中=`3×3` 灰点；Content 当前页=`14×3` Paper White 横线、未选中=`3×3` 灰点；单页保留对应方向的白线，Pager 不使用熟铜。`workspace-edge` 只保留为框架级特殊能力，未来确有完整目录避让需求时才允许显式启用。不新增常驻详情栏。Settings 只调整内部表单比例，不推翻全屏空间和输入流程。
