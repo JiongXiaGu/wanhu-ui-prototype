@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type WheelEvent } from 'react';
-import { Building2, Grid2X2, House, Landmark, ScrollText, X } from '../ui/icons/runtime-icons.generated';
+import { Building2, Grid2X2, House, Landmark, MoreHorizontal, Pencil, Plus, ScrollText, Trash2, X } from '../ui/icons/runtime-icons.generated';
 import type { BlueprintDockCategory } from '../app/ui-state';
 import type { MotionPhase } from '../ui/motion';
 import { useHoverOverlay, type HoverCardDefinition } from '../ui/hover/HoverOverlay';
@@ -7,7 +7,6 @@ import {
   BLUEPRINT_CATEGORY_LABELS,
   BLUEPRINT_SIZE_LABELS,
   BLUEPRINT_SOURCE_LABELS,
-  BLUEPRINT_WORKSPACE_ITEMS,
   type BlueprintSize,
   type BlueprintSource,
   type BlueprintWorkspaceItem,
@@ -39,8 +38,12 @@ interface WheelPagingState {
 
 interface BlueprintWorkspaceProps {
   category: BlueprintDockCategory;
+  items: readonly BlueprintWorkspaceItem[];
   motionPhase?: MotionPhase;
   onClose: () => void;
+  onCreate: (category: BlueprintDockCategory) => void;
+  onEdit: (item: BlueprintWorkspaceItem) => void;
+  onDelete: (item: BlueprintWorkspaceItem) => void;
   onSelectItem?: (item: BlueprintWorkspaceItem) => void;
 }
 
@@ -75,22 +78,27 @@ function hoverCardFor(item: BlueprintWorkspaceItem): HoverCardDefinition {
 
 export function BlueprintWorkspace({
   category,
+  items,
   motionPhase = 'steady',
   onClose,
+  onCreate,
+  onEdit,
+  onDelete,
   onSelectItem,
 }: BlueprintWorkspaceProps) {
   const hover = useHoverOverlay();
   const [size, setSize] = useState<BlueprintSize>('all');
   const [source, setSource] = useState<BlueprintSource>('all');
   const [page, setPage] = useState(0);
+  const [menuItemId, setMenuItemId] = useState('');
   const wheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
 
-  const visibleItems = useMemo(() => BLUEPRINT_WORKSPACE_ITEMS.filter((item) => {
+  const visibleItems = useMemo(() => items.filter((item) => {
     const categoryMatch = category === 'all' || item.category === category;
     const sizeMatch = size === 'all' || item.size === size;
     const sourceMatch = source === 'all' || item.source === source;
     return categoryMatch && sizeMatch && sourceMatch;
-  }), [category, size, source]);
+  }), [category, items, size, source]);
 
   const pageCount = Math.max(1, Math.ceil(visibleItems.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
@@ -194,6 +202,21 @@ export function BlueprintWorkspace({
                 </button>
               ))}
             </div>
+            <div className="blueprint-workspace__actions">
+              <button
+                type="button"
+                className="blueprint-workspace__action is-primary"
+                aria-label={'新建' + BLUEPRINT_CATEGORY_LABELS[category]}
+                onClick={() => {
+                  hover.clear();
+                  setMenuItemId('');
+                  onCreate(category);
+                }}
+              >
+                <Plus size={14} aria-hidden="true" />
+                <span>新建蓝图</span>
+              </button>
+            </div>
           </nav>
 
           <div className="workspace-content-stage blueprint-workspace__stage" onWheel={runWheelPaging}>
@@ -203,36 +226,71 @@ export function BlueprintWorkspace({
                   {pageItems.map((item) => {
                     const badge = sourceBadge(item);
                     const hoverDefinition = hoverCardFor(item);
+                    const editable = item.source === 'mine';
+                    const menuOpen = menuItemId === item.id;
                     return (
-                      <button
+                      <article
                         key={item.id}
-                        type="button"
-                        className="workspace-item-card blueprint-workspace__card"
-                        aria-label={'使用蓝图 ' + item.name + '，占地 ' + item.footprint}
-                        data-blueprint-id={item.id}
-                        {...hover.bind(hoverDefinition)}
-                        onClick={() => {
-                          hover.clear();
-                          onSelectItem?.(item);
-                        }}
+                        className={'blueprint-workspace__card-shell ' + (editable ? 'is-editable ' : '') + (menuOpen ? 'is-menu-open' : '')}
+                        onPointerLeave={() => menuOpen && setMenuItemId('')}
                       >
-                        <i className="workspace-item-card__state-line" aria-hidden="true" />
-                        <span
-                          className="blueprint-workspace__preview"
-                          aria-hidden="true"
-                          style={{
-                            backgroundImage: 'url(' + item.previewAsset + ')',
-                            backgroundPosition: item.previewPosition,
-                            backgroundSize: item.previewSize,
+                        <button
+                          type="button"
+                          className="workspace-item-card blueprint-workspace__card"
+                          aria-label={'使用蓝图 ' + item.name + '，占地 ' + item.footprint}
+                          data-blueprint-id={item.id}
+                          {...hover.bind(hoverDefinition)}
+                          onClick={() => {
+                            hover.clear();
+                            setMenuItemId('');
+                            onSelectItem?.(item);
                           }}
-                        />
-                        <span className="blueprint-workspace__shade" aria-hidden="true" />
-                        {badge && <span className={'blueprint-workspace__source is-' + item.source}>{badge}</span>}
-                        <span className="blueprint-workspace__caption">
-                          <b>{item.name}</b>
-                          <span>{item.footprint}</span>
-                        </span>
-                      </button>
+                        >
+                          <i className="workspace-item-card__state-line" aria-hidden="true" />
+                          <span
+                            className="blueprint-workspace__preview"
+                            aria-hidden="true"
+                            style={{
+                              backgroundImage: 'url(' + item.previewAsset + ')',
+                              backgroundPosition: item.previewPosition,
+                              backgroundSize: item.previewSize,
+                            }}
+                          />
+                          <span className="blueprint-workspace__shade" aria-hidden="true" />
+                          {badge && <span className={'blueprint-workspace__source is-' + item.source}>{badge}</span>}
+                          <span className="blueprint-workspace__caption">
+                            <b>{item.name}</b>
+                            <span>{item.footprint}</span>
+                          </span>
+                        </button>
+
+                        {editable && (
+                          <>
+                            <button
+                              type="button"
+                              className="blueprint-workspace__menu-trigger"
+                              aria-label={'管理我的蓝图 ' + item.name}
+                              aria-expanded={menuOpen}
+                              onClick={() => {
+                                hover.clear();
+                                setMenuItemId(menuOpen ? '' : item.id);
+                              }}
+                            >
+                              <MoreHorizontal size={16} aria-hidden="true" />
+                            </button>
+                            {menuOpen && (
+                              <div className="blueprint-workspace__card-menu" role="menu" aria-label={item.name + ' 蓝图操作'}>
+                                <button type="button" role="menuitem" onClick={() => { setMenuItemId(''); onEdit(item); }}>
+                                  <Pencil size={14} aria-hidden="true" /><span>编辑</span>
+                                </button>
+                                <button type="button" role="menuitem" className="is-danger" onClick={() => { setMenuItemId(''); onDelete(item); }}>
+                                  <Trash2 size={14} aria-hidden="true" /><span>删除</span>
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </article>
                     );
                   })}
                 </div>
