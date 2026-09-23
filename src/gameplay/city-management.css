@@ -1,3 +1,4 @@
+/* Management geometry/content baseline. Final material and topic styling are owned by management-panel-skin.css + wanhu-surface-system.css. */
 /* Simulated world data overlays. */
 .map-view-layer{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .18s ease}
 .map-view-layer--default{display:none}
