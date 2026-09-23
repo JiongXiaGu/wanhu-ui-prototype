@@ -28,8 +28,8 @@
 }
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__content{
-  /* Catalog Pager 统一使用 14×3px 横线。给 Pager Lane 和 Rail Selected
-     State Line 留出稳定间距，避免分页状态与分类选中语义挤在一起。 */
+  /* Rail Pager 使用纵向语言：当前页竖线、其它页圆点。给 Pager Lane
+     和 Rail Selected State Line 留出稳定间距，避免分页与筛选选中混淆。 */
   padding-left:28px;
 }
 
@@ -48,7 +48,7 @@
 
 .gameplay-screen .workspace--catalog .workspace-rail-pager button{
   /* Explicitly neutralize the old generic aside-button padding/flex.
-     Catalog Rail / Content Pager share the same dash language. */
+     Rail Pager follows the vertical paging axis: active line + inactive dots. */
   flex:0 0 14px;
   width:14px;
   height:14px;
@@ -59,25 +59,25 @@
 }
 
 .gameplay-screen .workspace--catalog .workspace-rail-pager button span{
-  width:14px;
+  width:3px;
   height:3px;
-  border-radius:2px;
+  border-radius:50%;
   background:var(--wanhu-color-paper-tertiary);
   opacity:.34;
   box-shadow:none;
 }
 
 .gameplay-screen .workspace--catalog .workspace-rail-pager button:hover span{
-  width:14px;
+  width:3px;
   height:3px;
-  border-radius:2px;
+  border-radius:50%;
   background:var(--wanhu-color-paper-secondary);
   opacity:.68;
 }
 
 .gameplay-screen .workspace--catalog .workspace-rail-pager button.is-active span{
-  width:14px;
-  height:3px;
+  width:3px;
+  height:14px;
   border-radius:2px;
   background:var(--wanhu-color-paper-primary);
   opacity:.92;
@@ -109,15 +109,15 @@
   text-overflow:ellipsis;
 }
 
-/* Rail Selected 保留熟铜竖线；Pager 无论单页/多页都只使用横线。
-   当前页用 Paper White，高亮状态不再使用熟铜。 */
+/* Rail Selected 保留熟铜竖线；Rail Pager 用独立 Paper White 竖线表达
+   当前页，未选中页保持中性圆点。单页也保留同形竖线。 */
 .gameplay-screen .workspace--catalog .workspace-rail-pager-marker{
   position:absolute;
   z-index:4;
-  left:0;
+  left:5px;
   top:50%;
-  width:14px;
-  height:3px;
+  width:3px;
+  height:14px;
   border-radius:2px;
   background:var(--wanhu-color-paper-primary);
   opacity:.78;
@@ -171,11 +171,10 @@
   height:16px;
 }
 
-.gameplay-screen .workspace--catalog .workspace-content-pager button span,
-.gameplay-screen .workspace--catalog .workspace-content-pager button.is-active span{
-  width:14px;
+.gameplay-screen .workspace--catalog .workspace-content-pager button span{
+  width:3px;
   height:3px;
-  border-radius:2px;
+  border-radius:50%;
   background:var(--wanhu-color-paper-tertiary);
   opacity:.34;
   box-shadow:none;
@@ -183,11 +182,17 @@
 }
 
 .gameplay-screen .workspace--catalog .workspace-content-pager button:hover span{
+  width:3px;
+  height:3px;
+  border-radius:50%;
   background:var(--wanhu-color-paper-secondary);
   opacity:.68;
 }
 
 .gameplay-screen .workspace--catalog .workspace-content-pager button.is-active span{
+  width:14px;
+  height:3px;
+  border-radius:2px;
   background:var(--wanhu-color-paper-primary);
   opacity:.92;
   box-shadow:0 0 8px rgba(238,233,223,.12);
