@@ -15,19 +15,21 @@
 .ui-modal-layer.is-entering .ui-modal-backdrop,
 .ui-modal-layer.is-exiting .ui-modal-backdrop{opacity:0}
 .ui-modal-layer.is-exiting{pointer-events:none}
-.ui-dialog{
+.ui-modal-surface{
   position:relative;
   z-index:1;
   box-sizing:border-box;
-  width:560px;
-  max-width:calc(100% - 96px);
-  padding:0 32px 26px;
   overflow:hidden;
   border:1px solid transparent;
-  border-radius:12px;
+  border-radius:var(--wanhu-dialog-radius,12px);
   background:transparent;
   box-shadow:none;
   color:var(--wanhu-color-paper-primary,#eee9df);
+}
+.ui-dialog{
+  width:560px;
+  max-width:calc(100% - 96px);
+  padding:0 32px 26px;
   animation:none;
 }
 .ui-dialog__header{

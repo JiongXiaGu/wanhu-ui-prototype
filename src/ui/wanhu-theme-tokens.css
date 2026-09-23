@@ -328,9 +328,11 @@
   --wanhu-hud-filter-soft:blur(13px) saturate(.92) brightness(1.0);
 }
 
-/* Dialog 不额外模糊仍是当前美术/成本选择，不再声称 Unity 6.6 做不到 UI-over-UI Blur。 */
+/* Dialog / Modal 统一使用近黑高不透明遮罩与 Elevated Smoked Graphite Surface。
+   UI-over-UI 不增加 Blur 是当前美术/成本选择，不代表 Unity 6.6 不支持。 */
 .game-canvas{
-  --wanhu-dialog-backdrop:rgba(8,10,9,.64);
+  --wanhu-dialog-backdrop:rgba(5,7,7,.89);
+  --wanhu-dialog-radius:12px;
   --wanhu-dialog-surface-bg:rgba(43,45,42,.95);
   --wanhu-dialog-surface-highlight:rgba(255,249,238,.018);
   --wanhu-dialog-surface-shade:rgba(8,10,9,.052);

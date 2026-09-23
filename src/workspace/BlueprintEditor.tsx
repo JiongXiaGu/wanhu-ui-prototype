@@ -67,7 +67,7 @@ export function BlueprintEditor({ draft, onCancel, onRephotograph, onSave }: Blu
     <div className="ui-modal-layer blueprint-editor-layer" role="presentation">
       <div className="ui-modal-backdrop" />
       <section
-        className="blueprint-editor"
+        className="blueprint-editor ui-modal-surface"
         role="dialog"
         aria-modal="true"
         aria-labelledby="blueprint-editor-title"

@@ -35,6 +35,13 @@ const SHARED_SURFACE_MATERIAL_OWNER_FILES=new Set([
 const SHARED_SURFACE_ROOT_SELECTOR=/(?:^|,)\s*(?:\.gameplay-screen[^,{]*\s+)?\.(?:bottom-command-surface(?:--(?:lg|md|sm))?|gameplay-left-context-surface|workspace--catalog)\s*(?:$|,)/;
 const SHARED_SURFACE_MATERIAL_PROPERTY=/(?:background(?:-color|-image)?|box-shadow|(?:-webkit-)?backdrop-filter)\s*:/;
 
+const SHARED_MODAL_STYLE_OWNER_FILES=new Set([
+  'src/ui/dialog/dialog.css',
+  'src/ui/wanhu-surface-system.css',
+  'src/ui/wanhu-theme-tokens.css',
+]);
+const SHARED_MODAL_STYLE_HOOK=/\.ui-modal-(?:backdrop|surface)\b|--wanhu-dialog-/;
+
 async function walk(dir){
   const entries=await readdir(dir,{withFileTypes:true});
   const files=[];
@@ -152,11 +159,19 @@ for(const file of files){
     }
   }
 
+  if (/archive-confirm-(?:layer|dialog)/.test(text)) {
+    errors.push(`${file}: retired Archive private confirm modal must not return. Route blocking confirmation through the shared Dialog system.`);
+  }
+
   if (file === 'src/styles.css' && /\.parameter-row\s*\{[^}]*grid-template-columns\s*:[^;}]*29px[^;}]*29px/s.test(text)) {
     errors.push(`${file}: Legacy five-column ParameterRow layout is retired. RuntimeParameterRow must be Label + NumericSliderField.`);
   }
 
   if(file.endsWith('.css')){
+    if(!SHARED_MODAL_STYLE_OWNER_FILES.has(file) && SHARED_MODAL_STYLE_HOOK.test(text)){
+      errors.push(`${file}: shared Modal backdrop / surface material must remain owned by dialog.css + wanhu-surface-system.css + theme tokens. Feature CSS may own modal geometry and content layout only.`);
+    }
+
     if(SHARED_CONTROL_INTERNAL_SELECTOR.test(text) && !SHARED_CONTROL_INTERNAL_OWNER_FILES.has(file)){
       errors.push(`${file}: shared Slider / Stepper / Select / Toggle internals must be owned by ui-control-system.css. Use semantic variables or an approved shared adapter instead.`);
     }

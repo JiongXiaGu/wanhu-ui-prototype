@@ -130,16 +130,6 @@
 .archive-footer-action:disabled{opacity:.32;cursor:default}
 .archive-footer-back{min-width:86px;color:var(--wanhu-color-paper-secondary);border-color:var(--wanhu-control-border-soft)}
 
-/* 旧调用点兼容；新输入/确认流程继续使用共享 Dialog。 */
-.archive-confirm-layer{position:absolute;inset:0;z-index:40;display:grid;place-items:center;background:var(--wanhu-dialog-backdrop)}
-.archive-confirm-dialog{width:440px;padding:28px;border:1px solid var(--wanhu-dialog-surface-edge);border-radius:18px;background:var(--wanhu-dialog-surface-bg);box-shadow:var(--wanhu-dialog-surface-shadow)}
-.archive-confirm-dialog h2{margin:0 0 10px;color:var(--wanhu-color-paper-primary);font-size:18px;font-weight:500}
-.archive-confirm-dialog p{margin:0;color:var(--wanhu-color-text-secondary);font-size:var(--wanhu-type-reading);line-height:var(--wanhu-type-reading-leading)}
-.archive-confirm-dialog footer{margin-top:27px;display:flex;justify-content:flex-end;gap:8px}
-.archive-confirm-dialog footer button{min-width:94px;height:36px;border:1px solid var(--wanhu-control-border-soft);border-radius:8px;background:var(--ui-field-surface);color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-label);cursor:pointer}
-.archive-confirm-dialog footer button.is-danger{display:inline-flex;align-items:center;justify-content:center;gap:7px;color:#c9857b;border-color:rgba(152,84,71,.25);background:rgba(152,84,71,.06)}
-.archive-confirm-dialog footer button:hover{background:var(--wanhu-control-hover)}
-.archive-confirm-dialog footer button.is-danger:hover{border-color:rgba(152,84,71,.38);background:rgba(152,84,71,.10)}
 @media (max-width:1500px){
   .archive-space__layout{width:min(1340px,calc(100% - 100px));gap:26px}
   .archive-groups{flex-basis:306px;padding-right:22px}
