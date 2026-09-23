@@ -358,7 +358,7 @@ Blueprint 与 Design 共享 Catalog Workspace Shell，但 Content 使用 image-f
 - 每页 4 Item，单行大图 Card；
 - Preview 覆盖整张 Card，左下名称、右下占地；
 - Rich Hover 承载构件数量、预计造价、规模与说明；
-- Web V1 只验证目录与选择入口，真实 Blueprint Placement 生命周期后续接入。
+- 来源栏右侧提供“新建蓝图”；创建进入 `blueprint-photography` Tool，完成后打开带 4:3 Preview 的 Blueprint Editor，再保存到“我的蓝图”；`mine` Card 提供编辑 / 删除管理。真实 Blueprint Placement 生命周期仍后续接入。
 
 ### Design Workspace
 
@@ -420,16 +420,19 @@ Tool 高于 Workspace / Management，打开后：
 - Building Placement（New / Move）；
 - Road Placement；
 - Terrain Edit World Tool；
-- Material Palette（内部含 Surface / Lighting / Scheme 三模式）。
+- Material Palette（内部含 Surface / Lighting / Scheme 三模式）；
+- Blueprint Photography（蓝图预览摄影）。
 
 ### 11.1 ToolOrigin
 
 每次进入 Tool 都记录来源：
 
 - `gameplay`；
-- `design-workspace(category)`。
+- `design-workspace(category)`；
+- `blueprint-workspace(category)`；
+- `selection(target)`。
 
-退出时只恢复 Origin，不根据 Tool 类型猜目标空间。
+退出时只恢复 Origin，不根据 Tool 类型猜目标空间。Blueprint Photography 完成或取消后恢复原 Blueprint Workspace；若由 Blueprint Editor 发起“重新拍摄”，取消摄影则恢复 Editor Draft。
 
 ### 11.2 Terrain Edit
 
