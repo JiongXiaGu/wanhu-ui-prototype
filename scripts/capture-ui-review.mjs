@@ -986,16 +986,19 @@ const colorLineBox = await materialColorLines.first().boundingBox();
 if (!colorLineBox || colorLineBox.width < 24 || colorLineBox.width > 32 || colorLineBox.height > 4) {
   throw new Error('Material BaseColor must remain a thin accent line, not a preview block. box=' + JSON.stringify(colorLineBox));
 }
-const sourceBadges = schemeWorkspace.locator('.material-preset-workspace__source');
+const sourceBadges = schemeWorkspace.locator('.workspace-item-card__source.is-compact');
 if ((await sourceBadges.count()) !== 8) {
-  throw new Error('Every visible Material Scheme Card must identify its source.');
+  throw new Error('Every visible Material Scheme Card must identify its source through the shared Compact badge.');
 }
-const firstMaterialCardBox = await schemeWorkspace.locator('.workspace-item-card').first().boundingBox();
+const firstMaterialCard = schemeWorkspace.locator('.workspace-item-card').first();
+const firstMaterialCardBox = await firstMaterialCard.boundingBox();
+const firstMaterialMetaBox = await firstMaterialCard.locator('.material-preset-workspace__card-meta').boundingBox();
 const firstSourceBadgeBox = await sourceBadges.first().boundingBox();
-if (!firstMaterialCardBox || !firstSourceBadgeBox
+if (!firstMaterialCardBox || !firstMaterialMetaBox || !firstSourceBadgeBox
   || firstSourceBadgeBox.x < firstMaterialCardBox.x + firstMaterialCardBox.width * 0.55
-  || firstSourceBadgeBox.y > firstMaterialCardBox.y + 28) {
-  throw new Error('Material source badge should stay in the Card upper-right area. badge=' + JSON.stringify(firstSourceBadgeBox));
+  || firstSourceBadgeBox.y < firstMaterialMetaBox.y - 1
+  || firstSourceBadgeBox.y + firstSourceBadgeBox.height > firstMaterialMetaBox.y + firstMaterialMetaBox.height + 1) {
+  throw new Error('Material source badge must stay in the Compact Card metadata line rather than returning to the title row. badge=' + JSON.stringify(firstSourceBadgeBox));
 }
 if (Math.abs(firstMaterialCardBox.height - 64) > 1) {
   throw new Error('Material Scheme Card must match shared WorkspaceItemCard 64px height. box=' + JSON.stringify(firstMaterialCardBox));
@@ -1106,6 +1109,15 @@ if ((await savedMaterialSource.count()) !== 1) {
 const savedMaterialMenuTrigger = savedMaterialCard.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true });
 if (!(await savedMaterialMenuTrigger.evaluate(node => node.classList.contains('workspace-item-menu-trigger') && node.classList.contains('is-compact')))) {
   throw new Error('My Scheme management action must use the shared Compact menu trigger.');
+}
+const [savedMaterialCardBox, savedMaterialTriggerBox] = await Promise.all([
+  savedMaterialCard.boundingBox(),
+  savedMaterialMenuTrigger.boundingBox(),
+]);
+if (!savedMaterialCardBox || !savedMaterialTriggerBox
+  || Math.abs((savedMaterialTriggerBox.y + savedMaterialTriggerBox.height / 2) - (savedMaterialCardBox.y + savedMaterialCardBox.height / 2)) > 2
+  || (savedMaterialCardBox.x + savedMaterialCardBox.width) - (savedMaterialTriggerBox.x + savedMaterialTriggerBox.width) > 12) {
+  throw new Error('Compact Card management trigger must stay independently centered on the Card right edge.');
 }
 await schemeWorkspace.getByRole('button', { name: '应用材质方案 石材 · 城墙暖灰', exact: true }).hover();
 await page.waitForTimeout(540);
