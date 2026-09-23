@@ -12,7 +12,7 @@ import {
   X,
   type UiIconComponent,
 } from '../../../../ui/icons/runtime-icons.generated';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHoverOverlay, type HoverCardDefinition } from '../../../../ui/hover/HoverOverlay';
 import type { MotionPhase } from '../../../../ui/motion';
 
@@ -217,7 +217,10 @@ export function BuildingSchemeWorkspace({
     'player-amber',
   ]));
   const [menuSchemeId, setMenuSchemeId] = useState('');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(() => {
+    const selectedIndex = schemes.findIndex((scheme) => scheme.id === selectedSchemeId);
+    return selectedIndex < 0 ? 0 : Math.floor(selectedIndex / PAGE_SIZE);
+  });
 
   const filtered = useMemo(
     () => schemes.filter((scheme) => (
@@ -231,6 +234,15 @@ export function BuildingSchemeWorkspace({
   const stylePageCount = Math.max(1, Math.ceil(STYLE_FILTERS.length / STYLE_PAGE_SIZE));
   const visibleStyleFilters = STYLE_FILTERS.slice(stylePage * STYLE_PAGE_SIZE, (stylePage + 1) * STYLE_PAGE_SIZE);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  useEffect(() => {
+    if (favoriteOnly) return;
+    const selectedIndex = filtered.findIndex((scheme) => scheme.id === selectedSchemeId);
+    if (selectedIndex < 0) return;
+    const selectedPage = Math.floor(selectedIndex / PAGE_SIZE);
+    setPage((current) => current === selectedPage ? current : selectedPage);
+  }, [favoriteOnly, filtered, selectedSchemeId]);
+
   const safePage = Math.min(page, pageCount - 1);
   const visible = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
   const rows = [visible.slice(0, 3), visible.slice(3, 6)].filter((row) => row.length > 0);
