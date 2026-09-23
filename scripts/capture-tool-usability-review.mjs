@@ -521,10 +521,11 @@ try {
   assert(editorPreviewBox && Math.abs(editorPreviewBox.width / editorPreviewBox.height - 4 / 3) < .02, '蓝图编辑窗口必须保留摄影所得 4:3 Preview');
   await page.screenshot({ path: `${out}/blueprint-workflow-editor.png` }); report.screenshots.push('blueprint-workflow-editor');
 
-  const blueprintNameInput = page.getByRole('textbox', { name: '蓝图名称' });
+  const createBlueprintEditor = page.locator('.blueprint-editor[data-blueprint-editor="create"]');
+  const blueprintNameInput = createBlueprintEditor.getByRole('textbox', { name: '蓝图名称' });
   await blueprintNameInput.fill('测试摄影蓝图');
-  await page.getByRole('button', { name: '商业', exact: true }).click();
-  await page.getByRole('button', { name: '保存蓝图', exact: true }).click();
+  await createBlueprintEditor.getByRole('button', { name: '商业', exact: true }).click();
+  await createBlueprintEditor.getByRole('button', { name: '保存蓝图', exact: true }).click();
   await page.waitForSelector('.blueprint-editor', { state: 'detached' });
   await page.waitForSelector('.workspace--blueprint');
   const returnedBlueprintWorkspace = page.locator('.workspace--blueprint');
