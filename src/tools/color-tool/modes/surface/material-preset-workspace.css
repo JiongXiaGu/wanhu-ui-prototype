@@ -109,8 +109,6 @@
   width:100%;
   height:64px;
   padding-left:14px;
-}
-.material-preset-workspace__card.is-editable .material-preset-workspace__card-apply{
   padding-right:40px;
 }
 .material-preset-workspace__card.is-revealed .workspace-item-card{

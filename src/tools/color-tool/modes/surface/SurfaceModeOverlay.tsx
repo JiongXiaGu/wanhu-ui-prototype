@@ -623,8 +623,8 @@ export function SurfaceModeOverlay({
     }
   }
 
-  function copyCustomPreset(id: string) {
-    const preset = customPresets.find((entry) => entry.id === id);
+  function copyPresetParameters(id: string) {
+    const preset = [...BUILTIN_PRESETS, ...WORKSHOP_PRESETS, ...customPresets].find((entry) => entry.id === id);
     if (preset) setSurfaceClipboard(cloneDraft(preset.draft));
   }
 
@@ -780,7 +780,7 @@ export function SurfaceModeOverlay({
           if (surfaceClipboard) replaceDraft(surfaceClipboard);
         }}
         onUpdateMetadata={updateCustomPresetMetadata}
-        onCopy={copyCustomPreset}
+        onCopy={copyPresetParameters}
         onDelete={(id) => {
           const preset = customPresets.find((entry) => entry.id === id);
           if (preset) deleteCustomPreset(preset);

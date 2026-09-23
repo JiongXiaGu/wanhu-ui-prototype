@@ -70,7 +70,7 @@ interface Props {
 }
 
 const PAGE_SIZE = 8;
-const CATEGORY_PAGE_SIZE = 7;
+const CATEGORY_PAGE_SIZE = 5;
 const MATERIAL_FAMILIES = Object.keys(MATERIAL_FAMILY_LABELS) as MaterialFamily[];
 
 const MATERIAL_CATEGORIES: readonly {
@@ -131,8 +131,10 @@ function SchemeCard({
   menuOpen,
   dragging,
   highlighted,
+  favorite,
   onApply,
   onMenuToggle,
+  onToggleFavorite,
   onEdit,
   onCopy,
   onDelete,
@@ -143,8 +145,10 @@ function SchemeCard({
   menuOpen: boolean;
   dragging: boolean;
   highlighted: boolean;
+  favorite: boolean;
   onApply: (id: string) => void;
   onMenuToggle: (id: string) => void;
+  onToggleFavorite: (id: string) => void;
   onEdit: (preset: MaterialPresetWorkspaceItem) => void;
   onCopy: (preset: MaterialPresetWorkspaceItem) => void;
   onDelete: (preset: MaterialPresetWorkspaceItem) => void;
@@ -206,7 +210,10 @@ function SchemeCard({
         <i className="workspace-item-card__state-line" aria-hidden="true" />
         <div className="workspace-item-card__copy material-preset-workspace__card-copy">
           <div className="material-preset-workspace__card-head">
-            <b className="workspace-item-card__title">{preset.name}</b>
+            <b className="workspace-item-card__title workspace-item-card__title-row">
+              <span className="workspace-item-card__title-text">{preset.name}</span>
+              {favorite && <span className="workspace-item-card__favorite-star" aria-label="已收藏">★</span>}
+            </b>
           </div>
           <span className="workspace-item-card__meta material-preset-workspace__card-meta">
             <i
@@ -220,36 +227,39 @@ function SchemeCard({
         </div>
       </button>
 
-      {editable && (
-        <>
-          <button
-            type="button"
-            className="workspace-item-menu-trigger is-compact material-preset-workspace__menu-trigger"
-            aria-label={'管理我的方案 ' + preset.name}
-            aria-expanded={menuOpen}
-            onClick={() => onMenuToggle(menuOpen ? '' : preset.id)}
-          >
-            <MoreHorizontal aria-hidden="true" />
-          </button>
+      <button
+        type="button"
+        className="workspace-item-menu-trigger is-compact material-preset-workspace__menu-trigger"
+        aria-label={'方案操作 ' + preset.name}
+        aria-expanded={menuOpen}
+        onClick={() => onMenuToggle(menuOpen ? '' : preset.id)}
+      >
+        <MoreHorizontal aria-hidden="true" />
+      </button>
 
-          {menuOpen && (
-            <div
-              className="workspace-item-menu is-compact material-preset-workspace__card-menu"
-              role="menu"
-              aria-label={preset.name + ' 方案操作'}
-            >
-              <button type="button" role="menuitem" onClick={() => onEdit(preset)}>
-                <Pencil aria-hidden="true" /><span>编辑</span>
-              </button>
-              <button type="button" role="menuitem" onClick={() => onCopy(preset)}>
-                <Copy aria-hidden="true" /><span>复制参数</span>
-              </button>
-              <button type="button" role="menuitem" className="is-danger" onClick={() => onDelete(preset)}>
-                <Trash2 aria-hidden="true" /><span>删除</span>
-              </button>
-            </div>
+      {menuOpen && (
+        <div
+          className="workspace-item-menu is-compact material-preset-workspace__card-menu"
+          role="menu"
+          aria-label={preset.name + ' 方案操作'}
+        >
+          <button type="button" role="menuitem" className="is-favorite" onClick={() => onToggleFavorite(preset.id)}>
+            <Bookmark aria-hidden="true" /><span>{favorite ? '取消收藏' : '收藏'}</span>
+          </button>
+          {editable && (
+            <button type="button" role="menuitem" onClick={() => onEdit(preset)}>
+              <Pencil aria-hidden="true" /><span>编辑</span>
+            </button>
           )}
-        </>
+          <button type="button" role="menuitem" onClick={() => onCopy(preset)}>
+            <Copy aria-hidden="true" /><span>复制参数</span>
+          </button>
+          {editable && (
+            <button type="button" role="menuitem" className="is-danger" onClick={() => onDelete(preset)}>
+              <Trash2 aria-hidden="true" /><span>删除</span>
+            </button>
+          )}
+        </div>
       )}
     </article>
   );
@@ -306,6 +316,11 @@ export function MaterialPresetWorkspace({
   const [category, setCategory] = useState<MaterialPresetWorkspaceCategory>('all');
   const [categoryPage, setCategoryPage] = useState(0);
   const [source, setSource] = useState<MaterialPresetWorkspaceSource>('all');
+  const [favoriteOnly, setFavoriteOnly] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set([
+    'wall-plaster',
+    'workshop-wood-smoked',
+  ]));
   const [page, setPage] = useState(0);
   const [menuPresetId, setMenuPresetId] = useState('');
   const [draggingPresetId, setDraggingPresetId] = useState('');
@@ -328,9 +343,10 @@ export function MaterialPresetWorkspace({
     () => allPresets.filter((preset) => {
       const matchesCategory = category === 'all' || preset.family === category;
       const matchesSource = source === 'all' || preset.source === source;
-      return matchesCategory && matchesSource;
+      const matchesFavorite = !favoriteOnly || favoriteIds.has(preset.id);
+      return matchesCategory && matchesSource && matchesFavorite;
     }),
-    [allPresets, category, source],
+    [allPresets, category, favoriteIds, favoriteOnly, source],
   );
 
   const categoryPageCount = Math.max(1, Math.ceil(MATERIAL_CATEGORIES.length / CATEGORY_PAGE_SIZE));
@@ -351,9 +367,29 @@ export function MaterialPresetWorkspace({
 
   function selectCategory(next: MaterialPresetWorkspaceCategory) {
     hover.clear();
+    setFavoriteOnly(false);
     setCategory(next);
     setPage(0);
     setMenuPresetId('');
+  }
+
+  function selectFavorites() {
+    hover.clear();
+    setFavoriteOnly(true);
+    setCategory('all');
+    setPage(0);
+    setMenuPresetId('');
+  }
+
+  function toggleFavorite(presetId: string) {
+    setFavoriteIds((current) => {
+      const next = new Set(current);
+      if (next.has(presetId)) next.delete(presetId);
+      else next.add(presetId);
+      return next;
+    });
+    setMenuPresetId('');
+    hover.clear();
   }
 
   function selectSource(next: MaterialPresetWorkspaceSource) {
@@ -487,15 +523,19 @@ export function MaterialPresetWorkspace({
     endDrag();
   }
 
-  const emptyTitle = source === 'mine'
-    ? '还没有保存的我的方案'
-    : source === 'workshop'
-      ? '没有符合条件的创意工坊方案'
-      : '没有符合条件的材质方案';
+  const emptyTitle = favoriteOnly
+    ? '还没有符合条件的收藏方案'
+    : source === 'mine'
+      ? '还没有保存的我的方案'
+      : source === 'workshop'
+        ? '没有符合条件的创意工坊方案'
+        : '没有符合条件的材质方案';
 
-  const emptyDetail = source === 'mine'
-    ? '使用右上“保存配色”把左侧当前参数加入这里。'
-    : '切换左侧材质分类或顶部来源筛选继续浏览。';
+  const emptyDetail = favoriteOnly
+    ? '通过 Card 右侧菜单收藏方案，或切换顶部来源筛选。'
+    : source === 'mine'
+      ? '使用右上“保存配色”把左侧当前参数加入这里。'
+      : '切换左侧材质分类或顶部来源筛选继续浏览。';
 
   return (
     <section
@@ -504,6 +544,7 @@ export function MaterialPresetWorkspace({
       aria-busy={motionPhase !== 'steady'}
       data-material-preset-source={source}
       data-material-preset-category={category}
+      data-material-favorite={favoriteOnly ? 'true' : 'false'}
       data-material-category-page={categoryPage + 1}
       data-material-dragging={draggingPreset ? 'true' : 'false'}
       data-material-highlight-preset={highlightPresetId || undefined}
@@ -521,7 +562,17 @@ export function MaterialPresetWorkspace({
 
       <div className="workspace-body material-preset-workspace__body">
         <aside className="workspace-primary-rail material-preset-workspace__rail" aria-label="材质方案分类">
-          <div className="workspace-primary-rail__content">
+          <div className="workspace-primary-rail__content has-favorite-shortcut">
+            <button
+              type="button"
+              className={'workspace-primary-rail__favorite ' + (favoriteOnly ? 'is-active' : '')}
+              aria-pressed={favoriteOnly}
+              onClick={selectFavorites}
+            >
+              <Bookmark aria-hidden="true" />
+              <span>收藏</span>
+            </button>
+            <i className="workspace-primary-rail__favorite-divider" aria-hidden="true" />
             {categoryPageCount > 1 ? (
               <div className="workspace-rail-pager" aria-label="材质分类组">
                 <i className="workspace-rail-pager__track" aria-hidden="true" />
@@ -626,8 +677,10 @@ export function MaterialPresetWorkspace({
                         menuOpen={menuPresetId === preset.id}
                         dragging={draggingPresetId === preset.id}
                         highlighted={highlightPresetId === preset.id}
+                        favorite={favoriteIds.has(preset.id)}
                         onApply={onApply}
                         onMenuToggle={setMenuPresetId}
+                        onToggleFavorite={toggleFavorite}
                         onEdit={editPreset}
                         onCopy={copyPreset}
                         onDelete={deletePreset}
