@@ -54,7 +54,7 @@
   background:linear-gradient(180deg,rgba(255,255,255,.012),rgba(255,255,255,.002));
 }
 .management-space__heading{display:flex;align-items:center;gap:12px;min-width:0}
-.management-space__heading-icon{width:30px;height:30px;display:grid;place-items:center;color:#c2a66a;border:1px solid rgba(201,165,95,.13);background:rgba(201,165,95,.035)}
+.management-space__heading-icon{width:30px;height:30px;display:grid;place-items:center;color:var(--wanhu-color-brass-high);border:1px solid rgba(169,132,75,.13);background:rgba(169,132,75,.035)}
 .management-space__heading-icon .ui-icon{width:16px;height:16px;}
 .management-space__heading>div{display:flex;align-items:baseline;gap:12px}
 .management-space__heading small{font-size:var(--wanhu-type-caption,10px);color:#777e76;letter-spacing:.08em}
@@ -101,7 +101,7 @@
   text-align:left;
   cursor:pointer;
 }
-.management-task-row:hover{background:linear-gradient(90deg,rgba(201,165,95,.048),rgba(201,165,95,0) 76%)}
+.management-task-row:hover{background:var(--wanhu-control-hover)}
 .management-task-row>span{display:flex;flex-direction:column;gap:7px}
 .management-task-row>span b{font-size:11px;font-weight:520;color:#c9c6bd}
 .management-task-row>span small{font-size:var(--wanhu-type-caption,10px);color:#777f77;line-height:1.45}
