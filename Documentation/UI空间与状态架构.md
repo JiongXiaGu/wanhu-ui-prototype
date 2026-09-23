@@ -432,7 +432,7 @@ Tool 高于 Workspace / Management，打开后：
 - `blueprint-workspace(category)`；
 - `selection(target)`。
 
-退出时只恢复 Origin，不根据 Tool 类型猜目标空间。Blueprint Photography 完成或取消后恢复原 Blueprint Workspace；若由 Blueprint Editor 发起“重新拍摄”，取消摄影则恢复 Editor Draft。
+退出时只恢复 Origin，不根据 Tool 类型猜目标空间。Blueprint Photography 完成或取消后恢复原 Blueprint Workspace；若由 Blueprint Editor 发起“重新拍摄”，取消摄影则恢复 Editor Draft。摄影状态属于标准 Tool Space：普通 HUD / Utility 隐藏，左 Context + 中下 Secondary Action Bar + 右下 Operation Hints 保留；Web 不模拟场景移动，只验证 4:3 Frame 与 Safe Distance。
 
 ### 11.2 Terrain Edit
 
