@@ -440,8 +440,10 @@ try {
   await open('workspace-blueprint-all', '.workspace--blueprint');
   await checkPersistentHints('蓝图目录', 'workspace-blueprint-all');
   const blueprintWorkspace = page.locator('.workspace--blueprint');
+  const blueprintFavoriteRail = blueprintWorkspace.locator('.blueprint-workspace__rail .workspace-primary-rail__favorite');
+  assert.equal(await blueprintFavoriteRail.getByText('收藏', { exact: true }).count(), 1, '蓝图左 Rail 必须提供独立收藏快捷筛选');
   const blueprintRailLabels = await blueprintWorkspace.locator('.blueprint-workspace__rail .workspace-primary-rail__page>button').evaluateAll(buttons => buttons.map(button => button.textContent?.trim()));
-  assert.deepEqual(blueprintRailLabels, ['全部', '小型', '中型', '大型'], '蓝图左 Rail 必须固定为 全部 / 小型 / 中型 / 大型');
+  assert.deepEqual(blueprintRailLabels, ['全部', '小型', '中型', '大型'], '蓝图分类区继续固定为 全部 / 小型 / 中型 / 大型');
   const blueprintSourceLabels = await blueprintWorkspace.locator('.blueprint-workspace__source-filter .workspace-context-filter__scroll>button').evaluateAll(buttons => buttons.map(button => button.textContent?.trim()));
   assert.deepEqual(blueprintSourceLabels, ['全部', '系统内置', '创意工坊', '我的蓝图'], '蓝图顶部筛选必须按来源显示');
   const createBlueprintButton = blueprintWorkspace.getByRole('button', { name: '新建全部蓝图', exact: true });
@@ -476,6 +478,8 @@ try {
 
   const blueprintCards = blueprintWorkspace.locator('.blueprint-workspace__card');
   assert.equal(await blueprintCards.count(), 4, '蓝图第一页必须显示 4 张大图 Card');
+  assert.equal(await blueprintWorkspace.locator('.blueprint-workspace__card-shell>.workspace-item-menu-trigger').count(), 4, '蓝图所有来源 Card 都必须常驻共享 ··· 操作入口');
+  assert(await blueprintWorkspace.locator('.workspace-item-card__favorite-star').count() >= 1, '已收藏蓝图必须在名称后显示星标');
   const blueprintMetrics = await blueprintCards.evaluateAll((cards) => cards.map((card) => {
     const rect = card.getBoundingClientRect();
     const preview = card.querySelector('.blueprint-workspace__preview')?.getBoundingClientRect();
@@ -496,6 +500,13 @@ try {
   assert(blueprintMetrics.every(item => item.previewWidth >= item.width - 2 && item.previewHeight >= item.height - 2 && item.backgroundImage && item.backgroundImage !== 'none'), '蓝图 Preview 必须覆盖 Card 主体并绑定场景示例图');
   report.checks.push({ label: 'Blueprint Workspace 4×1 image cards', blueprintRailLabels, blueprintSourceLabels, blueprintMetrics });
   await blueprintWorkspaceShot('all');
+
+  await blueprintFavoriteRail.click();
+  await settle();
+  assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-favorite'), 'true', '蓝图收藏快捷筛选必须进入 Favorite 状态');
+  assert((await blueprintWorkspace.locator('.blueprint-workspace__card').count()) > 0, '收藏筛选必须显示已收藏蓝图');
+  await blueprintWorkspace.locator('.blueprint-workspace__rail').getByRole('button', { name: '全部', exact: true }).click();
+  await settle();
 
   const firstBlueprintCard = blueprintCards.first();
   await firstBlueprintCard.hover();
@@ -572,7 +583,7 @@ try {
   assert.equal(await createdBlueprintCard.count(), 1, '摄影完成并保存后，新蓝图必须进入“我的蓝图”');
 
   const createdShell = createdBlueprintCard.locator('..');
-  const createdMenuTrigger = createdShell.getByRole('button', { name: '管理我的蓝图 测试摄影蓝图', exact: true });
+  const createdMenuTrigger = createdShell.getByRole('button', { name: '蓝图操作 测试摄影蓝图', exact: true });
   assert(await createdMenuTrigger.evaluate(node => node.classList.contains('workspace-item-menu-trigger') && node.classList.contains('is-media')), '我的蓝图管理入口必须复用共享 Media Menu Trigger');
   const createdSourceBadge = createdShell.locator('.workspace-item-card__source.is-media.is-user');
   assert.equal(await createdSourceBadge.count(), 1, '我的蓝图来源 Badge 必须位于共享 Media Source 槽位');
@@ -592,8 +603,8 @@ try {
   assert.equal(await createdShell.getByRole('menu').count(), 1, '我的蓝图 Card 必须提供管理 Popover');
   assert.deepEqual(
     await createdShell.getByRole('menuitem').evaluateAll(items => items.map(item => item.textContent?.trim())),
-    ['编辑', '删除'],
-    '我的蓝图管理菜单固定为 编辑 / 删除',
+    ['收藏', '编辑', '删除'],
+    '我的蓝图操作菜单必须包含共享收藏 + 编辑 / 删除',
   );
   await page.screenshot({ path: `${out}/blueprint-workflow-manage.png` }); report.screenshots.push('blueprint-workflow-manage');
 
@@ -605,7 +616,7 @@ try {
   assert.equal(await page.getByText('测试摄影蓝图·改', { exact: true }).count(), 1, '编辑保存后必须更新我的蓝图 Card 名称');
 
   const renamedShell = page.locator('.blueprint-workspace__card-shell').filter({ hasText: '测试摄影蓝图·改' });
-  await renamedShell.getByRole('button', { name: '管理我的蓝图 测试摄影蓝图·改', exact: true }).click();
+  await renamedShell.getByRole('button', { name: '蓝图操作 测试摄影蓝图·改', exact: true }).click();
   await renamedShell.getByRole('menuitem', { name: '删除', exact: true }).click();
   await page.waitForSelector('.ui-dialog');
   assert((await page.locator('.ui-dialog').textContent())?.includes('已经放置在城市中的内容不会受到影响'), '删除蓝图确认必须说明不会反向删除城市内容');

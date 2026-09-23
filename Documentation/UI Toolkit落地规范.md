@@ -102,14 +102,16 @@ Tooltip 统一处理延迟、位置、屏幕边缘修正与快捷键文案，不
 
 Design / MaterialPreset / BuildingScheme / Blueprint 等目录继续复用同一 Workspace Catalog 外壳。Card 不强制同尺寸，而是统一公共视觉语言后保留两种内容 Variant：
 
-- **Compact Card**：用于 MaterialPreset、BuildingScheme 等文字/参数型条目，保持约 64px 高；来源 Badge 跟随内容信息行，Editable 的 `···` 位于 Card 最右侧垂直居中；
-- **Media Card**：用于 Blueprint 等预览图主导条目，允许 4:3 等业务比例；来源 Badge 固定左上，Editable 的 `···` 固定右上，底部区域只承担名称和核心数据；
+- **Compact Card**：用于 MaterialPreset、BuildingScheme 等文字/参数型条目，保持约 64px 高；来源 Badge 跟随内容信息行，`···` 固定在 Card 最右侧垂直居中；
+- **Media Card**：用于 Blueprint 等预览图主导条目，允许 4:3 等业务比例；来源 Badge 固定左上，`···` 固定右上，底部区域只承担名称和核心数据；
+- 两种 Variant 的 **所有来源**（System / Workshop / User）都保留常驻的 Item Action Menu Trigger；菜单内容按来源与能力裁剪，但操作入口 Geometry 不随来源消失；
+- 收藏是共享 Catalog 用户元数据：所有 Card 菜单提供“收藏 / 取消收藏”，左 Rail 顶部提供独立“收藏”快捷筛选；已收藏条目在名称后显示低权重熟铜 `★`，不再额外占用 Card 四角；
 - 两种 Variant 共用 Source Badge、Menu Trigger、Popover Skin、Hover / Focus / Selected 状态语义；Hover 为中性提亮，Selected 使用熟铜 State Line + 极弱背景，Focus 独立表达；
 - Source Badge 的语义色只区分 System / Workshop / User，不允许 Feature 各写一套 Badge 皮肤；
 - Feature CSS 只持有 Preview、Color Line、Palette Line、文字内容排版、Drag / Revealed 等业务差异，不重新定义共享来源 Badge 或菜单材质；
-- BuildingScheme 当前没有玩家管理操作，因此不为了视觉统一虚构 `···` 或编辑菜单。
+- BuildingScheme 当前没有编辑/删除等玩家管理能力，但仍保留共享 `···` 作为收藏和未来资源动作入口，不虚构未实现的编辑操作。
 
-Unity UI Toolkit 迁移建议使用一个 `WorkspaceItemCard.uxml`，由 `Compact / Media` Variant 控制内容槽位和定位；Source Badge 与 Item Menu 继续是共享子结构。
+Unity UI Toolkit 迁移建议使用一个 `WorkspaceItemCard.uxml`，由 `Compact / Media` Variant 控制内容槽位和定位；Source Badge、Favorite State 与 Item Menu 继续是共享子结构。Web Prototype 的收藏状态仅用于当前 UI 会话验证，正式 Unity 应由 Catalog/User Metadata 层持久化。
 
 ## Blueprint Photography / Editor 映射
 

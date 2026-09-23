@@ -88,6 +88,8 @@ try {
 
   const firstSchemeCard = page.locator('.building-scheme-workspace__card-apply').first();
   ok('scheme source uses shared compact badge', await page.locator('.building-scheme-workspace .workspace-item-card__source.is-compact').count() > 0);
+  ok('scheme cards keep permanent action slots', await page.locator('.building-scheme-workspace .building-scheme-workspace__card>.workspace-item-menu-trigger').count() > 0);
+  ok('scheme favorites show name star', await page.locator('.building-scheme-workspace .workspace-item-card__favorite-star').count() > 0);
   ok('scheme selected state uses shared card language', await page.locator('.building-scheme-workspace .workspace-item-card.is-selected .workspace-item-card__state-line').count() === 1);
   await firstSchemeCard.hover();
   await page.waitForTimeout(540);

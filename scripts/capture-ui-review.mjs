@@ -893,11 +893,13 @@ for (const sourceLabel of ['全部', '系统内置', '创意工坊', '我的方�
 const schemeRail = schemeWorkspace.locator('.material-preset-workspace__rail');
 const materialWorkspaceHeaderPng = schemeWorkspace.locator('.workspace-title .ui-icon[data-ui-icon="palette"]');
 const materialWorkspaceClosePng = schemeWorkspace.locator('.workspace-header .icon-button .ui-icon[data-ui-icon="x"]');
+const materialFavoriteRail = schemeRail.locator('.workspace-primary-rail__favorite');
 const materialRailPngIcons = schemeRail.locator('.workspace-primary-rail__page .ui-icon');
 if ((await materialWorkspaceHeaderPng.count()) !== 1
   || (await materialWorkspaceClosePng.count()) !== 1
-  || (await materialRailPngIcons.count()) !== 7) {
-  throw new Error('Material Workspace PNG pilot must render header, close and visible rail icons through UiIcon.');
+  || (await materialFavoriteRail.count()) !== 1
+  || (await materialRailPngIcons.count()) !== 5) {
+  throw new Error('Material Workspace must render header / close, favorite shortcut and the visible category page through UiIcon.');
 }
 const materialWorkspaceMask = await materialWorkspaceHeaderPng.evaluate((node) => {
   const style = getComputedStyle(node);
@@ -906,7 +908,7 @@ const materialWorkspaceMask = await materialWorkspaceHeaderPng.evaluate((node) =
 if (!materialWorkspaceMask.includes('/assets/ui/icons/palette.png')) {
   throw new Error('Material Workspace UiIcon must consume the committed PNG runtime asset. mask=' + materialWorkspaceMask);
 }
-for (const category of ['全部', '木材', '石材', '金属', '砖瓦', '灰泥 / 土', '布料']) {
+for (const category of ['全部', '木材', '石材', '金属', '砖瓦']) {
   if ((await schemeRail.getByRole('button', { name: category, exact: true }).count()) !== 1) {
     throw new Error('Material family rail first page missing: ' + category);
   }
@@ -919,7 +921,7 @@ await page.waitForTimeout(100);
 if ((await schemeWorkspace.getAttribute('data-material-category-page')) !== '2') {
   throw new Error('Material Family rail should expose its second page.');
 }
-for (const category of ['玻璃', '漆饰', '其他']) {
+for (const category of ['灰泥 / 土', '布料', '玻璃', '漆饰', '其他']) {
   if ((await schemeRail.getByRole('button', { name: category, exact: true }).count()) !== 1) {
     throw new Error('Material family rail second page missing: ' + category);
   }
@@ -989,6 +991,12 @@ if (!colorLineBox || colorLineBox.width < 24 || colorLineBox.width > 32 || color
 const sourceBadges = schemeWorkspace.locator('.workspace-item-card__source.is-compact');
 if ((await sourceBadges.count()) !== 8) {
   throw new Error('Every visible Material Scheme Card must identify its source through the shared Compact badge.');
+}
+if ((await schemeWorkspace.locator('.material-preset-workspace__card>.workspace-item-menu-trigger').count()) !== 8) {
+  throw new Error('Every visible Material Scheme Card must expose a permanent shared action menu trigger.');
+}
+if ((await schemeWorkspace.locator('.workspace-item-card__favorite-star').count()) < 1) {
+  throw new Error('Favorited Material Cards must show a star after the name.');
 }
 const firstMaterialCard = schemeWorkspace.locator('.workspace-item-card').first();
 const firstMaterialCardBox = await firstMaterialCard.boundingBox();
@@ -1106,7 +1114,7 @@ const savedMaterialSource = savedMaterialCard.locator('.workspace-item-card__sou
 if ((await savedMaterialSource.count()) !== 1) {
   throw new Error('My Scheme source must use the shared Compact user badge.');
 }
-const savedMaterialMenuTrigger = savedMaterialCard.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true });
+const savedMaterialMenuTrigger = savedMaterialCard.getByRole('button', { name: '方案操作 城墙暖灰', exact: true });
 if (!(await savedMaterialMenuTrigger.evaluate(node => node.classList.contains('workspace-item-menu-trigger') && node.classList.contains('is-compact')))) {
   throw new Error('My Scheme management action must use the shared Compact menu trigger.');
 }
@@ -1129,13 +1137,13 @@ if ((await materialHoverCard.count()) !== 1
   throw new Error('Material Preset Workspace must use the shared rich Hover Card.');
 }
 await page.screenshot({ path: outDir + '/hover-card-material-preset.png' });
-await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true }).click();
+await schemeWorkspace.getByRole('button', { name: '方案操作 城墙暖灰', exact: true }).click();
 await page.waitForSelector('.material-preset-workspace__card-menu');
 let presetMenu = schemeWorkspace.locator('.material-preset-workspace__card-menu');
 if (!(await presetMenu.evaluate(node => node.classList.contains('workspace-item-menu') && node.classList.contains('is-compact')))) {
   throw new Error('My Scheme popover must reuse the shared Compact Workspace Item Menu.');
 }
-for (const menuAction of ['编辑', '复制参数', '删除']) {
+for (const menuAction of ['收藏', '编辑', '复制参数', '删除']) {
   if ((await presetMenu.getByRole('menuitem', { name: menuAction, exact: true }).count()) !== 1) {
     throw new Error('My Scheme menu missing action: ' + menuAction);
   }
@@ -1212,7 +1220,7 @@ if ((await schemeWorkspace.getAttribute('data-material-highlight-preset')) !== '
 await page.screenshot({ path: outDir + '/color-tool-33-drag-move-selects-family.png' });
 
 await schemeWorkspace.getByRole('button', { name: '应用材质方案 木材 · 城墙暖灰二号', exact: true }).hover();
-await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
+await schemeWorkspace.getByRole('button', { name: '方案操作 城墙暖灰二号', exact: true }).click();
 await page.waitForSelector('.material-preset-workspace__card-menu');
 presetMenu = schemeWorkspace.locator('.material-preset-workspace__card-menu');
 await presetMenu.getByRole('menuitem', { name: '复制参数', exact: true }).click();
@@ -1227,7 +1235,7 @@ if ((await materialPanel.getAttribute('data-material-preset-name')) !== '未保�
 }
 
 await schemeWorkspace.getByRole('button', { name: '应用材质方案 木材 · 城墙暖灰二号', exact: true }).hover();
-await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰二号', exact: true }).click();
+await schemeWorkspace.getByRole('button', { name: '方案操作 城墙暖灰二号', exact: true }).click();
 await page.waitForSelector('.material-preset-workspace__card-menu');
 await schemeWorkspace.locator('.material-preset-workspace__card-menu').getByRole('menuitem', { name: '删除', exact: true }).click();
 await page.waitForSelector('.ui-dialog');
@@ -1489,11 +1497,26 @@ if (!(await buildingSchemeWorkspace.evaluate((node) => node.classList.contains('
   throw new Error('Scheme mode Workspace must reuse Catalog and coexist with Building Appearance.');
 }
 const buildingStyleRail = buildingSchemeWorkspace.locator('.building-scheme-workspace__rail');
-for (const styleLabel of ['全部', '素雅', '沉稳', '明快', '华丽', '自然', '其他']) {
+if ((await buildingStyleRail.locator('.workspace-primary-rail__favorite').count()) !== 1) {
+  throw new Error('Building Scheme rail must expose the shared favorite shortcut.');
+}
+for (const styleLabel of ['全部', '素雅', '沉稳', '明快', '华丽']) {
   if ((await buildingStyleRail.getByRole('button', { name: styleLabel, exact: true }).count()) !== 1) {
-    throw new Error('Building Scheme style rail missing: ' + styleLabel);
+    throw new Error('Building Scheme style rail first page missing: ' + styleLabel);
   }
 }
+if ((await buildingStyleRail.locator('.workspace-rail-pager button').count()) !== 2) {
+  throw new Error('Building Scheme style rail must paginate after adding Favorite.');
+}
+await buildingStyleRail.getByRole('button', { name: '切换到第 2 组配色风格', exact: true }).click();
+await page.waitForTimeout(80);
+for (const styleLabel of ['自然', '其他']) {
+  if ((await buildingStyleRail.getByRole('button', { name: styleLabel, exact: true }).count()) !== 1) {
+    throw new Error('Building Scheme style rail second page missing: ' + styleLabel);
+  }
+}
+await buildingStyleRail.getByRole('button', { name: '切换到第 1 组配色风格', exact: true }).click();
+await page.waitForTimeout(80);
 const buildingSourceFilter = buildingSchemeWorkspace.locator('.building-scheme-workspace__source-filter');
 for (const sourceLabel of ['全部', '系统内置', '创意工坊', '玩家方案']) {
   if ((await buildingSourceFilter.getByRole('button', { name: sourceLabel, exact: true }).count()) !== 1) {
@@ -1503,6 +1526,12 @@ for (const sourceLabel of ['全部', '系统内置', '创意工坊', '玩家方�
 if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 8
   || await buildingSchemeWorkspace.locator('.workspace-item-card__preview').count()) {
   throw new Error('Building Scheme first page must reuse 4×2 cards without fake thumbnails.');
+}
+if ((await buildingSchemeWorkspace.locator('.building-scheme-workspace__card>.workspace-item-menu-trigger').count()) !== 8) {
+  throw new Error('Every visible Building Scheme Card must expose the permanent shared action menu trigger.');
+}
+if ((await buildingSchemeWorkspace.locator('.workspace-item-card__favorite-star').count()) < 1) {
+  throw new Error('Favorited Building Scheme Cards must show a star after the name.');
 }
 if ((await buildingSchemeWorkspace.getByRole('button', { name: '应用建筑配色方案 江南素雅', exact: true }).getAttribute('aria-pressed')) !== 'true') {
   throw new Error('Current building scheme should be selected.');
@@ -1537,6 +1566,7 @@ if ((await buildingSchemePanel.getAttribute('data-building-selected')) !== 'inn-
 await page.screenshot({ path: outDir + '/color-tool-41-scheme-rebind.png' });
 
 await buildingSourceFilter.getByRole('button', { name: '创意工坊', exact: true }).click();
+await buildingStyleRail.getByRole('button', { name: '切换到第 2 组配色风格', exact: true }).click();
 await buildingStyleRail.getByRole('button', { name: '自然', exact: true }).click();
 await page.waitForTimeout(80);
 if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 1
