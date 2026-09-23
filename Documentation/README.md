@@ -10,6 +10,7 @@
 | --- | --- | --- |
 | 视觉全貌 | [UI Toolkit 视觉总规范](<UI Toolkit视觉总规范.md>) | 页面家族、阅读顺序、状态区别、CSS 到 USS 的判读方法与现存例外 |
 | 配色与材质 | [烟墨熟铜视觉材质规范](<Wanhu 烟墨熟铜视觉材质规范.md>) | 当前 Theme Token、Root/Body/Backdrop 配方、局部前景与昼夜边界 |
+| 长期视觉治理 | [Web 配色与样式治理长期方案](<Web 配色与样式治理长期方案.md>) | 分阶段收敛 Theme / Surface / Control / Feature CSS，并定义 CI Ratchet；不实施 Unity USS |
 | 信息设计 | [UI设计原则](<UI设计原则.md>) | 减少冗余、空间与内容取舍；不重复维护色卡 |
 | 表面与操作语法 | [UI Surface与Control视觉规范](<UI Surface与Control视觉规范.md>) | Family、按钮、Segmented、全屏和底部命令组合 |
 | 字体与资源 | `UI Typography与Icon尺寸规范.md`、`UI图标资产管线.md` | 语义档位、PNG Runtime / SVG Source、字体与 Player 边界 |

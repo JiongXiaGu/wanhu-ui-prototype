@@ -9,6 +9,7 @@
 1. `Documentation/工作交接.md`
 2. `Documentation/项目概览.md`
 3. `Documentation/UI Toolkit视觉总规范.md`
+4. 涉及配色 / Surface / Control / USS 迁移依据时读取 `Documentation/Web 配色与样式治理长期方案.md`
 4. `Documentation/Wanhu 烟墨熟铜视觉材质规范.md`、`Documentation/UI设计原则.md`
 5. `Documentation/UI空间与状态架构.md`
 6. `Documentation/UI Toolkit落地规范.md`、`Documentation/Unity 6.6视觉能力与回退规范.md`
@@ -18,7 +19,7 @@
 10. `Documentation/工具辨识与局部布局.md`、`Documentation/世界对象选中系统.md`
 11. `Documentation/蓝图Workspace设计规范.md` 和当前任务对应组件规范与代码。
 
-目标为 Unity 6.6 + URP + UI Toolkit。引擎能力以 6.6 专项规范及官方对应版本为准；不使用历史“不能模糊 UI”限制新设计，也不把原生能力写成已经完成 Player 实测。
+目标运行时为 Unity 6.6 + URP + UI Toolkit，但本仓库只治理 Web 视觉原型、设计权威和迁移依据，不在这里维护正式 Unity USS 镜像。Unity 制作 AI 负责后续 UXML / USS / Player 实现。引擎能力以 6.6 专项规范及官方对应版本为准；不使用历史“不能模糊 UI”限制新设计，也不把原生能力写成已经完成 Player 实测。
 
 ## 取色与样式权威
 
@@ -74,7 +75,7 @@ SVG 仅作 Source Master，64×64 PNG 是 Web / Unity 共用 Runtime Asset，src
 
 Web 只验证美术、构图、信息和交互，不把 React / CSS 当最终游戏架构。默认直接提交 main，不建临时分支，不强制 Vercel。
 
-先执行 icons:check、audit:scale、audit:unity、相关单元检查和 build。不能本地运行时说明实际使用的 Actions 日志，不声称本地测试成功。局部 Control / Surface 组件图不能冒充真实页面和交互验收。
+先执行 icons:check、audit:scale、audit:visual、audit:unity、相关单元检查和 build。视觉治理 Guard 使用 Ratchet：已有旧色债务逐批清理，新文件不得扩散退役共享色。不能本地运行时说明实际使用的 Actions 日志，不声称本地测试成功。局部 Control / Surface 组件图不能冒充真实页面和交互验收。
 
 重要 UI 修改须 Build + UI Review，并下载、实际打开关键完整截图；发现问题继续修复。全局改动覆盖 Settings / Archive / Management / Workspace / Tool / Dialog、昼夜与缩放。矩阵不足时补充受影响状态，不为局部试验机械堆积截图。
 

@@ -2,7 +2,9 @@
 
 这是 Unity UI Toolkit 制作与迁移的视觉阅读入口。它说明当前界面应当如何被理解、哪些页面可以类比、哪些差异必须保留；不是要求把已有页面重新设计一次。
 
-本仓库是 React / TypeScript / CSS 原型，目标运行时是 Unity 6.6 + URP + UI Toolkit。这里对 CSS 的审查是 USS 迁移依据，不表示已经审查或运行了正式 Unity 工程的 USS。
+本仓库是 React / TypeScript / CSS 原型，目标运行时是 Unity 6.6 + URP + UI Toolkit。这里负责把 Web 视觉权威、设计语义和迁移依据整理清楚，不在本仓库实施或镜像维护正式 Unity USS；Unity 制作 AI 根据这些稳定依据完成 UXML / USS / Player 实现。
+
+长期配色、Surface、Control 与 Feature CSS 的分阶段治理见 [Web 配色与样式治理长期方案](<Web 配色与样式治理长期方案.md>)。这里对 CSS 的审查是 USS 迁移依据，不表示已经审查或运行了正式 Unity 工程的 USS。
 
 ## 先确定依据，不从形容词猜颜色
 
