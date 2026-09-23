@@ -79,7 +79,16 @@ for(const file of files){
 
   debt.push({file,markers});
 
-  if(!LEGACY_SHARED_COLOR_BASELINE_FILES.has(file)){
+  const retiredVariableMarkers=markers.filter(marker=>
+    marker.id==='legacy-paper-var' || marker.id==='legacy-gold-var'
+  );
+
+  if(retiredVariableMarkers.length){
+    errors.push(
+      file + ': retired shared --paper / --gold* variables are fully retired and may not return. '
+      + 'Use current wanhu semantic Theme tokens.'
+    );
+  }else if(!LEGACY_SHARED_COLOR_BASELINE_FILES.has(file)){
     errors.push(
       file + ': retired shared palette literal introduced outside the Phase 1 baseline. '
       + 'Use current wanhu Theme / Surface / Control tokens or document a real content-color exception.'
