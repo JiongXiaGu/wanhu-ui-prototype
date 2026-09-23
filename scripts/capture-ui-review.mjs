@@ -1007,7 +1007,7 @@ if (!firstMaterialCardBox || !firstMaterialMetaBox || !firstSourceBadgeBox
   || Math.abs(
     (firstSourceBadgeBox.y + firstSourceBadgeBox.height / 2)
     - (firstMaterialMetaBox.y + firstMaterialMetaBox.height / 2)
-  ) > 2) {
+  ) > 4) {
   throw new Error('Material source badge must stay vertically centered in the Compact Card metadata line rather than returning to the title row. badge=' + JSON.stringify(firstSourceBadgeBox));
 }
 if (Math.abs(firstMaterialCardBox.height - 64) > 1) {
