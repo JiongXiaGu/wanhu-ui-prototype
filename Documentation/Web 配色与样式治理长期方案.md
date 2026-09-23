@@ -153,6 +153,19 @@ Phase 1 不处理：
 
 下一批优先处理 Catalog Workspace 的旧共享 Brass / Paper 债务，再单独进入 HUD / Management，避免跨页面家族一次改色。
 
+### Phase 1 进度：Batch 2 已完成
+
+第二批只处理 Workspace 共享状态语义，不改 Layout / Card 尺寸 / Blueprint 4:3 Preview / Design 4×2 Grid / Surface Recipe：
+
+- `src/workspace.css`：旧 Rail / Filter / Card / Pager Brass 债务退出；Hover / Pressed 使用中性 Control Hover，Selected 使用 Control Active，Focus 独立使用 Control Focus；
+- `src/workspace/workspace-world-first-glass.css`：移除局部 `--workspace-gold*`，Rail / Filter Selected 改消费共享 Active Token；Design Search Hover 不再使用 Brass；
+- Pager Current 固定使用 Paper White，Inactive 使用 Gray；Favorite 星只使用 Brass Text 且无 Glow；Source Badge 继续保留蓝灰 / 暖灰来源语义；
+- Ratchet 已从 Baseline 移除 `workspace.css` 与 `workspace-world-first-glass.css`，并将旧 `--paper / --gold*` 变量加入 Runtime 禁止项。
+
+验证：与 `main` 应用源码一致的临时验证 PR 仅额外开启 UI Review 的 PR 触发，Build #1475 与 UI Review #457 均通过；`audit:visual` 在 Build 中通过。已实际查看 Design / Blueprint / MaterialPreset / BuildingScheme Workspace 截图，确认 Workspace 未整体变灰、Hover 不发黄、Selected 保持弱熟铜识别、Favorite 为低权重星标、Pager Current 为 Paper White，Card Variant / Source Badge 未被统一破坏。临时 PR 已关闭，复用的 `tmp-*` 分支已恢复原 SHA。
+
+Phase 1 下一批继续按页面家族处理 HUD / Management / Loading 等债务，不把 Workspace 再与其它系统混改。
+
 ## Phase 2：Semantic Token 收敛
 
 目标：Theme 管理“共享语义”，而不是收集所有 RGBA。
