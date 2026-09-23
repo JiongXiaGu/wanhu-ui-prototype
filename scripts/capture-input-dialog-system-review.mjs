@@ -31,6 +31,7 @@ async function expectDialogTone(dialog,tone){
 async function expectDialogMaterial(dialog,label){
   const backdrop=page.locator('.ui-modal-backdrop');
   await backdrop.waitFor();
+  await page.waitForTimeout(220);
   const backdropMaterial=await backdrop.evaluate(node=>{
     const style=getComputedStyle(node);
     return {
