@@ -4,10 +4,11 @@
 
 .gameplay-screen .workspace--blueprint{
   width:1240px;
+  height:330px;
 }
 
 .gameplay-screen .workspace--blueprint .blueprint-workspace__stage{
-  height:154px;
+  height:210px;
   padding:4px 0 8px;
 }
 
@@ -16,7 +17,8 @@
 }
 
 .gameplay-screen .workspace--blueprint .blueprint-workspace__row{
-  height:142px;
+  height:auto;
+  align-items:flex-start;
   gap:10px;
 }
 
@@ -25,7 +27,8 @@
 }
 
 .blueprint-workspace__card{
-  height:142px;
+  height:auto;
+  aspect-ratio:4 / 3;
   padding:0;
   display:block;
   overflow:hidden;
