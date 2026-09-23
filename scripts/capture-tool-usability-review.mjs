@@ -507,13 +507,35 @@ try {
 
   await blueprintWorkspace.getByRole('button', { name: '新建全部蓝图', exact: true }).click();
   await page.waitForSelector('.blueprint-photography[data-blueprint-photography="active"]');
-  const photographyFrame = page.locator('.blueprint-photography__frame');
-  const photographyBox = await photographyFrame.boundingBox();
-  assert(photographyBox && Math.abs(photographyBox.width / photographyBox.height - 4 / 3) < .02, '蓝图摄影取景框必须保持 4:3');
   await page.waitForSelector('.workspace--blueprint', { state: 'detached' });
+
+  const photographyFrame = page.locator('.blueprint-photography__frame');
+  const photographyPanel = page.locator('.blueprint-photography-context-panel');
+  const photographyToolbar = page.locator('.blueprint-photography-toolbar-cluster .secondary-action-bar');
+  const [photographyBox, photographyPanelBox, photographyToolbarBox] = await Promise.all([
+    photographyFrame.boundingBox(),
+    photographyPanel.boundingBox(),
+    photographyToolbar.boundingBox(),
+  ]);
+  assert(photographyBox && Math.abs(photographyBox.width / photographyBox.height - 4 / 3) < .02, '蓝图摄影取景框必须保持 4:3');
+  assert(photographyBox.y >= 95 && (1080 - (photographyBox.y + photographyBox.height)) >= 115, '蓝图摄影取景框必须遵守 96px Top / 116px Bottom Safe Distance');
+  assert(photographyBox.width <= 901, '1080p 蓝图摄影取景框最大宽度不得超过约 900px');
+  assert(photographyPanelBox && Math.abs(photographyPanelBox.x - 16) < 1.5 && Math.abs(photographyPanelBox.width - 360) < 1.5, '蓝图摄影参数必须复用左侧 360px Context Panel');
+  assert(photographyToolbarBox && Math.abs(photographyToolbarBox.height - 84) < 1.5 && Math.abs((photographyToolbarBox.x + photographyToolbarBox.width / 2) - 960) < 1.5, '蓝图摄影操作必须复用 84px 居中 Secondary Action Bar');
+  assert.equal(await page.locator('.blueprint-photography__header, .blueprint-photography__footer').count(), 0, '蓝图摄影不得恢复私有上下菜单条');
+  assert.equal(await page.locator('.gameplay-top-shell, .gameplay-compass-hud, .gameplay-system-menu-button, .context-utility-toolbar').count(), 0, '摄影 Tool 必须隐藏普通 Gameplay HUD / Compass / Utility');
+  assert.equal(await page.locator('.blueprint-photography-context-panel .ui-parameter-row').count(), 3, '蓝图摄影左栏必须展示 FOV / 高度 / 俯角三个镜头参数');
+  assert.equal(await page.locator('.blueprint-photography__grid').count(), 0, '构图线默认应关闭，保持预览干净');
+  await checkPersistentHints('蓝图摄影', 'blueprint-photography', false);
+  const hintsBox = await page.locator('.gameplay-operation-hints').boundingBox();
+  assert(hintsBox && Math.abs((hintsBox.y + hintsBox.height) - (1080 - 16)) < 1.5, '蓝图摄影 Operation Hints 必须落在右下 16px Safe Edge');
   assert.equal(await page.locator('.workspace--blueprint').count(), 0, '进入摄影模式并完成退出 Motion 后 Blueprint Workspace 必须卸载');
+
   await page.screenshot({ path: `${out}/blueprint-workflow-photography.png` }); report.screenshots.push('blueprint-workflow-photography');
 
+  await page.getByRole('button', { name: '显示构图线', exact: true }).click();
+  assert.equal(await page.locator('.blueprint-photography__grid').count(), 1, '构图线 Quick Action 必须可切换');
+  await page.getByRole('button', { name: '关闭构图线', exact: true }).click();
   await page.getByRole('button', { name: '完成摄影', exact: true }).click();
   await page.waitForSelector('.blueprint-editor[data-blueprint-editor="create"]');
   const editorPreview = page.locator('.blueprint-editor__preview');
