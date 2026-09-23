@@ -25,11 +25,11 @@ const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
   'src/ui/dialog/dialog.css',
   'src/ui/hover/hover-overlay.css',
   'src/ui/wanhu-character.css',
-  'src/workspace.css',
-  'src/workspace/workspace-world-first-glass.css',
 ]);
 
 const RETIRED_SHARED_COLOR_MARKERS=[
+  {id:'legacy-paper-var',re:/--paper\b/gi},
+  {id:'legacy-gold-var',re:/--gold(?:-hi|-fill)?\b/gi},
   {id:'legacy-paper-hex',re:/#efe9dd/gi},
   {id:'legacy-brass-hex',re:/#c9a55f/gi},
   {id:'legacy-brass-high-hex',re:/#e2c27d/gi},
