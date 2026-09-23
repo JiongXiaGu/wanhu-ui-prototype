@@ -4,6 +4,13 @@ import { gameplayUiReducer, isBlueprintDockCategory, isDesignDockCategory, selec
 import { DesignWorkspace } from '../workspace/DesignWorkspace';
 import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
 import { BlueprintWorkspace } from '../workspace/BlueprintWorkspace';
+import { BlueprintEditor, type BlueprintEditorDraft } from '../workspace/BlueprintEditor';
+import {
+  BLUEPRINT_BUILTIN_ITEMS,
+  BLUEPRINT_CUSTOM_SEED_ITEMS,
+  type BlueprintWorkspaceItem,
+} from '../workspace/blueprint-workspace-model';
+import { BlueprintPhotographyTool, type BlueprintPreviewCapture } from '../tools/blueprint-photography/BlueprintPhotographyTool';
 import { BuildingPlacementOverlay } from '../tools/building-placement/BuildingPlacementOverlay';
 import { BuildingPlacementDock } from '../tools/building-placement/BuildingPlacementDock';
 import { RoadPlacementOverlay } from '../tools/road-placement/RoadPlacementOverlay';
@@ -49,6 +56,9 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const [dayTime, setDayTime] = useState(14.5);
   const [selectionFocusPulse, setSelectionFocusPulse] = useState(0);
   const [removedBuildingIds, setRemovedBuildingIds] = useState<Set<string>>(() => new Set());
+  const [customBlueprints, setCustomBlueprints] = useState<BlueprintWorkspaceItem[]>(() => BLUEPRINT_CUSTOM_SEED_ITEMS.map((item) => ({ ...item })));
+  const [blueprintEditorDraft, setBlueprintEditorDraft] = useState<BlueprintEditorDraft | null>(null);
+  const [blueprintCaptureSession, setBlueprintCaptureSession] = useState<{ draft: BlueprintEditorDraft; returnToEditor: boolean } | null>(null);
   const [buildingAppearance, setBuildingAppearance] = useState<Record<string, { schemeId: string; weathering: number }>>(() => (
     Object.fromEntries(BUILDING_SELECTIONS.map((building) => [building.id, { ...building.appearance }]))
   ));
@@ -80,6 +90,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const selectedScheme = selectedAppearance ? getBuildingColorScheme(selectedAppearance.schemeId) : BUILDING_COLOR_SCHEMES[0];
   const isNight = dayTime >= 18 || dayTime < 6;
   const sceneBackground = isNight ? nightBackground : background;
+  const blueprintCatalogItems = [...BLUEPRINT_BUILTIN_ITEMS, ...customBlueprints];
   const designWorkspace = state.workspace === 'design' && isDesignDockCategory(state.dockCategory)
     ? DESIGN_WORKSPACES[state.dockCategory]
     : null;
@@ -153,6 +164,14 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         dispatch({ type: 'CLOSE_MAP_PANEL' });
         return;
       }
+      if (state.tool === 'blueprint-photography') {
+        if (blueprintCaptureSession?.returnToEditor) {
+          setBlueprintEditorDraft(blueprintCaptureSession.draft);
+        }
+        setBlueprintCaptureSession(null);
+        dispatch({ type: 'EXIT_TOOL' });
+        return;
+      }
       if (state.tool !== 'none') {
         dispatch({ type: 'EXIT_TOOL' });
         return;
@@ -187,7 +206,110 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
     window.addEventListener('keydown', handleGameplayEscape);
     return () => window.removeEventListener('keydown', handleGameplayEscape);
-  }, [state.buildingSchemeOpen, state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace, state.worldDemolitionMode]);
+  }, [blueprintCaptureSession, state.buildingSchemeOpen, state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace, state.worldDemolitionMode]);
+
+  function createBlueprintDraft(category: import('../app/ui-state').BlueprintDockCategory): BlueprintEditorDraft {
+    return {
+      name: '未命名蓝图',
+      category: category === 'all' ? 'residential' : category,
+      size: 'medium',
+      footprint: '12 × 18',
+      objectCount: 18,
+      estimatedCost: '8,420 钱',
+      description: '玩家创建的蓝图；预览图由蓝图摄影模式生成。',
+      previewAsset: sceneBackground,
+      previewPosition: '50% 50%',
+      previewSize: '150% auto',
+    };
+  }
+
+  function startBlueprintPhotography(category: import('../app/ui-state').BlueprintDockCategory) {
+    setBlueprintEditorDraft(null);
+    setBlueprintCaptureSession({ draft: createBlueprintDraft(category), returnToEditor: false });
+    dispatch({ type: 'ENTER_BLUEPRINT_PHOTOGRAPHY' });
+  }
+
+  function rephotographBlueprint(draft: BlueprintEditorDraft) {
+    setBlueprintEditorDraft(null);
+    setBlueprintCaptureSession({ draft, returnToEditor: true });
+    dispatch({ type: 'ENTER_BLUEPRINT_PHOTOGRAPHY' });
+  }
+
+  function completeBlueprintPhotography(capture: BlueprintPreviewCapture) {
+    if (!blueprintCaptureSession) return;
+    setBlueprintEditorDraft({ ...blueprintCaptureSession.draft, ...capture });
+    setBlueprintCaptureSession(null);
+    dispatch({ type: 'EXIT_TOOL' });
+  }
+
+  function cancelBlueprintPhotography() {
+    if (blueprintCaptureSession?.returnToEditor) {
+      setBlueprintEditorDraft(blueprintCaptureSession.draft);
+    }
+    setBlueprintCaptureSession(null);
+    dispatch({ type: 'EXIT_TOOL' });
+  }
+
+  function editBlueprint(item: BlueprintWorkspaceItem) {
+    setBlueprintEditorDraft({
+      originalId: item.id,
+      name: item.name,
+      category: item.category,
+      size: item.size,
+      footprint: item.footprint,
+      objectCount: item.objectCount,
+      estimatedCost: item.estimatedCost,
+      description: item.description,
+      previewAsset: item.previewAsset,
+      previewPosition: item.previewPosition,
+      previewSize: item.previewSize,
+    });
+  }
+
+  function saveBlueprint(draft: BlueprintEditorDraft) {
+    const duplicate = customBlueprints.some((item) => item.id !== draft.originalId && item.name === draft.name);
+    if (duplicate) {
+      dialogs.toast('“我的蓝图”中已存在同名蓝图。', 'warning');
+      return;
+    }
+
+    const nextItem: BlueprintWorkspaceItem = {
+      id: draft.originalId ?? 'bp-user-' + Date.now(),
+      name: draft.name,
+      category: draft.category,
+      size: draft.size,
+      source: 'mine',
+      footprint: draft.footprint,
+      objectCount: draft.objectCount,
+      estimatedCost: draft.estimatedCost,
+      description: draft.description,
+      previewAsset: draft.previewAsset,
+      previewPosition: draft.previewPosition,
+      previewSize: draft.previewSize,
+    };
+
+    setCustomBlueprints((current) => draft.originalId
+      ? current.map((item) => item.id === draft.originalId ? nextItem : item)
+      : [...current, nextItem]);
+    setBlueprintEditorDraft(null);
+    dialogs.toast(draft.originalId ? '已保存蓝图修改' : '已保存到“我的蓝图”', 'success');
+  }
+
+  function deleteBlueprint(item: BlueprintWorkspaceItem) {
+    dialogs.confirm({
+      title: '删除这个蓝图？',
+      message: '将从“我的蓝图”中删除“' + item.name + '”。已经放置在城市中的内容不会受到影响。',
+      confirmText: '删除',
+      cancelText: '取消',
+      tone: 'danger',
+      visualTone: 'danger',
+      onConfirm: () => {
+        setCustomBlueprints((current) => current.filter((entry) => entry.id !== item.id));
+        setBlueprintEditorDraft((current) => current?.originalId === item.id ? null : current);
+        dialogs.toast('已删除“' + item.name + '”', 'warning');
+      },
+    });
+  }
 
   function exitTool() {
     dispatch({ type: 'EXIT_TOOL' });
@@ -377,8 +499,12 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         <BlueprintWorkspace
           key={renderedWorkspace.category}
           category={renderedWorkspace.category}
+          items={blueprintCatalogItems}
           motionPhase={workspacePresence.phase}
           onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
+          onCreate={startBlueprintPhotography}
+          onEdit={editBlueprint}
+          onDelete={deleteBlueprint}
           onSelectItem={(item) => dialogs.toast('蓝图“' + item.name + '”的放置流程将在下一阶段接入。')}
         />
       )}
@@ -539,6 +665,23 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
       {toolPresence.mounted && renderedTool === 'tree-placement' && (
         <TreePlacementTool state={state} motionPhase={toolPresence.phase} dispatch={dispatch} onExit={exitTool} />
+      )}
+
+      {toolPresence.mounted && renderedTool === 'blueprint-photography' && blueprintCaptureSession && (
+        <BlueprintPhotographyTool
+          sceneAsset={sceneBackground}
+          onCancel={cancelBlueprintPhotography}
+          onCapture={completeBlueprintPhotography}
+        />
+      )}
+
+      {blueprintEditorDraft && (
+        <BlueprintEditor
+          draft={blueprintEditorDraft}
+          onCancel={() => setBlueprintEditorDraft(null)}
+          onRephotograph={rephotographBlueprint}
+          onSave={saveBlueprint}
+        />
       )}
 
       {!state.paused && (
