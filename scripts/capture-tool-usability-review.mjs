@@ -510,7 +510,8 @@ try {
   const photographyFrame = page.locator('.blueprint-photography__frame');
   const photographyBox = await photographyFrame.boundingBox();
   assert(photographyBox && Math.abs(photographyBox.width / photographyBox.height - 4 / 3) < .02, '蓝图摄影取景框必须保持 4:3');
-  assert.equal(await page.locator('.workspace--blueprint:visible').count(), 0, '进入摄影模式后 Blueprint Workspace 必须收起');
+  await page.waitForSelector('.workspace--blueprint', { state: 'detached' });
+  assert.equal(await page.locator('.workspace--blueprint').count(), 0, '进入摄影模式并完成退出 Motion 后 Blueprint Workspace 必须卸载');
   await page.screenshot({ path: `${out}/blueprint-workflow-photography.png` }); report.screenshots.push('blueprint-workflow-photography');
 
   await page.getByRole('button', { name: '完成摄影', exact: true }).click();
