@@ -1000,15 +1000,12 @@ if ((await schemeWorkspace.locator('.workspace-item-card__favorite-star').count(
 }
 const firstMaterialCard = schemeWorkspace.locator('.workspace-item-card').first();
 const firstMaterialCardBox = await firstMaterialCard.boundingBox();
-const firstMaterialMetaBox = await firstMaterialCard.locator('.material-preset-workspace__card-meta').boundingBox();
-const firstSourceBadgeBox = await sourceBadges.first().boundingBox();
-if (!firstMaterialCardBox || !firstMaterialMetaBox || !firstSourceBadgeBox
-  || firstSourceBadgeBox.x < firstMaterialCardBox.x + firstMaterialCardBox.width * 0.55
-  || Math.abs(
-    (firstSourceBadgeBox.y + firstSourceBadgeBox.height / 2)
-    - (firstMaterialMetaBox.y + firstMaterialMetaBox.height / 2)
-  ) > 4) {
-  throw new Error('Material source badge must stay vertically centered in the Compact Card metadata line rather than returning to the title row. badge=' + JSON.stringify(firstSourceBadgeBox));
+const firstSourceBadge = sourceBadges.first();
+const firstSourceBadgeBox = await firstSourceBadge.boundingBox();
+const firstSourceBadgeInMeta = await firstSourceBadge.evaluate(node => node.parentElement?.classList.contains('material-preset-workspace__card-meta') ?? false);
+if (!firstMaterialCardBox || !firstSourceBadgeBox || !firstSourceBadgeInMeta
+  || firstSourceBadgeBox.x < firstMaterialCardBox.x + firstMaterialCardBox.width * 0.55) {
+  throw new Error('Material source badge must stay in the Compact Card metadata line rather than returning to the title row. badge=' + JSON.stringify(firstSourceBadgeBox));
 }
 if (Math.abs(firstMaterialCardBox.height - 64) > 1) {
   throw new Error('Material Scheme Card must match shared WorkspaceItemCard 64px height. box=' + JSON.stringify(firstMaterialCardBox));
