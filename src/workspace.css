@@ -419,7 +419,9 @@
 }
 
 
-/* Shared Workspace Item Card ------------------------------------------------- */
+/* Shared Workspace Item Card -------------------------------------------------
+   Hover / Pressed stay neutral; Focus is independent; persistent Selected alone
+   owns the Brass state line and weak active tone. */
 .workspace-item-card{
   position:relative;
   height:64px;
