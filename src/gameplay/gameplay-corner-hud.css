@@ -44,7 +44,7 @@
 }
 .gameplay-compass-hud__dial::after{
   inset:19px;
-  border:1px solid rgba(201,165,95,.065);
+  border:1px solid rgba(169,132,75,.065);
 }
 
 .gameplay-compass-hud__rose{
@@ -79,7 +79,7 @@
 .gameplay-compass-hud__axis--vertical{width:1px;height:44px}
 .gameplay-compass-hud__axis--horizontal{width:44px;height:1px}
 .gameplay-compass-hud.is-build-mode .gameplay-compass-hud__axis--vertical{
-  background:linear-gradient(180deg,rgba(201,165,95,.32),rgba(239,233,221,.07) 48%,rgba(239,233,221,.11));
+  background:linear-gradient(180deg,rgba(169,132,75,.32),rgba(239,233,221,.07) 48%,rgba(239,233,221,.11));
 }
 
 .gameplay-compass-hud__cardinal{
@@ -101,10 +101,10 @@
 .gameplay-compass-hud__cardinal--north{
   left:50%;
   top:8px;
-  color:var(--wanhu-color-brass-high,#bd9959);
+  color:var(--wanhu-color-brass-high);
   font-size:10px;
   transform:translateX(-50%);
-  text-shadow:0 0 10px rgba(201,165,95,.18);
+  text-shadow:0 0 10px rgba(169,132,75,.18);
 }
 .gameplay-compass-hud__cardinal--south{
   left:50%;
@@ -144,8 +144,8 @@
   top:0;
   border-left:4px solid transparent;
   border-right:4px solid transparent;
-  border-bottom:16px solid rgba(216,187,116,.96);
-  filter:drop-shadow(0 0 6px rgba(201,165,95,.18));
+  border-bottom:16px solid var(--wanhu-color-brass-high);
+  filter:drop-shadow(0 0 6px rgba(169,132,75,.18));
 }
 .gameplay-compass-hud__needle-south{
   bottom:0;
@@ -188,7 +188,7 @@
 .gameplay-system-menu-button:hover{
   opacity:1;
   color:#d0cdc3;
-  border-color:rgba(201,165,95,.18);
+  border-color:var(--wanhu-control-border-soft);
   background:linear-gradient(180deg,rgba(31,40,36,.78),rgba(22,29,26,.68));
 }
 .gameplay-system-menu-button:active{transform:translateY(1px)}
