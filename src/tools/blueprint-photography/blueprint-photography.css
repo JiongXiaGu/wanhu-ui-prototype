@@ -1,0 +1,242 @@
+/* Blueprint Photography -------------------------------------------------------
+   Full-screen tool used only to author a 4:3 Blueprint preview image.
+   It deliberately covers ordinary HUD surfaces instead of re-skinning them. */
+
+.blueprint-photography{
+  position:absolute;
+  inset:0;
+  z-index:170;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  background-position:center;
+  background-size:cover;
+  color:var(--wanhu-color-paper-primary,#eee9df);
+}
+
+.blueprint-photography__wash{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:rgba(6,10,8,.34);
+}
+
+.blueprint-photography__header,
+.blueprint-photography__footer{
+  position:relative;
+  z-index:3;
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:16px;
+  padding:10px 12px;
+  border:1px solid rgba(238,233,223,.08);
+  border-radius:12px;
+  background:rgba(21,27,24,.86);
+  box-shadow:0 12px 30px rgba(4,7,6,.22);
+}
+
+.blueprint-photography__header{
+  height:48px;
+}
+
+.blueprint-photography__header>div{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.blueprint-photography__header>div>span{
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+}
+
+.blueprint-photography__header b{
+  font-size:var(--wanhu-type-subheading,14px);
+  font-weight:620;
+}
+
+.blueprint-photography__header small{
+  color:var(--wanhu-color-paper-tertiary,#9da29d);
+  font-size:var(--wanhu-type-caption,11px);
+}
+
+.blueprint-photography__icon-button{
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#a9ada8;
+  cursor:pointer;
+}
+
+.blueprint-photography__icon-button:hover{
+  background:rgba(255,255,255,.045);
+  color:#eee9df;
+}
+
+.blueprint-photography__canvas{
+  position:relative;
+  z-index:2;
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 24px;
+}
+
+.blueprint-photography__frame{
+  position:relative;
+  width:min(70vw,920px);
+  max-height:calc(100vh - 190px);
+  aspect-ratio:4 / 3;
+  overflow:hidden;
+  border:1px solid rgba(238,233,223,.72);
+  border-radius:4px;
+  background:#121815;
+  box-shadow:
+    0 0 0 9999px rgba(4,7,6,.36),
+    0 18px 55px rgba(0,0,0,.34);
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+}
+
+.blueprint-photography__frame:active{cursor:grabbing}
+
+.blueprint-photography__scene{
+  position:absolute;
+  inset:0;
+  background-repeat:no-repeat;
+  background-color:#111713;
+}
+
+.blueprint-photography__grid{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.blueprint-photography__grid i{
+  position:absolute;
+  display:block;
+  background:rgba(238,233,223,.20);
+}
+
+.blueprint-photography__grid i:nth-child(1),
+.blueprint-photography__grid i:nth-child(2){
+  top:0;
+  bottom:0;
+  width:1px;
+}
+
+.blueprint-photography__grid i:nth-child(1){left:33.333%}
+.blueprint-photography__grid i:nth-child(2){left:66.666%}
+
+.blueprint-photography__grid i:nth-child(3),
+.blueprint-photography__grid i:nth-child(4){
+  left:0;
+  right:0;
+  height:1px;
+}
+
+.blueprint-photography__grid i:nth-child(3){top:33.333%}
+.blueprint-photography__grid i:nth-child(4){top:66.666%}
+
+.blueprint-photography__ratio{
+  position:absolute;
+  left:10px;
+  bottom:9px;
+  padding:3px 6px;
+  border-radius:5px;
+  background:rgba(8,12,10,.62);
+  color:#d8d5cd;
+  font-size:var(--wanhu-type-micro,9.5px);
+  pointer-events:none;
+}
+
+.blueprint-photography__footer{
+  min-height:52px;
+  margin-top:8px;
+}
+
+.blueprint-photography__help,
+.blueprint-photography__actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.blueprint-photography__help{
+  color:#a9ada8;
+  font-size:var(--wanhu-type-caption,11px);
+}
+
+.blueprint-photography__help span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+
+.blueprint-photography__help kbd{
+  min-width:30px;
+  padding:2px 5px;
+  border:1px solid rgba(238,233,223,.10);
+  border-radius:5px;
+  background:rgba(255,255,255,.025);
+  color:#d2d0c8;
+  font:inherit;
+  text-align:center;
+}
+
+.blueprint-photography__actions button{
+  height:32px;
+  padding:0 10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border:0;
+  border-radius:8px;
+  background:rgba(255,255,255,.035);
+  color:#c0c2bd;
+  font:inherit;
+  font-size:var(--wanhu-type-caption,11px);
+  font-weight:560;
+  cursor:pointer;
+}
+
+.blueprint-photography__actions button:hover{
+  background:rgba(255,255,255,.06);
+  color:#eee9df;
+}
+
+.blueprint-photography__actions button.is-primary{
+  background:rgba(169,132,75,.16);
+  color:#e2d0a8;
+}
+
+.blueprint-photography__actions button.is-primary:hover{
+  background:rgba(169,132,75,.24);
+}
+
+.blueprint-photography__zoom{
+  min-width:44px;
+  color:#a8aca7;
+  font-size:var(--wanhu-type-caption,11px);
+  font-variant-numeric:tabular-nums;
+  text-align:center;
+}
+
+@media (max-width:1200px){
+  .blueprint-photography__header small{display:none}
+  .blueprint-photography__help span:nth-child(2){display:none}
+}
