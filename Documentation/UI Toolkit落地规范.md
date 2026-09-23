@@ -98,6 +98,40 @@ Workspace 的 Primary Rail 与 Context Filter 是独立维度；Rail 滚轮翻�
 
 Tooltip 统一处理延迟、位置、屏幕边缘修正与快捷键文案，不使用浏览器原生 Tooltip 作为最终方案，不让完成基础操作依赖悬停说明。
 
+## Blueprint Photography / Editor 映射
+
+Blueprint Authoring 在 Unity UI Toolkit 中保持“Tool + Editor”两阶段，不把摄影逻辑塞进普通 Camera Context Panel。
+
+建议结构：
+
+```text
+BlueprintWorkspace.uxml
+└ CreateBlueprintAction
+
+BlueprintPhotographyTool.uxml
+├ PhotographyTopBar
+├ PreviewFrame 4:3
+└ PhotographyBottomBar
+
+BlueprintEditor.uxml
+├ PreviewSlot 4:3
+├ MetadataForm
+├ ReadonlyFacts
+└ FooterActions
+```
+
+状态与职责：
+
+- `BlueprintPhotographyController`：进入/退出 Tool、相机快照恢复、4:3 Preview Capture、拖动/缩放输入；
+- `BlueprintEditorController`：名称/分类 Draft、重新拍摄、保存/取消；
+- `BlueprintCatalog`：系统 / 创意工坊 / 玩家蓝图数据与 Create / Update / Delete Command；
+- UI 不通过 Preview Texture 反推 Blueprint ObjectRefs；ObjectRefs / Bounds / Footprint 来自 Blueprint Definition / Capture 数据；
+- Photography 完成只生成 Preview，再进入 Editor；不会直接创建持久蓝图；
+- “我的蓝图” Card 管理使用可交互 Popover，不把编辑/删除按钮塞进只读 Hover Card；
+- 删除 Blueprint Definition 不影响世界中已经实例化的对象。
+
+Web Prototype 的 `background-position / background-size` 只验证 Preview Crop；Unity 应使用受控 Camera + RenderTexture / Texture2D Capture，并复用有限 Preview 资源，不给所有蓝图长期分配实时 RenderTexture。
+
 ## World 与 UI 的边界
 
 Terrain Brush、道路与城墙路径、Gate / Stair Clearance、树木预览和真实配色材质属于 World Controller / Renderer / Command History。Web 中对应的 DOM 预览不迁入 UI Toolkit。
