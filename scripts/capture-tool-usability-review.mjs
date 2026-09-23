@@ -508,6 +508,7 @@ try {
   await blueprintWorkspace.getByRole('button', { name: '新建全部蓝图', exact: true }).click();
   await page.waitForSelector('.blueprint-photography[data-blueprint-photography="active"]');
   await page.waitForSelector('.workspace--blueprint', { state: 'detached' });
+  await settle();
 
   const photographyFrame = page.locator('.blueprint-photography__frame');
   const photographyPanel = page.locator('.blueprint-photography-context-panel');
