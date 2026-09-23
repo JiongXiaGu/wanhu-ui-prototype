@@ -138,7 +138,7 @@ Phase 1 不处理：
 
 > Runtime 新代码不再需要知道旧 `#C9A55F` 是什么；共享熟铜只从当前 Theme 读取。
 
-### Phase 1 进度：Batch 1
+### Phase 1 进度：Batch 1 已完成
 
 第一批只处理主菜单基础层与共享全屏 Control：
 
@@ -148,6 +148,10 @@ Phase 1 不处理：
 - Ratchet 已从 Baseline 移除以上文件，并禁止旧 `--paper / --gold*` 变量重新进入 Runtime。
 
 这一批不处理 Workspace、HUD、Management、Loading、Hover 等后续债务。
+
+验证：Build #1470 与 UI Review #455 通过；UI Review 现在额外上传轻量 `visual-governance-review`，固定包含 Main Menu / New Game / Settings / Save 四张治理关键图及 readability report，供后续每批颜色整理快速人工审图。
+
+下一批优先处理 Catalog Workspace 的旧共享 Brass / Paper 债务，再单独进入 HUD / Management，避免跨页面家族一次改色。
 
 ## Phase 2：Semantic Token 收敛
 
