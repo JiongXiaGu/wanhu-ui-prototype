@@ -19,6 +19,8 @@ jobs:
       - run: npm install
       - run: npm run icons:check
       - run: npm run audit:scale
+      - name: Audit visual governance
+        run: npm run audit:visual
       - run: npm run audit:unity
       - run: node scripts/test-tool-usability.mjs
       - run: node scripts/test-building-selection.mjs
