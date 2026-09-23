@@ -1004,9 +1004,11 @@ const firstMaterialMetaBox = await firstMaterialCard.locator('.material-preset-w
 const firstSourceBadgeBox = await sourceBadges.first().boundingBox();
 if (!firstMaterialCardBox || !firstMaterialMetaBox || !firstSourceBadgeBox
   || firstSourceBadgeBox.x < firstMaterialCardBox.x + firstMaterialCardBox.width * 0.55
-  || firstSourceBadgeBox.y < firstMaterialMetaBox.y - 1
-  || firstSourceBadgeBox.y + firstSourceBadgeBox.height > firstMaterialMetaBox.y + firstMaterialMetaBox.height + 1) {
-  throw new Error('Material source badge must stay in the Compact Card metadata line rather than returning to the title row. badge=' + JSON.stringify(firstSourceBadgeBox));
+  || Math.abs(
+    (firstSourceBadgeBox.y + firstSourceBadgeBox.height / 2)
+    - (firstMaterialMetaBox.y + firstMaterialMetaBox.height / 2)
+  ) > 2) {
+  throw new Error('Material source badge must stay vertically centered in the Compact Card metadata line rather than returning to the title row. badge=' + JSON.stringify(firstSourceBadgeBox));
 }
 if (Math.abs(firstMaterialCardBox.height - 64) > 1) {
   throw new Error('Material Scheme Card must match shared WorkspaceItemCard 64px height. box=' + JSON.stringify(firstMaterialCardBox));
