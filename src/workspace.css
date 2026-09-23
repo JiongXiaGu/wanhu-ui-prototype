@@ -580,10 +580,10 @@
   z-index:4;
   left:9px;
   top:9px;
-  padding:3px 6px;
-  border:1px solid rgba(238,233,223,.08);
+  padding:2px 5px;
+  border:1px solid rgba(238,233,223,.055);
   border-radius:6px;
-  background:rgba(17,23,20,.86);
+  background:rgba(17,23,20,.74);
 }
 .workspace-item-card__source.is-media.is-workshop{color:#a9b8bb}
 .workspace-item-card__source.is-media.is-user{color:#c2ad82}
@@ -611,7 +611,7 @@
 .workspace-item-menu-trigger.is-media{
   right:8px;
   top:7px;
-  opacity:.72;
+  opacity:.56;
   pointer-events:auto;
 }
 .workspace-item-menu-trigger.is-compact{

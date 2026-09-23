@@ -498,6 +498,7 @@ try {
   const blueprintWorkspaceBox = await blueprintWorkspace.boundingBox();
   assert(blueprintWorkspaceBox && Math.abs(blueprintWorkspaceBox.height - 330) < 1, 'Blueprint Workspace 应为 4:3 Card 提供约 330px 高度');
   assert(blueprintMetrics.every(item => item.previewWidth >= item.width - 2 && item.previewHeight >= item.height - 2 && item.backgroundImage && item.backgroundImage !== 'none'), '蓝图 Preview 必须覆盖 Card 主体并绑定场景示例图');
+  assert.equal(await blueprintWorkspace.locator('.blueprint-workspace__caption>span').count(), 0, 'Blueprint Card 正面不得继续显示占地尺寸，尺寸留在 Hover / 详情信息层');
   report.checks.push({ label: 'Blueprint Workspace 4×1 image cards', blueprintRailLabels, blueprintSourceLabels, blueprintMetrics });
   await blueprintWorkspaceShot('all');
 

@@ -298,7 +298,6 @@ export function BlueprintWorkspace({
                               <span className="workspace-item-card__title-text">{item.name}</span>
                               {favorite && <span className="workspace-item-card__favorite-star" aria-label="已收藏">★</span>}
                             </b>
-                            <span>{item.footprint}</span>
                           </span>
                         </button>
 

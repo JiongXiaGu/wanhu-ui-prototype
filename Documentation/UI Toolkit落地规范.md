@@ -102,8 +102,8 @@ Tooltip 统一处理延迟、位置、屏幕边缘修正与快捷键文案，不
 
 Design / MaterialPreset / BuildingScheme / Blueprint 等目录继续复用同一 Workspace Catalog 外壳。Card 不强制同尺寸，而是统一公共视觉语言后保留两种内容 Variant：
 
-- **Compact Card**：用于 MaterialPreset、BuildingScheme 等文字/参数型条目，保持约 64px 高；来源 Badge 跟随内容信息行，`···` 固定在 Card 最右侧垂直居中；
-- **Media Card**：用于 Blueprint 等预览图主导条目，允许 4:3 等业务比例；来源 Badge 固定左上，`···` 固定右上，底部区域只承担名称和核心数据；
+- **Compact Card**：用于 MaterialPreset、BuildingScheme 等文字/参数型条目，保持约 64px 高并使用 **3 列 × 2 行 / 6 Slot** 的宽松目录密度；来源 Badge 跟随内容信息行，`···` 固定在 Card 最右侧垂直居中。Card 正面只保留名称、收藏星、色条/色组、一级分类与来源，表面质感等次级参数退回 Hover Card；
+- **Media Card**：用于 Blueprint 等预览图主导条目，允许 4:3 等业务比例；来源 Badge 固定左上，`···` 固定右上，底部只保留名称与收藏星。Footprint / 尺寸等属性退回 Hover / 详情层，避免四角同时堆放信息；
 - 两种 Variant 的 **所有来源**（System / Workshop / User）都保留常驻的 Item Action Menu Trigger；菜单内容按来源与能力裁剪，但操作入口 Geometry 不随来源消失；
 - 收藏是共享 Catalog 用户元数据：所有 Card 菜单提供“收藏 / 取消收藏”，左 Rail 顶部提供独立“收藏”快捷筛选；已收藏条目在名称后显示低权重熟铜 `★`，不再额外占用 Card 四角；
 - 两种 Variant 共用 Source Badge、Menu Trigger、Popover Skin、Hover / Focus / Selected 状态语义；Hover 为中性提亮，Selected 使用熟铜 State Line + 极弱背景，Focus 独立表达；
@@ -157,7 +157,7 @@ Terrain Brush、道路与城墙路径、Gate / Stair Clearance、树木预览和
 
 UI 只绑定参数、状态与命令。ToolOrigin、开放城墙路径 Facing、Gate 的独立放置和连接、楼梯高低反向等既有语义不得由此次视觉升级改写。具体行为遵守对应工具文档与当前代码。
 
-实时 Preview 需要时使用受限数量的 RenderTexture，按可见 Slot 分配与复用；不要为全部资产长期维护实时预览。现有固定 4×2 Workspace 目录适合 Slot / Pool，存档和居民等长列表使用虚拟化。
+实时 Preview 需要时使用受限数量的 RenderTexture，按可见 Slot 分配与复用；不要为全部资产长期维护实时预览。Design 等高密度目录仍可使用 4×2 Slot / Pool，MaterialPreset / BuildingScheme 的 Compact Card 基线为 3×2；存档和居民等长列表使用虚拟化。
 
 ## 迁移门槛
 

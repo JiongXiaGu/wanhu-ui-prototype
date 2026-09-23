@@ -152,12 +152,11 @@
   position:absolute;
   z-index:3;
   left:14px;
-  right:13px;
+  right:14px;
   bottom:11px;
   min-width:0;
   display:flex;
   align-items:flex-end;
-  gap:10px;
   pointer-events:none;
 }
 
@@ -173,14 +172,6 @@
   white-space:nowrap;
   text-overflow:ellipsis;
   text-shadow:0 2px 8px rgba(4,7,6,.58);
-}
-
-.blueprint-workspace__caption>span{
-  flex:0 0 auto;
-  color:#b9b8b0;
-  font-size:var(--wanhu-type-caption,10px);
-  font-variant-numeric:tabular-nums;
-  text-shadow:0 2px 7px rgba(4,7,6,.64);
 }
 
 .blueprint-workspace__empty{

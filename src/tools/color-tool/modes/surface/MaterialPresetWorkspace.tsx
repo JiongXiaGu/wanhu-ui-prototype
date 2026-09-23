@@ -69,7 +69,7 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 6;
 const CATEGORY_PAGE_SIZE = 5;
 const MATERIAL_FAMILIES = Object.keys(MATERIAL_FAMILY_LABELS) as MaterialFamily[];
 
@@ -221,7 +221,7 @@ function SchemeCard({
               style={{ backgroundColor: preset.colors[0] }}
               aria-hidden="true"
             />
-            <span className="material-preset-workspace__card-detail">{familyLabel} · {finishLabel}</span>
+            <span className="material-preset-workspace__card-detail">{familyLabel}</span>
             <span className={'workspace-item-card__source is-compact ' + sourceTone}>{sourceLabel}</span>
           </span>
         </div>
@@ -354,7 +354,7 @@ export function MaterialPresetWorkspace({
   const pageCount = Math.max(1, Math.ceil(activeItems.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
   const visibleItems = pageItems(activeItems, safePage);
-  const rows = [visibleItems.slice(0, 4), visibleItems.slice(4, 8)].filter((row) => row.length > 0);
+  const rows = [visibleItems.slice(0, 3), visibleItems.slice(3, 6)].filter((row) => row.length > 0);
   const draggingPreset = customPresets.find((preset) => preset.id === draggingPresetId) ?? null;
 
   function validateName(value: string, excludeId?: string) {

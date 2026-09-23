@@ -968,10 +968,10 @@ for (const action of ['保存配色', '粘贴配色']) {
 if (await schemeWorkspace.getByRole('button', { name: '粘贴配色', exact: true }).isDisabled()) {
   throw new Error('Scheme Workspace paste action should consume the Surface clipboard copied before opening.');
 }
-if ((await schemeWorkspace.locator('.material-preset-workspace__card').count()) !== 8) {
-  throw new Error('All-sources first page should use the shared 4x2 Workspace card pool.');
+if ((await schemeWorkspace.locator('.material-preset-workspace__card').count()) !== 6) {
+  throw new Error('All-sources first page should use the Compact 3x2 Workspace card pool.');
 }
-if ((await schemeWorkspace.locator('.workspace-item-card').count()) !== 8) {
+if ((await schemeWorkspace.locator('.workspace-item-card').count()) !== 6) {
   throw new Error('Every Material Scheme Card should consume the shared WorkspaceItemCard primitive.');
 }
 if (await schemeWorkspace.locator('.workspace-item-card__preview').count()) {
@@ -981,7 +981,7 @@ if (await schemeWorkspace.locator('.material-preset-workspace__card-swatches').c
   throw new Error('Scheme Cards must not regress to the four-color swatch strip.');
 }
 const materialColorLines = schemeWorkspace.locator('.material-preset-workspace__color-line');
-if ((await materialColorLines.count()) !== 8) {
+if ((await materialColorLines.count()) !== 6) {
   throw new Error('Each Scheme Card should expose exactly one subtle BaseColor accent line.');
 }
 const colorLineBox = await materialColorLines.first().boundingBox();
@@ -989,10 +989,10 @@ if (!colorLineBox || colorLineBox.width < 24 || colorLineBox.width > 32 || color
   throw new Error('Material BaseColor must remain a thin accent line, not a preview block. box=' + JSON.stringify(colorLineBox));
 }
 const sourceBadges = schemeWorkspace.locator('.workspace-item-card__source.is-compact');
-if ((await sourceBadges.count()) !== 8) {
+if ((await sourceBadges.count()) !== 6) {
   throw new Error('Every visible Material Scheme Card must identify its source through the shared Compact badge.');
 }
-if ((await schemeWorkspace.locator('.material-preset-workspace__card>.workspace-item-menu-trigger').count()) !== 8) {
+if ((await schemeWorkspace.locator('.material-preset-workspace__card>.workspace-item-menu-trigger').count()) !== 6) {
   throw new Error('Every visible Material Scheme Card must expose a permanent shared action menu trigger.');
 }
 if ((await schemeWorkspace.locator('.workspace-item-card__favorite-star').count()) < 1) {
@@ -1519,11 +1519,11 @@ for (const sourceLabel of ['全部', '系统内置', '创意工坊', '玩家方�
     throw new Error('Building Scheme source filter missing: ' + sourceLabel);
   }
 }
-if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 8
+if ((await buildingSchemeWorkspace.locator('.workspace-item-card').count()) !== 6
   || await buildingSchemeWorkspace.locator('.workspace-item-card__preview').count()) {
-  throw new Error('Building Scheme first page must reuse 4×2 cards without fake thumbnails.');
+  throw new Error('Building Scheme first page must reuse the Compact 3×2 card family without fake thumbnails.');
 }
-if ((await buildingSchemeWorkspace.locator('.building-scheme-workspace__card>.workspace-item-menu-trigger').count()) !== 8) {
+if ((await buildingSchemeWorkspace.locator('.building-scheme-workspace__card>.workspace-item-menu-trigger').count()) !== 6) {
   throw new Error('Every visible Building Scheme Card must expose the permanent shared action menu trigger.');
 }
 if ((await buildingSchemeWorkspace.locator('.workspace-item-card__favorite-star').count()) < 1) {

@@ -44,7 +44,7 @@ interface Props {
   onClose: () => void;
 }
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 6;
 const STYLE_PAGE_SIZE = 5;
 
 const STYLE_LABELS: Record<BuildingSchemeStyle, string> = {
@@ -233,7 +233,7 @@ export function BuildingSchemeWorkspace({
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
   const visible = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
-  const rows = [visible.slice(0, 4), visible.slice(4, 8)].filter((row) => row.length > 0);
+  const rows = [visible.slice(0, 3), visible.slice(3, 6)].filter((row) => row.length > 0);
 
   function selectStyle(next: BuildingSchemeStyleFilter) {
     hover.clear();

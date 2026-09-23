@@ -74,6 +74,9 @@
 }
 
 .material-preset-workspace__stage{overflow:visible}
+.gameplay-screen .workspace--material-preset .workspace-content-row>*{
+  flex:0 0 calc((100% - 20px)/3);
+}
 .material-preset-workspace__card.is-dragging{opacity:.42}
 
 .material-preset-workspace.is-dragging-preset .material-preset-workspace__rail-list>button{
