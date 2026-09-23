@@ -8,8 +8,6 @@
   --workspace-text:var(--wanhu-color-text-secondary,#d4cfc6);
   --workspace-muted:#a19f99;
   --workspace-faint:var(--wanhu-color-paper-tertiary,#818685);
-  --workspace-gold:var(--wanhu-color-brass,#a9844b);
-  --workspace-gold-soft:rgba(169,132,75,.085);
   --workspace-jade:#9b9e99;
   border-radius:18px;
 }
@@ -49,12 +47,12 @@
   transform:none;
 }
 .gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active{
-  background:linear-gradient(90deg,rgba(169,132,75,.095),rgba(169,132,75,.020) 68%,transparent);
-  color:#d9d1c2;
+  background:var(--wanhu-control-active-bg);
+  color:var(--wanhu-color-brass-text);
 }
 .gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active::before{
   width:2px;
-  background:var(--workspace-gold);
+  background:var(--wanhu-control-active-line);
   box-shadow:none;
 }
 .gameplay-screen .workspace--catalog .workspace-primary-rail button.is-active .ui-icon{transform:none}
@@ -69,14 +67,14 @@
   transform:none;
 }
 .gameplay-screen .workspace--catalog .workspace-context-filter__scroll>button.is-active{
-  color:#d9d1c2;
-  background:rgba(169,132,75,.055);
+  color:var(--wanhu-color-brass-text);
+  background:var(--wanhu-control-active-bg);
 }
 .gameplay-screen .workspace--catalog .workspace-context-filter__scroll>button.is-active::after{
   left:32%;
   right:32%;
   height:2px;
-  background:var(--workspace-gold);
+  background:var(--wanhu-control-active-line);
   box-shadow:none;
 }
 
@@ -86,12 +84,12 @@
   color:#aaa9a3;
 }
 .gameplay-screen .workspace--design .workspace-search__trigger:hover{
-  border-bottom-color:rgba(169,132,75,.30);
+  border-bottom-color:var(--wanhu-control-border-hover);
   background:rgba(255,255,255,.035);
   color:var(--workspace-paper);
 }
 .gameplay-screen .workspace--design .workspace-search__field{
-  border-bottom-color:rgba(210,179,111,.38);
+  border-bottom-color:var(--wanhu-control-focus);
   background:rgba(255,248,237,.040);
   color:var(--workspace-text);
 }
@@ -106,11 +104,11 @@
 .gameplay-screen .workspace--design .design-item-card:hover{transform:none}
 .gameplay-screen .workspace--design .design-item-card:focus-visible{transform:none}
 .gameplay-screen .workspace--design .design-item-card:active{
-  background:rgba(169,132,75,.055);
+  background:var(--wanhu-control-hover-strong);
   transform:scale(.995);
 }
 .gameplay-screen .workspace--design .design-item-card::before{
-  background:var(--workspace-gold);
+  background:var(--wanhu-control-focus);
 }
 .gameplay-screen .workspace--design .design-item-card:hover::before{opacity:0}
 .gameplay-screen .workspace--design .design-item-card:focus-visible::before{opacity:.78}
