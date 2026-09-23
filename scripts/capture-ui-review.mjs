@@ -709,8 +709,8 @@ const buildingActiveRailPager = buildingCatalogRail.locator('.workspace-rail-pag
 const buildingRailPagerBox = await buildingActiveRailPager.boundingBox();
 if (!buildingRailItemBox || !buildingRailPagerBox
   || Math.abs(buildingRailItemBox.height - 29) > 1
-  || buildingRailPagerBox.width > 6
-  || buildingRailPagerBox.height > 6) {
+  || Math.abs(buildingRailPagerBox.width - 14) > 1
+  || Math.abs(buildingRailPagerBox.height - 3) > 1) {
   throw new Error('Building shared Rail geometry regressed. item=' + JSON.stringify(buildingRailItemBox) + ' pager=' + JSON.stringify(buildingRailPagerBox));
 }
 const buildingRailPagerGap = buildingRailItemBox.x - (buildingRailPagerBox.x + buildingRailPagerBox.width);
