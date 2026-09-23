@@ -124,7 +124,7 @@ Dialog 的 Warning 与 Danger 不相同：
 
 管理专题允许受控内容色：overview `#b3a07a`、civic `#b58d78`、economy `#b79255`、resource `#8f9c72`、governance `#8294a0`、defense `#aa6d62`。它们只进入 Header / 图表 / 数据强调，不改公共按钮和全页 Body。这些内容色不意味着另建六套 Theme。
 
-Catalog 来源 Badge 也有共享局部前景：Compact Workshop 为 `#96a7aa`、User 为 `#b8a47d`；Media Workshop 为 `#a9b8bb`、User 为 `#c2ad82`。名称后的收藏星当前为 `#d3b86f`。这些由 `workspace.css` 持有，不把它们冒充全局 Brass / Focus Token。
+Catalog 来源 Badge 也有共享局部前景：Compact Workshop 为 `#96a7aa`、User 为 `#b8a47d`；Media Workshop 为 `#a9b8bb`、User 为 `#c2ad82`。名称后的收藏星消费 `--wanhu-color-brass-text`，保持低权重且不添加 Glow。来源色由 `workspace.css` 持有，不把它们冒充全局 Brass / Focus Token。
 
 ## 昼夜
 
