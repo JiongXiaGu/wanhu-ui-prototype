@@ -75,7 +75,7 @@ Card 不在图片之外再增加大块文本区，不恢复 Design Card 的“64
 
 第一版 Web Prototype 暂时使用现有 Gameplay 场景图的不同裁切验证构图和信息层级。这些图片不是最终蓝图截图资产。正式资源应由 Blueprint Preview Capture 统一生成，保持稳定俯视角、焦距、主体居中、光照和输出比例。
 
-## Card 状态
+## Card 状态与“我的蓝图”管理
 
 Blueprint Card 仍是 Action Button：
 
@@ -85,7 +85,59 @@ Blueprint Card 仍是 Action Button：
 - Pressed：极轻缩放反馈；
 - 不保存持续 Selected。
 
-当前 Web V1 只完成浏览与选择入口。点击 Card 会给出蓝图放置尚未接入的提示，不伪造放置状态。真实 Blueprint Placement Preview / Confirm / Cancel 属于后续 Blueprint Tool。
+只有 `source=mine` 的 Card 显示右上 `···` 管理 Popover。菜单固定为：
+
+`编辑 / 删除`
+
+“编辑”打开 Blueprint Editor，可修改名称、分类，并可进入“重新拍摄”；规模、占地、构件数和预计造价由蓝图内容数据提供，只读。“删除”使用共享 Danger Confirm，只删除 Blueprint Definition / Template，不反向删除已经放置到城市中的对象。
+
+系统内置与创意工坊蓝图保持只读，不显示管理菜单。点击 Card 的真实 Blueprint Placement Preview / Confirm / Cancel 仍属于后续 Blueprint Placement Tool。
+
+## 新建蓝图与摄影流程
+
+来源筛选栏右侧提供 `＋ 新建蓝图`，视觉和交互家族参考材质方案 Workspace 的保存动作，但业务流程不同：蓝图不能通过一个名称弹窗直接创建。
+
+稳定流程：
+
+```text
+Blueprint Workspace
+→ 新建蓝图
+→ Blueprint Photography Tool
+→ 完成摄影
+→ Blueprint Editor（带 4:3 Preview）
+→ 保存到“我的蓝图”
+→ 返回 Blueprint Workspace
+```
+
+### Photography
+
+摄影是独立 Tool：`tool=blueprint-photography`，进入时记录 `blueprint-workspace(category)` ToolOrigin。普通 Workspace / Main Dock / Control Tray 收起，摄影 Surface 作为全屏 Tool 接管构图。
+
+第一版 Web Prototype：
+
+- 取景框固定 4:3；
+- 拖动调整 Preview Crop；
+- 滚轮缩放；
+- “恢复镜头”回到摄影默认构图；
+- “完成摄影”只生成 Preview Capture，不直接保存 Blueprint；
+- Esc / 取消恢复原 Blueprint Workspace；
+- 从 Editor 发起“重新拍摄”时，取消摄影应回到原 Editor Draft。
+
+摄影只拥有 `previewAsset / previewPosition / previewSize`。它不能根据“镜头里看到了什么”推断 Blueprint ObjectRefs。真实蓝图内容、Bounds、Footprint、构件列表由 Blueprint Capture / Definition 数据提供，Preview 只是展示资产。
+
+### Blueprint Editor
+
+Photography 完成后打开专用 Blueprint Editor，而不是通用小型 Input Dialog。Editor 采用：
+
+- 左：较大的 4:3 Preview；
+- 右：蓝图名称、业务分类；
+- 只读 Facts：规模、占地、构件数、预计造价；
+- “重新拍摄”返回 Photography，但保留当前 Metadata Draft；
+- “取消 / 保存蓝图（或保存修改）”。
+
+从“全部蓝图”入口创建时，不提前强迫选择业务分类；Editor 默认给出一个可修改分类。玩家最终保存的 Blueprint 必须属于一个真实分类，`all` 永远只是浏览 Filter。
+
+保存后 Source 固定为 `mine`。Web Prototype 的 Custom Catalog 暂由 GameplayScreen 持有；正式 Unity 由 BlueprintCatalog / BlueprintDefinition + Create/Update/Delete Command 持有，Workspace 只消费数据和命令，不成为数据权威。
 
 ## Rich Hover
 
