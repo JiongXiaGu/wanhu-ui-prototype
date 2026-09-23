@@ -38,7 +38,7 @@ Blueprint 不复制新的 Workspace Shell，也不建立独立 Tooltip / Inspect
 
 规模是 Blueprint 数据属性，不从占地数字临时推断。切换规模会回到第一页，并清理当前 Rich Hover。
 
-当前只需要一组 4 项，因此 Rail 保留共享单页中性 Pager Marker，不新增第二套分页结构。
+当前只需要一组 4 项，因此 Rail 仍保留共享单页 Pager Marker；Marker 与多页时完全同形，统一为 `14×3px` Paper White 横线 `━`，不再显示圆点。
 
 ## Context Filter
 
@@ -52,7 +52,7 @@ Main Dock Category、规模 Rail、来源 Filter 是三个正交维度：
 - Size：整体规模；
 - Source：蓝图来自哪里。
 
-筛选结果变化时 Content Pager 回到第一页。
+筛选结果变化时 Content Pager 回到第一页。Content Pager 与 Design Workspace 共用同一视觉契约：所有页面 Marker 都是 `14×3px` 横线，当前页 Paper White，高亮只改 Tone / Opacity。
 
 ## Image-first Card
 
@@ -62,9 +62,9 @@ Design Card 主要表达“构件是什么”；Blueprint Card 主要表达“�
 
 1080p 当前基线：
 
-- Workspace：约 `1240 × 280px`；
+- Workspace：约 `1240 × 330px`；
 - Content：每页 `4 × 1`；
-- Blueprint Card：约 `142px` 高；
+- Blueprint Card：固定 `4:3`；
 - Preview：覆盖整张 Card；
 - Card 底部使用暗渐变保证文字阅读；
 - 左下：蓝图名称；
