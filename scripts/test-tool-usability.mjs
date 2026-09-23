@@ -153,7 +153,36 @@ assert(blueprintWorkspaceModel.includes('BLUEPRINT_BUILTIN_ITEMS') && blueprintW
 assert(blueprintWorkspaceSource.includes('新建蓝图') && blueprintWorkspaceSource.includes('onCreate(category)') && blueprintWorkspaceSource.includes('管理我的蓝图'), 'Blueprint Workspace 必须提供新建入口和我的蓝图管理入口');
 assert(blueprintWorkspaceSource.includes('<span>编辑</span>') && blueprintWorkspaceSource.includes('<span>删除</span>') && !blueprintWorkspaceSource.includes('复制参数'), '我的蓝图管理菜单固定为 编辑 / 删除');
 assert(uiStateSource.includes("'blueprint-photography'") && uiStateSource.includes("kind: 'blueprint-workspace'") && uiStateSource.includes("case 'ENTER_BLUEPRINT_PHOTOGRAPHY'"), 'Blueprint Photography 必须作为独立 Tool 并保留 Workspace Origin');
-assert(blueprintPhotographySource.includes('aspect-ratio:4 / 3') === false && blueprintPhotographyCss.includes('aspect-ratio:4 / 3') && blueprintPhotographySource.includes('完成摄影'), 'Blueprint Photography 必须使用独立 4:3 取景框并显式完成摄影');
+assert(
+  blueprintPhotographySource.includes('LeftContextPanel')
+  && blueprintPhotographySource.includes('RuntimeParameterRow')
+  && blueprintPhotographySource.includes('ToolActionBar')
+  && blueprintPhotographySource.includes('completeShortLabel="完成"')
+  && blueprintPhotographySource.includes('cancelShortLabel="取消"'),
+  'Blueprint Photography 必须复用 LeftContextPanel + ToolActionBar，不再维护私有 Header / Footer',
+);
+assert(
+  blueprintPhotographyCss.includes('aspect-ratio:4 / 3')
+  && blueprintPhotographyCss.includes('--blueprint-photo-frame-top-safe:96px')
+  && blueprintPhotographyCss.includes('--blueprint-photo-frame-bottom-safe:116px')
+  && blueprintPhotographyCss.includes('--blueprint-photo-frame-side-safe:392px'),
+  'Blueprint Photography 必须固定 4:3 取景框与明确 Screen Safe Distance',
+);
+assert(
+  !blueprintPhotographySource.includes('onPointerDown')
+  && !blueprintPhotographySource.includes('onPointerMove')
+  && !blueprintPhotographySource.includes('onWheel')
+  && !blueprintPhotographySource.includes('offsetX')
+  && !blueprintPhotographySource.includes('offsetY')
+  && !blueprintPhotographySource.includes('zoom'),
+  'Web Blueprint Photography 不得模拟拖动画面 / 滚轮缩放等场景移动交互',
+);
+assert(
+  gameplayScreenBlueprintSource.includes('blueprintPhotographyActive')
+  && gameplayScreenBlueprintSource.includes('!blueprintPhotographyActive && <GameplaySystemMenuButton')
+  && gameplayScreenBlueprintSource.includes('!blueprintPhotographyActive && ('),
+  '摄影 Tool 必须隐藏普通 Compass / System Menu / Gameplay HUD / Utility，只保留摄影标准 Tool Surfaces',
+);
 assert(blueprintEditorSource.includes('blueprint-editor__preview') && blueprintEditorSource.includes('重新拍摄') && blueprintEditorSource.includes('保存蓝图') && blueprintEditorCss.includes('aspect-ratio:4 / 3'), 'Blueprint Editor 必须以 4:3 Preview 为核心并支持重新拍摄');
 assert(gameplayScreenBlueprintSource.includes('customBlueprints') && gameplayScreenBlueprintSource.includes('completeBlueprintPhotography') && gameplayScreenBlueprintSource.includes('saveBlueprint') && gameplayScreenBlueprintSource.includes('deleteBlueprint'), 'Gameplay Blueprint Owner 必须持有摄影→编辑→保存/删除生命周期');
 assert(mainSource.includes("import './workspace/blueprint-editor.css';") && mainSource.includes("import './tools/blueprint-photography/blueprint-photography.css';"), 'Blueprint Photography / Editor 必须拥有正式 Runtime 样式入口');
@@ -180,7 +209,7 @@ assert(
   'Workspace Material Owner 不得把 Pager Active 覆盖回熟铜或非 Paper White',
 );
 assert(workspaceCatalogCss.includes('.workspace-content-pager button,') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active') && workspaceCatalogCss.includes('width:20px'), 'Content Pager Button 命中区必须保持等宽，只有内部 Marker 改变形状');
-checks += 20;
+checks += 23;
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
 const operationHintsRootRule = operationHintsCss.match(/\.gameplay-operation-hints\s*\{([^}]*)\}/s)?.[1] ?? '';
 assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRootRule.includes('box-shadow:') && !operationHintsRootRule.includes('background:'), 'Operation Hints Root 不得持有 Surface 材质');
