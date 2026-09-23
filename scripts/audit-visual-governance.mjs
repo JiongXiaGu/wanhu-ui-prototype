@@ -15,7 +15,6 @@ const SRC_ROOT='src';
  */
 const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
   'src/fullscreen-actions.css',
-  'src/gameplay/city-management.css',
   'src/new-game/new-game-space.css',
   'src/loading/loading-space.css',
   'src/tools/color-tool/modes/scheme/scheme-mode.css',
