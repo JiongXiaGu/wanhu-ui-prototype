@@ -205,8 +205,8 @@
 }
 
 @keyframes workspace-pager-marker-enter{
-  from{opacity:.28;transform:scale(.78)}
-  to{opacity:1;transform:scale(1)}
+  from{transform:scale(.78)}
+  to{transform:scale(1)}
 }
 
 @media (max-width:1500px){
