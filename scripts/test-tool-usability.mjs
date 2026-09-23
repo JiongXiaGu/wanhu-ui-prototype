@@ -97,6 +97,11 @@ const uiStateSource = await readFile('src/app/ui-state.ts', 'utf8');
 const blueprintWorkspaceSource = await readFile('src/workspace/BlueprintWorkspace.tsx', 'utf8');
 const blueprintWorkspaceModel = await readFile('src/workspace/blueprint-workspace-model.ts', 'utf8');
 const blueprintWorkspaceCss = await readFile('src/workspace/blueprint-workspace.css', 'utf8');
+const blueprintPhotographySource = await readFile('src/tools/blueprint-photography/BlueprintPhotographyTool.tsx', 'utf8');
+const blueprintPhotographyCss = await readFile('src/tools/blueprint-photography/blueprint-photography.css', 'utf8');
+const blueprintEditorSource = await readFile('src/workspace/BlueprintEditor.tsx', 'utf8');
+const blueprintEditorCss = await readFile('src/workspace/blueprint-editor.css', 'utf8');
+const gameplayScreenBlueprintSource = await readFile('src/gameplay/GameplayScreen.tsx', 'utf8');
 
 assert(sharedControlsCss.includes('.ui-scroll-region'), '共享控件必须持有 ui-scroll-region');
 assert(sharedControlsCss.includes('.ui-numeric-slider-field.is-standard'), '共享控件必须定义 standard density');
@@ -144,6 +149,14 @@ assert(blueprintWorkspaceSource.includes("id: 'system', label: '系统内置'") 
 assert(blueprintWorkspaceSource.includes('blueprint-workspace__preview') && blueprintWorkspaceSource.includes('workspace-item-card blueprint-workspace__card') && blueprintWorkspaceSource.includes('hover.bind(hoverDefinition)'), 'Blueprint Card 必须使用共享 Card / Hover 框架并以 Preview 为主体');
 assert(blueprintWorkspaceCss.includes('.blueprint-workspace__row') && blueprintWorkspaceCss.includes('aspect-ratio:4 / 3') && blueprintWorkspaceCss.includes('height:330px') && blueprintWorkspaceCss.includes('flex:0 0 calc((100% - 30px)/4)') && blueprintWorkspaceCss.includes('.blueprint-workspace__preview'), 'Blueprint Workspace 必须使用 4×1、4:3 大图 Card Geometry');
 assert(blueprintWorkspaceModel.includes("previewAsset: '/assets/wanhu-gameplay-city.png'") && blueprintWorkspaceModel.includes("category: 'residential'") && blueprintWorkspaceModel.includes("size: 'large'"), 'Blueprint 原型数据必须包含真实场景预览资产与规模元数据');
+assert(blueprintWorkspaceModel.includes('BLUEPRINT_BUILTIN_ITEMS') && blueprintWorkspaceModel.includes('BLUEPRINT_CUSTOM_SEED_ITEMS'), 'Blueprint Catalog 必须区分只读来源与玩家可编辑蓝图');
+assert(blueprintWorkspaceSource.includes('新建蓝图') && blueprintWorkspaceSource.includes('onCreate(category)') && blueprintWorkspaceSource.includes('管理我的蓝图'), 'Blueprint Workspace 必须提供新建入口和我的蓝图管理入口');
+assert(blueprintWorkspaceSource.includes('<span>编辑</span>') && blueprintWorkspaceSource.includes('<span>删除</span>') && !blueprintWorkspaceSource.includes('复制参数'), '我的蓝图管理菜单固定为 编辑 / 删除');
+assert(uiStateSource.includes("'blueprint-photography'") && uiStateSource.includes("kind: 'blueprint-workspace'") && uiStateSource.includes("case 'ENTER_BLUEPRINT_PHOTOGRAPHY'"), 'Blueprint Photography 必须作为独立 Tool 并保留 Workspace Origin');
+assert(blueprintPhotographySource.includes('aspect-ratio:4 / 3') === false && blueprintPhotographyCss.includes('aspect-ratio:4 / 3') && blueprintPhotographySource.includes('完成摄影'), 'Blueprint Photography 必须使用独立 4:3 取景框并显式完成摄影');
+assert(blueprintEditorSource.includes('blueprint-editor__preview') && blueprintEditorSource.includes('重新拍摄') && blueprintEditorSource.includes('保存蓝图') && blueprintEditorCss.includes('aspect-ratio:4 / 3'), 'Blueprint Editor 必须以 4:3 Preview 为核心并支持重新拍摄');
+assert(gameplayScreenBlueprintSource.includes('customBlueprints') && gameplayScreenBlueprintSource.includes('completeBlueprintPhotography') && gameplayScreenBlueprintSource.includes('saveBlueprint') && gameplayScreenBlueprintSource.includes('deleteBlueprint'), 'Gameplay Blueprint Owner 必须持有摄影→编辑→保存/删除生命周期');
+assert(mainSource.includes("import './workspace/blueprint-editor.css';") && mainSource.includes("import './tools/blueprint-photography/blueprint-photography.css';"), 'Blueprint Photography / Editor 必须拥有正式 Runtime 样式入口');
 assert(
   workspaceCatalogCss.includes('.workspace-rail-pager button span')
   && workspaceCatalogCss.includes('.workspace-rail-pager button.is-active span')
@@ -167,7 +180,7 @@ assert(
   'Workspace Material Owner 不得把 Pager Active 覆盖回熟铜或非 Paper White',
 );
 assert(workspaceCatalogCss.includes('.workspace-content-pager button,') && workspaceCatalogCss.includes('.workspace-content-pager button.is-active') && workspaceCatalogCss.includes('width:20px'), 'Content Pager Button 命中区必须保持等宽，只有内部 Marker 改变形状');
-checks += 12;
+checks += 20;
 assert(mainSource.includes("import './gameplay/operation-hints.css';") && !mainSource.includes('operation-hints-refined.css') && !mainSource.includes("import './operation-hints.css';"), 'Operation Hints 必须只有一个正式 Runtime 样式入口');
 const operationHintsRootRule = operationHintsCss.match(/\.gameplay-operation-hints\s*\{([^}]*)\}/s)?.[1] ?? '';
 assert(!operationHintsRootRule.includes('backdrop-filter') && !operationHintsRootRule.includes('box-shadow:') && !operationHintsRootRule.includes('background:'), 'Operation Hints Root 不得持有 Surface 材质');
