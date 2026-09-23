@@ -1,8 +1,10 @@
 import {
+  Bookmark,
   Crown,
   Feather,
   Grid3X3,
   Leaf,
+  MoreHorizontal,
   Palette,
   Shapes,
   Shield,
@@ -43,6 +45,7 @@ interface Props {
 }
 
 const PAGE_SIZE = 8;
+const STYLE_PAGE_SIZE = 5;
 
 const STYLE_LABELS: Record<BuildingSchemeStyle, string> = {
   elegant: '素雅',
@@ -113,11 +116,19 @@ function Pager({
 function SchemeCard({
   scheme,
   selected,
+  favorite,
+  menuOpen,
   onApply,
+  onMenuToggle,
+  onToggleFavorite,
 }: {
   scheme: BuildingColorScheme;
   selected: boolean;
+  favorite: boolean;
+  menuOpen: boolean;
   onApply: (schemeId: string) => void;
+  onMenuToggle: (id: string) => void;
+  onToggleFavorite: (id: string) => void;
 }) {
   const hover = useHoverOverlay();
   const sourceTone = scheme.source === 'player' ? 'is-user' : scheme.source === 'workshop' ? 'is-workshop' : 'is-system';
@@ -136,7 +147,10 @@ function SchemeCard({
     description: '用于快速替换当前建筑的整套配色关系；应用后仍可继续调整做旧程度等建筑外观参数。',
   };
   return (
-    <article className={'workspace-item-card-shell building-scheme-workspace__card ' + (selected ? 'is-selected' : '')}>
+    <article
+      className={'workspace-item-card-shell building-scheme-workspace__card ' + (selected ? 'is-selected ' : '') + (menuOpen ? 'is-menu-open' : '')}
+      onPointerLeave={() => menuOpen && onMenuToggle('')}
+    >
       <button
         type="button"
         className={'workspace-item-card building-scheme-workspace__card-apply ' + (selected ? 'is-selected' : '')}
@@ -148,7 +162,10 @@ function SchemeCard({
         <i className="workspace-item-card__state-line" aria-hidden="true" />
         <div className="workspace-item-card__copy building-scheme-workspace__card-copy">
           <div className="building-scheme-workspace__card-head">
-            <b className="workspace-item-card__title">{scheme.name}</b>
+            <b className="workspace-item-card__title workspace-item-card__title-row">
+              <span className="workspace-item-card__title-text">{scheme.name}</span>
+              {favorite && <span className="workspace-item-card__favorite-star" aria-label="已收藏">★</span>}
+            </b>
           </div>
           <span className="workspace-item-card__meta building-scheme-workspace__card-meta">
             <i className="building-scheme-workspace__palette-line" aria-hidden="true">
@@ -159,6 +176,25 @@ function SchemeCard({
           </span>
         </div>
       </button>
+      <button
+        type="button"
+        className="workspace-item-menu-trigger is-compact building-scheme-workspace__menu-trigger"
+        aria-label={'配色方案操作 ' + scheme.name}
+        aria-expanded={menuOpen}
+        onClick={() => {
+          hover.clear();
+          onMenuToggle(menuOpen ? '' : scheme.id);
+        }}
+      >
+        <MoreHorizontal aria-hidden="true" />
+      </button>
+      {menuOpen && (
+        <div className="workspace-item-menu is-compact building-scheme-workspace__card-menu" role="menu" aria-label={scheme.name + ' 配色方案操作'}>
+          <button type="button" role="menuitem" className="is-favorite" onClick={() => onToggleFavorite(scheme.id)}>
+            <Bookmark aria-hidden="true" /><span>{favorite ? '取消收藏' : '收藏'}</span>
+          </button>
+        </div>
+      )}
     </article>
   );
 }
@@ -172,17 +208,28 @@ export function BuildingSchemeWorkspace({
 }: Props) {
   const hover = useHoverOverlay();
   const [style, setStyle] = useState<BuildingSchemeStyleFilter>('all');
+  const [stylePage, setStylePage] = useState(0);
   const [source, setSource] = useState<BuildingSchemeSourceFilter>('all');
+  const [favoriteOnly, setFavoriteOnly] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set([
+    'jiangnan-elegant',
+    'workshop-rain',
+    'player-amber',
+  ]));
+  const [menuSchemeId, setMenuSchemeId] = useState('');
   const [page, setPage] = useState(0);
 
   const filtered = useMemo(
     () => schemes.filter((scheme) => (
       (style === 'all' || scheme.style === style)
       && (source === 'all' || scheme.source === source)
+      && (!favoriteOnly || favoriteIds.has(scheme.id))
     )),
-    [schemes, source, style],
+    [favoriteIds, favoriteOnly, schemes, source, style],
   );
 
+  const stylePageCount = Math.max(1, Math.ceil(STYLE_FILTERS.length / STYLE_PAGE_SIZE));
+  const visibleStyleFilters = STYLE_FILTERS.slice(stylePage * STYLE_PAGE_SIZE, (stylePage + 1) * STYLE_PAGE_SIZE);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
   const visible = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
@@ -190,8 +237,29 @@ export function BuildingSchemeWorkspace({
 
   function selectStyle(next: BuildingSchemeStyleFilter) {
     hover.clear();
+    setFavoriteOnly(false);
     setStyle(next);
     setPage(0);
+    setMenuSchemeId('');
+  }
+
+  function selectFavorites() {
+    hover.clear();
+    setFavoriteOnly(true);
+    setStyle('all');
+    setPage(0);
+    setMenuSchemeId('');
+  }
+
+  function toggleFavorite(schemeId: string) {
+    setFavoriteIds((current) => {
+      const next = new Set(current);
+      if (next.has(schemeId)) next.delete(schemeId);
+      else next.add(schemeId);
+      return next;
+    });
+    setMenuSchemeId('');
+    hover.clear();
   }
 
   function selectSource(next: BuildingSchemeSourceFilter) {
@@ -206,7 +274,9 @@ export function BuildingSchemeWorkspace({
       aria-label="建筑配色方案工作区"
       aria-busy={motionPhase !== 'steady'}
       data-building-scheme-style={style}
+      data-building-scheme-style-page={stylePage + 1}
       data-building-scheme-source={source}
+      data-building-scheme-favorite={favoriteOnly ? 'true' : 'false'}
     >
       <header className="workspace-header building-scheme-workspace__header">
         <div className="workspace-title">
@@ -220,10 +290,37 @@ export function BuildingSchemeWorkspace({
 
       <div className="workspace-body building-scheme-workspace__body">
         <aside className="workspace-primary-rail building-scheme-workspace__rail" aria-label="配色风格筛选">
-          <div className="workspace-primary-rail__content">
-            <span className="workspace-rail-pager-marker" aria-hidden="true" />
-            <div className="workspace-primary-rail__page building-scheme-workspace__rail-list">
-              {STYLE_FILTERS.map(({ id, label, icon: Icon }) => (
+          <div className="workspace-primary-rail__content has-favorite-shortcut">
+            <button
+              type="button"
+              className={'workspace-primary-rail__favorite ' + (favoriteOnly ? 'is-active' : '')}
+              aria-pressed={favoriteOnly}
+              onClick={selectFavorites}
+            >
+              <Bookmark aria-hidden="true" />
+              <span>收藏</span>
+            </button>
+            <i className="workspace-primary-rail__favorite-divider" aria-hidden="true" />
+            {stylePageCount > 1 ? (
+              <div className="workspace-rail-pager" aria-label="配色风格组">
+                <i className="workspace-rail-pager__track" aria-hidden="true" />
+                {Array.from({ length: stylePageCount }, (_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={stylePage === index ? 'is-active' : ''}
+                    aria-label={'切换到第 ' + (index + 1) + ' 组配色风格'}
+                    onClick={() => setStylePage(index)}
+                  >
+                    <span />
+                  </button>
+                ))}
+              </div>
+            ) : (
+              !favoriteOnly && <span className="workspace-rail-pager-marker" aria-hidden="true" />
+            )}
+            <div className="workspace-primary-rail__page building-scheme-workspace__rail-list" key={stylePage}>
+              {visibleStyleFilters.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
                   type="button"
@@ -266,7 +363,11 @@ export function BuildingSchemeWorkspace({
                         key={scheme.id}
                         scheme={scheme}
                         selected={scheme.id === selectedSchemeId}
+                        favorite={favoriteIds.has(scheme.id)}
+                        menuOpen={menuSchemeId === scheme.id}
                         onApply={onApply}
+                        onMenuToggle={setMenuSchemeId}
+                        onToggleFavorite={toggleFavorite}
                       />
                     ))}
                   </div>
@@ -275,8 +376,8 @@ export function BuildingSchemeWorkspace({
             ) : (
               <div className="workspace-empty building-scheme-workspace__empty">
                 <Palette aria-hidden="true" />
-                <b>没有符合条件的配色方案</b>
-                <span>切换左侧风格或顶部来源继续浏览。</span>
+                <b>{favoriteOnly ? '还没有符合条件的收藏配色' : '没有符合条件的配色方案'}</b>
+                <span>{favoriteOnly ? '通过 Card 右侧菜单收藏配色，或切换顶部来源筛选。' : '切换左侧风格或顶部来源继续浏览。'}</span>
               </div>
             )}
           </div>
