@@ -12,6 +12,8 @@ import './gameplay/bottom-command-system.css';
 import './gameplay/main-dock.css';
 import './workspace/design-workspace.css';
 import './workspace/blueprint-workspace.css';
+import './workspace/blueprint-editor.css';
+import './tools/blueprint-photography/blueprint-photography.css';
 import './archive/archive-panel.css';
 import './archive/save-game-space.css';
 import './gameplay/gameplay-context-panel.css';
