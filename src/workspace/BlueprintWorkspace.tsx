@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type WheelEvent } from 'react';
-import { Building2, Grid2X2, House, Landmark, MoreHorizontal, Pencil, Plus, ScrollText, Trash2, X } from '../ui/icons/runtime-icons.generated';
+import { Bookmark, Building2, Grid2X2, House, Landmark, MoreHorizontal, Pencil, Plus, ScrollText, Trash2, X } from '../ui/icons/runtime-icons.generated';
 import type { BlueprintDockCategory } from '../app/ui-state';
 import type { MotionPhase } from '../ui/motion';
 import { useHoverOverlay, type HoverCardDefinition } from '../ui/hover/HoverOverlay';
@@ -55,9 +55,7 @@ function pagerWindow(pageCount: number, currentPage: number) {
 }
 
 function sourceBadge(item: BlueprintWorkspaceItem) {
-  if (item.source === 'workshop') return '创意工坊';
-  if (item.source === 'mine') return '我的蓝图';
-  return null;
+  return BLUEPRINT_SOURCE_LABELS[item.source];
 }
 
 function hoverCardFor(item: BlueprintWorkspaceItem): HoverCardDefinition {
@@ -89,6 +87,12 @@ export function BlueprintWorkspace({
   const hover = useHoverOverlay();
   const [size, setSize] = useState<BlueprintSize>('all');
   const [source, setSource] = useState<BlueprintSource>('all');
+  const [favoriteOnly, setFavoriteOnly] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set([
+    'bp-residential-jiangnan-courtyard',
+    'bp-residential-riverside-home',
+    'bp-commercial-street-row',
+  ]));
   const [page, setPage] = useState(0);
   const [menuItemId, setMenuItemId] = useState('');
   const wheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
@@ -97,8 +101,9 @@ export function BlueprintWorkspace({
     const categoryMatch = category === 'all' || item.category === category;
     const sizeMatch = size === 'all' || item.size === size;
     const sourceMatch = source === 'all' || item.source === source;
-    return categoryMatch && sizeMatch && sourceMatch;
-  }), [category, items, size, source]);
+    const favoriteMatch = !favoriteOnly || favoriteIds.has(item.id);
+    return categoryMatch && sizeMatch && sourceMatch && favoriteMatch;
+  }), [category, favoriteIds, favoriteOnly, items, size, source]);
 
   const pageCount = Math.max(1, Math.ceil(visibleItems.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
@@ -111,8 +116,26 @@ export function BlueprintWorkspace({
   }
 
   function selectSize(next: BlueprintSize) {
+    setFavoriteOnly(false);
     setSize(next);
     resetPage();
+  }
+
+  function selectFavorites() {
+    setFavoriteOnly(true);
+    setSize('all');
+    resetPage();
+  }
+
+  function toggleFavorite(itemId: string) {
+    setFavoriteIds((current) => {
+      const next = new Set(current);
+      if (next.has(itemId)) next.delete(itemId);
+      else next.add(itemId);
+      return next;
+    });
+    setMenuItemId('');
+    hover.clear();
   }
 
   function selectSource(next: BlueprintSource) {
@@ -145,6 +168,7 @@ export function BlueprintWorkspace({
       data-blueprint-category={category}
       data-blueprint-size={size}
       data-blueprint-source={source}
+      data-blueprint-favorite={favoriteOnly ? 'true' : 'false'}
       aria-label={BLUEPRINT_CATEGORY_LABELS[category]}
       aria-busy={motionPhase !== 'steady'}
     >
@@ -168,8 +192,18 @@ export function BlueprintWorkspace({
 
       <div className="workspace-body">
         <nav className="workspace-primary-rail blueprint-workspace__rail" aria-label="蓝图规模">
-          <div className="workspace-primary-rail__content">
-            <span className="workspace-rail-pager-marker" aria-hidden="true" />
+          <div className="workspace-primary-rail__content has-favorite-shortcut">
+            <button
+              type="button"
+              className={'workspace-primary-rail__favorite ' + (favoriteOnly ? 'is-active' : '')}
+              aria-pressed={favoriteOnly}
+              onClick={selectFavorites}
+            >
+              <Bookmark size={16} aria-hidden="true" />
+              <span>收藏</span>
+            </button>
+            <i className="workspace-primary-rail__favorite-divider" aria-hidden="true" />
+            {!favoriteOnly && <span className="workspace-rail-pager-marker" aria-hidden="true" />}
             <div className="workspace-primary-rail__page">
               {SIZE_ITEMS.map(({ id, label, icon: Icon }) => (
                 <button
@@ -227,6 +261,7 @@ export function BlueprintWorkspace({
                     const badge = sourceBadge(item);
                     const hoverDefinition = hoverCardFor(item);
                     const editable = item.source === 'mine';
+                    const favorite = favoriteIds.has(item.id);
                     const menuOpen = menuItemId === item.id;
                     return (
                       <article
@@ -257,38 +292,44 @@ export function BlueprintWorkspace({
                             }}
                           />
                           <span className="blueprint-workspace__shade" aria-hidden="true" />
-                          {badge && <span className={'workspace-item-card__source is-media ' + (item.source === 'workshop' ? 'is-workshop' : 'is-user')}>{badge}</span>}
+                          <span className={'workspace-item-card__source is-media ' + (item.source === 'workshop' ? 'is-workshop' : item.source === 'mine' ? 'is-user' : 'is-system')}>{badge}</span>
                           <span className="blueprint-workspace__caption">
-                            <b>{item.name}</b>
+                            <b className="workspace-item-card__title-row">
+                              <span className="workspace-item-card__title-text">{item.name}</span>
+                              {favorite && <span className="workspace-item-card__favorite-star" aria-label="已收藏">★</span>}
+                            </b>
                             <span>{item.footprint}</span>
                           </span>
                         </button>
 
-                        {editable && (
-                          <>
-                            <button
-                              type="button"
-                              className="workspace-item-menu-trigger is-media blueprint-workspace__menu-trigger"
-                              aria-label={'管理我的蓝图 ' + item.name}
-                              aria-expanded={menuOpen}
-                              onClick={() => {
-                                hover.clear();
-                                setMenuItemId(menuOpen ? '' : item.id);
-                              }}
-                            >
-                              <MoreHorizontal size={16} aria-hidden="true" />
+                        <button
+                          type="button"
+                          className="workspace-item-menu-trigger is-media blueprint-workspace__menu-trigger"
+                          aria-label={'蓝图操作 ' + item.name}
+                          aria-expanded={menuOpen}
+                          onClick={() => {
+                            hover.clear();
+                            setMenuItemId(menuOpen ? '' : item.id);
+                          }}
+                        >
+                          <MoreHorizontal size={16} aria-hidden="true" />
+                        </button>
+                        {menuOpen && (
+                          <div className="workspace-item-menu is-media blueprint-workspace__card-menu" role="menu" aria-label={item.name + ' 蓝图操作'}>
+                            <button type="button" role="menuitem" className="is-favorite" onClick={() => toggleFavorite(item.id)}>
+                              <Bookmark size={14} aria-hidden="true" /><span>{favorite ? '取消收藏' : '收藏'}</span>
                             </button>
-                            {menuOpen && (
-                              <div className="workspace-item-menu is-media blueprint-workspace__card-menu" role="menu" aria-label={item.name + ' 蓝图操作'}>
+                            {editable && (
+                              <>
                                 <button type="button" role="menuitem" onClick={() => { setMenuItemId(''); onEdit(item); }}>
                                   <Pencil size={14} aria-hidden="true" /><span>编辑</span>
                                 </button>
                                 <button type="button" role="menuitem" className="is-danger" onClick={() => { setMenuItemId(''); onDelete(item); }}>
                                   <Trash2 size={14} aria-hidden="true" /><span>删除</span>
                                 </button>
-                              </div>
+                              </>
                             )}
-                          </>
+                          </div>
                         )}
                       </article>
                     );
@@ -298,8 +339,8 @@ export function BlueprintWorkspace({
             ) : (
               <div className="workspace-empty blueprint-workspace__empty">
                 <ScrollText aria-hidden="true" />
-                <b>没有符合条件的蓝图</b>
-                <span>切换规模或来源继续浏览。</span>
+                <b>{favoriteOnly ? '还没有符合条件的收藏蓝图' : '没有符合条件的蓝图'}</b>
+                <span>{favoriteOnly ? '通过 Card 右上角菜单收藏蓝图，或切换顶部来源筛选。' : '切换规模或来源继续浏览。'}</span>
               </div>
             )}
           </div>

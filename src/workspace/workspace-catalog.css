@@ -32,6 +32,28 @@
      和 Rail Selected State Line 留出稳定间距，避免分页与筛选选中混淆。 */
   padding-left:28px;
 }
+.gameplay-screen .workspace--catalog .workspace-primary-rail__content.has-favorite-shortcut{
+  display:flex;
+  flex-direction:column;
+}
+.gameplay-screen .workspace--catalog .workspace-primary-rail__favorite{
+  flex:0 0 27px;
+  height:27px;
+  min-height:27px;
+  padding:0 10px;
+  gap:8px;
+  border-radius:8px;
+}
+.gameplay-screen .workspace--catalog .workspace-primary-rail__favorite-divider{
+  flex:0 0 1px;
+  margin:5px 8px 6px 10px;
+  background:linear-gradient(90deg,rgba(239,233,221,.065),rgba(239,233,221,.012));
+}
+.gameplay-screen .workspace--catalog .workspace-primary-rail__content.has-favorite-shortcut .workspace-primary-rail__page{
+  height:auto;
+  min-height:0;
+  flex:1 1 auto;
+}
 
 .gameplay-screen .workspace--catalog .workspace-primary-rail__page{
   gap:2px;
