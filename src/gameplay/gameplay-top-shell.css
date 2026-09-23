@@ -1,3 +1,4 @@
+/* Top HUD shell layout. Persistent material/state overrides are finalized later by wanhu-surface-system.css. */
 /* Unified gameplay top shell.
    Row 1: world state (left), centered resources, simulation speed (right).
    Row 2: scene controls (left), five primary management domains (center), information views (right). */
