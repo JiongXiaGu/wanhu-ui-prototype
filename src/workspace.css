@@ -10,7 +10,7 @@
   border:1px solid rgba(239,233,221,.12);
   border-radius:2px;
   background:
-    radial-gradient(ellipse at 78% 18%,rgba(201,165,95,.034),transparent 29%),
+    radial-gradient(ellipse at 78% 18%,rgba(169,132,75,.034),transparent 29%),
     radial-gradient(ellipse at 14% 88%,rgba(104,126,112,.028),transparent 34%),
     linear-gradient(180deg,rgba(27,35,31,.968),rgba(22,29,26,.956));
   box-shadow:0 24px 58px rgba(5,8,7,.30),inset 0 1px 0 rgba(255,255,255,.014);
@@ -43,7 +43,7 @@
 }
 
 .workspace-title{display:flex;align-items:center;gap:10px}
-.workspace-title>.ui-icon{width:var(--wanhu-icon-md,18px);height:var(--wanhu-icon-md,18px);color:#b89b60;filter:drop-shadow(0 0 8px rgba(201,165,95,.08))}
+.workspace-title>.ui-icon{width:var(--wanhu-icon-md,18px);height:var(--wanhu-icon-md,18px);color:#b89b60;filter:drop-shadow(0 0 8px rgba(169,132,75,.08))}
 .workspace-title b{font-size:var(--wanhu-type-workspace-title,18px);font-weight:600;letter-spacing:.018em;color:#e9e3d8}
 .workspace-header .icon-button{width:30px;height:30px;color:#7e857d}
 .workspace-header .icon-button:hover{background:rgba(255,255,255,.035);color:#d0cdc4}
@@ -93,8 +93,8 @@
 
 .workspace-primary-rail button:hover{background:linear-gradient(90deg,rgba(255,255,255,.030),transparent 82%);color:#c5c3bb;transform:translateX(1px)}
 .workspace-primary-rail button:hover .ui-icon{opacity:1}
-.workspace-primary-rail button.is-active{color:#dbc078;background:linear-gradient(90deg,rgba(201,165,95,.090),rgba(201,165,95,.020) 68%,transparent)}
-.workspace-primary-rail button.is-active::before{content:'';position:absolute;left:0;top:7px;bottom:7px;width:2px;background:#c9a55f;box-shadow:4px 0 14px rgba(201,165,95,.10)}
+.workspace-primary-rail button.is-active{color:var(--wanhu-color-brass-text);background:var(--wanhu-control-active-bg)}
+.workspace-primary-rail button.is-active::before{content:'';position:absolute;left:0;top:7px;bottom:7px;width:2px;background:var(--wanhu-control-active-line);box-shadow:none}
 .workspace-primary-rail button.is-active .ui-icon{opacity:1;transform:translateX(1px)}
 
 .workspace-primary-rail__all{
@@ -224,8 +224,8 @@
   transition:color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-control,120ms) ease;
 }
 .workspace-context-filter__scroll>button:hover{color:#c6c4bc;transform:translateY(-1px)}
-.workspace-context-filter__scroll>button.is-active{color:#d8bb76}
-.workspace-context-filter__scroll>button.is-active::after{content:'';position:absolute;left:11px;right:11px;bottom:0;height:2px;background:#c9a55f;box-shadow:0 -3px 10px rgba(201,165,95,.10)}
+.workspace-context-filter__scroll>button.is-active{color:var(--wanhu-color-brass-text)}
+.workspace-context-filter__scroll>button.is-active::after{content:'';position:absolute;left:11px;right:11px;bottom:0;height:2px;background:var(--wanhu-control-active-line);box-shadow:none}
 
 .workspace-content-stage{
   position:relative;
@@ -285,8 +285,8 @@
   width:18px;
   height:4px;
   border-radius:2px;
-  background:#c9a55f;
-  box-shadow:0 0 10px rgba(201,165,95,.18);
+  background:var(--wanhu-color-paper-primary);
+  box-shadow:0 0 8px rgba(238,233,223,.12);
 }
 
 .workspace-empty{
@@ -319,7 +319,7 @@
   transition:background var(--wanhu-motion-surface,160ms) ease,transform var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)),box-shadow var(--wanhu-motion-surface,160ms) ease;
 }
 .building-card:hover{
-  background:linear-gradient(90deg,rgba(201,165,95,.052),rgba(255,255,255,.010) 72%,rgba(255,255,255,.003));
+  background:linear-gradient(90deg,var(--wanhu-control-hover),rgba(255,255,255,.010) 72%,rgba(255,255,255,.003));
   box-shadow:inset 0 1px 0 rgba(239,233,221,.046),0 8px 20px rgba(5,8,7,.09);
   transform:translateY(-1px);
 }
@@ -332,10 +332,11 @@
   z-index:4;
   width:2px;
   opacity:0;
-  background:linear-gradient(180deg,#c9a55f,rgba(201,165,95,.18));
+  background:var(--wanhu-control-focus);
   transition:opacity var(--wanhu-motion-control,120ms) ease;
 }
-.building-card:hover::before,.building-card:focus-visible::before{opacity:.78}
+.building-card:hover::before{opacity:0}
+.building-card:focus-visible::before{opacity:.78}
 
 .card-thumb{
   position:relative;
@@ -440,14 +441,18 @@
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
   transition-timing-function:ease,ease,ease;
 }
-.workspace-item-card:hover,
-.workspace-item-card:focus-visible{
-  background:rgba(255,255,255,.040);
+.workspace-item-card:hover{
+  background:var(--wanhu-control-hover);
   box-shadow:inset 0 1px 0 rgba(239,233,221,.030);
   transform:none;
 }
+.workspace-item-card:focus-visible{
+  background:var(--wanhu-control-hover);
+  box-shadow:inset 0 1px 0 rgba(239,233,221,.030),inset 0 0 0 1px var(--wanhu-control-focus);
+  transform:none;
+}
 .workspace-item-card:active{
-  background:rgba(201,170,104,.055);
+  background:var(--wanhu-control-hover-strong);
   transform:scale(.995);
 }
 .workspace-item-card__state-line{
@@ -458,14 +463,13 @@
   z-index:4;
   width:2px;
   border-radius:0 2px 2px 0;
-  background:#c9aa68;
+  background:var(--wanhu-control-active-line);
   opacity:0;
   pointer-events:none;
   transition-property:opacity;
   transition-duration:var(--wanhu-motion-control,120ms);
   transition-timing-function:ease;
 }
-.workspace-item-card:focus-visible .workspace-item-card__state-line{opacity:.82}
 .workspace-item-card__preview{
   position:relative;
   width:64px;
@@ -523,10 +527,10 @@
 }
 .workspace-item-card__favorite-star{
   flex:0 0 auto;
-  color:#d3b86f;
+  color:var(--wanhu-color-brass-text);
   font-size:10px;
   line-height:1;
-  text-shadow:0 1px 6px rgba(201,165,95,.18);
+  text-shadow:none;
 }
 .workspace-item-card__meta{
   max-width:100%;
@@ -549,7 +553,7 @@
 .workspace-item-card-shell.is-menu-open{z-index:12}
 
 .workspace-item-card.is-selected{
-  background:rgba(201,170,104,.038);
+  background:var(--wanhu-control-active-bg);
   box-shadow:inset 0 1px 0 rgba(239,233,221,.025);
 }
 .workspace-item-card.is-selected .workspace-item-card__state-line{opacity:.82}
@@ -684,8 +688,8 @@
   background:rgba(255,255,255,.035);
   color:#d3cfc6;
 }
-.workspace-item-menu>button.is-favorite{color:#c7b37d}
-.workspace-item-menu>button.is-favorite:hover{color:#e0c77f}
+.workspace-item-menu>button.is-favorite{color:var(--wanhu-color-brass-text)}
+.workspace-item-menu>button.is-favorite:hover{color:var(--wanhu-color-paper-primary)}
 .workspace-item-menu>button.is-danger{color:#bd867c}
 .workspace-item-menu>button.is-danger:hover{
   background:rgba(152,84,71,.075);
