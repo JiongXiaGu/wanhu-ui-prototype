@@ -87,6 +87,8 @@ try {
   await page.screenshot({ path: out + '/operation-hints-selection-scheme.png' }); report.screenshots.push('operation-hints-selection-scheme');
 
   const firstSchemeCard = page.locator('.building-scheme-workspace__card-apply').first();
+  ok('scheme source uses shared compact badge', await page.locator('.building-scheme-workspace .workspace-item-card__source.is-compact').count() > 0);
+  ok('scheme selected state uses shared card language', await page.locator('.building-scheme-workspace .workspace-item-card.is-selected .workspace-item-card__state-line').count() === 1);
   await firstSchemeCard.hover();
   await page.waitForTimeout(540);
   const hoverCard = page.locator('.ui-hover-card[data-ready="true"]');

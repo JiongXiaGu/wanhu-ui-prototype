@@ -1098,6 +1098,15 @@ if ((await schemeWorkspace.getByRole('button', { name: '应用材质方案 石�
   throw new Error('Saved scheme should stay visible after the Workspace navigates to its family.');
 }
 
+const savedMaterialCard = schemeWorkspace.locator('.material-preset-workspace__card').filter({ hasText: '城墙暖灰' });
+const savedMaterialSource = savedMaterialCard.locator('.workspace-item-card__source.is-compact.is-user');
+if ((await savedMaterialSource.count()) !== 1) {
+  throw new Error('My Scheme source must use the shared Compact user badge.');
+}
+const savedMaterialMenuTrigger = savedMaterialCard.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true });
+if (!(await savedMaterialMenuTrigger.evaluate(node => node.classList.contains('workspace-item-menu-trigger') && node.classList.contains('is-compact')))) {
+  throw new Error('My Scheme management action must use the shared Compact menu trigger.');
+}
 await schemeWorkspace.getByRole('button', { name: '应用材质方案 石材 · 城墙暖灰', exact: true }).hover();
 await page.waitForTimeout(540);
 const materialHoverCard = page.locator('.ui-hover-card[data-ready="true"]');
@@ -1111,6 +1120,9 @@ await page.screenshot({ path: outDir + '/hover-card-material-preset.png' });
 await schemeWorkspace.getByRole('button', { name: '管理我的方案 城墙暖灰', exact: true }).click();
 await page.waitForSelector('.material-preset-workspace__card-menu');
 let presetMenu = schemeWorkspace.locator('.material-preset-workspace__card-menu');
+if (!(await presetMenu.evaluate(node => node.classList.contains('workspace-item-menu') && node.classList.contains('is-compact')))) {
+  throw new Error('My Scheme popover must reuse the shared Compact Workspace Item Menu.');
+}
 for (const menuAction of ['编辑', '复制参数', '删除']) {
   if ((await presetMenu.getByRole('menuitem', { name: menuAction, exact: true }).count()) !== 1) {
     throw new Error('My Scheme menu missing action: ' + menuAction);

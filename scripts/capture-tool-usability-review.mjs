@@ -370,6 +370,8 @@ try {
   await settle();
   const materialCards = page.locator('.material-preset-workspace__card-apply');
   assert(await materialCards.count() > 0, '材质方案 Workspace 必须存在可悬浮条目');
+  const materialSourceBadges = page.locator('.material-preset-workspace .workspace-item-card__source.is-compact');
+  assert(await materialSourceBadges.count() > 0, '材质方案 Card 来源必须复用共享 Compact Source Badge');
   await materialCards.first().hover(); await page.waitForTimeout(540);
   await checkHoverCard('材质方案锚定', materialCards.first());
   await page.screenshot({ path: `${out}/hover-material-preset-top.png` }); report.screenshots.push('hover-material-preset-top');
@@ -571,6 +573,21 @@ try {
 
   const createdShell = createdBlueprintCard.locator('..');
   const createdMenuTrigger = createdShell.getByRole('button', { name: '管理我的蓝图 测试摄影蓝图', exact: true });
+  assert(await createdMenuTrigger.evaluate(node => node.classList.contains('workspace-item-menu-trigger') && node.classList.contains('is-media')), '我的蓝图管理入口必须复用共享 Media Menu Trigger');
+  const createdSourceBadge = createdShell.locator('.workspace-item-card__source.is-media.is-user');
+  assert.equal(await createdSourceBadge.count(), 1, '我的蓝图来源 Badge 必须位于共享 Media Source 槽位');
+  const [createdCardBox, createdSourceBox, createdTriggerBox] = await Promise.all([
+    createdBlueprintCard.boundingBox(),
+    createdSourceBadge.boundingBox(),
+    createdMenuTrigger.boundingBox(),
+  ]);
+  assert(
+    createdCardBox && createdSourceBox && createdTriggerBox
+      && createdSourceBox.x < createdTriggerBox.x
+      && createdSourceBox.x - createdCardBox.x < 16
+      && (createdCardBox.x + createdCardBox.width) - (createdTriggerBox.x + createdTriggerBox.width) < 16,
+    'Media Card 必须保持左上来源、右上管理入口的四角职责',
+  );
   await createdMenuTrigger.click();
   assert.equal(await createdShell.getByRole('menu').count(), 1, '我的蓝图 Card 必须提供管理 Popover');
   assert.deepEqual(
