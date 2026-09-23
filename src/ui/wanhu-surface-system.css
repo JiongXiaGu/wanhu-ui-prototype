@@ -428,7 +428,7 @@
 }
 .gameplay-screen .gameplay-system-menu-button:hover{
   background-color:rgba(33,39,41,.44);
-  border-color:rgba(189,153,89,.025);
+  border-color:var(--wanhu-control-border-soft);
   color:var(--wanhu-color-icon-hover);
 }
 
