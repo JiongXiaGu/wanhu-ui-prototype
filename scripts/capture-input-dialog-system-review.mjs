@@ -31,9 +31,12 @@ async function expectDialogTone(dialog,tone){
 async function expectDialogMaterial(dialog,label){
   const backdrop=page.locator('.ui-modal-backdrop');
   await backdrop.waitFor();
-  const backdropFilter=await backdrop.evaluate(node=>{
+  const backdropMaterial=await backdrop.evaluate(node=>{
     const style=getComputedStyle(node);
-    return style.backdropFilter||style.webkitBackdropFilter||'';
+    return {
+      backdropFilter:style.backdropFilter||style.webkitBackdropFilter||'',
+      backgroundColor:style.backgroundColor,
+    };
   });
   const material=await dialog.evaluate(node=>{
     const style=getComputedStyle(node);
@@ -44,7 +47,13 @@ async function expectDialogMaterial(dialog,label){
     };
   });
   const noBlur=value=>value===''||value==='none';
-  if(!noBlur(backdropFilter))throw new Error(`${label} backdrop must not blur background UI. filter=${backdropFilter}`);
+  if(!noBlur(backdropMaterial.backdropFilter))throw new Error(`${label} backdrop must not blur background UI. filter=${backdropMaterial.backdropFilter}`);
+  const backdropMatch=backdropMaterial.backgroundColor.match(/rgba?\(([^)]+)\)/);
+  if(!backdropMatch)throw new Error(`${label} backdrop must expose a stable near-black tint. background=${backdropMaterial.backgroundColor}`);
+  const backdropParts=backdropMatch[1].split(',').map(value=>Number.parseFloat(value.trim()));
+  const [backdropR,backdropG,backdropB,backdropA=1]=backdropParts;
+  if(backdropA<.86||backdropA>.92)throw new Error(`${label} backdrop must use the high-opacity modal range. alpha=${backdropA}`);
+  if(Math.max(backdropR,backdropG,backdropB)>12||Math.max(backdropR,backdropG,backdropB)===0)throw new Error(`${label} backdrop must remain near-black rather than pure black or grey. background=${backdropMaterial.backgroundColor}`);
   if(!noBlur(material.backdropFilter))throw new Error(`${label} surface must not use backdrop blur. filter=${material.backdropFilter}`);
   if(material.radius<10)throw new Error(`${label} must use the current rounded dialog language. radius=${material.radius}`);
   const match=material.backgroundColor.match(/rgba?\(([^)]+)\)/);

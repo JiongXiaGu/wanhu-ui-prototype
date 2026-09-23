@@ -59,6 +59,8 @@ jobs:
           exit 1
       - name: Capture and assert UI review
         run: node scripts/capture-ui-review.mjs
+      - name: Capture shared dialog system
+        run: node scripts/capture-input-dialog-system-review.mjs
       - name: Capture typography decision surfaces
         run: node scripts/capture-typography-decision-review.mjs
       - name: Capture tool usability and layout
@@ -73,6 +75,15 @@ jobs:
           path: review-screenshots/
           if-no-files-found: error
           retention-days: 7
+      - name: Upload dialog review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dialog-review
+          path: review-screenshots/dialog-*.png
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 9
       - name: Upload hover surface review
         if: always()
         uses: actions/upload-artifact@v4

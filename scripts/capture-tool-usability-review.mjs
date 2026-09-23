@@ -539,6 +539,8 @@ try {
   await page.getByRole('button', { name: '关闭构图线', exact: true }).click();
   await page.getByRole('button', { name: '完成摄影', exact: true }).click();
   await page.waitForSelector('.blueprint-editor[data-blueprint-editor="create"]');
+  const createEditorSurface = page.locator('.blueprint-editor[data-blueprint-editor="create"]');
+  assert(await createEditorSurface.evaluate(node => node.classList.contains('ui-modal-surface')), '蓝图编辑窗口必须复用共享 ui-modal-surface 材质');
   const editorPreview = page.locator('.blueprint-editor__preview');
   const editorPreviewBox = await editorPreview.boundingBox();
   assert(editorPreviewBox && Math.abs(editorPreviewBox.width / editorPreviewBox.height - 4 / 3) < .02, '蓝图编辑窗口必须保留摄影所得 4:3 Preview');

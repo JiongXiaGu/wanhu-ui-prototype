@@ -54,7 +54,7 @@ Noto Sans SC 继续用于主要界面，品牌标题保留 Noto Serif SC。Unity
 
 Unity 6.6 下优先验证共享 Surface 配方驱动的原生滤镜；不是每个 Panel 再分配一套自定义 Blur RenderTexture。原生效果若不满足目标成本或特定世界采样需求，才选择共享 Scene Blur / URP Pass 作为回退。低画质至少保持 Tint + 边缘的无 Blur 路径。
 
-Dialog / Pause Panel 目前不增加 UI-over-UI Blur，不恢复颗粒磨砂。这是保留已确认的美术和成本选择，而非声称引擎不支持。原生 drop-shadow 不等价于 CSS box-shadow 的 inset / spread；需要内高光、复杂材质或可控离线阴影时，仍可使用边缘节点、9-slice、纹理或自定义绘制。
+真正阻塞式 Dialog / Modal 统一使用 **Near-black High-opacity Backdrop + Elevated Smoked Graphite Surface**：Backdrop 采用近黑高不透明遮罩（Web 基线约 0.89 alpha），不使用纯黑，也不增加 UI-over-UI Blur；Dialog 与 Blueprint Editor 等 Modal Panel 必须复用同一共享 Modal Surface 材质，Feature 只持有尺寸、内容布局和业务语义，不私有重定义背景 Tint、边缘、Shadow 或 Blur。Pause 是独立 Screen Space，不机械套用小型 Dialog Geometry。原生 drop-shadow 不等价于 CSS box-shadow 的 inset / spread；需要内高光、复杂材质或可控离线阴影时，仍可使用边缘节点、9-slice、纹理或自定义绘制。
 
 昼夜共用 Palette，只允许调整 Surface 自身密度和轻微明度。不得让植被背景把正文区域染成墨绿，也不得夜晚切换为独立蓝色主题。
 
