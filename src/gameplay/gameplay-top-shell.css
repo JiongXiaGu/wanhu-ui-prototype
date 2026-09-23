@@ -128,8 +128,8 @@
   transition:background var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease;
 }
 .gameplay-top-speed-button .ui-icon{width:15px;height:15px;}
-.gameplay-top-speed-button:hover{background:rgba(255,255,255,.038);color:#cfccc3}
-.gameplay-top-speed-button.is-active{background:var(--hud-accent-bg,rgba(201,165,95,.085));color:var(--hud-accent-text,#dec17a)}
+.gameplay-top-speed-button:hover{background:var(--wanhu-control-hover);color:var(--wanhu-color-icon-hover)}
+.gameplay-top-speed-button.is-active{background:var(--hud-accent-bg);color:var(--hud-accent-text)}
 .gameplay-top-speed-button:active{transform:translateY(1px)}
 
 /* Top HUD tooltips are rendered by the global Hover Overlay. */
@@ -251,9 +251,9 @@
   text-align:left;
 }
 .gameplay-top-map-grid button .ui-icon{width:14px;height:14px;}
-.gameplay-top-map-grid button:hover{background:rgba(255,255,255,.034);color:#c7c5bc}
-.gameplay-top-map-grid button.is-active{border-color:rgba(201,165,95,.24);background:rgba(201,165,95,.07);color:#d8bb77}
-.gameplay-top-map-grid button.is-active::before{content:'';position:absolute;left:-1px;top:9px;bottom:9px;width:2px;background:#c9a55f}
+.gameplay-top-map-grid button:hover{background:var(--wanhu-control-hover);color:var(--wanhu-color-text-secondary)}
+.gameplay-top-map-grid button.is-active{border-color:rgba(169,132,75,.24);background:var(--wanhu-control-active-bg);color:var(--wanhu-color-brass-text)}
+.gameplay-top-map-grid button.is-active::before{content:'';position:absolute;left:-1px;top:9px;bottom:9px;width:2px;background:var(--wanhu-control-active-line)}
 .gameplay-top-map-legend{height:24px;margin-top:8px;display:grid;grid-template-columns:18px 1fr 18px;align-items:center;gap:6px;color:#757d75;font-size:var(--wanhu-type-micro,9.5px)}
 .gameplay-top-map-legend i{height:3px;background:linear-gradient(90deg,rgba(90,146,116,.8),rgba(198,176,91,.9),rgba(177,91,74,.92))}
 .gameplay-top-map-legend span:last-child{text-align:right}
