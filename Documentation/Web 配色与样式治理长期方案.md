@@ -166,6 +166,20 @@ Phase 1 不处理：
 
 Phase 1 下一批继续按页面家族处理 HUD / Management / Loading 等债务，不把 Workspace 再与其它系统混改。
 
+### Phase 1 进度：Batch 3 已完成
+
+第三批只处理 Gameplay Persistent HUD / Main Dock 家族的旧共享色债务，不改 Top Tray / Main Dock / Compass 几何，也不修改 HUD Surface Recipe：
+
+- `src/gameplay/gameplay-top-shell.css`：速度档与 Information View 的 Hover / Selected 改为当前 Control / Brass 语义，退役旧 201/165/95 fallback 与状态线；
+- `src/gameplay/gameplay-corner-hud.css`：Compass 北向、针尖、建造态南北轴仍属于方向内容强调，但旧 Brass Hue 已迁移到当前 Aged Brass；System Menu Hover 不再使用 Brass 边框；
+- `src/ui/wanhu-surface-system.css`：最终生效的 System Menu Hover Edge 同步改为中性 Control Border，避免后加载 Surface Owner 把旧的“Hover 发金”语义重新覆盖回来；
+- Main Dock、Bottom Command、Operation Hints、Utility Toolbar 经审查本身已经没有 Phase 1 旧共享色债务，本批不为了“统一”重复改写；
+- Ratchet 已从 Baseline 移除 `gameplay-top-shell.css` 与 `gameplay-corner-hud.css`。
+
+验证：使用与 `main` 应用源码一致的临时 PR，仅额外开启 UI Review 的 PR 触发；Build #1480 与 UI Review #459 均通过，`audit:visual` 在 Build 中通过。已实际查看 Top Control Tray、Compass、System Menu 与 Main Dock 设计 / 蓝图两态截图：持续 Selected 仍有弱熟铜识别，Compass 方向强调没有被去色，System Menu 保持中性，Main Dock 几何与状态层级未回退。临时 PR #7 已关闭，复用的 `tmp-*` 分支已恢复原 SHA。
+
+Phase 1 后续继续把 Management 与 Loading 分开处理，不把专题内容色或外围空间颜色误并为共享 Brass。
+
 ## Phase 2：Semantic Token 收敛
 
 目标：Theme 管理“共享语义”，而不是收集所有 RGBA。
