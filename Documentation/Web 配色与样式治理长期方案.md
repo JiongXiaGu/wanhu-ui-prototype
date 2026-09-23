@@ -138,6 +138,17 @@ Phase 1 不处理：
 
 > Runtime 新代码不再需要知道旧 `#C9A55F` 是什么；共享熟铜只从当前 Theme 读取。
 
+### Phase 1 进度：Batch 1
+
+第一批只处理主菜单基础层与共享全屏 Control：
+
+- `src/styles.css`：退役共享 `--paper / --gold / --gold-hi / --gold-fill`，消费者改用当前 Paper / Brass / Focus 语义；
+- `src/menu-refine.css`：主菜单当前态改用正式 Brass Hue，保持原透明度与布局；
+- `src/ui/ui-visual-system.css`：Segmented 与 Global Space Primary 不再使用旧 `201/165/95` Hue，状态线直接消费正式 Brass / Brass High；
+- Ratchet 已从 Baseline 移除以上文件，并禁止旧 `--paper / --gold*` 变量重新进入 Runtime。
+
+这一批不处理 Workspace、HUD、Management、Loading、Hover 等后续债务。
+
 ## Phase 2：Semantic Token 收敛
 
 目标：Theme 管理“共享语义”，而不是收集所有 RGBA。

@@ -14,8 +14,6 @@ const SRC_ROOT='src';
  * Remove a file from this set as soon as its retired shared colors are cleaned.
  */
 const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
-  'src/styles.css',
-  'src/menu-refine.css',
   'src/fullscreen-actions.css',
   'src/gameplay/gameplay-top-shell.css',
   'src/gameplay/city-management.css',
@@ -26,7 +24,6 @@ const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
   'src/ui/color/color-parameter-field.css',
   'src/ui/dialog/dialog.css',
   'src/ui/hover/hover-overlay.css',
-  'src/ui/ui-visual-system.css',
   'src/ui/wanhu-character.css',
   'src/workspace.css',
   'src/workspace/workspace-world-first-glass.css',
