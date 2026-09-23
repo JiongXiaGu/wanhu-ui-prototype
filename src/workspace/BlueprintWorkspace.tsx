@@ -231,7 +231,7 @@ export function BlueprintWorkspace({
                     return (
                       <article
                         key={item.id}
-                        className={'blueprint-workspace__card-shell ' + (editable ? 'is-editable ' : '') + (menuOpen ? 'is-menu-open' : '')}
+                        className={'workspace-item-card-shell blueprint-workspace__card-shell ' + (editable ? 'is-editable ' : '') + (menuOpen ? 'is-menu-open' : '')}
                         onPointerLeave={() => menuOpen && setMenuItemId('')}
                       >
                         <button
@@ -257,7 +257,7 @@ export function BlueprintWorkspace({
                             }}
                           />
                           <span className="blueprint-workspace__shade" aria-hidden="true" />
-                          {badge && <span className={'blueprint-workspace__source is-' + item.source}>{badge}</span>}
+                          {badge && <span className={'workspace-item-card__source is-media ' + (item.source === 'workshop' ? 'is-workshop' : 'is-user')}>{badge}</span>}
                           <span className="blueprint-workspace__caption">
                             <b>{item.name}</b>
                             <span>{item.footprint}</span>
@@ -268,7 +268,7 @@ export function BlueprintWorkspace({
                           <>
                             <button
                               type="button"
-                              className="blueprint-workspace__menu-trigger"
+                              className="workspace-item-menu-trigger is-media blueprint-workspace__menu-trigger"
                               aria-label={'管理我的蓝图 ' + item.name}
                               aria-expanded={menuOpen}
                               onClick={() => {
@@ -279,7 +279,7 @@ export function BlueprintWorkspace({
                               <MoreHorizontal size={16} aria-hidden="true" />
                             </button>
                             {menuOpen && (
-                              <div className="blueprint-workspace__card-menu" role="menu" aria-label={item.name + ' 蓝图操作'}>
+                              <div className="workspace-item-menu is-media blueprint-workspace__card-menu" role="menu" aria-label={item.name + ' 蓝图操作'}>
                                 <button type="button" role="menuitem" onClick={() => { setMenuItemId(''); onEdit(item); }}>
                                   <Pencil size={14} aria-hidden="true" /><span>编辑</span>
                                 </button>

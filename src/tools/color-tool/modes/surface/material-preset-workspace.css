@@ -74,82 +74,7 @@
 }
 
 .material-preset-workspace__stage{overflow:visible}
-.material-preset-workspace__card.is-menu-open{z-index:12}
 .material-preset-workspace__card.is-dragging{opacity:.42}
-
-.material-preset-workspace__menu-trigger{
-  position:absolute;
-  z-index:5;
-  right:5px;
-  bottom:5px;
-  width:25px;
-  height:25px;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:0;
-  border-radius:6px;
-  background:transparent;
-  color:#7f8580;
-  opacity:0;
-  pointer-events:none;
-  cursor:pointer;
-  transition-property:background,color,opacity;
-  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
-}
-.material-preset-workspace__card.is-editable:hover .material-preset-workspace__menu-trigger,
-.material-preset-workspace__card.is-editable:focus-within .material-preset-workspace__menu-trigger,
-.material-preset-workspace__card.is-menu-open .material-preset-workspace__menu-trigger{
-  opacity:1;
-  pointer-events:auto;
-}
-.material-preset-workspace__menu-trigger:hover{
-  background:rgba(255,255,255,.045);
-  color:#d1ccc2;
-}
-.material-preset-workspace__menu-trigger .ui-icon{width:14px;height:14px;}
-
-.material-preset-workspace__card-menu{
-  position:absolute;
-  z-index:20;
-  top:4px;
-  right:4px;
-  width:146px;
-  padding:4px;
-  overflow:hidden;
-  border:1px solid rgba(238,233,223,.085);
-  border-radius:9px;
-  background:rgba(33,38,35,.985);
-  box-shadow:0 14px 32px rgba(5,8,7,.38),inset 0 1px 0 rgba(255,255,255,.018);
-}
-.material-preset-workspace__row:last-child .material-preset-workspace__card-menu{
-  top:auto;
-  bottom:4px;
-}
-.material-preset-workspace__card-menu>button{
-  width:100%;
-  height:27px;
-  padding:0 8px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  border:0;
-  border-radius:6px;
-  background:transparent;
-  color:#a3a7a1;
-  font:inherit;
-  font-size:var(--wanhu-type-caption,10px);
-  text-align:left;
-  cursor:pointer;
-}
-.material-preset-workspace__card-menu>button:hover{
-  background:rgba(255,255,255,.035);
-  color:#d3cfc6;
-}
-.material-preset-workspace__card-menu>button.is-danger{color:#bd867c}
-.material-preset-workspace__card-menu>button.is-danger:hover{background:rgba(152,84,71,.075);color:#dda096}
-.material-preset-workspace__card-menu>button .ui-icon{width:var(--wanhu-icon-xs,14px);height:var(--wanhu-icon-xs,14px);}
 
 .material-preset-workspace.is-dragging-preset .material-preset-workspace__rail-list>button{
   transition-property:background,color,opacity,box-shadow;
@@ -178,21 +103,15 @@
 }
 
 .material-preset-workspace__card{
-  position:relative;
   height:64px;
-  min-width:0;
 }
 .material-preset-workspace__card-apply{
   width:100%;
   height:64px;
   padding-left:14px;
 }
-.material-preset-workspace__card.is-selected .workspace-item-card{
-  background:rgba(201,170,104,.038);
-  box-shadow:inset 0 1px 0 rgba(239,233,221,.025);
-}
-.material-preset-workspace__card.is-selected .workspace-item-card__state-line{
-  opacity:.82;
+.material-preset-workspace__card.is-editable .material-preset-workspace__card-apply{
+  padding-right:40px;
 }
 .material-preset-workspace__card.is-revealed .workspace-item-card{
   background:rgba(169,132,75,.080);
@@ -214,36 +133,12 @@
   flex:1 1 auto;
   -webkit-line-clamp:1;
 }
-.material-preset-workspace__source{
-  flex:0 0 auto;
-  margin-left:auto;
-  padding:2px 5px;
-  border-radius:5px;
-  background:rgba(255,255,255,.025);
-  color:#858b85;
-  font-size:var(--wanhu-type-micro,9.5px);
-  line-height:1.1;
-  font-weight:560;
-  white-space:nowrap;
-}
-.material-preset-workspace__source.is-workshop{
-  background:rgba(116,137,145,.050);
-  color:#96a7aa;
-}
-.material-preset-workspace__source.is-mine{
-  background:rgba(169,132,75,.055);
-  color:#b8a47d;
-}
 .material-preset-workspace__card-meta{
   width:100%;
   min-width:0;
   display:flex;
   align-items:center;
   gap:7px;
-}
-.material-preset-workspace__card.is-editable .material-preset-workspace__card-meta{
-  box-sizing:border-box;
-  padding-right:27px;
 }
 .material-preset-workspace__color-line{
   width:28px;
@@ -256,6 +151,7 @@
 }
 .material-preset-workspace__card-detail{
   min-width:0;
+  flex:1 1 auto;
   overflow:hidden;
   color:#a9aaa4;
   white-space:nowrap;

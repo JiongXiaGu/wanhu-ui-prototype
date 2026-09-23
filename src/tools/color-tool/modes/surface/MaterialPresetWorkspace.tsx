@@ -154,6 +154,7 @@ function SchemeCard({
   const hover = useHoverOverlay();
   const finishLabel = materialFinishLabel(preset.smoothness);
   const sourceLabel = SOURCE_LABELS[preset.source];
+  const sourceTone = preset.source === 'mine' ? 'is-user' : preset.source === 'workshop' ? 'is-workshop' : 'is-system';
   const familyLabel = MATERIAL_FAMILY_LABELS[preset.family];
   const editable = preset.source === 'mine';
   const hoverDefinition: HoverCardDefinition = {
@@ -178,6 +179,7 @@ function SchemeCard({
   return (
     <article
       className={[
+        'workspace-item-card-shell',
         'material-preset-workspace__card',
         preset.selected ? 'is-selected' : '',
         editable ? 'is-editable' : '',
@@ -189,7 +191,7 @@ function SchemeCard({
     >
       <button
         type="button"
-        className="workspace-item-card material-preset-workspace__card-apply"
+        className={'workspace-item-card material-preset-workspace__card-apply ' + (preset.selected ? 'is-selected' : '')}
         aria-label={'应用材质方案 ' + familyLabel + ' · ' + preset.name}
         aria-pressed={preset.selected}
         {...hover.bind(hoverDefinition)}
@@ -205,7 +207,6 @@ function SchemeCard({
         <div className="workspace-item-card__copy material-preset-workspace__card-copy">
           <div className="material-preset-workspace__card-head">
             <b className="workspace-item-card__title">{preset.name}</b>
-            <span className={'material-preset-workspace__source is-' + preset.source}>{sourceLabel}</span>
           </div>
           <span className="workspace-item-card__meta material-preset-workspace__card-meta">
             <i
@@ -214,6 +215,7 @@ function SchemeCard({
               aria-hidden="true"
             />
             <span className="material-preset-workspace__card-detail">{familyLabel} · {finishLabel}</span>
+            <span className={'workspace-item-card__source is-compact ' + sourceTone}>{sourceLabel}</span>
           </span>
         </div>
       </button>
@@ -222,7 +224,7 @@ function SchemeCard({
         <>
           <button
             type="button"
-            className="material-preset-workspace__menu-trigger"
+            className="workspace-item-menu-trigger is-compact material-preset-workspace__menu-trigger"
             aria-label={'管理我的方案 ' + preset.name}
             aria-expanded={menuOpen}
             onClick={() => onMenuToggle(menuOpen ? '' : preset.id)}
@@ -232,7 +234,7 @@ function SchemeCard({
 
           {menuOpen && (
             <div
-              className="material-preset-workspace__card-menu"
+              className="workspace-item-menu is-compact material-preset-workspace__card-menu"
               role="menu"
               aria-label={preset.name + ' 方案操作'}
             >

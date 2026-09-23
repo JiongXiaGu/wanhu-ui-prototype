@@ -77,13 +77,7 @@
 }
 
 .blueprint-workspace__card-shell{
-  position:relative;
-  min-width:0;
   aspect-ratio:4 / 3;
-}
-
-.blueprint-workspace__card-shell.is-menu-open{
-  z-index:12;
 }
 
 .blueprint-workspace__card{
@@ -100,7 +94,7 @@
 .blueprint-workspace__card:hover,
 .blueprint-workspace__card:focus-visible{
   background:#202824;
-  box-shadow:inset 0 0 0 1px rgba(238,233,223,.075),0 8px 22px rgba(4,7,6,.14);
+  box-shadow:inset 0 0 0 1px rgba(238,233,223,.075);
 }
 
 .blueprint-workspace__card:active{
@@ -187,96 +181,6 @@
   font-size:var(--wanhu-type-caption,10px);
   font-variant-numeric:tabular-nums;
   text-shadow:0 2px 7px rgba(4,7,6,.64);
-}
-
-.blueprint-workspace__source{
-  position:absolute;
-  z-index:4;
-  right:9px;
-  top:9px;
-  padding:3px 6px;
-  border:1px solid rgba(238,233,223,.08);
-  border-radius:6px;
-  background:rgba(17,23,20,.86);
-  color:#aaa9a2;
-  font-size:var(--wanhu-type-micro,9.5px);
-  line-height:1.1;
-  pointer-events:none;
-}
-
-.blueprint-workspace__source.is-workshop{color:#a9b8bb}
-.blueprint-workspace__source.is-mine{color:#c2ad82}
-
-.blueprint-workspace__card-shell.is-editable .blueprint-workspace__source{
-  right:38px;
-}
-
-.blueprint-workspace__menu-trigger{
-  position:absolute;
-  z-index:7;
-  right:8px;
-  top:7px;
-  width:26px;
-  height:26px;
-  display:grid;
-  place-items:center;
-  border:0;
-  border-radius:7px;
-  background:rgba(13,18,15,.72);
-  color:#aaaDA8;
-  cursor:pointer;
-}
-
-.blueprint-workspace__menu-trigger:hover,
-.blueprint-workspace__card-shell.is-menu-open .blueprint-workspace__menu-trigger{
-  background:rgba(29,36,32,.94);
-  color:#ebe6dc;
-}
-
-.blueprint-workspace__card-menu{
-  position:absolute;
-  z-index:20;
-  right:7px;
-  top:38px;
-  min-width:104px;
-  padding:4px;
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  border:1px solid rgba(238,233,223,.08);
-  border-radius:8px;
-  background:rgba(28,34,31,.98);
-  box-shadow:0 14px 34px rgba(4,7,6,.30);
-}
-
-.blueprint-workspace__card-menu button{
-  height:30px;
-  padding:0 8px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  border:0;
-  border-radius:6px;
-  background:transparent;
-  color:#aaaDA8;
-  font:inherit;
-  font-size:var(--wanhu-type-caption,10px);
-  text-align:left;
-  cursor:pointer;
-}
-
-.blueprint-workspace__card-menu button:hover{
-  background:rgba(255,255,255,.04);
-  color:#e1ddd4;
-}
-
-.blueprint-workspace__card-menu button.is-danger{
-  color:#c9948e;
-}
-
-.blueprint-workspace__card-menu button.is-danger:hover{
-  background:rgba(159,78,67,.12);
-  color:#e1a49b;
 }
 
 .blueprint-workspace__empty{
