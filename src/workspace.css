@@ -616,10 +616,10 @@
 }
 .workspace-item-menu-trigger.is-compact{
   right:6px;
-  top:50%;
+  top:5px;
   opacity:.58;
   pointer-events:auto;
-  transform:translateY(-50%);
+  transform:none;
   background:rgba(13,18,15,.22);
 }
 .workspace-item-card-shell:hover>.workspace-item-menu-trigger,
@@ -658,11 +658,11 @@
 }
 .workspace-item-menu.is-compact{
   right:4px;
-  top:calc(50% + 18px);
+  top:34px;
 }
 .workspace-content-row:last-child .workspace-item-menu.is-compact{
   top:auto;
-  bottom:calc(50% + 18px);
+  bottom:34px;
 }
 .workspace-item-menu>button{
   width:100%;

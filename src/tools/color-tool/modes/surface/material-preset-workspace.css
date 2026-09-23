@@ -112,7 +112,7 @@
   width:100%;
   height:64px;
   padding-left:14px;
-  padding-right:40px;
+  padding-right:12px;
 }
 .material-preset-workspace__card.is-revealed .workspace-item-card{
   background:rgba(169,132,75,.080);
@@ -125,6 +125,8 @@
 .material-preset-workspace__card-head{
   width:100%;
   min-width:0;
+  box-sizing:border-box;
+  padding-right:30px;
   display:flex;
   align-items:center;
   gap:8px;

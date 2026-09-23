@@ -1114,14 +1114,16 @@ const savedMaterialMenuTrigger = savedMaterialCard.getByRole('button', { name: '
 if (!(await savedMaterialMenuTrigger.evaluate(node => node.classList.contains('workspace-item-menu-trigger') && node.classList.contains('is-compact')))) {
   throw new Error('My Scheme management action must use the shared Compact menu trigger.');
 }
-const [savedMaterialCardBox, savedMaterialTriggerBox] = await Promise.all([
+const [savedMaterialCardBox, savedMaterialTriggerBox, savedMaterialSourceBox] = await Promise.all([
   savedMaterialCard.boundingBox(),
   savedMaterialMenuTrigger.boundingBox(),
+  savedMaterialSource.boundingBox(),
 ]);
-if (!savedMaterialCardBox || !savedMaterialTriggerBox
-  || Math.abs((savedMaterialTriggerBox.y + savedMaterialTriggerBox.height / 2) - (savedMaterialCardBox.y + savedMaterialCardBox.height / 2)) > 2
-  || (savedMaterialCardBox.x + savedMaterialCardBox.width) - (savedMaterialTriggerBox.x + savedMaterialTriggerBox.width) > 12) {
-  throw new Error('Compact Card management trigger must stay independently centered on the Card right edge.');
+if (!savedMaterialCardBox || !savedMaterialTriggerBox || !savedMaterialSourceBox
+  || savedMaterialTriggerBox.y >= savedMaterialSourceBox.y
+  || Math.abs((savedMaterialCardBox.x + savedMaterialCardBox.width) - (savedMaterialTriggerBox.x + savedMaterialTriggerBox.width)) > 12
+  || Math.abs((savedMaterialTriggerBox.x + savedMaterialTriggerBox.width) - (savedMaterialSourceBox.x + savedMaterialSourceBox.width)) > 12) {
+  throw new Error('Compact Card must use a two-line right column: action trigger on top, source badge directly below.');
 }
 await schemeWorkspace.getByRole('button', { name: '应用材质方案 石材 · 城墙暖灰', exact: true }).hover();
 await page.waitForTimeout(540);
