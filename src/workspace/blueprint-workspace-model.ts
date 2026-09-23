@@ -270,3 +270,7 @@ export const BLUEPRINT_WORKSPACE_ITEMS: readonly BlueprintWorkspaceItem[] = [
     previewSize: '610px auto',
   },
 ];
+
+
+export const BLUEPRINT_BUILTIN_ITEMS: readonly BlueprintWorkspaceItem[] = BLUEPRINT_WORKSPACE_ITEMS.filter((item) => item.source !== 'mine');
+export const BLUEPRINT_CUSTOM_SEED_ITEMS: readonly BlueprintWorkspaceItem[] = BLUEPRINT_WORKSPACE_ITEMS.filter((item) => item.source === 'mine');
