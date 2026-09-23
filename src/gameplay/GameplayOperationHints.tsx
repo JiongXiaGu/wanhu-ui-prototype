@@ -275,9 +275,9 @@ const blueprintPhotographyPreset: HintPreset = {
   id: 'blueprint-photography',
   task: '蓝图摄影',
   rows: [
-    { binding: '鼠标左键拖动', description: '调整构图', primary: true },
-    { binding: '鼠标滚轮', description: '缩放画面' },
-    { binding: '完成摄影', description: '进入蓝图编辑' },
+    { binding: 'Enter', description: '完成摄影', primary: true },
+    { binding: 'G', description: '显示 / 隐藏构图线' },
+    { binding: 'R', description: '恢复镜头参数' },
     { binding: 'Esc', description: '取消摄影' },
   ],
 };
