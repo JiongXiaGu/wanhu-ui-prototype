@@ -117,6 +117,17 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           compression-level: 9
+      - name: Upload workspace pager review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-pager-review
+          path: |
+            review-screenshots/workspace-pager-*.png
+            review-screenshots/tool-usability-report.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 9
       - name: Upload secondary action review
         if: always()
         uses: actions/upload-artifact@v4
