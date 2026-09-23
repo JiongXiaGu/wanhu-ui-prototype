@@ -22,6 +22,7 @@ async function operationHintsShot(name) { await page.mouse.move(20, 200); await 
 async function secondaryActionShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/secondary-action-${name}.png` }); report.screenshots.push('secondary-action-' + name); }
 async function mainDockShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/main-dock-${name}.png` }); report.screenshots.push('main-dock-' + name); }
 async function blueprintWorkspaceShot(name) { await page.screenshot({ path: `${out}/blueprint-workspace-${name}.png` }); report.screenshots.push('blueprint-workspace-' + name); }
+async function workspacePagerShot(name) { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/workspace-pager-${name}.png` }); report.screenshots.push('workspace-pager-' + name); }
 async function topControlTrayShot() { await page.mouse.move(20, 200); await page.screenshot({ path: `${out}/top-control-tray.png` }); report.screenshots.push('top-control-tray'); }
 async function checkPersistentHints(label, expectedContext, utilityExpected = true) {
   const hints = page.locator('.gameplay-operation-hints');
@@ -390,6 +391,26 @@ try {
   await open('workspace-building', '.workspace--catalog');
   await checkPersistentHints('建筑目录', 'workspace-building');
   await operationHintsShot('workspace-building');
+
+  const designRailPagerMarks = page.locator('.workspace--design .workspace-rail-pager button span');
+  const designContentPagerMarks = page.locator('.workspace--design .workspace-content-pager button span');
+  assert(await designRailPagerMarks.count() > 1, '建筑 Workspace 必须提供多页 Rail 用于 Pager 一致性审查');
+  assert(await designContentPagerMarks.count() > 1, '建筑 Workspace 必须提供多页 Content Pager 用于一致性审查');
+  const designPagerMetrics = await page.locator('.workspace--design .workspace-rail-pager button span, .workspace--design .workspace-content-pager button span').evaluateAll((marks) => marks.map((mark) => {
+    const rect = mark.getBoundingClientRect();
+    const style = getComputedStyle(mark);
+    const active = Boolean(mark.closest('button')?.classList.contains('is-active'));
+    return { width: rect.width, height: rect.height, active, backgroundColor: style.backgroundColor, opacity: Number(style.opacity) };
+  }));
+  assert(designPagerMetrics.every(item => Math.abs(item.width - 14) < 1 && Math.abs(item.height - 3) < 1), 'Design Rail / Content Pager 必须全部使用 14×3 横线');
+  const designActivePager = designPagerMetrics.filter(item => item.active);
+  const designInactivePager = designPagerMetrics.filter(item => !item.active);
+  assert(designActivePager.length >= 2 && designInactivePager.length >= 1, 'Design Pager 必须同时存在 Active / Inactive 横线');
+  assert(designActivePager.every(item => item.backgroundColor === 'rgb(238, 233, 223)' && item.opacity > .8), 'Design 当前页必须使用 Paper White 高亮');
+  assert(designInactivePager.every(item => item.opacity < .5), 'Design 非当前页必须使用低对比横线');
+  report.checks.push({ label: 'Design Workspace unified dash pagers', designPagerMetrics });
+  await workspacePagerShot('design');
+
   const cards = page.locator('.design-item-card');
   const count = await cards.count();
   assert(count >= 4, '建筑目录需要足够的条目用于多位置锚定检查');
@@ -410,6 +431,28 @@ try {
   const blueprintSourceLabels = await blueprintWorkspace.locator('.blueprint-workspace__source-filter button').evaluateAll(buttons => buttons.map(button => button.textContent?.trim()));
   assert.deepEqual(blueprintSourceLabels, ['全部', '系统内置', '创意工坊', '我的蓝图'], '蓝图顶部筛选必须按来源显示');
 
+  const blueprintSingleRailMark = blueprintWorkspace.locator('.workspace-rail-pager-marker');
+  const blueprintContentPagerMarks = blueprintWorkspace.locator('.workspace-content-pager button span');
+  assert.equal(await blueprintSingleRailMark.count(), 1, '蓝图单页 Rail 必须保留一个稳定 Pager Marker');
+  assert(await blueprintContentPagerMarks.count() > 1, '全部蓝图必须有多页 Content Pager');
+  const blueprintSingleRailMetric = await blueprintSingleRailMark.evaluate((mark) => {
+    const rect = mark.getBoundingClientRect();
+    const style = getComputedStyle(mark);
+    return { width: rect.width, height: rect.height, backgroundColor: style.backgroundColor, opacity: Number(style.opacity) };
+  });
+  const blueprintContentPagerMetrics = await blueprintContentPagerMarks.evaluateAll((marks) => marks.map((mark) => {
+    const rect = mark.getBoundingClientRect();
+    const style = getComputedStyle(mark);
+    const active = Boolean(mark.closest('button')?.classList.contains('is-active'));
+    return { width: rect.width, height: rect.height, active, backgroundColor: style.backgroundColor, opacity: Number(style.opacity) };
+  }));
+  assert(Math.abs(blueprintSingleRailMetric.width - 14) < 1 && Math.abs(blueprintSingleRailMetric.height - 3) < 1, 'Blueprint 单页 Rail Marker 必须使用 14×3 横线');
+  assert(blueprintSingleRailMetric.backgroundColor === 'rgb(238, 233, 223)' && blueprintSingleRailMetric.opacity > .7, 'Blueprint 单页 Rail Marker 必须作为当前页使用 Paper White');
+  assert(blueprintContentPagerMetrics.every(item => Math.abs(item.width - 14) < 1 && Math.abs(item.height - 3) < 1), 'Blueprint Content Pager 必须全部使用 14×3 横线');
+  assert(blueprintContentPagerMetrics.filter(item => item.active).every(item => item.backgroundColor === 'rgb(238, 233, 223)' && item.opacity > .8), 'Blueprint 当前 Content Page 必须使用 Paper White 高亮');
+  report.checks.push({ label: 'Blueprint Workspace unified dash pagers', blueprintSingleRailMetric, blueprintContentPagerMetrics });
+  await workspacePagerShot('blueprint');
+
   const blueprintCards = blueprintWorkspace.locator('.blueprint-workspace__card');
   assert.equal(await blueprintCards.count(), 4, '蓝图第一页必须显示 4 张大图 Card');
   const blueprintMetrics = await blueprintCards.evaluateAll((cards) => cards.map((card) => {
@@ -425,8 +468,10 @@ try {
       backgroundImage: preview ? getComputedStyle(card.querySelector('.blueprint-workspace__preview')).backgroundImage : '',
     };
   }));
-  assert(blueprintMetrics.every(item => Math.abs(item.height - 142) < 1), '蓝图 Card 必须保持约 142px 高');
+  assert(blueprintMetrics.every(item => Math.abs(item.width / item.height - 4 / 3) < .025), '蓝图 Card 必须保持 4:3 图片比例');
   assert(Math.max(...blueprintMetrics.map(item => item.y)) - Math.min(...blueprintMetrics.map(item => item.y)) < 1, '蓝图 4 张 Card 必须保持单行');
+  const blueprintWorkspaceBox = await blueprintWorkspace.boundingBox();
+  assert(blueprintWorkspaceBox && Math.abs(blueprintWorkspaceBox.height - 330) < 1, 'Blueprint Workspace 应为 4:3 Card 提供约 330px 高度');
   assert(blueprintMetrics.every(item => item.previewWidth >= item.width - 2 && item.previewHeight >= item.height - 2 && item.backgroundImage && item.backgroundImage !== 'none'), '蓝图 Preview 必须覆盖 Card 主体并绑定场景示例图');
   report.checks.push({ label: 'Blueprint Workspace 4×1 image cards', blueprintRailLabels, blueprintSourceLabels, blueprintMetrics });
   await blueprintWorkspaceShot('all');
