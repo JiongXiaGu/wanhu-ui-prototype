@@ -18,11 +18,13 @@ interface BlueprintPhotographyToolProps {
   onCapture: (capture: BlueprintPreviewCapture) => void;
 }
 
-const CAMERA_DEFAULTS = {
+type CameraSettings = { fov: number; height: number; pitch: number };
+
+const CAMERA_DEFAULTS: CameraSettings = {
   fov: 45,
   height: 28,
   pitch: 24,
-} as const;
+};
 
 export function BlueprintPhotographyTool({
   sceneAsset,
