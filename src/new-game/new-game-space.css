@@ -1,3 +1,4 @@
+/* New Game Global Space: Selected/On and keyboard Focus remain independent semantic states. */
 /* New Game is a full-screen Global Space sibling of Settings / Load / Save.
    This file owns only New Game geometry and content hierarchy.
    Root / Header / Footer material is owned by wanhu-surface-system.css. */
