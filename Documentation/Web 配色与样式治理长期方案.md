@@ -242,7 +242,20 @@ Phase 1 下一批处理 Global Space 家族剩余旧 Focus 债务（`fullscreen-
 
 验证：Build #1512 与 UI Review #473 通过，`audit:visual` 通过；已实际查看 Confirm / Choice / Danger Focus 截图，Danger 仍保持朱砂语义，Choice 当前项仍保持 Selected，键盘 Focus 为独立细熟铜轮廓。
 
-复核 Ratchet 时确认 `src/ui/hover/hover-overlay.css` 仍有一处退役 `#c9aa68`（Rich Hover 内容 Accent），因此它继续留在 Baseline；`src/ui/wanhu-character.css` 的旧 210/179/111 Structural Accent 也继续独立处理。Phase 1 下一步先收敛 Hover，再单独审查 Character，避免把内容强调、结构装饰和共享 Control 状态混改。
+复核 Ratchet 时确认 `src/ui/hover/hover-overlay.css` 当时仍有一处退役 `#c9aa68`（Rich Hover 内容 Accent），因此 Batch 8 没有错误移出 Baseline。
+
+### Phase 1 进度：Batch 9 已完成
+
+第九批只处理 Hover Overlay 剩余的单一旧 Card Brass 债务，不重做 Tooltip / Rich Hover 结构、几何、定位、延迟或 Surface：
+
+- 唯一命中 `.ui-hover-card__fact dd.is-accent{color:#c9aa68}` 实际用于 Rich Hover 中“造价”等小字号内容强调，不属于 Hover 状态；
+- 该内容强调迁移到正式 `--wanhu-color-brass-text`，符合小字号熟铜文字语义；Card 背景、边框、标题、正文与普通 Fact 保持原样；
+- `src/ui/hover/hover-overlay.css` 已从 Ratchet Baseline 移除；
+- Tool Usability Review 在真实建筑 Catalog Rich Hover 中新增 computed-style 断言，要求 Accent 为 `rgb(209,180,122)`，并输出 `hover-design-accent.png`。
+
+验证：Build #1516 与 UI Review #475 通过，`audit:visual` 通过；已实际查看建筑 Rich Hover 截图，造价保持低面积熟铜强调，Hover Surface 没有整体发金或层级回退。临时 PR #15 用于验证且不合并。
+
+Phase 1 Ratchet 现在只剩 `src/ui/wanhu-character.css`。下一批只审查 Character Structural Accent 的旧 210/179/111 Hue，区分“应迁移到当前 Character / Brass Token 的结构强调”和“应删除的历史 Glow”，不做机械 Replace All。
 
 ## Phase 2：Semantic Token 收敛
 
