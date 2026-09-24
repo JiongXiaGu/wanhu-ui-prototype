@@ -362,21 +362,6 @@
    material family. Size/density differ; hue and state language do not.
    --------------------------------------------------------------------- */
 .gameplay-screen .bottom-command-surface{
-  --command-divider:var(--wanhu-command-divider);
-  --command-hover:var(--wanhu-command-hover);
-  --command-active-top:var(--wanhu-command-active-top);
-  --command-active-bottom:var(--wanhu-command-active-bottom);
-  --command-active-line:var(--wanhu-command-active-line);
-  --command-primary-top:var(--wanhu-command-primary-top);
-  --command-primary-bottom:var(--wanhu-command-primary-bottom);
-  --command-primary-hover-top:var(--wanhu-command-primary-hover-top);
-  --command-primary-hover-bottom:var(--wanhu-command-primary-hover-bottom);
-  --command-icon:var(--wanhu-color-icon);
-  --command-icon-hover:var(--wanhu-color-icon-hover);
-  --command-icon-active:var(--wanhu-color-brass-high);
-  --command-tooltip-bg:var(--wanhu-command-tooltip-bg);
-  --command-tooltip-edge:var(--wanhu-command-tooltip-edge);
-  --command-tooltip-shadow:var(--wanhu-command-tooltip-shadow);
   background-repeat:repeat,repeat;
   background-size:auto,256px 256px;
 }
