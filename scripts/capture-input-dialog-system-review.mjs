@@ -175,6 +175,46 @@ await page.keyboard.press('Enter');
 if(!(await seedButton.textContent())?.includes('12345678'))throw new Error('Seed must commit through Dialog.');
 await page.screenshot({path:`${outDir}/input-new-game-values.png`});
 
+// Choice Dropdown Review：只为自动化提供默认 dropdown 组合，不增加业务入口。
+await open('dialog-dropdown','.ui-dialog-choice-select');
+dialog=page.getByRole('dialog',{name:'下拉选择验收'});
+await dialog.waitFor();
+await expectDialogMaterial(dialog,'Choice Dropdown Dialog');
+const dropdownTrigger=dialog.getByRole('button',{name:'方案来源',exact:true});
+await expectKeyboardFocus(dropdownTrigger,'Dialog Choice Dropdown Trigger');
+await dropdownTrigger.press('Enter');
+let dropdownMenu=dialog.getByRole('listbox',{name:'方案来源'});
+await dropdownMenu.waitFor();
+let dropdownSelected=dropdownMenu.getByRole('option',{selected:true});
+const dropdownSelectedStyle=await dropdownSelected.evaluate(node=>({
+  selected:node.getAttribute('aria-selected')==='true',
+  backgroundColor:getComputedStyle(node).backgroundColor,
+}));
+if(!dropdownSelectedStyle.selected||!dropdownSelectedStyle.backgroundColor.includes('169, 132, 75'))throw new Error(`Dialog Dropdown selected option must retain Active state. ${JSON.stringify(dropdownSelectedStyle)}`);
+await page.screenshot({path:`${outDir}/dialog-choice-dropdown-open.png`});
+await page.keyboard.press('Escape');
+await page.waitForTimeout(80);
+if(await dialog.getByRole('listbox',{name:'方案来源'}).count())throw new Error('First Escape must close Dropdown menu.');
+if(!(await dialog.isVisible()))throw new Error('First Escape must not close Dialog while Dropdown is open.');
+if(!(await dropdownTrigger.evaluate(node=>node===document.activeElement)))throw new Error('Dropdown Escape must restore focus to trigger.');
+await dropdownTrigger.press('Enter');
+await dropdownTrigger.press('ArrowDown');
+const highlightedText=(await dialog.locator('.ui-select__menu button.is-highlighted').textContent())?.trim();
+await dropdownTrigger.press('Enter');
+await page.waitForTimeout(80);
+if(!(await dialog.isVisible()))throw new Error('Dropdown Enter selection must not submit Dialog.');
+if(await dialog.getByRole('listbox',{name:'方案来源'}).count())throw new Error('Dropdown Enter selection must close only the menu.');
+if(!highlightedText||!(await dropdownTrigger.textContent())?.includes(highlightedText))throw new Error('Dropdown Enter must commit highlighted option.');
+await expectKeyboardFocus(dropdownTrigger,'Dialog Choice Dropdown Selected Trigger');
+await page.screenshot({path:`${outDir}/dialog-choice-dropdown-selected-focus.png`});
+await dropdownTrigger.press('Enter');
+await dialog.getByRole('listbox',{name:'方案来源'}).waitFor();
+await page.keyboard.press('Escape');
+await page.waitForTimeout(80);
+if(!(await dialog.isVisible()))throw new Error('Escape must still leave Dialog open after closing Dropdown.');
+await page.keyboard.press('Escape');
+await dialog.waitFor({state:'detached'});
+
 // Choice Dialog: Selected state must remain active while keyboard Focus is independently visible.
 await open('color-tool-surface','.color-tool-surface-panel');
 await page.getByRole('button',{name:'打开材质方案库',exact:true}).click();
