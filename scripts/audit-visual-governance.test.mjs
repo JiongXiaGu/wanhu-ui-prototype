@@ -635,3 +635,50 @@ test('Primary consumer guard tolerates shared base block before canonical varian
   });
   assert.equal(result.status,0,result.output);
 });
+
+test('preserve weak Active border declaration in Theme tokens',async()=>{
+  const result=await runAudit({'src/ui/wanhu-theme-tokens.css':`.game-canvas{
+    --wanhu-control-active-border-soft:rgba(189,153,89,.30);
+  }`});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Shared Active Control recipe owner variables guarded: 1/);
+  assert.match(result.output,/Active Control canonical consumer files guarded: 1/);
+});
+
+test('reject weak Active border declaration outside Theme tokens',async()=>{
+  const result=await runAudit({'src/ui/probe.css':'.probe{--wanhu-control-active-border-soft:transparent}'});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/shared Selected \/ On Control recipe must use canonical/);
+  assert.match(result.output,/--wanhu-control-active-border-soft=1/);
+});
+
+test('reject Dialog Choice Grid private Selected recipe',async()=>{
+  const result=await runAudit({'src/ui/dialog/dialog.css':`
+    .ui-dialog-choice-grid>button.is-active{
+      border-color:rgba(189,153,89,.30);
+      background:rgba(169,132,75,.060);
+    }
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/shared Selected \/ On Control recipe must use canonical/);
+  assert.match(result.output,/\.ui-dialog-choice-grid>button\.is-active missing/);
+});
+
+test('preserve Dialog Choice Grid geometry and foreground with shared Active recipe',async()=>{
+  const result=await runAudit({'src/ui/dialog/dialog.css':`
+    .ui-dialog-choice-grid>button.is-active{
+      border-color:var(--wanhu-control-active-border-soft);
+      background:var(--wanhu-control-active-bg);
+      color:var(--wanhu-color-brass-high);
+    }
+  `});
+  assert.equal(result.status,0,result.output);
+});
+
+test('Active Line remains distinct from weak Selected border',async()=>{
+  const result=await runAudit({'src/ui/probe.css':`.probe{
+    border-color:var(--wanhu-control-active-border-soft);
+    background:var(--wanhu-control-active-bg);
+  }.marker{background:var(--wanhu-control-active-line)}`});
+  assert.equal(result.status,0,result.output);
+});

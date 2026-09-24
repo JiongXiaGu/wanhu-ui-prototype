@@ -91,6 +91,22 @@ const PRIMARY_CONTROL_CONSUMER_RULES=[
   ]},
 ];
 
+/* Phase 4 Batch 22：弱 Selected Border 独立于 Active Line，Choice Grid 直接消费共享 Active Recipe。 */
+const ACTIVE_CONTROL_RECIPE_OWNER_FILE='src/ui/wanhu-theme-tokens.css';
+const ACTIVE_CONTROL_RECIPE_VARIABLES=[
+  '--wanhu-control-active-border-soft',
+];
+const ACTIVE_CONTROL_RECIPE_DECLARATION_MARKERS=ACTIVE_CONTROL_RECIPE_VARIABLES.map(name=>({
+  name,re:new RegExp(escapeRegExp(name)+String.raw`\s*:`,'g'),
+}));
+const ACTIVE_CONTROL_CONSUMER_RULES=[
+  {file:'src/ui/dialog/dialog.css',selectors:[
+    {selector:'.ui-dialog-choice-grid>button.is-active',tokens:[
+      '--wanhu-control-active-border-soft','--wanhu-control-active-bg',
+    ]},
+  ]},
+];
+
 /* HUD 前景别名已退役；只枚举完整名称，不禁止仍在使用的材质、背景或几何变量。 */
 const RETIRED_HUD_FOREGROUND_ALIASES=[
   '--hud-text','--hud-text-secondary','--hud-icon','--hud-accent','--hud-accent-text',
@@ -360,6 +376,40 @@ for(const file of files){
     );
   }
 
+  const activeControlRecipeOwnershipViolations=[];
+  if(file!==ACTIVE_CONTROL_RECIPE_OWNER_FILE){
+    for(const marker of ACTIVE_CONTROL_RECIPE_DECLARATION_MARKERS){
+      const count=countMatches(text,marker.re);
+      if(count)activeControlRecipeOwnershipViolations.push({name:marker.name,count});
+    }
+  }
+
+  const activeControlConsumerViolations=[];
+  const activeConsumerRule=ACTIVE_CONTROL_CONSUMER_RULES.find(rule=>rule.file===file);
+  if(activeConsumerRule){
+    for(const item of activeConsumerRule.selectors){
+      const blockRe=new RegExp(escapeRegExp(item.selector)+String.raw`\s*\{([^}]*)\}`,'gis');
+      const blocks=[...text.matchAll(blockRe)];
+      if(!blocks.length)continue;
+      const canonicalBlock=blocks.find(match=>item.tokens.every(token=>match[1].includes('var('+token+')')));
+      if(canonicalBlock)continue;
+      const missing=item.tokens.filter(token=>!blocks.some(match=>match[1].includes('var('+token+')')));
+      activeControlConsumerViolations.push({selector:item.selector,missing});
+    }
+  }
+
+  if(activeControlRecipeOwnershipViolations.length || activeControlConsumerViolations.length){
+    errors.push(
+      file + ': shared Selected / On Control recipe must use canonical --wanhu-control-active-* tokens. '
+      + 'Weak Selected borders use --wanhu-control-active-border-soft; Active Line remains a structural marker. '
+      + activeControlRecipeOwnershipViolations.map(marker=>marker.name + '=' + marker.count).join('; ')
+      + (activeControlConsumerViolations.length
+        ? (activeControlRecipeOwnershipViolations.length ? '; ' : '')
+          + activeControlConsumerViolations.map(item=>item.selector + ' missing [' + item.missing.join(', ') + ']').join('; ')
+        : '')
+    );
+  }
+
   const hudAliases=[];
   for(const marker of RETIRED_HUD_FOREGROUND_ALIAS_MARKERS){
     const count=countMatches(text,marker.re);
@@ -508,7 +558,7 @@ for(const file of files){
     }
   }
 
-  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && controlRecipeOwnershipViolations.length===0 && retiredSegmentedOwnerSelectors.length===0 && retiredDialogSelectOwnerSelectors.length===0 && primaryControlRecipeOwnershipViolations.length===0 && primaryControlConsumerViolations.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
+  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && controlRecipeOwnershipViolations.length===0 && retiredSegmentedOwnerSelectors.length===0 && retiredDialogSelectOwnerSelectors.length===0 && primaryControlRecipeOwnershipViolations.length===0 && primaryControlConsumerViolations.length===0 && activeControlRecipeOwnershipViolations.length===0 && activeControlConsumerViolations.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -543,6 +593,8 @@ console.log('Retired Segmented legacy owner selectors guarded: ' + RETIRED_SEGME
 console.log('Retired Dialog Select owner selectors guarded: ' + RETIRED_DIALOG_SELECT_OWNER_SELECTORS.length);
 console.log('Shared Primary Control recipe owner variables guarded: ' + PRIMARY_CONTROL_RECIPE_VARIABLES.length);
 console.log('Primary Control canonical consumer files guarded: ' + PRIMARY_CONTROL_CONSUMER_RULES.length);
+console.log('Shared Active Control recipe owner variables guarded: ' + ACTIVE_CONTROL_RECIPE_VARIABLES.length);
+console.log('Active Control canonical consumer files guarded: ' + ACTIVE_CONTROL_CONSUMER_RULES.length);
 console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
 console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.length);
 console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.length);

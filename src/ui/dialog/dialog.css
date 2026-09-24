@@ -180,8 +180,8 @@
   color:var(--wanhu-color-paper-secondary,#b9b5ab);
 }
 .ui-dialog-choice-grid>button.is-active{
-  border-color:rgba(189,153,89,.30);
-  background:rgba(169,132,75,.060);
+  border-color:var(--wanhu-control-active-border-soft);
+  background:var(--wanhu-control-active-bg);
   color:var(--wanhu-color-brass-high,#bd9959);
 }
 .ui-dialog-choice-grid>button:focus-visible{

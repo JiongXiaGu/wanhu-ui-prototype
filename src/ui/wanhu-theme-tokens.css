@@ -214,6 +214,7 @@
   --wanhu-control-border-soft:rgba(238,233,223,.085);
   --wanhu-control-border-hover:rgba(238,233,223,.20);
   --wanhu-control-active-bg:rgba(169,132,75,.075);
+  --wanhu-control-active-border-soft:rgba(189,153,89,.30);
   --wanhu-control-active-line:rgba(169,132,75,.78);
   --wanhu-control-focus:var(--wanhu-color-brass-text);
   --wanhu-control-primary-border:rgba(189,153,89,.22);
