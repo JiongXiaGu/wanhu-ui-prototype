@@ -192,84 +192,21 @@
 .ui-dialog-choice-select{
   width:100%;
 }
-.ui-dialog-choice-trigger{
-  width:100%;
+.ui-dialog-choice-select .ui-select__trigger{
   height:40px;
-  padding:0 12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  border:1px solid var(--wanhu-control-border-soft);
+  padding-right:12px;
   border-radius:9px;
-  background:var(--ui-field-surface,rgba(255,255,255,.014));
-  color:var(--wanhu-color-paper-secondary,#b9b5ab);
-  font:inherit;
   font-size:10px;
-  cursor:pointer;
-  transition-property:background,border-color,color;
-  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
-.ui-dialog-choice-trigger:hover,
-.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger{
-  border-color:var(--wanhu-control-border-hover);
-  background:var(--ui-field-surface-hover,rgba(255,255,255,.030));
-  color:var(--wanhu-color-paper-primary,#eee9df);
-}
-.ui-dialog-choice-trigger:focus-visible{
-  outline:1px solid var(--wanhu-control-focus);
-  outline-offset:1px;
-  box-shadow:0 0 0 3px rgba(169,132,75,.055);
-}
-.ui-dialog-choice-trigger .ui-icon{
-  width:var(--wanhu-icon-xs,14px);
-  height:var(--wanhu-icon-xs,14px);
-  flex:0 0 var(--wanhu-icon-xs,14px);
-  color:#7f8580;
-  transition:transform var(--wanhu-motion-control,120ms) ease;
-}
-.ui-dialog-choice-select.is-open .ui-dialog-choice-trigger .ui-icon{transform:rotate(180deg)}
-.ui-dialog-choice-menu{
+.ui-dialog-choice-select .ui-select__menu{
   max-height:150px;
-  margin-top:5px;
-  padding:4px;
-  overflow-y:auto;
-  border:1px solid rgba(238,233,223,.085);
   border-radius:9px;
-  background:rgba(34,39,36,.97);
-  box-shadow:0 10px 24px rgba(5,8,7,.26),inset 0 1px 0 rgba(255,255,255,.018);
 }
-.ui-dialog-choice-menu>button{
-  width:100%;
+.ui-dialog-choice-select .ui-select__menu button{
   height:30px;
-  padding:0 8px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  border:0;
   border-radius:6px;
-  background:transparent;
-  color:#999e98;
-  font:inherit;
   font-size:var(--wanhu-type-caption,10px);
-  text-align:left;
-  cursor:pointer;
 }
-.ui-dialog-choice-menu>button:hover{
-  background:rgba(255,255,255,.035);
-  color:#d1cdc4;
-}
-.ui-dialog-choice-menu>button.is-selected{
-  background:rgba(169,132,75,.050);
-  color:#c8b995;
-}
-.ui-dialog-choice-menu>button .ui-icon{
-  width:var(--wanhu-icon-xs,14px);
-  height:var(--wanhu-icon-xs,14px);
-  color:#bd9959;
-}
-
 .ui-dialog-change{
   min-height:48px;
   padding:0 13px;

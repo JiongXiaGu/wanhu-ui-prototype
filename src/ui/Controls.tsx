@@ -164,10 +164,11 @@ interface SelectControlProps {
   options: string[];
   disabled?: boolean;
   className?: string;
+  onOpenChange?: (open: boolean) => void;
   onChange: (value: string) => void;
 }
 
-export function SelectControl({ ariaLabel, value, options, disabled = false, className = '', onChange }: SelectControlProps) {
+export function SelectControl({ ariaLabel, value, options, disabled = false, className = '', onOpenChange, onChange }: SelectControlProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
@@ -177,11 +178,14 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
   useEffect(() => {
     if (!open) return;
     const handleOutside = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+        onOpenChange?.(false);
+      }
     };
     document.addEventListener('pointerdown', handleOutside);
     return () => document.removeEventListener('pointerdown', handleOutside);
-  }, [open]);
+  }, [open, onOpenChange]);
 
   function openMenu() {
     if (disabled || options.length === 0) return;
@@ -190,11 +194,13 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
     setOpensUp(Boolean(rect && window.innerHeight - rect.bottom < menuHeight + 18));
     setHighlighted(Math.max(0, options.indexOf(value)));
     setOpen(true);
+    onOpenChange?.(true);
   }
 
   function choose(next: string) {
     onChange(next);
     setOpen(false);
+    onOpenChange?.(false);
   }
 
   // 下拉框自身消费 Esc，不能让同一次按键继续关闭 Settings / Tool。
@@ -204,6 +210,7 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
     event.preventDefault();
     event.stopPropagation();
     setOpen(false);
+    onOpenChange?.(false);
     triggerRef.current?.focus();
   }
 
@@ -237,7 +244,14 @@ export function SelectControl({ ariaLabel, value, options, disabled = false, cla
         aria-haspopup="listbox"
         aria-expanded={open}
         disabled={disabled}
-        onClick={() => open ? setOpen(false) : openMenu()}
+        onClick={() => {
+          if (open) {
+            setOpen(false);
+            onOpenChange?.(false);
+          } else {
+            openMenu();
+          }
+        }}
         onKeyDown={handleKeyDown}
       >
         <span>{value}</span><UiIcon icon="chevron-down" size={14} className="ui-select__chevron-icon" />

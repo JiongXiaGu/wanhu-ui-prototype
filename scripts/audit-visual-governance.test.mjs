@@ -506,3 +506,25 @@ test('reject retired Segmented owner selectors in ui-visual-system.css',async()=
   assert.match(result.output,/selectors=.*\.game-canvas \.segment/);
   assert.match(result.output,/\.game-canvas \.bp-segment/);
 });
+
+test('reject retired Dialog Choice Dropdown skin owner selectors',async()=>{
+  const result=await runAudit({'src/ui/dialog/dialog.css':`
+    .ui-dialog-choice-trigger{background:#111}
+    .ui-dialog-choice-menu>button{color:#fff}
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/Dialog Choice Dropdown must consume shared SelectControl skin/);
+  assert.match(result.output,/\.ui-dialog-choice-trigger/);
+  assert.match(result.output,/\.ui-dialog-choice-menu/);
+});
+
+test('preserve Dialog Select density modifiers on shared SelectControl classes',async()=>{
+  const result=await runAudit({'src/ui/dialog/dialog.css':`
+    .ui-dialog-choice-select{width:100%}
+    .ui-dialog-choice-select .ui-select__trigger{height:40px;padding-right:12px;border-radius:9px;font-size:10px}
+    .ui-dialog-choice-select .ui-select__menu{max-height:150px;border-radius:9px}
+    .ui-dialog-choice-select .ui-select__menu button{height:30px;border-radius:6px;font-size:var(--wanhu-type-caption)}
+  `});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Dialog Select owner selectors guarded: 2/);
+});

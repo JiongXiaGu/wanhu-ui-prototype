@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Check, CircleX, Info, Trash2, TriangleAlert } from '../icons/runtime-icons.generated';
-import { TextInput } from '../Controls';
-import { UiIcon } from '../icons/UiIcon';
+import { SelectControl, TextInput } from '../Controls';
 import { usePresence, type MotionPhase } from '../motion';
 
 type DialogTone = 'primary' | 'danger';
@@ -172,7 +171,7 @@ function ChoiceInputDialogView({request,onDismiss,interactive,motionPhase}:{requ
   const canConfirm=!error&&Boolean(choice);
   const gridChoice=request.choiceLayout==='grid';
   useEffect(()=>{if(interactive){inputRef.current?.focus();inputRef.current?.select()}},[request.id,interactive]);
-  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();if(choiceOpen){setChoiceOpen(false);return}request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm&&!choiceOpen){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed,choice);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,choice,canConfirm,interactive,choiceOpen]);
+  useEffect(()=>{if(!interactive)return;const handleKey=(event:KeyboardEvent)=>{if(choiceOpen&&(event.key==='Escape'||event.key==='Enter'))return;if(event.key==='Escape'){event.preventDefault();event.stopPropagation();request.onCancel?.();onDismiss()}else if(event.key==='Enter'&&canConfirm){event.preventDefault();event.stopPropagation();request.onConfirm(trimmed,choice);onDismiss()}};window.addEventListener('keydown',handleKey,true);return()=>window.removeEventListener('keydown',handleKey,true)},[request,onDismiss,trimmed,choice,canConfirm,interactive,choiceOpen]);
   return <DialogFrame title={request.title} motionPhase={motionPhase} actions={<><button type="button" className="ui-dialog-button is-secondary" onClick={()=>{request.onCancel?.();onDismiss()}}>{request.cancelText}</button><button type="button" className="ui-dialog-button is-primary" disabled={!canConfirm} onClick={()=>{if(canConfirm){request.onConfirm(trimmed,choice);onDismiss()}}}>{request.confirmText}</button></>}>
     <label className={`ui-dialog-input ${error?'is-invalid':''}`}><span>{request.label}</span><TextInput ref={inputRef} className="ui-dialog-input__field" value={value} maxLength={request.maxLength} placeholder={request.placeholder} aria-invalid={Boolean(error)} onChange={event=>setValue(event.target.value)}/><small className={error?'is-error':''}>{error||request.helperText||''}</small></label>
     <div className={`ui-dialog-choice-group ${gridChoice?'is-grid-choice':''}`}>
@@ -182,12 +181,14 @@ function ChoiceInputDialogView({request,onDismiss,interactive,motionPhase}:{requ
           {request.choices.map(item=><button key={item} type="button" role="radio" aria-checked={choice===item} className={choice===item?'is-active':''} onClick={()=>setChoice(item)}>{item}</button>)}
         </div>
       ):(
-        <div className={`ui-dialog-choice-select ${choiceOpen?'is-open':''}`}>
-          <button type="button" className="ui-dialog-choice-trigger" aria-label={request.choiceLabel} aria-haspopup="listbox" aria-expanded={choiceOpen} onClick={()=>setChoiceOpen(open=>!open)}>
-            <span>{choice}</span><UiIcon icon="chevron-down" size={14} className="ui-dialog-choice-chevron" />
-          </button>
-          {choiceOpen&&<div className="ui-dialog-choice-menu" role="listbox" aria-label={request.choiceLabel}>{request.choices.map(item=><button key={item} type="button" role="option" aria-selected={choice===item} className={choice===item?'is-selected':''} onClick={()=>{setChoice(item);setChoiceOpen(false)}}><span>{item}</span>{choice===item&&<UiIcon icon="check" size={14} className="ui-dialog-choice-check" />}</button>)}</div>}
-        </div>
+        <SelectControl
+          ariaLabel={request.choiceLabel}
+          value={choice}
+          options={request.choices}
+          className="ui-dialog-choice-select"
+          onOpenChange={setChoiceOpen}
+          onChange={setChoice}
+        />
       )}
     </div>
   </DialogFrame>;

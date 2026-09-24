@@ -64,6 +64,12 @@ const RETIRED_SEGMENTED_OWNER_SELECTORS=[
   '.game-canvas .segment','.game-canvas .bp-segment','.game-canvas .new-game-segmented',
 ];
 
+/* Phase 4 Batch 20：Dialog Choice Dropdown 改为共享 SelectControl，私有 Trigger / Menu skin 退役。 */
+const RETIRED_DIALOG_SELECT_OWNER_FILE='src/ui/dialog/dialog.css';
+const RETIRED_DIALOG_SELECT_OWNER_SELECTORS=[
+  '.ui-dialog-choice-trigger','.ui-dialog-choice-menu',
+];
+
 /* HUD 前景别名已退役；只枚举完整名称，不禁止仍在使用的材质、背景或几何变量。 */
 const RETIRED_HUD_FOREGROUND_ALIASES=[
   '--hud-text','--hud-text-secondary','--hud-icon','--hud-accent','--hud-accent-text',
@@ -284,6 +290,21 @@ for(const file of files){
     );
   }
 
+  const retiredDialogSelectOwnerSelectors=[];
+  if(file===RETIRED_DIALOG_SELECT_OWNER_FILE){
+    for(const selector of RETIRED_DIALOG_SELECT_OWNER_SELECTORS){
+      const selectorRe=new RegExp(escapeRegExp(selector)+String.raw`(?:\s*[>,:+.~#\[]|\s*\{|\s*,)`,'i');
+      if(selectorRe.test(text))retiredDialogSelectOwnerSelectors.push(selector);
+    }
+    if(retiredDialogSelectOwnerSelectors.length){
+      errors.push(
+        file + ': Dialog Choice Dropdown must consume shared SelectControl skin from ui-control-system.css. '
+        + 'Dialog CSS may keep density / geometry modifiers on .ui-dialog-choice-select only. '
+        + 'selectors=' + retiredDialogSelectOwnerSelectors.join(', ')
+      );
+    }
+  }
+
   const hudAliases=[];
   for(const marker of RETIRED_HUD_FOREGROUND_ALIAS_MARKERS){
     const count=countMatches(text,marker.re);
@@ -432,7 +453,7 @@ for(const file of files){
     }
   }
 
-  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && controlRecipeOwnershipViolations.length===0 && retiredSegmentedOwnerSelectors.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
+  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && controlRecipeOwnershipViolations.length===0 && retiredSegmentedOwnerSelectors.length===0 && retiredDialogSelectOwnerSelectors.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -464,6 +485,7 @@ console.log('Retired command visual aliases guarded: ' + RETIRED_COMMAND_VISUAL_
 console.log('Retired Phase 4 control visual aliases guarded: ' + RETIRED_PHASE4_CONTROL_VISUAL_ALIASES.length);
 console.log('Shared Control recipe owner variables guarded: ' + CONTROL_RECIPE_VARIABLES.length);
 console.log('Retired Segmented legacy owner selectors guarded: ' + RETIRED_SEGMENTED_OWNER_SELECTORS.length);
+console.log('Retired Dialog Select owner selectors guarded: ' + RETIRED_DIALOG_SELECT_OWNER_SELECTORS.length);
 console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
 console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.length);
 console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.length);
