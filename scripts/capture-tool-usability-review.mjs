@@ -394,15 +394,34 @@ try {
   await checkPersistentHints('建筑目录', 'workspace-building');
   await operationHintsShot('workspace-building');
   const activeDesignFilter = page.locator('.workspace--design .workspace-context-filter__scroll>button.is-active').first();
-  const characterWorkspaceNode = await activeDesignFilter.evaluate(element => {
-    const node = getComputedStyle(element, '::after');
-    return { backgroundColor: node.backgroundColor, boxShadow: node.boxShadow, width: node.width, height: node.height, transform: node.transform };
-  });
+  const activeDockCategory = page.locator('.main-dock__category-button.is-active').first();
+  const [characterWorkspaceNode, characterDockCategory] = await Promise.all([
+    activeDesignFilter.evaluate(element => {
+      const node = getComputedStyle(element, '::after');
+      return { backgroundColor: node.backgroundColor, boxShadow: node.boxShadow, width: node.width, height: node.height, transform: node.transform };
+    }),
+    activeDockCategory.evaluate(element => {
+      const style = getComputedStyle(element);
+      const base = getComputedStyle(element, '::before');
+      const node = getComputedStyle(element, '::after');
+      return {
+        backgroundImage: style.backgroundImage,
+        baseColor: base.backgroundColor,
+        nodeColor: node.backgroundColor,
+        nodeShadow: node.boxShadow,
+      };
+    }),
+  ]);
   assert.equal(characterWorkspaceNode.backgroundColor, 'rgb(197, 164, 105)', 'Design Workspace 榫节点必须使用当前 Brass High');
   assert(characterWorkspaceNode.boxShadow === 'none' || characterWorkspaceNode.boxShadow === '', 'Design Workspace 榫节点不得保留历史 Glow');
   assert.equal(characterWorkspaceNode.width, '4px', 'Design Workspace 榫节点结构尺寸不得回退');
   assert.equal(characterWorkspaceNode.height, '4px', 'Design Workspace 榫节点结构尺寸不得回退');
-  report.checks.push({ label: 'Character Workspace tenon node', characterWorkspaceNode });
+  assert(characterDockCategory.backgroundImage.includes('169, 132, 75'), 'Category Selected 底座必须使用当前 Command Active Brass Hue');
+  assert.equal(characterDockCategory.baseColor, 'rgb(169, 132, 75)', 'Category 底部结构线必须使用当前 Brass');
+  assert.equal(characterDockCategory.nodeColor, 'rgb(197, 164, 105)', 'Category 榫节点必须使用当前 Brass High');
+  assert(characterDockCategory.nodeShadow === 'none' || characterDockCategory.nodeShadow === '', 'Category 榫节点不得保留历史 Glow');
+  assert(!JSON.stringify({ characterWorkspaceNode, characterDockCategory }).includes('210, 179, 111'), 'Character Workspace / Category 不得继续渲染旧 210/179/111 Hue');
+  report.checks.push({ label: 'Character Workspace + Category structural accent', characterWorkspaceNode, characterDockCategory });
   await page.screenshot({ path: `${out}/character-workspace-node.png` }); report.screenshots.push('character-workspace-node');
 
   const designRailPagerMarks = page.locator('.workspace--design .workspace-rail-pager button span');
@@ -718,33 +737,15 @@ try {
   await topControlTrayShot();
   await checkMainDock('Main Dock/设计', 'design', 8);
   const activeDockMode = page.locator('.main-dock__mode-button.is-active').first();
-  const activeDockCategory = page.locator('.main-dock__category-button.is-active').first();
-  const characterDockMetrics = await Promise.all([
-    activeDockMode.evaluate(element => {
-      const style = getComputedStyle(element);
-      const marker = getComputedStyle(element, '::after');
-      return { backgroundImage: style.backgroundImage, markerColor: marker.backgroundColor, markerShadow: marker.boxShadow };
-    }),
-    activeDockCategory.evaluate(element => {
-      const style = getComputedStyle(element);
-      const base = getComputedStyle(element, '::before');
-      const node = getComputedStyle(element, '::after');
-      return {
-        backgroundImage: style.backgroundImage,
-        baseColor: base.backgroundColor,
-        nodeColor: node.backgroundColor,
-        nodeShadow: node.boxShadow,
-      };
-    }),
-  ]);
-  assert(characterDockMetrics[0].backgroundImage.includes('169, 132, 75'), 'Mode Rail Selected 必须使用当前 Command Active Brass Hue');
-  assert.equal(characterDockMetrics[0].markerColor, 'rgb(169, 132, 75)', 'Mode Rail 结构线必须使用当前 Brass');
-  assert(characterDockMetrics[1].backgroundImage.includes('169, 132, 75'), 'Category Selected 底座必须使用当前 Command Active Brass Hue');
-  assert.equal(characterDockMetrics[1].baseColor, 'rgb(169, 132, 75)', 'Category 底部结构线必须使用当前 Brass');
-  assert.equal(characterDockMetrics[1].nodeColor, 'rgb(197, 164, 105)', 'Category 榫节点必须使用当前 Brass High');
-  assert(characterDockMetrics[1].nodeShadow === 'none' || characterDockMetrics[1].nodeShadow === '', 'Category 榫节点不得保留历史 Glow');
-  assert(!JSON.stringify(characterDockMetrics).includes('210, 179, 111'), 'Character Main Dock 不得继续渲染旧 210/179/111 Hue');
-  report.checks.push({ label: 'Character Main Dock structural accent', characterDockMetrics });
+  const characterDockMode = await activeDockMode.evaluate(element => {
+    const style = getComputedStyle(element);
+    const marker = getComputedStyle(element, '::after');
+    return { backgroundImage: style.backgroundImage, markerColor: marker.backgroundColor, markerShadow: marker.boxShadow };
+  });
+  assert(characterDockMode.backgroundImage.includes('169, 132, 75'), 'Mode Rail Selected 必须使用当前 Command Active Brass Hue');
+  assert.equal(characterDockMode.markerColor, 'rgb(169, 132, 75)', 'Mode Rail 结构线必须使用当前 Brass');
+  assert(!JSON.stringify(characterDockMode).includes('210, 179, 111'), 'Character Mode Rail 不得继续渲染旧 210/179/111 Hue');
+  report.checks.push({ label: 'Character Main Dock mode accent', characterDockMode });
   await page.screenshot({ path: `${out}/character-main-dock.png` }); report.screenshots.push('character-main-dock');
   await mainDockShot('design');
   const mainDockSwitch = page.locator('.main-dock');
