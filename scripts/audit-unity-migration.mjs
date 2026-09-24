@@ -77,6 +77,14 @@ const metrics={
   pseudoElements:0,
   backdropFilters:0,
   imageFilters:0,
+  linearGradients:0,
+  radialGradients:0,
+  boxShadows:0,
+  brightnessFilters:0,
+  saturateFilters:0,
+  composedColorVariables:0,
+  variableMath:0,
+  backdropTransitions:0,
   browserApis:0,
 };
 const backdropFiles=new Set();
@@ -219,6 +227,18 @@ for(const file of files){
     metrics.pseudoElements+=count(/::before|::after/g,text);
     metrics.imageFilters+=count(/(^|[;{]\s*)filter\s*:/gm,text);
 
+    // Unity 6000.6.2f1 compatibility telemetry.
+    // These are intentionally warning-only while Theme / Surface / Control cleanup is still active.
+    // After visual governance converges, freeze the measured baseline and convert suitable metrics to ratchets.
+    metrics.linearGradients+=count(/linear-gradient\s*\(/gi,text);
+    metrics.radialGradients+=count(/radial-gradient\s*\(/gi,text);
+    metrics.boxShadows+=count(/\bbox-shadow\s*:/gi,text);
+    metrics.brightnessFilters+=count(/\bbrightness\s*\(/gi,text);
+    metrics.saturateFilters+=count(/\bsaturate\s*\(/gi,text);
+    metrics.composedColorVariables+=count(/\brgba?\s*\(\s*var\s*\(/gi,text);
+    metrics.variableMath+=count(/\b(?:calc|min|max|clamp)\s*\([^;{}\n]*var\s*\(/gi,text);
+    metrics.backdropTransitions+=count(/\btransition(?:-property)?\s*:[^;{}\n]*backdrop-filter\b/gi,text);
+
     if(/@import\s+url\(/.test(text)){
       warnings.push(`${file}: external web-font import is Web-only; Unity must use imported font assets.`);
     }
@@ -249,6 +269,21 @@ if(metrics.pseudoElements){
 if(metrics.imageFilters){
   warnings.push(`CSS filter migration debt: ${metrics.imageFilters} declarations. Plan Tint/Overlay/Material equivalents.`);
 }
+if(metrics.linearGradients || metrics.radialGradients){
+  warnings.push(`Unity 6000.6.2f1 gradient compatibility debt: linear=${metrics.linearGradients}, radial=${metrics.radialGradients}. Do not add new visual dependencies; audit remains telemetry-only until the current color/surface cleanup converges.`);
+}
+if(metrics.boxShadows){
+  warnings.push(`CSS box-shadow migration debt: ${metrics.boxShadows} declarations. Unity hierarchy must remain readable with solid tint/alpha/edge even when Web shadow is removed.`);
+}
+if(metrics.brightnessFilters || metrics.saturateFilters){
+  warnings.push(`Custom filter dependency: brightness=${metrics.brightnessFilters}, saturate=${metrics.saturateFilters}. Keep these centralized and non-essential to control state readability.`);
+}
+if(metrics.composedColorVariables || metrics.variableMath){
+  warnings.push(`USS variable composition debt: rgb/rgba(var())=${metrics.composedColorVariables}, math-with-var=${metrics.variableMath}. Prefer final semantic token values for Unity migration.`);
+}
+if(metrics.backdropTransitions){
+  warnings.push(`Backdrop transition debt: ${metrics.backdropTransitions} declarations reference backdrop-filter in transitions. Blur radius must not be a required interaction animation.`);
+}
 if(metrics.browserApis){
   warnings.push(`Browser API adapters: ${metrics.browserApis} references. Keep them at Web adapter boundaries; do not let them own game state.`);
 }
@@ -265,6 +300,14 @@ console.log(`CSS Grid declarations: ${metrics.cssGrid}`);
 console.log(`Pseudo-element selectors: ${metrics.pseudoElements}`);
 console.log(`Backdrop filter declarations: ${metrics.backdropFilters}`);
 console.log(`CSS filter declarations: ${metrics.imageFilters}`);
+console.log(`Linear gradients: ${metrics.linearGradients}`);
+console.log(`Radial gradients: ${metrics.radialGradients}`);
+console.log(`Box shadows: ${metrics.boxShadows}`);
+console.log(`brightness() filters: ${metrics.brightnessFilters}`);
+console.log(`saturate() filters: ${metrics.saturateFilters}`);
+console.log(`rgb/rgba(var()) compositions: ${metrics.composedColorVariables}`);
+console.log(`CSS math with var(): ${metrics.variableMath}`);
+console.log(`Backdrop filter transitions: ${metrics.backdropTransitions}`);
 console.log(`Browser API references: ${metrics.browserApis}`);
 
 if(lucideIcons.size){

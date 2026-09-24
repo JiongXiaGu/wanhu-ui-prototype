@@ -21,6 +21,17 @@
 
 目标运行时为 Unity 6.6 + URP + UI Toolkit，但本仓库只治理 Web 视觉原型、设计权威和迁移依据，不在这里维护正式 Unity USS 镜像。Unity 制作 AI 负责后续 UXML / USS / Player 实现。引擎能力以 6.6 专项规范及官方对应版本为准；不使用历史“不能模糊 UI”限制新设计，也不把原生能力写成已经完成 Player 实测。
 
+### Unity 6000.6.2f1 实测兼容基线
+
+当前项目安装版本的实际验证结果优先于通用 Web CSS 能力和跨版本文档推断。设计与审查按以下顺序判断：**本项目 6000.6.2f1 实测 > 对应版本官方文档 > Web 浏览器实现**。
+
+- Runtime 视觉不得新增对 `linear-gradient()` / `radial-gradient()` 的必要依赖；6000.6.2f1 当前会拒绝这类 USS 背景。Unity 6.7 已有渐变文档，但必须等项目升级并重新实测后才能解除限制。
+- 不把 CSS `box-shadow`、Inset / Spread 或虚线边框当成 Unity 可逐字复刻能力；层级首先由纯色、透明度、实线边缘和结构承担。
+- `brightness()` / `saturate()` 当前依赖项目自定义滤镜，不作为每个小控件可任意组合的基础状态语言。
+- `backdrop-filter` 只允许共享 Surface 的静态能力；不动画 Blur Radius，不把它用于 World Space / 非 URP 的必要交互。
+- USS 变量按最终语义 Token 使用；不依赖 `rgb(var(...))`、`rgba(var(...))` 或变量数学运算。
+- 当前配色 / Surface / Control 治理尚在并行收敛。兼容审计现阶段对上述 Web-only 特效先做**非阻塞统计与警告**，不以历史存量打断正在进行的视觉整理；整理完成后再冻结 Baseline，升级为“只减不增”的 Ratchet Guard。
+
 ## 取色与样式权威
 
 必须读取 `src/main.tsx` 的实际导入顺序，再追踪 Theme / Surface / Controls / 组件前景的最终选择器、作用域与状态。`src/styles.css :root` 的旧 `--paper / --gold / --workspace` 不是当前共享 Palette；也不能假定旧变量已全部自动重定向。

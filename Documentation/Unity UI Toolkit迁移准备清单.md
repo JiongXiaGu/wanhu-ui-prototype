@@ -33,22 +33,54 @@
 
 ## 3. Runtime CSS Guard
 
-### 直接禁止
+兼容性判断以《Unity 6.6视觉能力与回退规范》的 **6000.6.2f1 实测基线**为准。
+
+### 立即硬禁止
 
 - `:has()`；
-- 新组件自己新增 `backdrop-filter`；
+- 新组件自己新增 `backdrop-filter` Owner；
 - `transition:.16s ease` 这类未声明属性且脱离 Motion Token 的 shorthand；
+- 对 `backdrop-filter` / Blur Radius 做必要交互动画；
 - 大型 Surface Width / Height 动画；
 - 依赖 DOM 当前形状推断业务状态。
 
-### 可继续使用，但必须有映射
+### 新设计不得依赖
+
+以下能力在 Web 可以暂时存在历史实现，但**新设计不能把它们作为视觉成立的必要条件**：
+
+- `linear-gradient()` / `radial-gradient()`；
+- CSS `box-shadow`，特别是 inset / spread / 多层复合阴影；
+- `brightness()` / `saturate()`；
+- `rgb(var(...))` / `rgba(var(...))`；
+- 对 CSS Variable 做数学组合后才得到最终颜色或几何；
+- 只有 Blur 开启时才可读的半透明 Surface。
+
+### 可继续使用，但必须有 Unity 映射
 
 - CSS Grid：只用于原型排版，布局必须可拆成 Flex/UXML Row + Column；
 - `::before / ::after`：纯装饰可保留；有结构语义时迁成真实节点；
-- Gradient：迁移为 Tint / 小型纹理 / Sprite / Painter2D；
-- box-shadow：迁移为层级、9-slice 或 Shadow Element；
-- filter：迁移为 Tint / Overlay / Material；
+- Web-only Gradient：迁移为明确 Tint / Overlay / 小型纹理 / Sprite / Painter2D；
+- Web-only Shadow：迁移为 Edge / 层级 / 9-slice / Shadow Element / 经实测的 drop-shadow；
+- Web-only Filter：迁移为 Tint / Overlay / Material / 共享自定义 Filter；
 - Browser API：只能属于 Web Adapter。
+
+### 当前审计阶段
+
+配色 / Surface / Control 仍在并行治理，因此兼容工作分两阶段：
+
+**阶段 A：现在**
+- `audit:unity` 统计 Gradient、box-shadow、brightness、saturate、变量组合与 Backdrop Transition；
+- 这些新增指标先输出 Warning / Telemetry；
+- 不因为历史存量阻塞正在进行的视觉整理；
+- AI 不得因为“CI 目前只是 Warning”而继续扩散这些能力。
+
+**阶段 B：视觉治理收敛后**
+- 全仓盘点存量；
+- 明确必须删除 / 可以降级 / 纯 Web Enhancement / 已有 Unity 等价物；
+- 冻结 Baseline；
+- 将可量化项目升级为 Ratchet Guard：历史值只减不增，新文件不得引入。
+
+Unity 6.7 升级后另做 Capability Revalidation；在实测完成前不提前解除 6.6 Guard。
 
 ## 4. 已完成的迁移准备
 
