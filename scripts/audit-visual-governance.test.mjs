@@ -682,3 +682,28 @@ test('Active Line remains distinct from weak Selected border',async()=>{
   }.marker{background:var(--wanhu-control-active-line)}`});
   assert.equal(result.status,0,result.output);
 });
+
+test('reject retired Archive Global Space button skin owners',async()=>{
+  const result=await runAudit({'src/archive/archive-panel.css':`
+    .global-space-secondary,.global-space-primary{background:#111;color:#eee}
+    .global-space-primary:hover:not(:disabled){background:#222}
+    .archive-footer-back{border-color:#333}
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/Archive must not own Global Space Button skin/);
+  assert.match(result.output,/\.global-space-secondary/);
+  assert.match(result.output,/\.global-space-primary/);
+  assert.match(result.output,/\.archive-footer-back/);
+});
+
+test('preserve Archive footer and utility action geometry after shared button skin retirement',async()=>{
+  const result=await runAudit({'src/archive/archive-panel.css':`
+    .global-space-footer{flex:0 0 72px;display:flex;align-items:center;justify-content:space-between;padding:0 44px}
+    .global-space-footer>div{display:flex;align-items:center;gap:9px}
+    .archive-space__footer-left,.archive-space__footer-right{display:flex;align-items:center;gap:8px}
+    .archive-footer-action{height:36px;padding:0 10px;display:inline-flex}
+    .archive-footer-action--danger:hover:not(:disabled){color:#c7867c;background:rgba(152,84,71,.04)}
+  `});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Archive Global Space button owner selectors guarded: 3/);
+});

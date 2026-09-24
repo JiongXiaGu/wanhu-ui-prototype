@@ -118,17 +118,11 @@
 /* 共用页脚的尺寸契约，材质和统一按钮外观由共享系统负责。 */
 .global-space-footer{flex:0 0 72px;display:flex;align-items:center;justify-content:space-between;padding:0 44px;border-top-width:1px;border-top-style:solid;color:var(--wanhu-color-paper-tertiary);font-size:var(--wanhu-type-caption)}
 .global-space-footer>div{display:flex;align-items:center;gap:9px}
-.global-space-secondary,.global-space-primary{height:36px;min-width:94px;padding:0 13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--wanhu-control-border-soft);border-radius:8px;background:var(--ui-field-surface);color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-label);cursor:pointer}
-.global-space-secondary:hover{background:var(--wanhu-control-hover);color:var(--wanhu-color-paper-primary)}
-.global-space-primary{min-width:112px;border-color:rgba(197,164,105,.28);background:var(--wanhu-control-active-bg);color:var(--wanhu-color-brass-text)}
-.global-space-primary:hover:not(:disabled){border-color:rgba(197,164,105,.40);background:rgba(169,132,75,.11);color:var(--wanhu-color-brass-text)}
-.global-space-primary:disabled{opacity:.32;cursor:default}
 .archive-space__footer-left,.archive-space__footer-right{display:flex;align-items:center;gap:8px}
 .archive-footer-action{height:36px;padding:0 10px;display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-label);cursor:pointer;transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease}
 .archive-footer-action:hover:not(:disabled){color:var(--wanhu-color-text-secondary);background:var(--wanhu-control-hover)}
 .archive-footer-action--danger:hover:not(:disabled){color:#c7867c;background:rgba(152,84,71,.04)}
 .archive-footer-action:disabled{opacity:.32;cursor:default}
-.archive-footer-back{min-width:86px;color:var(--wanhu-color-paper-secondary);border-color:var(--wanhu-control-border-soft)}
 
 @media (max-width:1500px){
   .archive-space__layout{width:min(1340px,calc(100% - 100px));gap:26px}
