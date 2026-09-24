@@ -382,6 +382,23 @@ Feature 只选择 Surface 角色，不私有维护大型表面的完整背景配
 
 下一批转向 Blocking / Global Space Surface，仍遵循“先证明真实覆盖与 Consumer，再删旧 Owner”的顺序，不提前整理 Control 状态。
 
+
+### Phase 3 进度：Batch 16 已完成
+
+第三批收敛 Blocking / Global Space Surface 的重复 Owner，保持既有最终视觉：
+
+- 根 `styles.css` 删除已被专用 Pause 几何与 Surface System 完全接管的旧 `.pause-layer / .pause-shade`；
+- `archive-panel.css` 的通用 Header / Footer 只保留布局与 Border width/style，不再持有共享背景、Rule 色、Shadow 或 Blur；
+- `ui-visual-system.css` 删除旧 Global Footer 材质块，并退役 `--ui-footer-surface-top / bottom / backdrop`；
+- New Game / Save Root 删除私有透明背景声明；最终 Global Space Root / Header / Footer 继续直接消费 `--wanhu-global-space-*`；
+- 新增文件级 Ownership Guard，阻止 Archive / Save / New Game / Settings / UI Visual 重新建立第二套共享 Surface，也阻止根 `styles.css` 恢复 Pause Owner。
+
+Runtime 提交为 `cd6f556d1bf9b1d4d3070a28574e152fa046ecb3`。Guard 迭代期间出现过转义错误导致的失败 Build，但没有继续修改 Runtime CSS；最终审计代码提交 `ca9565ad7e42a2f5f14693bd02b0747e2d806e9b` 的 Build #1545（Run `36013244997`）通过，128 tests / 128 pass / 0 fail，64 个 Runtime CSS 的旧共享色债务仍为 0。
+
+同一 Runtime 的 UI Review #485（Run `36013056471`）通过。已实际查看 New Game / Settings / Save 完整截图；Visual Governance 报告 25 组 checks，`runtimeErrors: []`。本批没有改变 Global Space Recipe 数值，也没有借机整理 Warning / Danger 或按钮状态。
+
+随后并行合入的 Unity 6000.6.2f1 兼容 Workflow 只增加迁移 Telemetry / 文档，不修改本批 Runtime Surface。下一批进入 Persistent HUD / Elevated Surface，先核对 HUD Bridge 与 Edge/Elevation 最终 Consumer，再决定是否可以退役；Rich Hover / Tooltip 与 Control 状态继续保持各自边界。
+
 ## Phase 4：Control 与 Overlay 收敛
 
 目标：基础控件与浮层不再因 Feature 不同而出现近似但不同的状态色。
