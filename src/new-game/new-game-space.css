@@ -132,6 +132,9 @@
   background:linear-gradient(90deg,var(--wanhu-global-space-item-selected),rgba(169,132,75,.010) 78%,transparent);
   border-color:transparent;
 }
+.new-game-map-card.is-selected:focus-visible{
+  border-color:var(--wanhu-control-focus);
+}
 .new-game-map-card.is-selected::before{
   content:'';
   position:absolute;
