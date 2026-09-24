@@ -1591,4 +1591,29 @@ await page.waitForSelector('.context-utility-toolbar[data-utility-context="world
 await page.waitForTimeout(160);
 await page.screenshot({ path: outDir + '/color-tool-44-return-gameplay.png' });
 
+// Loading is a first-class outer screen: keep one deterministic 62% review state.
+await open('loading', '.loading-space');
+const loadingTip = page.locator('.loading-space__tip');
+await loadingTip.focus();
+const loadingFocusColor = await loadingTip.evaluate(node => getComputedStyle(node).outlineColor);
+if (loadingFocusColor !== 'rgb(209, 180, 122)') {
+  throw new Error('Loading tip Focus must consume the current Brass Text focus token. color=' + loadingFocusColor);
+}
+const loadingProgress = page.locator('.loading-space__track i');
+const loadingProgressStyle = await loadingProgress.evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+});
+if (loadingProgressStyle.backgroundImage.includes('rgb(201, 165, 95)')) {
+  throw new Error('Loading progress must not restore the retired 201/165/95 Brass hue.');
+}
+if (!loadingProgressStyle.backgroundImage.includes('rgb(169, 132, 75)')
+  || !loadingProgressStyle.backgroundImage.includes('rgb(197, 164, 105)')) {
+  throw new Error('Loading progress must consume the current Brass / Brass High palette.');
+}
+if ((await page.locator('.loading-space__status b').textContent())?.trim() !== '62%') {
+  throw new Error('Loading review state must remain deterministic at 62%.');
+}
+await page.screenshot({ path: outDir + '/loading-space.png' });
+
 await browser.close();
