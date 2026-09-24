@@ -150,6 +150,7 @@ try {
   await page.keyboard.press('Tab');
   await unityCoreSegment.focus();
   const unityCoreSegmentState = await unityCoreSegment.evaluate(element => {
+    element.style.setProperty('transition', 'none', 'important');
     element.style.setProperty('box-shadow', 'none', 'important');
     element.style.setProperty('background-image', 'none', 'important');
     if (element.parentElement) element.parentElement.style.setProperty('box-shadow', 'none', 'important');
@@ -181,6 +182,8 @@ try {
     const thumb = element.querySelector('.ui-slider__thumb');
     const input = element.querySelector('input');
     if (!track || !fill || !thumb || !input) throw new Error('Unity Core Slider structure missing.');
+    track.style.setProperty('transition', 'none', 'important');
+    thumb.style.setProperty('transition', 'none', 'important');
     track.style.setProperty('box-shadow', 'none', 'important');
     fill.style.setProperty('background-image', 'none', 'important');
     thumb.style.setProperty('box-shadow', 'none', 'important');
