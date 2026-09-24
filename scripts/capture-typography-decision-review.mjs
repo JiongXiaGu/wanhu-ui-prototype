@@ -26,6 +26,22 @@ async function shot(name) {
   await page.screenshot({ path: `${outDir}/${name}.png` });
   report.screenshots.push(name);
 }
+async function disableWebOnlyControlEnhancements() {
+  await page.addStyleTag({ content: `
+    .game-canvas .segment,
+    .game-canvas .bp-segment,
+    .game-canvas .new-game-segmented,
+    .game-canvas .segment>button.is-active,
+    .game-canvas .bp-segment>button.is-active,
+    .game-canvas .new-game-segmented>button.is-active,
+    .ui-slider__track,
+    .ui-slider__thumb { box-shadow:none!important; }
+    .game-canvas .segment>button.is-active,
+    .game-canvas .bp-segment>button.is-active,
+    .game-canvas .new-game-segmented>button.is-active,
+    .ui-slider__track>i { background-image:none!important; }
+  ` });
+}
 async function assertFont(selector, minimum, label) {
   const rows = await page.locator(selector).evaluateAll(elements => elements.flatMap(element => {
     const rect = element.getBoundingClientRect();
@@ -144,6 +160,64 @@ try {
   assert(parseFloat(newGameFilterFocus.outlineWidth) >= 1, 'New Game Focus 轮廓必须可见');
   report.checks.push({ label: 'New Game Selected + Focus', ...newGameFilterFocus });
   await shot('readability-new-game-focus');
+
+  // Unity 6000.6 Core：去掉 Web-only gradient / shadow 后，Selected 与 Focus 仍由纯色和轮廓成立。
+  await disableWebOnlyControlEnhancements();
+  const unityCoreSegment = page.locator('.new-game-segmented>button.is-active').first();
+  await page.keyboard.press('Tab');
+  await unityCoreSegment.focus();
+  const unityCoreSegmentState = await unityCoreSegment.evaluate(element => {
+    const style = getComputedStyle(element);
+    return {
+      selected: element.classList.contains('is-active'),
+      focusVisible: element.matches(':focus-visible'),
+      backgroundImage: style.backgroundImage,
+      backgroundColor: style.backgroundColor,
+      outlineColor: style.outlineColor,
+      outlineWidth: style.outlineWidth,
+    };
+  });
+  assert(unityCoreSegmentState.selected && unityCoreSegmentState.focusVisible, 'Unity Core Segmented Selected 与 Focus 必须同时存在');
+  assert.equal(unityCoreSegmentState.backgroundImage, 'none', 'Unity Core Review 必须关闭 Segmented gradient');
+  assert.notEqual(unityCoreSegmentState.backgroundColor, 'rgba(0, 0, 0, 0)', 'Segmented 必须有纯色 Selected fallback');
+  assert(parseFloat(unityCoreSegmentState.outlineWidth) >= 1, 'Segmented Focus 不能依赖 shadow');
+  report.checks.push({ label: 'Unity Core Segmented Selected + Focus', ...unityCoreSegmentState });
+  await shot('readability-unity-core-segmented');
+
+  await open('settings', '.settings-space');
+  await page.getByRole('button', { name: '图形', exact: true }).click();
+  await disableWebOnlyControlEnhancements();
+  const unityCoreSliderInput = page.getByRole('slider', { name: '渲染比例', exact: true });
+  await page.keyboard.press('Tab');
+  await unityCoreSliderInput.focus();
+  const unityCoreSliderState = await page.locator('[data-setting-id="render-scale"] .ui-slider').evaluate(element => {
+    const track = element.querySelector('.ui-slider__track');
+    const fill = track?.querySelector('i');
+    const thumb = element.querySelector('.ui-slider__thumb');
+    const input = element.querySelector('input');
+    if (!track || !fill || !thumb || !input) throw new Error('Unity Core Slider structure missing.');
+    const trackStyle = getComputedStyle(track);
+    const fillStyle = getComputedStyle(fill);
+    const thumbStyle = getComputedStyle(thumb);
+    return {
+      focusVisible: input.matches(':focus-visible'),
+      fillBackgroundImage: fillStyle.backgroundImage,
+      fillBackgroundColor: fillStyle.backgroundColor,
+      trackBoxShadow: trackStyle.boxShadow,
+      trackOutlineColor: trackStyle.outlineColor,
+      trackOutlineWidth: trackStyle.outlineWidth,
+      thumbBoxShadow: thumbStyle.boxShadow,
+    };
+  });
+  assert(unityCoreSliderState.focusVisible, 'Unity Core Slider input Focus 必须可见');
+  assert.equal(unityCoreSliderState.fillBackgroundImage, 'none', 'Unity Core Review 必须关闭 Slider gradient');
+  assert.notEqual(unityCoreSliderState.fillBackgroundColor, 'rgba(0, 0, 0, 0)', 'Slider Fill 必须有纯色 fallback');
+  assert.equal(unityCoreSliderState.trackBoxShadow, 'none', 'Unity Core Review 必须关闭 Slider track shadow');
+  assert.equal(unityCoreSliderState.thumbBoxShadow, 'none', 'Unity Core Review 必须关闭 Slider thumb shadow');
+  assert(parseFloat(unityCoreSliderState.trackOutlineWidth) >= 1, 'Slider Focus 必须有非 shadow 轮廓');
+  report.checks.push({ label: 'Unity Core Slider Fill + Focus', ...unityCoreSliderState });
+  await shot('readability-unity-core-slider');
+
 
   const selectedMapCard = page.locator('.new-game-map-card.is-selected').first();
   await selectedMapCard.focus();
