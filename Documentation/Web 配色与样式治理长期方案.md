@@ -255,7 +255,29 @@ Phase 1 下一批处理 Global Space 家族剩余旧 Focus 债务（`fullscreen-
 
 验证：Build #1516 与 UI Review #475 通过，`audit:visual` 通过；已实际查看建筑 Rich Hover 截图，造价保持低面积熟铜强调，Hover Surface 没有整体发金或层级回退。临时 PR #15 用于验证且不合并。
 
-Phase 1 Ratchet 现在只剩 `src/ui/wanhu-character.css`。下一批只审查 Character Structural Accent 的旧 210/179/111 Hue，区分“应迁移到当前 Character / Brass Token 的结构强调”和“应删除的历史 Glow”，不做机械 Replace All。
+### Phase 1 进度：Batch 10 已完成
+
+第十批只处理 Character Structural Accent 的旧 210/179/111 Hue，不改 Main Dock / Workspace 几何、Category 数量、Mode Rail 布局、状态动画或 Surface：
+
+- Design Workspace 当前筛选的 4×4 榫节点继续保留，但颜色直接使用当前 Brass High，旧浅金 Glow 删除；
+- Main Dock Category 的底部“平台基座”构图继续保留，Selected 渐变改复用现有 `--wanhu-command-active-top / bottom`，不再维护第二套 Character Fill Hue；
+- Category 状态线使用当前 Brass，4×4 榫节点使用当前 Brass High，并删除历史 Glow；
+- Mode Rail Selected 背景同样消费 Command Active Token，结构线使用当前 Brass；
+- `src/ui/wanhu-character.css` 已从 Ratchet Baseline 移除；Baseline 现在为空，Guard 从“只减不增”正式进入“任何退役共享色重新出现都失败”的状态。
+
+验证首轮临时 PR #16 暴露的是 Review 场景错误：普通 Gameplay 初始状态 `activeCategory=null`，测试不应等待不存在的 Active Category。Runtime 修改与 Build 正常。随后将 Category 检查移动到真实 `workspace-building` 状态；第二轮 Build #1523 与 UI Review #479 均通过，`audit:visual` 在空 Baseline 下通过。已实际查看 Main Dock Design 与建筑 Workspace：Selected 仍保持克制熟铜结构识别，节点无 Glow，Workspace / Main Dock 几何无回退。临时 PR #17 用于验证且不合并。
+
+### Phase 1 完成
+
+Phase 1 的退役共享 Palette 清理至此结束：
+
+- Runtime CSS 不再允许旧 `--paper / --gold*`；
+- 旧 `#c9a55f / #e2c27d / #efe9dd / rgba(201,165,95,...) / rgba(210,179,111,...)` 已退出 Runtime 债务；
+- 旧 Card Brass `#c9aa68 / rgba(201,170,104,...)` 也已退出；
+- `LEGACY_SHARED_COLOR_BASELINE_FILES` 为空；
+- `audit:visual` 继续保留，作为防止退役 Theme 回流的长期 Guard，而不是删除。
+
+下一阶段进入 Phase 2，不再按“发现旧 RGB 就替换”的方式推进，而是审查 Semantic Token 所有权、兼容别名与 Consumer 边界。
 
 ## Phase 2：Semantic Token 收敛
 
