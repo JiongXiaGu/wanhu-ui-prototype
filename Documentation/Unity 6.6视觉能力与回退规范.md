@@ -98,6 +98,8 @@ USS 不是完整 CSS 变量系统。Web 原型不要把迁移成立建立在以�
 
 Web Enhancement 可以存在，但只能是附加表现，不能负责核心信息层级或交互状态。
 
+当前 Web Review 已为共享 Segmented / Slider 增加 Unity-Compatible Core 专项：测试在最终待测节点上关闭 Gradient、box-shadow 与相关 transition，再验证 Selected / Fill / Focus 是否仍由纯色和 Outline 成立。该专项属于 **Web 迁移证据**，用于防止设计重新依赖浏览器特效；它不等于 Unity 6000.6 Player / Editor 已完成实现或性能验证。
+
 ## Surface 决策
 
 继续使用 Ambient / Context / Work / Blocking / Elevated 五类职责，均属于中性烟墨材质家族。
@@ -135,7 +137,7 @@ Web CSS 不与 USS 逐字等价。Grid、伪元素、Mask、渐变、复杂 Shad
 
 ## 当前 CI 策略
 
-当前配色、Surface 与 Control 治理仍在并行推进，因此本阶段：
+配色、Surface 与 Control 主体治理已进入收尾；在收尾 B 完成兼容存量分类与 Baseline 冻结前：
 
 - 现有迁移硬 Guard 继续阻塞回归；
 - Gradient / box-shadow / brightness / saturate / USS 变量组合等新兼容项先进入 `audit:unity` **Telemetry / Warning**；
