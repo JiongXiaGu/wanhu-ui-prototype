@@ -37,6 +37,18 @@
 
 本地已执行：73 项审计回归全部通过；`audit:visual` 扫描 64 个 Runtime CSS、旧共享色债务 0；`audit:scale`、`audit:unity` 通过；新截图脚本通过 `node --check`。迁移审计仍报告既有 Grid / 伪元素 / Filter 等债务，不代表 Unity 已落地。
 
-本地缺少 `sharp`，未完成依赖它的工具检查与完整构建；以对应 GitHub Actions 为准。完整 Build、UI Review、截图下载和实际审图待本提交验证后记录，不预先声称通过。
+本地缺少 `sharp`，本地没有完成依赖它的工具检查与完整构建；这些检查随后在 GitHub Actions 的正常依赖环境中通过，不把两种环境混为一谈。
+
+Runtime 提交为 `dd1d76db1a4f3719bf70a7fbcf34d11384503c3d`：
+
+- Build #1532，Run `35998212810`，全部通过。除 73 项审计回归及各 Guard 外，图标资产检查、130 项 Tool Usability、11 项 Building Selection / Scheme / Placement、8 项 World Utility / Demolition 和 `tsc -b && vite build` 均通过。既有迁移债务与构建 Chunk 大小警告没有被隐藏或误称已解决。
+- UI Review #481，Run `35998212792`，全部通过，包含新增 HUD 检查及原有页面、Dialog、Typography、工具布局与建筑选择检查，没有只运行局部截图后就跳过原矩阵。
+- `hud-foreground-review` Artifact `10807291076` 已下载。报告 `source` 与上述 Runtime SHA 相同，52 组检查、6 张截图、`errors: []`。这些数字指报告记录，不等同于独立测试用例总数。
+
+已实际查看以下本次生成的完整页面：`hud-foreground-day-1080.png`、`hud-foreground-day-hover.png`、`hud-foreground-night-1080.png`、`hud-foreground-night-focus.png`、`hud-foreground-day-2160.png`、`hud-foreground-night-2160.png`。为适配图像查看器，使用同尺寸 JPEG 预览 1080p；4K 使用全图缩览，并额外查看原尺寸顶部 HUD 裁切。原始 PNG 保留，没有调色或改写截图内容。
+
+所查看页面未发现明显文字缺失、遮挡或焦点状态异常；指标数值维持 Paper Primary，速度默认灰、Hover 提亮、Brass High 选中与独立 Focus 轮廓均符合报告。昼夜 Surface 密度保持原值，Top Tray 逻辑尺寸仍为 400×38。没有用 Batch 11 截图冒充本批结果。
+
+收尾提交只同步本文与《工作交接》，Runtime 与上述受测提交一致，不为纯文档改动重复跑视觉矩阵。
 
 Web 通过不等于 Unity 6.6 Player、字体资产、设备性能或最终美术验收。未做前后截图逐像素比较。
