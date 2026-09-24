@@ -518,13 +518,18 @@ test('reject retired Dialog Choice Dropdown skin owner selectors',async()=>{
   assert.match(result.output,/\.ui-dialog-choice-menu/);
 });
 
-test('preserve Dialog Select density modifiers on shared SelectControl classes',async()=>{
-  const result=await runAudit({'src/ui/dialog/dialog.css':`
-    .ui-dialog-choice-select{width:100%}
-    .ui-dialog-choice-select .ui-select__trigger{height:40px;padding-right:12px;border-radius:9px;font-size:10px}
-    .ui-dialog-choice-select .ui-select__menu{max-height:150px;border-radius:9px}
-    .ui-dialog-choice-select .ui-select__menu button{height:30px;border-radius:6px;font-size:var(--wanhu-type-caption)}
-  `});
+test('preserve Dialog Select density modifiers through root geometry variables',async()=>{
+  const result=await runAudit({'src/ui/dialog/dialog.css':`.ui-dialog-choice-select{
+    width:100%;
+    --ui-select-height:40px;
+    --ui-select-padding-right:12px;
+    --ui-select-radius:9px;
+    --ui-select-font-size:10px;
+    --ui-select-menu-max-height:150px;
+    --ui-select-option-height:30px;
+    --ui-select-option-radius:6px;
+    --ui-select-option-font-size:var(--wanhu-type-caption);
+  }`});
   assert.equal(result.status,0,result.output);
   assert.match(result.output,/Retired Dialog Select owner selectors guarded: 2/);
 });
