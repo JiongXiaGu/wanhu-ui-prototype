@@ -94,7 +94,7 @@ let dialog=page.getByRole('dialog',{name:'退出游戏？'});
 await dialog.waitFor();
 await expectDialogMaterial(dialog,'Confirm Dialog');
 await expectDialogTone(dialog,'neutral');
-const confirmPrimary=dialog.getByRole('button',{name:'确认退出',exact:true});
+const confirmPrimary=dialog.getByRole('button',{name:'退出游戏',exact:true});
 await expectKeyboardFocus(confirmPrimary,'Dialog Primary Button');
 if(!(await confirmPrimary.evaluate(node=>node.classList.contains('is-primary'))))throw new Error('Primary button must retain its primary semantic class while focused.');
 await page.screenshot({path:`${outDir}/dialog-focus.png`});
