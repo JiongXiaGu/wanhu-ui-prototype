@@ -194,6 +194,20 @@ Phase 1 后续继续把 Management 与 Loading 分开处理，不把专题内容
 
 Phase 1 下一批单独处理 Loading / 外围空间债务；Management Topic Accent 不再纳入旧 Brass 清理。
 
+### Phase 1 进度：Batch 5 已完成
+
+第五批只处理 Loading 外围 Screen，不把 New Game / Save / Settings、Color Tool、Dialog / Hover 或 Character 混进同一批：
+
+- `src/loading/loading-space.css` 的旧色命中集中在 Tip Focus 和 Progress Brass；Focus 改消费 `--wanhu-control-focus`，进度条改消费当前 Brass / Brass High / Brass Text；
+- Loading 的提示图标、百分比与主要文字同时改为现行 Paper / Text / Brass Token，减少外围 Screen 继续持有近似但不同的第二套金色；
+- Loading 保持“背景图像主导 + 底部提示与进度”构图，不套 `wanhu-global-space`、Workspace 或 Blocking Panel Surface，也不改变遮罩、几何、进度动画与 Tip 轮换；
+- `src/loading/loading-space.css` 已从 Ratchet Baseline 移除；
+- UI Review 新增固定 `review=loading`、62% 进度截图与 Token 断言，并把 `loading-space.png` 纳入轻量 `visual-governance-review` Artifact，后续 Loading 改色可持续回归。
+
+验证：使用与 `main` 应用源码一致的临时 PR，仅额外开启 UI Review 的 PR 触发；Build #1490 与 UI Review #463 均通过，`audit:visual` 在 Build 中通过。已实际查看 Loading 62% 完整截图：城市画面仍是主体，进度条为克制熟铜，文字保持暖纸/中性灰，键盘 Focus 独立显示细熟铜轮廓，没有出现大面积金色 UI。临时 PR #9 已关闭，复用的 `tmp-*` 分支已恢复原 SHA。
+
+Phase 1 下一批处理 Global Space 家族剩余旧 Focus 债务（`fullscreen-actions.css` / `new-game-space.css` 等）；Color Tool、Dialog / Hover 与 Character 装饰语义继续独立分批。
+
 ## Phase 2：Semantic Token 收敛
 
 目标：Theme 管理“共享语义”，而不是收集所有 RGBA。
