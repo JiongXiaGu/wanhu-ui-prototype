@@ -61,7 +61,7 @@ const RETIRED_SEMANTIC_COMPATIBILITY_ALIASES=[
   '--wanhu-character-joint','--wanhu-character-rule','--wanhu-character-beam',
 ];
 const RETIRED_SEMANTIC_COMPATIBILITY_ALIAS_MARKERS=RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.map(name=>({
-  name,re:new RegExp(String.raw`(?<![-\\w])${name}(?![-\\w])`,'g'),
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
 }));
 
 const RETIRED_SHARED_COLOR_MARKERS=[
