@@ -27,20 +27,21 @@ async function shot(name) {
   report.screenshots.push(name);
 }
 async function disableWebOnlyControlEnhancements() {
-  await page.addStyleTag({ content: `
-    .game-canvas .segment,
-    .game-canvas .bp-segment,
-    .game-canvas .new-game-segmented,
-    .game-canvas .segment>button.is-active,
-    .game-canvas .bp-segment>button.is-active,
-    .game-canvas .new-game-segmented>button.is-active,
-    .ui-slider__track,
-    .ui-slider__thumb { box-shadow:none!important; }
-    .game-canvas .segment>button.is-active,
-    .game-canvas .bp-segment>button.is-active,
-    .game-canvas .new-game-segmented>button.is-active,
-    .ui-slider__track>i { background-image:none!important; }
-  ` });
+  await page.evaluate(() => {
+    document.querySelectorAll(
+      '.game-canvas .segment, .game-canvas .bp-segment, .game-canvas .new-game-segmented, '
+      + '.game-canvas .segment>button.is-active, .game-canvas .bp-segment>button.is-active, '
+      + '.game-canvas .new-game-segmented>button.is-active, .ui-slider__track, .ui-slider__thumb',
+    ).forEach(element => {
+      if (element instanceof HTMLElement) element.style.setProperty('box-shadow', 'none', 'important');
+    });
+    document.querySelectorAll(
+      '.game-canvas .segment>button.is-active, .game-canvas .bp-segment>button.is-active, '
+      + '.game-canvas .new-game-segmented>button.is-active, .ui-slider__track>i',
+    ).forEach(element => {
+      if (element instanceof HTMLElement) element.style.setProperty('background-image', 'none', 'important');
+    });
+  });
 }
 async function assertFont(selector, minimum, label) {
   const rows = await page.locator(selector).evaluateAll(elements => elements.flatMap(element => {
