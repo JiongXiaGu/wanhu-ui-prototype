@@ -92,6 +92,48 @@ const WEATHER_CONTENT_VARIABLE_MARKERS=WEATHER_CONTENT_VARIABLES.map(name=>({
   name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
 }));
 
+/* Phase 3 Batch 16：Global Space Footer 的早期材质桥接完整退役。 */
+const RETIRED_GLOBAL_SPACE_SURFACE_ALIASES=[
+  '--ui-footer-surface-top','--ui-footer-surface-bottom','--ui-footer-backdrop',
+];
+const RETIRED_GLOBAL_SPACE_SURFACE_ALIAS_MARKERS=RETIRED_GLOBAL_SPACE_SURFACE_ALIASES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
+}));
+
+const SURFACE_MATERIAL_PROPERTIES=[
+  'background','background-color','background-image',
+  'border-top-color','border-bottom-color',
+  'box-shadow','backdrop-filter','-webkit-backdrop-filter',
+];
+
+const SURFACE_OWNERSHIP_RULES=[
+  {file:'src/archive/archive-panel.css',selectors:['.archive-space','.archive-space--pause','.global-space-header','.global-space-footer']},
+  {file:'src/archive/save-game-space.css',selectors:['.save-game-space']},
+  {file:'src/new-game/new-game-space.css',selectors:['.new-game-space']},
+  {file:'src/settings/settings-panel.css',selectors:['.settings-space']},
+  {file:'src/ui/ui-visual-system.css',selectors:['.global-space-footer']},
+];
+
+function escapeRegExp(value){
+  return value.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\const WEATHER_CONTENT_VARIABLE_MARKERS=WEATHER_CONTENT_VARIABLES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
+}));
+');
+}
+
+function selectorMaterialProperties(text,selector){
+  const blockRe=new RegExp(escapeRegExp(selector)+String.raw`\s*\{([^}]*)\}`,'gis');
+  const hits=[];
+  for(const block of text.matchAll(blockRe)){
+    const body=block[1];
+    for(const property of SURFACE_MATERIAL_PROPERTIES){
+      const propertyRe=new RegExp(String.raw`(?:^|;)\s*`+escapeRegExp(property)+String.raw`\s*:`,'i');
+      if(propertyRe.test(body))hits.push(property);
+    }
+  }
+  return [...new Set(hits)];
+}
+
 const RETIRED_SHARED_COLOR_MARKERS=[
   {id:'legacy-paper-var',re:/--paper\b/gi},
   {id:'legacy-gold-var',re:/--gold(?:-hi|-fill)?\b/gi},
@@ -219,7 +261,51 @@ for(const file of files){
     }
   }
 
-  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0){
+  const globalSpaceSurfaceAliases=[];
+  for(const marker of RETIRED_GLOBAL_SPACE_SURFACE_ALIAS_MARKERS){
+    const count=countMatches(text,marker.re);
+    if(count)globalSpaceSurfaceAliases.push({name:marker.name,count});
+  }
+  if(globalSpaceSurfaceAliases.length){
+    errors.push(
+      file + ': retired Global Space Surface aliases may not return. '
+      + 'Use the canonical --wanhu-global-space-* recipe from wanhu-surface-system.css. '
+      + globalSpaceSurfaceAliases.map(marker=>marker.name + '=' + marker.count).join('; ')
+    );
+  }
+
+  const surfaceOwnershipViolations=[];
+  const ownershipRule=SURFACE_OWNERSHIP_RULES.find(rule=>rule.file===file);
+  if(ownershipRule){
+    for(const selector of ownershipRule.selectors){
+      const properties=selectorMaterialProperties(text,selector);
+      if(properties.length)surfaceOwnershipViolations.push({selector,properties});
+    }
+    if(surfaceOwnershipViolations.length){
+      errors.push(
+        file + ': shared Blocking / Global Space material must be owned by wanhu-surface-system.css. '
+        + 'Feature/control files may keep geometry and content, not Root/Header/Footer material. '
+        + surfaceOwnershipViolations.map(item=>item.selector + ' [' + item.properties.join(', ') + ']').join('; ')
+      );
+    }
+  }
+
+  const legacyPauseSelectors=[];
+  if(file==='src/styles.css'){
+    for(const selector of ['.pause-layer','.pause-shade']){
+      const re=new RegExp(escapeRegExp(selector)+String.raw`\s*\{`,'i');
+      if(re.test(text))legacyPauseSelectors.push(selector);
+    }
+    if(legacyPauseSelectors.length){
+      errors.push(
+        file + ': legacy Pause ownership may not return to root styles. '
+        + 'Use gameplay/pause-layer.css for geometry and wanhu-surface-system.css for material. '
+        + legacyPauseSelectors.join(', ')
+      );
+    }
+  }
+
+  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && legacyPauseSelectors.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -253,6 +339,9 @@ console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_S
 console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.length);
 console.log('Retired Context / Environment Surface aliases guarded: ' + RETIRED_CONTEXT_SURFACE_COMPATIBILITY_ALIASES.length);
 console.log('Weather content variables protected from Surface ownership: ' + WEATHER_CONTENT_VARIABLES.length);
+console.log('Retired Global Space Surface aliases guarded: ' + RETIRED_GLOBAL_SPACE_SURFACE_ALIASES.length);
+console.log('Blocking / Global Space Surface ownership files guarded: ' + SURFACE_OWNERSHIP_RULES.length);
+console.log('Legacy root Pause selectors guarded: 2');
 
 if(debt.length){
   console.log('\nPhase 1 legacy palette debt:');

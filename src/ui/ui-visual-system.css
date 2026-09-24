@@ -13,10 +13,6 @@
   --ui-segment-hover:rgba(255,255,255,.050);
   --ui-segment-active-top:rgba(169,132,75,.115);
   --ui-segment-active-bottom:rgba(169,132,75,.040);
-
-  --ui-footer-surface-top:rgba(255,255,255,.006);
-  --ui-footer-surface-bottom:rgba(8,10,9,.080);
-  --ui-footer-backdrop:blur(10px) saturate(.82) brightness(1.00);
 }
 
 /* Gameplay Surface material is owned by wanhu-surface-system.css.
@@ -74,14 +70,7 @@
 .game-canvas .new-game-segmented>button.is-active::before,
 .game-canvas .new-game-segmented>button.is-active::after{display:none!important}
 
-/* Full-screen action footer: same lightly rounded control language used by current gameplay UI. */
-.global-space-footer{
-  background:linear-gradient(180deg,var(--ui-footer-surface-top),var(--ui-footer-surface-bottom))!important;
-  border-top-color:rgba(239,233,221,.075)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.010);
-  backdrop-filter:var(--ui-footer-backdrop);
-  -webkit-backdrop-filter:var(--ui-footer-backdrop);
-}
+/* Global Space material is owned exclusively by wanhu-surface-system.css. */
 
 .global-space-secondary,
 .global-space-primary{

@@ -297,3 +297,76 @@ test('Context Surface guard matches complete identifiers only',async()=>{
   const result=await runAudit({'src/gameplay/probe.css':`.probe{${css}}`});
   assert.equal(result.status,0,result.output);
 });
+
+
+const retiredGlobalSpaceSurfaceAliases=[
+  '--ui-footer-surface-top','--ui-footer-surface-bottom','--ui-footer-backdrop',
+];
+
+for(const alias of retiredGlobalSpaceSurfaceAliases){
+  test(`reject retired Global Space Surface alias: ${alias}`,async()=>{
+    const result=await runAudit({'src/ui/probe.css':`.probe{${alias}:transparent;background:var(${alias})}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/retired Global Space Surface aliases/);
+    assert.ok(result.output.includes(alias+'=2'),result.output);
+  });
+}
+
+test('reject Global Space Header and Footer material in archive structural CSS',async()=>{
+  const result=await runAudit({'src/archive/archive-panel.css':`
+    .global-space-header{border-bottom-width:1px;border-bottom-style:solid;background:#111}
+    .global-space-footer{border-top-width:1px;border-top-style:solid;backdrop-filter:blur(8px)}
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/shared Blocking \/ Global Space material must be owned/);
+  assert.match(result.output,/\.global-space-header \[background\]/);
+  assert.match(result.output,/\.global-space-footer \[backdrop-filter\]/);
+});
+
+for(const [file,selector] of [
+  ['src/archive/save-game-space.css','.save-game-space'],
+  ['src/new-game/new-game-space.css','.new-game-space'],
+  ['src/settings/settings-panel.css','.settings-space'],
+  ['src/ui/ui-visual-system.css','.global-space-footer'],
+]){
+  test(`reject private Global Space root material: ${file} ${selector}`,async()=>{
+    const result=await runAudit({[file]:`${selector}{background:rgba(1,2,3,.5);box-shadow:0 1px 2px #000}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/shared Blocking \/ Global Space material must be owned/);
+    assert.ok(result.output.includes(selector),result.output);
+  });
+}
+
+test('reject legacy Pause root ownership in styles.css',async()=>{
+  const result=await runAudit({'src/styles.css':'.pause-layer{position:absolute}.pause-shade{background:#000}'});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/legacy Pause ownership may not return to root styles/);
+  assert.match(result.output,/\.pause-layer/);
+  assert.match(result.output,/\.pause-shade/);
+});
+
+test('preserve Global Space geometry and canonical Surface owner',async()=>{
+  const result=await runAudit({
+    'src/archive/archive-panel.css':`
+      .global-space-header{border-bottom-width:1px;border-bottom-style:solid}
+      .global-space-footer{border-top-width:1px;border-top-style:solid;color:var(--wanhu-color-paper-tertiary)}
+    `,
+    'src/new-game/new-game-space.css':'.new-game-space{position:absolute;inset:0;display:flex}',
+    'src/ui/ui-visual-system.css':'.global-space-primary{color:var(--wanhu-color-brass-high)}',
+    'src/ui/wanhu-surface-system.css':`
+      .wanhu-global-space{background-image:var(--wanhu-material-noise);backdrop-filter:var(--wanhu-global-space-filter)}
+      .wanhu-global-space .global-space-header{background:var(--wanhu-global-space-header-bg);border-bottom-color:var(--wanhu-global-space-rule)}
+      .wanhu-global-space .global-space-footer{background:var(--wanhu-global-space-footer-bg);border-top-color:var(--wanhu-global-space-rule);box-shadow:inset 0 1px 0 rgba(255,255,255,.01);backdrop-filter:none}
+    `,
+  });
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Global Space Surface aliases guarded: 3/);
+  assert.match(result.output,/Blocking \/ Global Space Surface ownership files guarded: 5/);
+  assert.match(result.output,/Legacy root Pause selectors guarded: 2/);
+});
+
+test('Global Space alias guard matches complete identifiers only',async()=>{
+  const css=retiredGlobalSpaceSurfaceAliases.map(alias=>`${alias}-fixture:0;--fixture${alias}:0;`).join('');
+  const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
+  assert.equal(result.status,0,result.output);
+});

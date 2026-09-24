@@ -48,7 +48,6 @@ button:focus-visible{outline:1px solid var(--wanhu-control-focus,#d1b47a);outlin
 /* Gameplay base geometry. Current Top Shell lives in dedicated gameplay files. */
 .gameplay-screen{background-size:cover;background-position:center}
 .game-vignette{position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,12,10,.29),transparent 22%,transparent 70%,rgba(9,12,10,.38)),linear-gradient(90deg,rgba(9,12,10,.14),transparent 25%,transparent 80%,rgba(9,12,10,.1));pointer-events:none}
-/* Pause */
-.pause-layer{position:absolute;inset:0;z-index:50}.pause-shade{position:absolute;inset:0;background:rgba(7,10,8,.58);backdrop-filter:blur(5px) brightness(.72) saturate(.78)}
+/* Pause geometry lives in gameplay/pause-layer.css; material lives in ui/wanhu-surface-system.css. */
 
 

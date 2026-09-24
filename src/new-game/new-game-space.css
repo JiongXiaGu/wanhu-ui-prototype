@@ -11,8 +11,6 @@
   display:flex;
   flex-direction:column;
   overflow:hidden;
-  color:inherit;
-  background:transparent;
 }
 
 .new-game-space__header{flex:0 0 92px}
