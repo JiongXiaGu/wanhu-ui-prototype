@@ -18,10 +18,26 @@ const GAME_BG_NIGHT = '/assets/wanhu-gameplay-city-night.png';
 
 export default function App() {
   const reviewBootstrap = useMemo(() => resolveReviewBootstrap(window.location.search), []);
+  const reviewTarget = useMemo(() => new URLSearchParams(window.location.search).get('review'), []);
   const [screen, setScreen] = useState<Screen>(reviewBootstrap.screen);
   const [simScale, setSimScale] = useState(1);
   const dialogs = useDialogSystem();
   const screenMotion = useKeyedTransition(screen);
+
+  useEffect(() => {
+    if (reviewTarget !== 'dialog-dropdown') return;
+    dialogs.choiceInput({
+      title: '下拉选择验收',
+      label: '方案名称',
+      initialValue: '测试方案',
+      choiceLabel: '方案来源',
+      choices: ['系统内置', '创意工坊', '我的方案'],
+      initialChoice: '系统内置',
+      choiceLayout: 'dropdown',
+      confirmText: '确认',
+      onConfirm: () => undefined,
+    });
+  }, [reviewTarget, dialogs.choiceInput]);
 
   useEffect(() => {
     const updateScale = () => setSimScale(Math.min(window.innerWidth / 1920, window.innerHeight / 1080));
