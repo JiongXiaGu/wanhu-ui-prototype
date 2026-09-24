@@ -707,3 +707,28 @@ test('preserve Archive footer and utility action geometry after shared button sk
   assert.equal(result.status,0,result.output);
   assert.match(result.output,/Retired Archive Global Space button owner selectors guarded: 3/);
 });
+
+test('reject retired Archive Footer Utility Action skin owners',async()=>{
+  const result=await runAudit({'src/archive/archive-panel.css':`
+    .archive-footer-action{background:transparent;color:#aaa}
+    .archive-footer-action:hover:not(:disabled){background:#111}
+    .archive-footer-action--danger:hover:not(:disabled){background:#600;color:#f99}
+    .archive-footer-action:disabled{opacity:.3}
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/Archive Footer Utility Action skin must be owned by fullscreen-actions\.css/);
+  assert.match(result.output,/\.archive-footer-action/);
+  assert.match(result.output,/\.archive-footer-action:hover/);
+  assert.match(result.output,/\.archive-footer-action--danger:hover/);
+  assert.match(result.output,/\.archive-footer-action:disabled/);
+});
+
+test('preserve Archive footer group geometry after Utility skin retirement',async()=>{
+  const result=await runAudit({'src/archive/archive-panel.css':`
+    .global-space-footer{flex:0 0 72px;display:flex;align-items:center;justify-content:space-between;padding:0 44px}
+    .global-space-footer>div{display:flex;align-items:center;gap:9px}
+    .archive-space__footer-left,.archive-space__footer-right{display:flex;align-items:center;gap:8px}
+  `});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Archive Footer Utility owner selectors guarded: 4/);
+});
