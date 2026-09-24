@@ -94,8 +94,8 @@
 }
 .ui-dialog-button:active:not(:disabled){transform:translateY(1px)}
 .ui-dialog-button:focus-visible{
-  outline:0;
-  border-color:var(--ui-field-border-focus,rgba(201,165,95,.38));
+  outline:1px solid var(--wanhu-control-focus);
+  outline-offset:1px;
   box-shadow:0 0 0 3px rgba(169,132,75,.060);
 }
 .ui-dialog-button.is-primary{
@@ -185,8 +185,8 @@
   color:var(--wanhu-color-brass-high,#bd9959);
 }
 .ui-dialog-choice-grid>button:focus-visible{
-  outline:0;
-  border-color:var(--ui-field-border-focus,rgba(201,165,95,.38));
+  outline:1px solid var(--wanhu-control-focus);
+  outline-offset:1px;
   box-shadow:0 0 0 3px rgba(169,132,75,.055);
 }
 .ui-dialog-choice-select{
@@ -217,8 +217,8 @@
   color:var(--wanhu-color-paper-primary,#eee9df);
 }
 .ui-dialog-choice-trigger:focus-visible{
-  outline:0;
-  border-color:var(--ui-field-border-focus,rgba(201,165,95,.38));
+  outline:1px solid var(--wanhu-control-focus);
+  outline-offset:1px;
   box-shadow:0 0 0 3px rgba(169,132,75,.055);
 }
 .ui-dialog-choice-trigger .ui-icon{
