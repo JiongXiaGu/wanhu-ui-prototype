@@ -311,6 +311,18 @@ Typography / Motion
 
 > 看见一个共享状态，可以从名字判断职责，不需要先猜 RGB。
 
+### Phase 2 进度：Batch 11–13 已完成
+
+Phase 2 以“迁移兼容层退出、正式语义 Owner 保留”为完成边界，不追求把 Surface / Control 的所有局部变量塞回 Theme。
+
+- Batch 11：退役 Command 视觉兼容别名，Main Dock / Secondary Action / Utility / Tooltip 直接消费正式 Command / Color 语义；
+- Batch 12：退役 10 个 HUD 前景兼容别名，保留 HUD Surface / Border / Shadow / Filter / Geometry；
+- Batch 13：确认 Tonal / Identity / Character 共 23 个兼容变量没有 Runtime Consumer，直接删除并加入防回退，不制造新的替换别名。
+
+Batch 13 最终 Build #1537（Run `36002212861`）通过，98 项视觉治理回归全部通过，64 个 Runtime CSS 的旧共享色债务为 0。Runtime 提交的 UI Review #482（Run `36001820757`）通过；后续只修改 Guard / 测试，没有改变受测 Runtime CSS。
+
+Phase 2 结束时，Theme 中仍存在的直接变量映射有明确后续归属：`--wanhu-control-focus` 是正式 Focus 语义；`--hud-accent-bg` 与 `--hud-surface-blocking-top/bottom` 是材质 / Surface 桥接，进入 Phase 3 盘点。Control 内部仍存在的近似状态配方属于 Phase 4，不在 Phase 2 伪装成“已统一”。
+
 ## Phase 3：Surface Recipe 收敛
 
 目标：Context / Work / Blocking / HUD / Elevated 的外观由共享材质 Owner 管理。
