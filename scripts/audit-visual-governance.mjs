@@ -4,14 +4,11 @@ import path from 'node:path';
 const SRC_ROOT='src';
 
 /*
- * Phase 1 visual-governance ratchet.
+ * Retired shared-palette guard.
  *
- * These files still contain retired shared palette literals from the early Web
- * theme. They are debt, not approved design tokens. Existing occurrences are
- * temporarily allowed so the cleanup can happen page-family by page-family.
- *
- * Rule: debt may shrink, but it must not spread to any new runtime CSS file.
- * Remove a file from this set as soon as its retired shared colors are cleaned.
+ * Phase 1 cleanup has completed, so the legacy baseline is intentionally empty.
+ * Any retired Paper / Gold / old Brass literal found in Runtime CSS is now a
+ * regression and must fail the audit rather than becoming a new exception.
  */
 const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
 ]);
