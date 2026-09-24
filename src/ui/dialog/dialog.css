@@ -76,7 +76,7 @@
   align-items:center;
   justify-content:center;
   gap:7px;
-  border:1px solid var(--ui-control-border,rgba(239,233,221,.10));
+  border:1px solid var(--wanhu-control-border-soft);
   border-radius:var(--ui-control-radius,10px);
   background:var(--ui-field-surface,rgba(255,255,255,.014));
   color:var(--wanhu-color-paper-secondary,#b9b5ab);
@@ -89,7 +89,7 @@
 }
 .ui-dialog-button:hover:not(:disabled){
   color:var(--wanhu-color-paper-primary,#eee9df);
-  border-color:var(--ui-control-border-hover,rgba(239,233,221,.16));
+  border-color:var(--wanhu-control-border-hover);
   background:var(--ui-field-surface-hover,rgba(255,255,255,.030));
 }
 .ui-dialog-button:active:not(:disabled){transform:translateY(1px)}
@@ -164,7 +164,7 @@
   flex:0 0 calc((100% - 16px)/3);
   height:36px;
   padding:0 8px;
-  border:1px solid var(--ui-control-border,rgba(239,233,221,.10));
+  border:1px solid var(--wanhu-control-border-soft);
   border-radius:8px;
   background:var(--ui-field-surface,rgba(255,255,255,.014));
   color:var(--wanhu-color-paper-tertiary,#8c8f89);
@@ -175,7 +175,7 @@
   transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
 .ui-dialog-choice-grid>button:hover{
-  border-color:var(--ui-control-border-hover,rgba(239,233,221,.16));
+  border-color:var(--wanhu-control-border-hover);
   background:var(--ui-field-surface-hover,rgba(255,255,255,.030));
   color:var(--wanhu-color-paper-secondary,#b9b5ab);
 }
@@ -200,7 +200,7 @@
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  border:1px solid var(--ui-control-border,rgba(239,233,221,.10));
+  border:1px solid var(--wanhu-control-border-soft);
   border-radius:9px;
   background:var(--ui-field-surface,rgba(255,255,255,.014));
   color:var(--wanhu-color-paper-secondary,#b9b5ab);
@@ -212,7 +212,7 @@
 }
 .ui-dialog-choice-trigger:hover,
 .ui-dialog-choice-select.is-open .ui-dialog-choice-trigger{
-  border-color:var(--ui-control-border-hover,rgba(239,233,221,.16));
+  border-color:var(--wanhu-control-border-hover);
   background:var(--ui-field-surface-hover,rgba(255,255,255,.030));
   color:var(--wanhu-color-paper-primary,#eee9df);
 }

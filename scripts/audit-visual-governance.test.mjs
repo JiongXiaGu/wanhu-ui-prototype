@@ -451,3 +451,34 @@ test('HUD Surface alias guard matches complete identifiers only',async()=>{
   const result=await runAudit({'src/gameplay/probe.css':`.probe{${css}}`});
   assert.equal(result.status,0,result.output);
 });
+
+
+const retiredPhase4ControlVisualAliases=[
+  '--ui-control-hover','--ui-control-border','--ui-control-border-hover',
+];
+
+for(const alias of retiredPhase4ControlVisualAliases){
+  test(`reject retired Phase 4 control visual alias: ${alias}`,async()=>{
+    const result=await runAudit({'src/ui/probe.css':`.probe{${alias}:transparent;border-color:var(${alias})}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/retired Phase 4 control visual aliases/);
+    assert.ok(result.output.includes(alias+'=2'),result.output);
+  });
+}
+
+test('preserve canonical Control states and component-specific Segment recipe',async()=>{
+  const result=await runAudit({'src/ui/probe.css':`.probe{
+    --ui-control-radius:10px;
+    --ui-control-radius-inner:8px;
+    --ui-segment-surface:rgba(255,255,255,.024);
+    --ui-segment-border:rgba(239,233,221,.095);
+    --ui-segment-hover:rgba(255,255,255,.050);
+    --ui-segment-active-top:rgba(169,132,75,.115);
+    --ui-segment-active-bottom:rgba(169,132,75,.040);
+    border-color:var(--wanhu-control-border-soft);
+    outline-color:var(--wanhu-control-border-hover);
+    background:var(--wanhu-control-hover);
+  }`});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Phase 4 control visual aliases guarded: 3/);
+});
