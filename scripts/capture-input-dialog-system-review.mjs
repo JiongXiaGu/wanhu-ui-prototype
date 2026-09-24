@@ -28,6 +28,28 @@ async function expectDialogTone(dialog,tone){
   if(tone!=='neutral'&&(accent==='transparent'||accent==='rgba(0, 0, 0, 0)'))throw new Error(`${tone} Dialog must expose a top semantic accent line.`);
 }
 
+async function expectKeyboardFocus(element,label){
+  await page.keyboard.press('Tab');
+  await element.focus();
+  await page.waitForTimeout(150);
+  const metrics=await element.evaluate(node=>{
+    const style=getComputedStyle(node);
+    return {
+      visible:node.matches(':focus-visible'),
+      outlineColor:style.outlineColor,
+      outlineWidth:style.outlineWidth,
+      outlineStyle:style.outlineStyle,
+      borderColor:style.borderColor,
+      backgroundColor:style.backgroundColor,
+      color:style.color,
+      className:node.className,
+    };
+  });
+  if(!metrics.visible||Number.parseFloat(metrics.outlineWidth)<1||metrics.outlineStyle==='none')throw new Error(`${label} keyboard Focus must be visible. ${JSON.stringify(metrics)}`);
+  if(metrics.outlineColor!=='rgb(209, 180, 122)')throw new Error(`${label} Focus must use --wanhu-control-focus. ${JSON.stringify(metrics)}`);
+  return metrics;
+}
+
 async function expectDialogMaterial(dialog,label){
   const backdrop=page.locator('.ui-modal-backdrop');
   await backdrop.waitFor();
@@ -72,6 +94,10 @@ let dialog=page.getByRole('dialog',{name:'退出游戏？'});
 await dialog.waitFor();
 await expectDialogMaterial(dialog,'Confirm Dialog');
 await expectDialogTone(dialog,'neutral');
+const confirmPrimary=dialog.getByRole('button',{name:'确认退出',exact:true});
+await expectKeyboardFocus(confirmPrimary,'Dialog Primary Button');
+if(!(await confirmPrimary.evaluate(node=>node.classList.contains('is-primary'))))throw new Error('Primary button must retain its primary semantic class while focused.');
+await page.screenshot({path:`${outDir}/dialog-focus.png`});
 await page.screenshot({path:`${outDir}/dialog-confirm.png`});
 await page.keyboard.press('Escape');
 
@@ -149,6 +175,20 @@ await page.keyboard.press('Enter');
 if(!(await seedButton.textContent())?.includes('12345678'))throw new Error('Seed must commit through Dialog.');
 await page.screenshot({path:`${outDir}/input-new-game-values.png`});
 
+// Choice Dialog: Selected state must remain active while keyboard Focus is independently visible.
+await open('color-tool-surface','.color-tool-surface-panel');
+await page.getByRole('button',{name:'打开材质方案库',exact:true}).click();
+await page.waitForSelector('.material-preset-workspace');
+await page.getByRole('button',{name:'保存配色',exact:true}).click();
+dialog=page.getByRole('dialog',{name:'保存配色'});
+await dialog.waitFor();
+const selectedChoice=dialog.getByRole('radio',{checked:true}).first();
+const choiceFocus=await expectKeyboardFocus(selectedChoice,'Dialog Choice Selected + Focus');
+if((await selectedChoice.getAttribute('aria-checked'))!=='true')throw new Error('Dialog selected choice must remain selected while focused.');
+if(!choiceFocus.backgroundColor.includes('169, 132, 75'))throw new Error(`Dialog selected choice must retain Active background while focused. ${JSON.stringify(choiceFocus)}`);
+await page.screenshot({path:`${outDir}/dialog-choice-selected-focus.png`});
+await page.keyboard.press('Escape');
+
 // Binding Capture Dialog shares the same material, with brass reserved for listening/focus state.
 await open('settings','.settings-space');
 await page.getByRole('button',{name:'操作',exact:true}).click();
@@ -179,6 +219,11 @@ await dialog.waitFor();
 await expectDialogMaterial(dialog,'Delete Danger Dialog');
 await expectDialogTone(dialog,'danger');
 await page.screenshot({path:`${outDir}/dialog-danger-delete.png`});
+const dangerAction=dialog.getByRole('button',{name:/删除/}).last();
+const dangerFocus=await expectKeyboardFocus(dangerAction,'Dialog Danger Button');
+if(!(await dangerAction.evaluate(node=>node.classList.contains('is-danger'))))throw new Error('Danger button must retain its danger semantic class while focused.');
+if(!dangerFocus.backgroundColor.includes('152, 84, 71'))throw new Error(`Danger Focus must not replace danger business state with Brass fill. ${JSON.stringify(dangerFocus)}`);
+await page.screenshot({path:`${outDir}/dialog-danger-focus.png`});
 await page.keyboard.press('Escape');
 
 await open('workspace-building','.workspace--design');
