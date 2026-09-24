@@ -100,9 +100,38 @@ const RETIRED_GLOBAL_SPACE_SURFACE_ALIAS_MARKERS=RETIRED_GLOBAL_SPACE_SURFACE_AL
   name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
 }));
 
+/* Phase 3 Batch 17：HUD 旧材质桥接与局部 Surface Owner 退役。 */
+const RETIRED_HUD_SURFACE_ALIASES=[
+  '--hud-glass-filter','--hud-glass-filter-soft',
+  '--hud-surface-ambient-top','--hud-surface-ambient-bottom',
+  '--hud-surface-context-top','--hud-surface-context-bottom',
+  '--hud-surface-work-top','--hud-surface-work-bottom',
+  '--hud-surface-blocking-top','--hud-surface-blocking-bottom',
+  '--hud-surface-primary-top','--hud-surface-primary-bottom',
+  '--hud-surface-secondary-top','--hud-surface-secondary-bottom',
+  '--hud-surface-tertiary-top','--hud-surface-tertiary-bottom',
+  '--hud-border-strong','--hud-border-soft','--hud-rule',
+  '--hud-shadow-primary','--hud-shadow-secondary','--hud-accent-bg',
+  '--wanhu-hud-filter','--wanhu-hud-filter-soft',
+];
+const RETIRED_HUD_SURFACE_ALIAS_MARKERS=RETIRED_HUD_SURFACE_ALIASES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
+}));
+
+const HUD_SURFACE_OWNERSHIP_RULES=[
+  {file:'src/gameplay/gameplay-top-shell.css',selectors:[
+    '.gameplay-top-status','.gameplay-top-shell.has-navigation .gameplay-top-status',
+    '.gameplay-top-speed-button.is-active','.gameplay-top-map-panel','.gameplay-top-map-panel>header',
+  ]},
+  {file:'src/gameplay/gameplay-corner-hud.css',selectors:[
+    '.gameplay-system-menu-button','.gameplay-system-menu-button:hover',
+  ]},
+];
+const RETIRED_EDGE_ELEVATION_OWNER_FILE='src/ui/wanhu-edge-elevation.css';
+
 const SURFACE_MATERIAL_PROPERTIES=[
   'background','background-color','background-image',
-  'border-top-color','border-bottom-color',
+  'border-color','border-top-color','border-right-color','border-bottom-color','border-left-color',
   'box-shadow','backdrop-filter','-webkit-backdrop-filter',
 ];
 
@@ -272,6 +301,43 @@ for(const file of files){
     );
   }
 
+  const hudSurfaceAliases=[];
+  for(const marker of RETIRED_HUD_SURFACE_ALIAS_MARKERS){
+    const count=countMatches(text,marker.re);
+    if(count)hudSurfaceAliases.push({name:marker.name,count});
+  }
+  if(hudSurfaceAliases.length){
+    errors.push(
+      file + ': retired HUD Surface compatibility aliases may not return. '
+      + 'Use canonical --wanhu-surface-* recipes; gameplay HUD layout keeps geometry only. '
+      + hudSurfaceAliases.map(marker=>marker.name + '=' + marker.count).join('; ')
+    );
+  }
+
+  const hudSurfaceOwnershipViolations=[];
+  const hudOwnershipRule=HUD_SURFACE_OWNERSHIP_RULES.find(rule=>rule.file===file);
+  if(hudOwnershipRule){
+    for(const selector of hudOwnershipRule.selectors){
+      const properties=selectorMaterialProperties(text,selector);
+      if(properties.length)hudSurfaceOwnershipViolations.push({selector,properties});
+    }
+    if(hudSurfaceOwnershipViolations.length){
+      errors.push(
+        file + ': persistent HUD / Elevated material must be owned by wanhu-surface-system.css. '
+        + 'Component files may keep geometry, content and motion only. '
+        + hudSurfaceOwnershipViolations.map(item=>item.selector + ' [' + item.properties.join(', ') + ']').join('; ')
+      );
+    }
+  }
+
+  const retiredEdgeElevationOwner=file===RETIRED_EDGE_ELEVATION_OWNER_FILE;
+  if(retiredEdgeElevationOwner){
+    errors.push(
+      file + ': wanhu-edge-elevation.css is retired. '
+      + 'Move live surface edge/shadow rules into wanhu-surface-system.css; keep specialized component visuals local.'
+    );
+  }
+
   const surfaceOwnershipViolations=[];
   const ownershipRule=SURFACE_OWNERSHIP_RULES.find(rule=>rule.file===file);
   if(ownershipRule){
@@ -303,7 +369,7 @@ for(const file of files){
     }
   }
 
-  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && legacyPauseSelectors.length===0){
+  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -338,6 +404,9 @@ console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMP
 console.log('Retired Context / Environment Surface aliases guarded: ' + RETIRED_CONTEXT_SURFACE_COMPATIBILITY_ALIASES.length);
 console.log('Weather content variables protected from Surface ownership: ' + WEATHER_CONTENT_VARIABLES.length);
 console.log('Retired Global Space Surface aliases guarded: ' + RETIRED_GLOBAL_SPACE_SURFACE_ALIASES.length);
+console.log('Retired HUD Surface aliases guarded: ' + RETIRED_HUD_SURFACE_ALIASES.length);
+console.log('Persistent HUD / Elevated Surface ownership files guarded: ' + HUD_SURFACE_OWNERSHIP_RULES.length);
+console.log('Retired Edge / Elevation owner files guarded: 1');
 console.log('Blocking / Global Space Surface ownership files guarded: ' + SURFACE_OWNERSHIP_RULES.length);
 console.log('Legacy root Pause selectors guarded: 2');
 

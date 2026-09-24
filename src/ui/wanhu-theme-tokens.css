@@ -200,6 +200,14 @@
   --wanhu-surface-readout-highlight:rgba(255,255,255,.020);
   --wanhu-surface-readout-shade:rgba(0,0,0,.024);
 
+  /* Elevated Surface — transient information picker above persistent HUD. */
+  --wanhu-surface-elevated-top:rgba(33,44,38,.80);
+  --wanhu-surface-elevated-bottom:rgba(21,31,26,.76);
+  --wanhu-surface-elevated-edge:rgba(239,233,221,.09);
+  --wanhu-surface-elevated-rule:rgba(239,233,221,.065);
+  --wanhu-surface-elevated-shadow:0 12px 30px rgba(5,8,7,.19),inset 0 1px 0 rgba(255,255,255,.014);
+  --wanhu-surface-elevated-filter:blur(11px);
+
   /* Hover 提亮中性底色；Selected 保留熟铜；Focus 是独立轮廓。 */
   --wanhu-control-hover:rgba(255,255,255,.045);
   --wanhu-control-hover-strong:rgba(255,255,255,.060);
@@ -209,25 +217,7 @@
   --wanhu-control-active-line:rgba(169,132,75,.78);
   --wanhu-control-focus:var(--wanhu-color-brass-text);
 
-  /* 仅保留仍有 Runtime 消费的 HUD 材质兼容变量；退役前景与旧语义别名不得回流。 */
-  --hud-accent-bg:var(--wanhu-color-brass-soft);
-  --hud-border-strong:rgba(238,233,223,.12);
-  --hud-border-soft:rgba(238,233,223,.075);
-  --hud-rule:rgba(238,233,223,.055);
-  --hud-shadow-primary:0 18px 46px rgba(2,4,5,.33),inset 0 1px 0 rgba(255,255,255,.035);
-  --hud-shadow-secondary:0 12px 30px rgba(2,4,5,.24),inset 0 1px 0 rgba(255,255,255,.025);
-  --hud-glass-filter:blur(16px) saturate(.92) brightness(.98);
-  --hud-glass-filter-soft:blur(13px) saturate(.94) brightness(.985);
-  --hud-surface-ambient-top:rgba(29,35,36,.66);
-  --hud-surface-ambient-bottom:rgba(20,25,27,.62);
-  --hud-surface-context-top:rgba(30,36,38,.78);
-  --hud-surface-context-bottom:rgba(20,25,27,.75);
-  --hud-surface-work-top:rgba(29,35,37,.86);
-  --hud-surface-work-bottom:rgba(18,23,25,.84);
-  --hud-surface-blocking-top:var(--wanhu-surface-blocking-top);
-  --hud-surface-blocking-bottom:var(--wanhu-surface-blocking-bottom);
-  --wanhu-hud-filter:blur(16px) saturate(.92) brightness(.98);
-  --wanhu-hud-filter-soft:blur(13px) saturate(.94) brightness(.985);
+
 }
 
 /* 昼夜共用色相，只微调自身密度；不建立独立 Night Theme。 */
@@ -259,14 +249,8 @@
   --wanhu-global-space-bottom:rgba(34,37,34,.97);
   --wanhu-global-space-filter:blur(7px) saturate(.74) brightness(.92);
   --wanhu-surface-info-bg:rgba(28,34,36,.52);
-  --hud-surface-ambient-top:rgba(33,39,41,.69);
-  --hud-surface-ambient-bottom:rgba(21,27,29,.66);
-  --hud-surface-context-top:rgba(34,40,42,.80);
-  --hud-surface-context-bottom:rgba(21,27,29,.78);
-  --hud-surface-work-top:rgba(32,38,40,.88);
-  --hud-surface-work-bottom:rgba(19,25,27,.86);
-  --wanhu-hud-filter:blur(16px) saturate(.90) brightness(1.0);
-  --wanhu-hud-filter-soft:blur(13px) saturate(.92) brightness(1.0);
+  --wanhu-surface-elevated-top:rgba(34,40,42,.80);
+  --wanhu-surface-elevated-bottom:rgba(21,27,29,.78);
 }
 
 /* Dialog / Modal 统一使用近黑高不透明遮罩与 Elevated Smoked Graphite Surface。

@@ -28,15 +28,11 @@
   align-items:center;
   padding:0 10px;
   pointer-events:auto;
-  background:linear-gradient(180deg,var(--hud-surface-primary-top,rgba(31,40,36,.955)),var(--hud-surface-primary-bottom,rgba(23,31,27,.945)));
-  border:1px solid var(--hud-border-strong,rgba(239,233,221,.14));
+  border:1px solid transparent;
   border-radius:var(--hud-radius-md,14px);
-  box-shadow:var(--hud-shadow-primary,0 18px 44px rgba(5,8,7,.25));
-  backdrop-filter:blur(12px);
 }
 .gameplay-top-shell.has-navigation .gameplay-top-status{
   border-radius:var(--hud-radius-md,14px) var(--hud-radius-md,14px) 8px 8px;
-  border-bottom-color:rgba(239,233,221,.025);
 }
 
 .gameplay-top-status__world-state{
@@ -74,7 +70,7 @@
   width:1px;
   height:20px;
   transform:translateY(-50%);
-  background:var(--hud-rule,rgba(239,233,221,.065));
+  background:rgba(239,233,221,.065);
 }
 
 .gameplay-top-status__resources{
@@ -92,7 +88,7 @@
   padding:0 10px;
   gap:8px;
   color:#8f968e;
-  border-right:1px solid var(--hud-rule,rgba(239,233,221,.065));
+  border-right:1px solid transparent;
 }
 .gameplay-screen .gameplay-top-status__resources>span:last-child{border-right:0}
 .gameplay-screen .gameplay-top-status__resources .ui-icon{width:15px;height:15px;opacity:.88;}
@@ -129,7 +125,6 @@
 }
 .gameplay-top-speed-button .ui-icon{width:15px;height:15px;}
 .gameplay-top-speed-button:hover{background:var(--wanhu-control-hover);color:var(--wanhu-color-icon-hover)}
-.gameplay-top-speed-button.is-active{background:var(--hud-accent-bg)}
 .gameplay-top-speed-button:active{transform:translateY(1px)}
 
 /* Top HUD tooltips are rendered by the global Hover Overlay. */
@@ -225,14 +220,11 @@
   width:304px;
   padding:0 12px 12px;
   pointer-events:auto;
-  background:linear-gradient(180deg,var(--hud-surface-secondary-top,rgba(27,35,31,.925)),var(--hud-surface-secondary-bottom,rgba(20,28,24,.905)));
-  border:1px solid var(--hud-border-soft,rgba(239,233,221,.085));
+  border:1px solid transparent;
   border-radius:var(--hud-radius-md,14px);
-  box-shadow:var(--hud-shadow-secondary,0 12px 30px rgba(5,8,7,.19));
-  backdrop-filter:blur(11px);
   animation:gameplay-top-map-enter var(--wanhu-motion-surface,160ms) var(--wanhu-motion-ease-out,ease-out) both;
 }
-.gameplay-top-map-panel>header{height:44px;display:flex;align-items:center;border-bottom:1px solid var(--hud-rule,rgba(239,233,221,.065))}
+.gameplay-top-map-panel>header{height:44px;display:flex;align-items:center;border-bottom:1px solid transparent}
 .gameplay-top-map-panel>header b{font-size:11px;font-weight:520;color:#dcd6cb}
 .gameplay-top-map-grid{padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .gameplay-top-map-grid button{

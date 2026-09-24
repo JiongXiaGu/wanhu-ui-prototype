@@ -370,3 +370,84 @@ test('Global Space alias guard matches complete identifiers only',async()=>{
   const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
   assert.equal(result.status,0,result.output);
 });
+
+
+const retiredHudSurfaceAliases=[
+  '--hud-glass-filter','--hud-glass-filter-soft',
+  '--hud-surface-ambient-top','--hud-surface-ambient-bottom',
+  '--hud-surface-context-top','--hud-surface-context-bottom',
+  '--hud-surface-work-top','--hud-surface-work-bottom',
+  '--hud-surface-blocking-top','--hud-surface-blocking-bottom',
+  '--hud-surface-primary-top','--hud-surface-primary-bottom',
+  '--hud-surface-secondary-top','--hud-surface-secondary-bottom',
+  '--hud-surface-tertiary-top','--hud-surface-tertiary-bottom',
+  '--hud-border-strong','--hud-border-soft','--hud-rule',
+  '--hud-shadow-primary','--hud-shadow-secondary','--hud-accent-bg',
+  '--wanhu-hud-filter','--wanhu-hud-filter-soft',
+];
+
+for(const alias of retiredHudSurfaceAliases){
+  test(`reject retired HUD Surface alias: ${alias}`,async()=>{
+    const result=await runAudit({'src/gameplay/probe.css':`.probe{${alias}:transparent;background:var(${alias})}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/retired HUD Surface compatibility aliases/);
+    assert.ok(result.output.includes(alias+'=2'),result.output);
+  });
+}
+
+test('reject private Top HUD and Elevated material ownership',async()=>{
+  const result=await runAudit({'src/gameplay/gameplay-top-shell.css':`
+    .gameplay-top-status{background:#111;box-shadow:0 1px 2px #000}
+    .gameplay-top-map-panel{border-color:#fff;backdrop-filter:blur(8px)}
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/persistent HUD \/ Elevated material must be owned/);
+  assert.match(result.output,/\.gameplay-top-status/);
+  assert.match(result.output,/\.gameplay-top-map-panel/);
+});
+
+test('reject private System Menu Surface ownership',async()=>{
+  const result=await runAudit({'src/gameplay/gameplay-corner-hud.css':'.gameplay-system-menu-button{background:#111;box-shadow:0 1px 2px #000}'});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/persistent HUD \/ Elevated material must be owned/);
+  assert.match(result.output,/\.gameplay-system-menu-button/);
+});
+
+test('reject retired Edge Elevation owner file',async()=>{
+  const result=await runAudit({'src/ui/wanhu-edge-elevation.css':'.gameplay-screen .gameplay-top-status{box-shadow:none}'});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/wanhu-edge-elevation\.css is retired/);
+});
+
+test('preserve HUD geometry, specialized Compass and canonical Surface owners',async()=>{
+  const result=await runAudit({
+    'src/gameplay/gameplay-hud-layout.css':`.gameplay-screen{
+      --hud-edge:16px;--hud-radius-sm:10px;--hud-radius-md:14px;--hud-radius-lg:18px;
+      --hud-core-width:880px;--hud-bottom-panel-height:84px;
+    }`,
+    'src/gameplay/gameplay-top-shell.css':`
+      .gameplay-top-status{border:1px solid transparent;border-radius:14px}
+      .gameplay-top-map-panel{border:1px solid transparent;border-radius:14px}
+      .gameplay-top-map-panel>header{border-bottom:1px solid transparent}
+    `,
+    'src/gameplay/gameplay-corner-hud.css':`
+      .gameplay-compass-hud__dial{background:radial-gradient(circle,#333,#111);box-shadow:0 1px 2px #000}
+      .gameplay-system-menu-button{border:1px solid transparent}
+    `,
+    'src/ui/wanhu-surface-system.css':`
+      .gameplay-screen .gameplay-top-status{background-color:var(--wanhu-surface-info-bg);box-shadow:var(--wanhu-surface-info-shadow)}
+      .gameplay-screen .gameplay-top-map-panel{background:linear-gradient(180deg,var(--wanhu-surface-elevated-top),var(--wanhu-surface-elevated-bottom));border-color:var(--wanhu-surface-elevated-edge);box-shadow:var(--wanhu-surface-elevated-shadow);backdrop-filter:var(--wanhu-surface-elevated-filter)}
+      .gameplay-screen .gameplay-system-menu-button{background-color:var(--wanhu-surface-ambient-soft-bg);box-shadow:var(--wanhu-surface-ambient-shadow)}
+    `,
+  });
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired HUD Surface aliases guarded: 24/);
+  assert.match(result.output,/Persistent HUD \/ Elevated Surface ownership files guarded: 2/);
+  assert.match(result.output,/Retired Edge \/ Elevation owner files guarded: 1/);
+});
+
+test('HUD Surface alias guard matches complete identifiers only',async()=>{
+  const css=retiredHudSurfaceAliases.map(alias=>`${alias}-fixture:0;--fixture${alias}:0;`).join('');
+  const result=await runAudit({'src/gameplay/probe.css':`.probe{${css}}`});
+  assert.equal(result.status,0,result.output);
+});

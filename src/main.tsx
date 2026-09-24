@@ -59,7 +59,6 @@ import './gameplay/weather-mist-glass.css';
 import './gameplay/management-panel-skin.css';
 import './gameplay/weather-visual-controls.css';
 import './gameplay/weather-art-pass.css';
-import './ui/wanhu-edge-elevation.css';
 import './ui/wanhu-character.css';
 import './tools/placement/placement-parameter-controls.css';
 import './ui/dialog/dialog.css';
