@@ -50,6 +50,20 @@ const RETIRED_HUD_FOREGROUND_ALIAS_MARKERS=RETIRED_HUD_FOREGROUND_ALIASES.map(na
   name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
 }));
 
+/* Phase 2 Batch 13：Tonal / Identity / Character 已确认无 Runtime Consumer，完整退役。 */
+const RETIRED_SEMANTIC_COMPATIBILITY_ALIASES=[
+  '--wanhu-tonal-ink-950','--wanhu-tonal-ink-900','--wanhu-tonal-ink-800',
+  '--wanhu-tonal-paper','--wanhu-tonal-secondary','--wanhu-tonal-tertiary',
+  '--wanhu-tonal-brass','--wanhu-tonal-brass-hi','--wanhu-tonal-brass-soft','--wanhu-tonal-cinnabar',
+  '--wanhu-identity-paper','--wanhu-identity-text','--wanhu-identity-secondary','--wanhu-identity-muted',
+  '--wanhu-identity-faint','--wanhu-identity-gold','--wanhu-identity-gold-hi',
+  '--wanhu-character-gold','--wanhu-character-gold-hi','--wanhu-character-gold-soft',
+  '--wanhu-character-joint','--wanhu-character-rule','--wanhu-character-beam',
+];
+const RETIRED_SEMANTIC_COMPATIBILITY_ALIAS_MARKERS=RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\\w])${name}(?![-\\w])`,'g'),
+}));
+
 const RETIRED_SHARED_COLOR_MARKERS=[
   {id:'legacy-paper-var',re:/--paper\b/gi},
   {id:'legacy-gold-var',re:/--gold(?:-hi|-fill)?\b/gi},
@@ -123,7 +137,20 @@ for(const file of files){
     );
   }
 
-  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0){
+  const semanticCompatibilityAliases=[];
+  for(const marker of RETIRED_SEMANTIC_COMPATIBILITY_ALIAS_MARKERS){
+    const count=countMatches(text,marker.re);
+    if(count)semanticCompatibilityAliases.push({name:marker.name,count});
+  }
+  if(semanticCompatibilityAliases.length){
+    errors.push(
+      file + ': retired Tonal / Identity / Character compatibility aliases may not return. '
+      + 'Use canonical --wanhu-color-* tokens or the existing component owner instead of recreating a compatibility layer. '
+      + semanticCompatibilityAliases.map(marker=>marker.name + '=' + marker.count).join('; ')
+    );
+  }
+
+  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -153,6 +180,7 @@ console.log('Runtime CSS scanned: ' + files.length);
 console.log('Legacy palette debt files: ' + debt.length);
 console.log('Retired command visual aliases guarded: ' + RETIRED_COMMAND_VISUAL_ALIAS_MARKERS.length);
 console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
+console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.length);
 
 if(debt.length){
   console.log('\nPhase 1 legacy palette debt:');
