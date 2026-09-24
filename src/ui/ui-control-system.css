@@ -1,6 +1,14 @@
 /* 共享基础控件。控件持有内部结构/状态，业务页面只选择尺寸参数。
    Hover 使用中性提亮；Selected/On 使用熟铜；Focus 轮廓独立于选中填色。 */
 .game-canvas{
+  --ui-control-radius:10px;
+  --ui-control-radius-inner:8px;
+  --ui-segment-surface:rgba(255,255,255,.024);
+  --ui-segment-border:rgba(239,233,221,.095);
+  --ui-segment-hover:rgba(255,255,255,.050);
+  --ui-segment-active-top:rgba(169,132,75,.115);
+  --ui-segment-active-bottom:rgba(169,132,75,.040);
+
   --ui-field-height:34px;
   --ui-field-radius:10px;
   --ui-field-radius-inner:8px;
@@ -41,6 +49,58 @@
   --ui-toggle-thumb-on:var(--wanhu-color-brass-high);
   --ui-toggle-focus:rgba(169,132,75,.10);
 }
+
+/* Shared segmented-control language.
+   Recipe ownership lives here; consumers keep only layout / business semantics. */
+.game-canvas .segment,
+.game-canvas .bp-segment,
+.game-canvas .new-game-segmented{
+  gap:3px;
+  padding:3px;
+  overflow:hidden;
+  border:1px solid var(--ui-segment-border);
+  border-radius:var(--ui-control-radius);
+  background:var(--ui-segment-surface);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.012);
+}
+
+.game-canvas .segment>button,
+.game-canvas .bp-segment>button,
+.game-canvas .new-game-segmented>button{
+  min-height:32px;
+  border:0;
+  border-radius:var(--ui-control-radius-inner);
+  background:transparent;
+  color:#858d85;
+  cursor:pointer;
+  transition:background .12s ease,color .12s ease,box-shadow .12s ease,transform .08s ease;
+}
+
+.game-canvas .segment>button:hover,
+.game-canvas .bp-segment>button:hover,
+.game-canvas .new-game-segmented>button:hover{
+  background:var(--ui-segment-hover);
+  color:#d0cdc4;
+}
+
+.game-canvas .segment>button:active,
+.game-canvas .bp-segment>button:active,
+.game-canvas .new-game-segmented>button:active{transform:translateY(1px)}
+
+.game-canvas .segment>button.is-active,
+.game-canvas .bp-segment>button.is-active,
+.game-canvas .new-game-segmented>button.is-active{
+  background:linear-gradient(180deg,var(--ui-segment-active-top),var(--ui-segment-active-bottom));
+  color:var(--wanhu-color-brass-text);
+  box-shadow:inset 0 0 0 1px rgba(169,132,75,.11),inset 0 1px 0 rgba(255,255,255,.012);
+}
+
+.game-canvas .segment>button.is-active::before,
+.game-canvas .segment>button.is-active::after,
+.game-canvas .bp-segment>button.is-active::before,
+.game-canvas .bp-segment>button.is-active::after,
+.game-canvas .new-game-segmented>button.is-active::before,
+.game-canvas .new-game-segmented>button.is-active::after{display:none!important}
 
 /* Slider：视觉轨道小于命中区，拖动不改变外部布局。 */
 .ui-slider{position:relative;height:24px;min-width:0;display:flex;align-items:center;cursor:pointer;touch-action:none}

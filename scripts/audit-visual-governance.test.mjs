@@ -466,8 +466,8 @@ for(const alias of retiredPhase4ControlVisualAliases){
   });
 }
 
-test('preserve canonical Control states and component-specific Segment recipe',async()=>{
-  const result=await runAudit({'src/ui/probe.css':`.probe{
+test('preserve canonical Control states and shared Control recipe owner',async()=>{
+  const result=await runAudit({'src/ui/ui-control-system.css':`.game-canvas{
     --ui-control-radius:10px;
     --ui-control-radius-inner:8px;
     --ui-segment-surface:rgba(255,255,255,.024);
@@ -481,4 +481,28 @@ test('preserve canonical Control states and component-specific Segment recipe',a
   }`});
   assert.equal(result.status,0,result.output);
   assert.match(result.output,/Retired Phase 4 control visual aliases guarded: 3/);
+  assert.match(result.output,/Shared Control recipe owner variables guarded: 7/);
+  assert.match(result.output,/Retired Segmented legacy owner selectors guarded: 3/);
+});
+
+test('reject Segmented recipe declarations outside ui-control-system.css',async()=>{
+  const result=await runAudit({'src/workspace/probe.css':`.probe{
+    --ui-segment-surface:rgba(255,255,255,.024);
+    --ui-control-radius:10px;
+  }`});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/shared Control recipe ownership must stay in ui-control-system\.css/);
+  assert.match(result.output,/--ui-segment-surface=1/);
+  assert.match(result.output,/--ui-control-radius=1/);
+});
+
+test('reject retired Segmented owner selectors in ui-visual-system.css',async()=>{
+  const result=await runAudit({'src/ui/ui-visual-system.css':`
+    .game-canvas .segment,
+    .game-canvas .bp-segment>button{background:transparent}
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/shared Control recipe ownership must stay in ui-control-system\.css/);
+  assert.match(result.output,/selectors=.*\.game-canvas \.segment/);
+  assert.match(result.output,/\.game-canvas \.bp-segment/);
 });

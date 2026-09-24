@@ -49,6 +49,21 @@ const RETIRED_PHASE4_CONTROL_VISUAL_ALIAS_MARKERS=RETIRED_PHASE4_CONTROL_VISUAL_
   name,re:new RegExp(String.raw`(?<![-\\w])${name}(?![-\\w])`,'g'),
 }));
 
+/* Phase 4 Batch 19：Control recipe 归 ui-control-system.css；旧 Visual System 不再拥有 Segmented skin。 */
+const CONTROL_RECIPE_OWNER_FILE='src/ui/ui-control-system.css';
+const CONTROL_RECIPE_VARIABLES=[
+  '--ui-control-radius','--ui-control-radius-inner',
+  '--ui-segment-surface','--ui-segment-border','--ui-segment-hover',
+  '--ui-segment-active-top','--ui-segment-active-bottom',
+];
+const CONTROL_RECIPE_VARIABLE_DECLARATION_MARKERS=CONTROL_RECIPE_VARIABLES.map(name=>({
+  name,re:new RegExp(escapeRegExp(name)+String.raw`\s*:`,'g'),
+}));
+const RETIRED_SEGMENTED_OWNER_FILE='src/ui/ui-visual-system.css';
+const RETIRED_SEGMENTED_OWNER_SELECTORS=[
+  '.game-canvas .segment','.game-canvas .bp-segment','.game-canvas .new-game-segmented',
+];
+
 /* HUD 前景别名已退役；只枚举完整名称，不禁止仍在使用的材质、背景或几何变量。 */
 const RETIRED_HUD_FOREGROUND_ALIASES=[
   '--hud-text','--hud-text-secondary','--hud-icon','--hud-accent','--hud-accent-text',
@@ -242,6 +257,33 @@ for(const file of files){
     );
   }
 
+  const controlRecipeOwnershipViolations=[];
+  if(file!==CONTROL_RECIPE_OWNER_FILE){
+    for(const marker of CONTROL_RECIPE_VARIABLE_DECLARATION_MARKERS){
+      const count=countMatches(text,marker.re);
+      if(count)controlRecipeOwnershipViolations.push({name:marker.name,count});
+    }
+  }
+
+  const retiredSegmentedOwnerSelectors=[];
+  if(file===RETIRED_SEGMENTED_OWNER_FILE){
+    for(const selector of RETIRED_SEGMENTED_OWNER_SELECTORS){
+      const selectorRe=new RegExp(escapeRegExp(selector)+String.raw`(?:\s*[>,:+.~#\[]|\s*\{|\s*,)`,'i');
+      if(selectorRe.test(text))retiredSegmentedOwnerSelectors.push(selector);
+    }
+  }
+
+  if(controlRecipeOwnershipViolations.length || retiredSegmentedOwnerSelectors.length){
+    errors.push(
+      file + ': shared Control recipe ownership must stay in ui-control-system.css. '
+      + 'Do not restore Segmented skin / shared Control recipe declarations in ui-visual-system.css or Feature CSS. '
+      + controlRecipeOwnershipViolations.map(marker=>marker.name + '=' + marker.count).join('; ')
+      + (retiredSegmentedOwnerSelectors.length
+        ? (controlRecipeOwnershipViolations.length ? '; ' : '') + 'selectors=' + retiredSegmentedOwnerSelectors.join(', ')
+        : '')
+    );
+  }
+
   const hudAliases=[];
   for(const marker of RETIRED_HUD_FOREGROUND_ALIAS_MARKERS){
     const count=countMatches(text,marker.re);
@@ -390,7 +432,7 @@ for(const file of files){
     }
   }
 
-  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
+  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && controlRecipeOwnershipViolations.length===0 && retiredSegmentedOwnerSelectors.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -420,6 +462,8 @@ console.log('Runtime CSS scanned: ' + files.length);
 console.log('Legacy palette debt files: ' + debt.length);
 console.log('Retired command visual aliases guarded: ' + RETIRED_COMMAND_VISUAL_ALIAS_MARKERS.length);
 console.log('Retired Phase 4 control visual aliases guarded: ' + RETIRED_PHASE4_CONTROL_VISUAL_ALIASES.length);
+console.log('Shared Control recipe owner variables guarded: ' + CONTROL_RECIPE_VARIABLES.length);
+console.log('Retired Segmented legacy owner selectors guarded: ' + RETIRED_SEGMENTED_OWNER_SELECTORS.length);
 console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
 console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.length);
 console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.length);
