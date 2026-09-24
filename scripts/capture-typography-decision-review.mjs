@@ -147,6 +147,7 @@ try {
 
   const selectedMapCard = page.locator('.new-game-map-card.is-selected').first();
   await selectedMapCard.focus();
+  await settle();
   const newGameCardFocus = await selectedMapCard.evaluate(element => ({
     selected: element.classList.contains('is-selected'),
     visible: element.matches(':focus-visible'),
