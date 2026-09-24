@@ -64,7 +64,7 @@
 }
 
 /* Utility actions deliberately stay visually quieter than flow actions. */
-.settings-restore{min-width:0!important;height:38px!important;padding:0 9px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;border:0!important;box-shadow:none!important;font-size:var(--wanhu-type-caption,10px)!important;font-weight:500!important;letter-spacing:.012em!important;cursor:pointer}
+.settings-restore{min-width:0!important;height:38px!important;padding:0 9px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;border:0!important;box-shadow:none!important;font-size:var(--wanhu-type-caption,10px)!important;font-weight:500!important;letter-spacing:.012em!important;cursor:pointer;transition:color .12s ease,background .12s ease,opacity .12s ease!important}
 .archive-footer-action,
 .save-group-rename{
   min-width:0!important;
@@ -93,6 +93,7 @@
   color:#c98b81!important;
   background:rgba(152,84,71,.060)!important;
 }
+.settings-restore:focus-visible,
 .archive-footer-action:focus-visible,
 .save-group-rename:focus-visible{outline:1px solid var(--wanhu-control-focus);outline-offset:1px}
 .archive-footer-action:disabled{opacity:.28!important;cursor:default!important}
