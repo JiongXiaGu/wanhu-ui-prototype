@@ -112,7 +112,7 @@ Pause 是独立 Screen Space，不套用小型 Dialog 的几何。默认 Pause �
 
 ## 状态色与允许的内容色
 
-普通 Hover：`--wanhu-control-hover:rgba(255,255,255,.045)`。Selected / On：`--wanhu-control-active-bg:rgba(169,132,75,.075)`，状态线为 `rgba(169,132,75,.78)`；Focus 独立表达，不代替 Selected。
+普通 Hover：`--wanhu-control-hover:rgba(255,255,255,.045)`。Selected / On：`--wanhu-control-active-bg:rgba(169,132,75,.075)`；需要弱轮廓的 Selected Button 使用 `--wanhu-control-active-border-soft:rgba(189,153,89,.30)`；状态线 `--wanhu-control-active-line` 为 `rgba(169,132,75,.78)`，只表达 Rail / Tab / Marker 等结构状态，不作为普通按钮边框。Focus 独立表达，不代替 Selected。
 
 Primary Action 的共享 Surface Recipe 由 Theme Token 唯一持有：默认 Border `--wanhu-control-primary-border:rgba(189,153,89,.22)`，背景 Top / Bottom 分别为 `rgba(169,132,75,.082)` / `rgba(169,132,75,.032)`；Hover Border 为 `rgba(189,153,89,.34)`，背景 Top / Bottom 为 `rgba(169,132,75,.115)` / `rgba(169,132,75,.048)`。Global Space Primary 与 Dialog Primary 直接消费这组 Token，但 Geometry、前景字色与局部装饰仍由各自组件持有。Warning / Danger 不消费 Primary Recipe。
 
