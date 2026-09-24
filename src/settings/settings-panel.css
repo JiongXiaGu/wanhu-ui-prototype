@@ -32,8 +32,6 @@
 .settings-space__footer{flex:0 0 72px;display:flex;align-items:center;justify-content:flex-start;border-top:1px solid transparent}
 .settings-space__footer-left{display:flex;align-items:center;gap:10px}
 .settings-space__footer-right{min-width:1px;min-height:1px}
-.settings-footer-back{min-width:86px;height:36px;padding:0 13px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--wanhu-control-border-soft);border-radius:10px;font:inherit;cursor:pointer;transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease}
-.settings-restore{height:36px;padding:0 11px;display:inline-flex;align-items:center;gap:7px;border:0;border-radius:8px;font:inherit;font-size:var(--wanhu-type-caption,11px);cursor:pointer;transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease}
 @keyframes settings-global-enter{from{opacity:.72}to{opacity:1}}
 @keyframes settings-content-enter{from{opacity:.42;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 /* 逻辑画布仍为 1920；不按浏览器物理像素单独改变表单比例。 */
