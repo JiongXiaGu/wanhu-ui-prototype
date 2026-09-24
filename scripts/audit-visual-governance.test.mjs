@@ -355,12 +355,12 @@ test('preserve Global Space geometry and canonical Surface owner',async()=>{
     'src/ui/ui-visual-system.css':`
       .global-space-primary{
         border-color:var(--wanhu-control-primary-border);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+        background:var(--wanhu-control-primary-bg);
         color:var(--wanhu-color-brass-high);
       }
       .global-space-primary:hover:not(:disabled){
         border-color:var(--wanhu-control-primary-border-hover);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+        background:var(--wanhu-control-primary-hover-bg);
       }
     `,
     'src/ui/wanhu-surface-system.css':`
@@ -483,15 +483,13 @@ test('preserve canonical Control states and shared Control recipe owner',async()
     --ui-segment-surface:rgba(255,255,255,.024);
     --ui-segment-border:rgba(239,233,221,.095);
     --ui-segment-hover:rgba(255,255,255,.050);
-    --ui-segment-active-top:rgba(169,132,75,.115);
-    --ui-segment-active-bottom:rgba(169,132,75,.040);
     border-color:var(--wanhu-control-border-soft);
     outline-color:var(--wanhu-control-border-hover);
     background:var(--wanhu-control-hover);
   }`});
   assert.equal(result.status,0,result.output);
   assert.match(result.output,/Retired Phase 4 control visual aliases guarded: 3/);
-  assert.match(result.output,/Shared Control recipe owner variables guarded: 7/);
+  assert.match(result.output,/Shared Control recipe owner variables guarded: 5/);
   assert.match(result.output,/Retired Segmented legacy owner selectors guarded: 3/);
 });
 
@@ -546,27 +544,26 @@ test('preserve Dialog Select density modifiers through root geometry variables',
 
 const primaryControlRecipeVariables=[
   '--wanhu-control-primary-border','--wanhu-control-primary-border-hover',
-  '--wanhu-control-primary-bg-top','--wanhu-control-primary-bg-bottom',
-  '--wanhu-control-primary-hover-top','--wanhu-control-primary-hover-bottom',
+  '--wanhu-control-primary-bg','--wanhu-control-primary-hover-bg',
 ];
 
 test('preserve canonical Primary Control recipe declarations in Theme tokens',async()=>{
   const declarations=primaryControlRecipeVariables.map(name=>name+':transparent;').join('');
   const result=await runAudit({'src/ui/wanhu-theme-tokens.css':`.game-canvas{${declarations}}`});
   assert.equal(result.status,0,result.output);
-  assert.match(result.output,/Shared Primary Control recipe owner variables guarded: 6/);
+  assert.match(result.output,/Shared Primary Control recipe owner variables guarded: 4/);
   assert.match(result.output,/Primary Control canonical consumer files guarded: 2/);
 });
 
 test('reject Primary Control recipe declarations outside Theme tokens',async()=>{
   const result=await runAudit({'src/ui/probe.css':`.probe{
     --wanhu-control-primary-border:transparent;
-    --wanhu-control-primary-bg-top:transparent;
+    --wanhu-control-primary-bg:transparent;
   }`});
   assert.equal(result.status,1,result.output);
   assert.match(result.output,/shared Primary Control Surface recipe must use canonical/);
   assert.match(result.output,/--wanhu-control-primary-border=1/);
-  assert.match(result.output,/--wanhu-control-primary-bg-top=1/);
+  assert.match(result.output,/--wanhu-control-primary-bg=1/);
 });
 
 test('reject Primary Button consumers that restore private Surface values',async()=>{
@@ -592,12 +589,12 @@ test('preserve Primary Button geometry and foreground differences while consumin
       .global-space-primary{
         min-width:124px;
         border-color:var(--wanhu-control-primary-border);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+        background:var(--wanhu-control-primary-bg);
         color:var(--wanhu-color-brass-text);
       }
       .global-space-primary:hover:not(:disabled){
         border-color:var(--wanhu-control-primary-border-hover);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+        background:var(--wanhu-control-primary-hover-bg);
         color:var(--wanhu-color-brass-text);
       }
     `,
@@ -605,12 +602,12 @@ test('preserve Primary Button geometry and foreground differences while consumin
       .ui-dialog-button.is-primary{
         min-width:112px;
         border-color:var(--wanhu-control-primary-border);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+        background:var(--wanhu-control-primary-bg);
         color:var(--wanhu-color-brass-high);
       }
       .ui-dialog-button.is-primary:hover:not(:disabled){
         border-color:var(--wanhu-control-primary-border-hover);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+        background:var(--wanhu-control-primary-hover-bg);
         color:#d9ba72;
       }
     `,
@@ -625,11 +622,11 @@ test('Primary consumer guard tolerates shared base block before canonical varian
       .global-space-primary{border:1px solid var(--wanhu-control-border-soft);background:rgba(255,255,255,.012)}
       .global-space-primary{
         border-color:var(--wanhu-control-primary-border);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+        background:var(--wanhu-control-primary-bg);
       }
       .global-space-primary:hover:not(:disabled){
         border-color:var(--wanhu-control-primary-border-hover);
-        background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+        background:var(--wanhu-control-primary-hover-bg);
       }
     `,
   });

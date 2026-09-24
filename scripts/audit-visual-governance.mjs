@@ -54,7 +54,6 @@ const CONTROL_RECIPE_OWNER_FILE='src/ui/ui-control-system.css';
 const CONTROL_RECIPE_VARIABLES=[
   '--ui-control-radius','--ui-control-radius-inner',
   '--ui-segment-surface','--ui-segment-border','--ui-segment-hover',
-  '--ui-segment-active-top','--ui-segment-active-bottom',
 ];
 const CONTROL_RECIPE_VARIABLE_DECLARATION_MARKERS=CONTROL_RECIPE_VARIABLES.map(name=>({
   name,re:new RegExp(escapeRegExp(name)+String.raw`\s*:`,'g'),
@@ -74,20 +73,19 @@ const RETIRED_DIALOG_SELECT_OWNER_SELECTORS=[
 const PRIMARY_CONTROL_RECIPE_OWNER_FILE='src/ui/wanhu-theme-tokens.css';
 const PRIMARY_CONTROL_RECIPE_VARIABLES=[
   '--wanhu-control-primary-border','--wanhu-control-primary-border-hover',
-  '--wanhu-control-primary-bg-top','--wanhu-control-primary-bg-bottom',
-  '--wanhu-control-primary-hover-top','--wanhu-control-primary-hover-bottom',
+  '--wanhu-control-primary-bg','--wanhu-control-primary-hover-bg',
 ];
 const PRIMARY_CONTROL_RECIPE_DECLARATION_MARKERS=PRIMARY_CONTROL_RECIPE_VARIABLES.map(name=>({
   name,re:new RegExp(escapeRegExp(name)+String.raw`\s*:`,'g'),
 }));
 const PRIMARY_CONTROL_CONSUMER_RULES=[
   {file:'src/ui/ui-visual-system.css',selectors:[
-    {selector:'.global-space-primary',tokens:['--wanhu-control-primary-border','--wanhu-control-primary-bg-top','--wanhu-control-primary-bg-bottom']},
-    {selector:'.global-space-primary:hover:not(:disabled)',tokens:['--wanhu-control-primary-border-hover','--wanhu-control-primary-hover-top','--wanhu-control-primary-hover-bottom']},
+    {selector:'.global-space-primary',tokens:['--wanhu-control-primary-border','--wanhu-control-primary-bg']},
+    {selector:'.global-space-primary:hover:not(:disabled)',tokens:['--wanhu-control-primary-border-hover','--wanhu-control-primary-hover-bg']},
   ]},
   {file:'src/ui/dialog/dialog.css',selectors:[
-    {selector:'.ui-dialog-button.is-primary',tokens:['--wanhu-control-primary-border','--wanhu-control-primary-bg-top','--wanhu-control-primary-bg-bottom']},
-    {selector:'.ui-dialog-button.is-primary:hover:not(:disabled)',tokens:['--wanhu-control-primary-border-hover','--wanhu-control-primary-hover-top','--wanhu-control-primary-hover-bottom']},
+    {selector:'.ui-dialog-button.is-primary',tokens:['--wanhu-control-primary-border','--wanhu-control-primary-bg']},
+    {selector:'.ui-dialog-button.is-primary:hover:not(:disabled)',tokens:['--wanhu-control-primary-border-hover','--wanhu-control-primary-hover-bg']},
   ]},
 ];
 

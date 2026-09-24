@@ -145,15 +145,11 @@ try {
   report.checks.push({ label: 'New Game Selected + Focus', ...newGameFilterFocus });
   await shot('readability-new-game-focus');
 
-  // Unity 6000.6 Core：去掉 Web-only gradient / shadow 后，Selected 与 Focus 仍由纯色和轮廓成立。
+  // Unity 6000.6 Visual Parity：正式 Web 视觉本身不依赖 Gradient / box-shadow。
   const unityCoreSegment = page.locator('.new-game-segmented>button.is-active').first();
   await page.keyboard.press('Tab');
   await unityCoreSegment.focus();
   const unityCoreSegmentState = await unityCoreSegment.evaluate(element => {
-    element.style.setProperty('transition', 'none', 'important');
-    element.style.setProperty('box-shadow', 'none', 'important');
-    element.style.setProperty('background-image', 'none', 'important');
-    if (element.parentElement) element.parentElement.style.setProperty('box-shadow', 'none', 'important');
     const style = getComputedStyle(element);
     return {
       selected: element.classList.contains('is-active'),
@@ -164,11 +160,11 @@ try {
       outlineWidth: style.outlineWidth,
     };
   });
-  assert(unityCoreSegmentState.selected && unityCoreSegmentState.focusVisible, 'Unity Core Segmented Selected 与 Focus 必须同时存在');
-  assert.equal(unityCoreSegmentState.backgroundImage, 'none', 'Unity Core Review 必须关闭 Segmented gradient');
-  assert.notEqual(unityCoreSegmentState.backgroundColor, 'rgba(0, 0, 0, 0)', 'Segmented 必须有纯色 Selected fallback');
+  assert(unityCoreSegmentState.selected && unityCoreSegmentState.focusVisible, 'Unity Parity Segmented Selected 与 Focus 必须同时存在');
+  assert.equal(unityCoreSegmentState.backgroundImage, 'none', '正式 Web 视觉必须关闭 Segmented gradient');
+  assert.notEqual(unityCoreSegmentState.backgroundColor, 'rgba(0, 0, 0, 0)', 'Segmented 必须直接使用纯色 Selected');
   assert(parseFloat(unityCoreSegmentState.outlineWidth) >= 1, 'Segmented Focus 不能依赖 shadow');
-  report.checks.push({ label: 'Unity Core Segmented Selected + Focus', ...unityCoreSegmentState });
+  report.checks.push({ label: 'Unity Parity Segmented Selected + Focus', ...unityCoreSegmentState });
   await shot('readability-unity-core-segmented');
 
   await open('settings', '.settings-space');
@@ -181,12 +177,7 @@ try {
     const fill = track?.querySelector('i');
     const thumb = element.querySelector('.ui-slider__thumb');
     const input = element.querySelector('input');
-    if (!track || !fill || !thumb || !input) throw new Error('Unity Core Slider structure missing.');
-    track.style.setProperty('transition', 'none', 'important');
-    thumb.style.setProperty('transition', 'none', 'important');
-    track.style.setProperty('box-shadow', 'none', 'important');
-    fill.style.setProperty('background-image', 'none', 'important');
-    thumb.style.setProperty('box-shadow', 'none', 'important');
+    if (!track || !fill || !thumb || !input) throw new Error('Unity Parity Slider structure missing.');
     const trackStyle = getComputedStyle(track);
     const fillStyle = getComputedStyle(fill);
     const thumbStyle = getComputedStyle(thumb);
@@ -200,13 +191,13 @@ try {
       thumbBoxShadow: thumbStyle.boxShadow,
     };
   });
-  assert(unityCoreSliderState.focusVisible, 'Unity Core Slider input Focus 必须可见');
-  assert.equal(unityCoreSliderState.fillBackgroundImage, 'none', 'Unity Core Review 必须关闭 Slider gradient');
-  assert.notEqual(unityCoreSliderState.fillBackgroundColor, 'rgba(0, 0, 0, 0)', 'Slider Fill 必须有纯色 fallback');
-  assert.equal(unityCoreSliderState.trackBoxShadow, 'none', 'Unity Core Review 必须关闭 Slider track shadow');
-  assert.equal(unityCoreSliderState.thumbBoxShadow, 'none', 'Unity Core Review 必须关闭 Slider thumb shadow');
+  assert(unityCoreSliderState.focusVisible, 'Unity Parity Slider input Focus 必须可见');
+  assert.equal(unityCoreSliderState.fillBackgroundImage, 'none', '正式 Web 视觉必须关闭 Slider gradient');
+  assert.notEqual(unityCoreSliderState.fillBackgroundColor, 'rgba(0, 0, 0, 0)', 'Slider Fill 必须直接使用纯色');
+  assert.equal(unityCoreSliderState.trackBoxShadow, 'none', '正式 Web 视觉必须关闭 Slider track shadow');
+  assert.equal(unityCoreSliderState.thumbBoxShadow, 'none', '正式 Web 视觉必须关闭 Slider thumb shadow');
   assert(parseFloat(unityCoreSliderState.trackOutlineWidth) >= 1, 'Slider Focus 必须有非 shadow 轮廓');
-  report.checks.push({ label: 'Unity Core Slider Fill + Focus', ...unityCoreSliderState });
+  report.checks.push({ label: 'Unity Parity Slider Fill + Focus', ...unityCoreSliderState });
   await shot('readability-unity-core-slider');
 
   // Slider Core Review 导航到 Settings；恢复 New Game 后继续既有地图卡 Selected + Focus 回归。

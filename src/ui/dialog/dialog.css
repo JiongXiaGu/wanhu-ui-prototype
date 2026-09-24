@@ -85,7 +85,7 @@
   font-weight:500;
   letter-spacing:.018em;
   cursor:pointer;
-  transition:color .13s ease,border-color .13s ease,background .13s ease,box-shadow .13s ease,transform .08s ease;
+  transition:color .13s ease,border-color .13s ease,background .13s ease,transform .08s ease;
 }
 .ui-dialog-button:hover:not(:disabled){
   color:var(--wanhu-color-paper-primary,#eee9df);
@@ -95,18 +95,17 @@
 .ui-dialog-button:active:not(:disabled){transform:translateY(1px)}
 .ui-dialog-button:focus-visible{
   outline:1px solid var(--wanhu-control-focus);
-  outline-offset:1px;
-  box-shadow:0 0 0 3px rgba(169,132,75,.060);
+  outline-offset:2px;
 }
 .ui-dialog-button.is-primary{
   min-width:112px;
   border-color:var(--wanhu-control-primary-border);
-  background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+  background:var(--wanhu-control-primary-bg);
   color:var(--wanhu-color-brass-high,#bd9959);
 }
 .ui-dialog-button.is-primary:hover:not(:disabled){
   border-color:var(--wanhu-control-primary-border-hover);
-  background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+  background:var(--wanhu-control-primary-hover-bg);
   color:#d9ba72;
 }
 .ui-dialog-button.is-danger{
@@ -186,8 +185,7 @@
 }
 .ui-dialog-choice-grid>button:focus-visible{
   outline:1px solid var(--wanhu-control-focus);
-  outline-offset:1px;
-  box-shadow:0 0 0 3px rgba(169,132,75,.055);
+  outline-offset:2px;
 }
 .ui-dialog-choice-select{
   width:100%;
@@ -260,16 +258,16 @@
   color:var(--wanhu-color-paper-secondary,#b9b5ab);
   font:inherit;
   cursor:pointer;
-  transition:border-color .12s ease,background .12s ease,box-shadow .12s ease;
+  transition:border-color .12s ease,background .12s ease;
 }
 .ui-binding-capture:hover{
   border-color:var(--ui-field-border-hover);
   background:var(--ui-field-surface-hover);
 }
 .ui-binding-capture:focus-visible{
-  outline:0;
+  outline:1px solid var(--ui-field-border-focus);
+  outline-offset:2px;
   border-color:var(--ui-field-border-focus);
-  box-shadow:0 0 0 3px rgba(169,132,75,.055);
 }
 .ui-binding-capture.is-listening{
   border-color:rgba(189,153,89,.28);
@@ -310,7 +308,7 @@
   border:1px solid var(--wanhu-dialog-surface-edge,rgba(238,233,223,.085));
   border-radius:var(--ui-control-radius,10px);
   background:rgba(39,41,38,.94);
-  box-shadow:0 14px 34px rgba(4,6,5,.32),inset 0 1px 0 rgba(255,255,255,.018);
+  box-shadow:none;
   color:var(--wanhu-color-paper-secondary,#b9b5ab);
   font-size:10px;
   white-space:nowrap;

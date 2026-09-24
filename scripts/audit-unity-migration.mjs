@@ -60,6 +60,12 @@ function count(re,text){
   return [...text.matchAll(re)].length;
 }
 
+function countNonNoneBoxShadows(text){
+  return [...text.matchAll(/\bbox-shadow\s*:\s*([^;}\n]+)/gi)]
+    .filter(match=>match[1].trim().toLowerCase()!=='none')
+    .length;
+}
+
 function lineHits(text,re){
   return text.split('\n')
     .map((line,index)=>({line:index+1,text:line.trim()}))
@@ -234,7 +240,7 @@ for(const file of files){
     const parity={
       linear:count(/linear-gradient\s*\(/gi,text),
       radial:count(/radial-gradient\s*\(/gi,text),
-      shadow:count(/\bbox-shadow\s*:/gi,text),
+      shadow:countNonNoneBoxShadows(text),
       brightness:count(/\bbrightness\s*\(/gi,text),
       saturate:count(/\bsaturate\s*\(/gi,text),
       composedColor:count(/\brgba?\s*\(\s*var\s*\(/gi,text),

@@ -17,13 +17,12 @@
   border:1px solid var(--wanhu-control-border-soft);
   border-radius:var(--ui-control-radius);
   background:rgba(255,255,255,.012);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
   color:var(--wanhu-color-paper-secondary);
   font-size:var(--wanhu-type-label,10.5px);
   font-weight:500;
   letter-spacing:.018em;
   cursor:pointer;
-  transition:color .13s ease,border-color .13s ease,background .13s ease,box-shadow .13s ease,transform .08s ease;
+  transition:color .13s ease,border-color .13s ease,background .13s ease,transform .08s ease;
 }
 .global-space-secondary .ui-icon,
 .global-space-primary .ui-icon{}
@@ -31,7 +30,6 @@
   color:var(--wanhu-color-paper-primary);
   border-color:var(--wanhu-control-border-hover);
   background:rgba(255,255,255,.030);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.022);
 }
 .global-space-secondary:active:not(:disabled),
 .global-space-primary:active:not(:disabled){transform:translateY(1px)}
@@ -43,7 +41,7 @@
 .global-space-primary{
   min-width:124px;
   border-color:var(--wanhu-control-primary-border);
-  background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+  background:var(--wanhu-control-primary-bg);
   color:var(--wanhu-color-brass-text);
 }
 .global-space-primary::after{
@@ -54,20 +52,19 @@
   bottom:0;
   height:1px;
   border-radius:1px;
-  background:linear-gradient(90deg,transparent,var(--wanhu-color-brass) 18%,var(--wanhu-color-brass-high) 50%,var(--wanhu-color-brass) 82%,transparent);
-  opacity:.78;
-  transition:left .14s ease,right .14s ease,opacity .14s ease,box-shadow .14s ease;
+  background:var(--wanhu-control-active-line);
+  opacity:.42;
+  transition:left .14s ease,right .14s ease,opacity .14s ease;
 }
 .global-space-primary:hover:not(:disabled){
   color:var(--wanhu-color-brass-text);
   border-color:var(--wanhu-control-primary-border-hover);
-  background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+  background:var(--wanhu-control-primary-hover-bg);
 }
 .global-space-primary:hover:not(:disabled)::after{
   left:8px;
   right:8px;
-  opacity:1;
-  box-shadow:0 -3px 10px rgba(169,132,75,.10);
+  opacity:.68;
 }
 
 .global-space-back,
