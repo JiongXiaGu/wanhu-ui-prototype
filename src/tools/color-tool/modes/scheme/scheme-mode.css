@@ -52,7 +52,7 @@
   outline:0;
   border-color:var(--ui-field-border-focus);
   background:var(--ui-field-surface-focus);
-  box-shadow:0 0 0 3px rgba(201,165,95,.045);
+  box-shadow:0 0 0 1px var(--wanhu-control-focus);
 }
 .building-scheme-selector>span{
   min-width:0;
