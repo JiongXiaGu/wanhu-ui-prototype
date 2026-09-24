@@ -26,23 +26,6 @@ async function shot(name) {
   await page.screenshot({ path: `${outDir}/${name}.png` });
   report.screenshots.push(name);
 }
-async function disableWebOnlyControlEnhancements() {
-  await page.evaluate(() => {
-    document.querySelectorAll(
-      '.game-canvas .segment, .game-canvas .bp-segment, .game-canvas .new-game-segmented, '
-      + '.game-canvas .segment>button.is-active, .game-canvas .bp-segment>button.is-active, '
-      + '.game-canvas .new-game-segmented>button.is-active, .ui-slider__track, .ui-slider__thumb',
-    ).forEach(element => {
-      if (element instanceof HTMLElement) element.style.setProperty('box-shadow', 'none', 'important');
-    });
-    document.querySelectorAll(
-      '.game-canvas .segment>button.is-active, .game-canvas .bp-segment>button.is-active, '
-      + '.game-canvas .new-game-segmented>button.is-active, .ui-slider__track>i',
-    ).forEach(element => {
-      if (element instanceof HTMLElement) element.style.setProperty('background-image', 'none', 'important');
-    });
-  });
-}
 async function assertFont(selector, minimum, label) {
   const rows = await page.locator(selector).evaluateAll(elements => elements.flatMap(element => {
     const rect = element.getBoundingClientRect();
@@ -163,11 +146,13 @@ try {
   await shot('readability-new-game-focus');
 
   // Unity 6000.6 Core：去掉 Web-only gradient / shadow 后，Selected 与 Focus 仍由纯色和轮廓成立。
-  await disableWebOnlyControlEnhancements();
   const unityCoreSegment = page.locator('.new-game-segmented>button.is-active').first();
   await page.keyboard.press('Tab');
   await unityCoreSegment.focus();
   const unityCoreSegmentState = await unityCoreSegment.evaluate(element => {
+    element.style.setProperty('box-shadow', 'none', 'important');
+    element.style.setProperty('background-image', 'none', 'important');
+    if (element.parentElement) element.parentElement.style.setProperty('box-shadow', 'none', 'important');
     const style = getComputedStyle(element);
     return {
       selected: element.classList.contains('is-active'),
@@ -187,7 +172,6 @@ try {
 
   await open('settings', '.settings-space');
   await page.getByRole('button', { name: '图形', exact: true }).click();
-  await disableWebOnlyControlEnhancements();
   const unityCoreSliderInput = page.getByRole('slider', { name: '渲染比例', exact: true });
   await page.keyboard.press('Tab');
   await unityCoreSliderInput.focus();
@@ -197,6 +181,9 @@ try {
     const thumb = element.querySelector('.ui-slider__thumb');
     const input = element.querySelector('input');
     if (!track || !fill || !thumb || !input) throw new Error('Unity Core Slider structure missing.');
+    track.style.setProperty('box-shadow', 'none', 'important');
+    fill.style.setProperty('background-image', 'none', 'important');
+    thumb.style.setProperty('box-shadow', 'none', 'important');
     const trackStyle = getComputedStyle(track);
     const fillStyle = getComputedStyle(fill);
     const thumbStyle = getComputedStyle(thumb);
