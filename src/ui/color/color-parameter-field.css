@@ -35,7 +35,7 @@
   outline:0;
   border-color:var(--ui-field-border-focus);
   background:var(--ui-field-surface-focus);
-  box-shadow:0 0 0 3px rgba(201,165,95,.045);
+  box-shadow:0 0 0 1px var(--wanhu-control-focus);
 }
 .ui-color-parameter-field__control:active:not(:disabled){transform:translateY(1px)}
 .ui-color-parameter-field__control:disabled{cursor:default;opacity:var(--ui-field-disabled)}
