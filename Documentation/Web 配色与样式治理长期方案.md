@@ -208,6 +208,20 @@ Phase 1 下一批单独处理 Loading / 外围空间债务；Management Topic Ac
 
 Phase 1 下一批处理 Global Space 家族剩余旧 Focus 债务（`fullscreen-actions.css` / `new-game-space.css` 等）；Color Tool、Dialog / Hover 与 Character 装饰语义继续独立分批。
 
+### Phase 1 进度：Batch 6 已完成
+
+第六批只处理 Global Space 家族的剩余旧 Focus / Selected 语义，不重做 New Game / Save / Load / Settings 的布局与 Surface：
+
+- `src/fullscreen-actions.css`：Archive / Save 的辅助动作键盘 Focus 退役旧 201/165/95 Hue，统一消费 `--wanhu-control-focus`；
+- `src/new-game/new-game-space.css`：旧 ValueButton Focus Halo 迁移到当前 Brass Hue；Map Filter / Segmented 的键盘 Focus 不再复用 Active Line，而改用独立 Control Focus；
+- New Game Map Card 的 Selected 继续保留当前填色与左侧状态线，Focus 作为独立边缘与 Selected 共存，不能通过“选中边框透明”把键盘焦点吞掉；
+- `fullscreen-actions.css` 与 `new-game/new-game-space.css` 已从 Ratchet Baseline 移除；
+- Readability Review 新增 New Game 当前筛选 + Focus、选中地图 + Focus、Save Utility Focus 的实际 computed-style 断言，并把 `readability-new-game-focus.png` / `readability-save-focus.png` 纳入轻量治理 Artifact。
+
+验证过程中 Review 实际发现两层问题：第一轮暴露 New Game 选中地图 Card 的透明边框会覆盖 Focus，随后增加显式 `is-selected:focus-visible`；第二轮暴露测试在 120ms `border-color` transition 尚未结束时读取 computed style，随后在 focus 后等待 settle。最终 Build #1503 与 UI Review #469 均通过，`audit:visual` 通过；最终 Readability Report 确认 New Game Filter Focus、选中 Map Card Focus、Save Utility Focus 均为 `rgb(209,180,122)`，且 Selected 与 Focus 可同时存在。已实际查看 New Game / Save Focus 截图。临时 PR #12 已关闭，复用的 `tmp-*` 分支已恢复原 SHA。
+
+Phase 1 下一批处理 Color Tool 相关剩余债务（`scheme-mode.css` / `color-parameter-field.css`）；Dialog / Hover 与 Character 装饰语义继续独立分批。
+
 ## Phase 2：Semantic Token 收敛
 
 目标：Theme 管理“共享语义”，而不是收集所有 RGBA。
