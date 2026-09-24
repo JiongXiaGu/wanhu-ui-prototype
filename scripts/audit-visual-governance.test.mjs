@@ -730,3 +730,25 @@ test('preserve Archive footer group geometry after Utility skin retirement',asyn
   assert.equal(result.status,0,result.output);
   assert.match(result.output,/Retired Archive Footer Utility owner selectors guarded: 4/);
 });
+
+
+test('reject retired Settings Footer local button skins',async()=>{
+  const result=await runAudit({'src/settings/settings-panel.css':`
+    .settings-footer-back{min-width:86px;border-color:#333}
+    .settings-restore{height:36px;background:transparent}
+  `});
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/Settings Footer button skin must be owned by shared Global Space \/ fullscreen actions/);
+  assert.match(result.output,/\.settings-footer-back/);
+  assert.match(result.output,/\.settings-restore/);
+});
+
+test('preserve Settings footer group geometry after local button skin retirement',async()=>{
+  const result=await runAudit({'src/settings/settings-panel.css':`
+    .settings-space__footer{flex:0 0 72px;display:flex;align-items:center}
+    .settings-space__footer-left{display:flex;align-items:center;gap:10px}
+    .settings-space__footer-right{min-width:1px;min-height:1px}
+  `});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Settings Footer button owner selectors guarded: 2/);
+});
