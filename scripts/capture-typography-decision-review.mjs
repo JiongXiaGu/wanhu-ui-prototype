@@ -218,7 +218,8 @@ try {
   report.checks.push({ label: 'Unity Core Slider Fill + Focus', ...unityCoreSliderState });
   await shot('readability-unity-core-slider');
 
-
+  // Slider Core Review 导航到 Settings；恢复 New Game 后继续既有地图卡 Selected + Focus 回归。
+  await open('new-game', '.new-game-space');
   const selectedMapCard = page.locator('.new-game-map-card.is-selected').first();
   await selectedMapCard.focus();
   await settle();
