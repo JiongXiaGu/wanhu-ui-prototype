@@ -170,6 +170,88 @@ try {
   report.checks.push({ label: 'Save Utility Focus', ...saveFocus });
   await shot('readability-save-focus');
 
+  // Color Tool Focus Review：HEX / RGB / HSV 使用独立 Control Focus；Workspace Selected 与 Focus 可共存。
+  await open('color-tool-surface', '.color-tool-surface-panel');
+  await page.getByRole('button', { name: '调整主色', exact: true }).click();
+  await page.waitForSelector('.material-color-editor');
+  await settle();
+
+  const colorHexInput = page.getByRole('textbox', { name: '十六进制颜色', exact: true });
+  await page.keyboard.press('Tab');
+  await colorHexInput.focus();
+  const colorHexFocus = await colorHexInput.evaluate(element => {
+    const style = getComputedStyle(element);
+    return { visible: element.matches(':focus-visible'), outlineColor: style.outlineColor, outlineWidth: style.outlineWidth };
+  });
+  assert(colorHexFocus.visible && parseFloat(colorHexFocus.outlineWidth) >= 1, 'Color Tool HEX Focus 必须可见');
+  assert.equal(colorHexFocus.outlineColor, 'rgb(209, 180, 122)', 'Color Tool HEX Focus 必须使用 Control Focus');
+  report.checks.push({ label: 'Color Tool HEX Focus', ...colorHexFocus });
+
+  const rgbValue = page.locator('[data-color-channel="R"] .ui-value-button').first();
+  await page.keyboard.press('Tab');
+  await rgbValue.focus();
+  const rgbFocus = await rgbValue.evaluate(element => {
+    const style = getComputedStyle(element);
+    return { visible: element.matches(':focus-visible'), outlineColor: style.outlineColor, outlineWidth: style.outlineWidth };
+  });
+  assert(rgbFocus.visible && parseFloat(rgbFocus.outlineWidth) >= 1, 'Color Tool RGB Focus 必须可见');
+  assert.equal(rgbFocus.outlineColor, 'rgb(209, 180, 122)', 'Color Tool RGB Focus 必须使用 Control Focus');
+  report.checks.push({ label: 'Color Tool RGB Focus', ...rgbFocus });
+
+  await page.getByRole('button', { name: 'HSV', exact: true }).click();
+  await settle();
+  const hsvValue = page.locator('[data-color-channel="H"] .ui-value-button').first();
+  await page.keyboard.press('Tab');
+  await hsvValue.focus();
+  const hsvFocus = await hsvValue.evaluate(element => {
+    const style = getComputedStyle(element);
+    return { visible: element.matches(':focus-visible'), outlineColor: style.outlineColor, outlineWidth: style.outlineWidth };
+  });
+  assert(hsvFocus.visible && parseFloat(hsvFocus.outlineWidth) >= 1, 'Color Tool HSV Focus 必须可见');
+  assert.equal(hsvFocus.outlineColor, 'rgb(209, 180, 122)', 'Color Tool HSV Focus 必须使用 Control Focus');
+  report.checks.push({ label: 'Color Tool HSV Focus', ...hsvFocus });
+  await shot('readability-color-tool-focus');
+
+  await open('color-tool-surface', '.color-tool-surface-panel');
+  await page.getByRole('button', { name: '打开材质方案库', exact: true }).click();
+  await page.waitForSelector('.material-preset-workspace');
+  await settle();
+
+  const selectedMaterialFamily = page.locator('.material-preset-workspace__rail-list>button.is-active').first();
+  await page.keyboard.press('Tab');
+  await selectedMaterialFamily.focus();
+  const materialFamilyFocus = await selectedMaterialFamily.evaluate(element => {
+    const style = getComputedStyle(element);
+    return {
+      selected: element.classList.contains('is-active') && element.getAttribute('aria-pressed') === 'true',
+      visible: element.matches(':focus-visible'),
+      outlineColor: style.outlineColor,
+      outlineWidth: style.outlineWidth,
+    };
+  });
+  assert(materialFamilyFocus.selected && materialFamilyFocus.visible, 'Material Family Selected 与 Focus 必须能同时存在');
+  assert.equal(materialFamilyFocus.outlineColor, 'rgb(209, 180, 122)', 'Material Family Focus 必须使用 Control Focus');
+  assert(parseFloat(materialFamilyFocus.outlineWidth) >= 1, 'Material Family Focus 轮廓必须可见');
+  report.checks.push({ label: 'Material Family Selected + Focus', ...materialFamilyFocus });
+
+  const selectedSchemeFilter = page.locator('.material-preset-workspace__source-filter .workspace-context-filter__scroll>button.is-active').first();
+  await page.keyboard.press('Tab');
+  await selectedSchemeFilter.focus();
+  const schemeFilterFocus = await selectedSchemeFilter.evaluate(element => {
+    const style = getComputedStyle(element);
+    return {
+      selected: element.classList.contains('is-active') && element.getAttribute('aria-pressed') === 'true',
+      visible: element.matches(':focus-visible'),
+      outlineColor: style.outlineColor,
+      outlineWidth: style.outlineWidth,
+    };
+  });
+  assert(schemeFilterFocus.selected && schemeFilterFocus.visible, 'Scheme Filter Selected 与 Focus 必须能同时存在');
+  assert.equal(schemeFilterFocus.outlineColor, 'rgb(209, 180, 122)', 'Scheme Filter Focus 必须使用 Control Focus');
+  assert(parseFloat(schemeFilterFocus.outlineWidth) >= 1, 'Scheme Filter Focus 轮廓必须可见');
+  report.checks.push({ label: 'Scheme Filter Selected + Focus', ...schemeFilterFocus });
+  await shot('color-scheme-focus');
+
   // 当前 LeftContextPanel 不再附加已退役的裸 gameplay-context-panel 类。
   await open('camera', '.gameplay-context-panel--camera');
   await assertFont('.ui-numeric-slider-field>.ui-value-button', 11, '相机参数值可读性');
