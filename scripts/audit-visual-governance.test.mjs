@@ -155,3 +155,44 @@ test('HUD guard matches complete identifiers, not prefixes or suffixes',async()=
   const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
   assert.equal(result.status,0,result.output);
 });
+
+
+const retiredSemanticCompatibilityAliases=[
+  '--wanhu-tonal-ink-950','--wanhu-tonal-ink-900','--wanhu-tonal-ink-800',
+  '--wanhu-tonal-paper','--wanhu-tonal-secondary','--wanhu-tonal-tertiary',
+  '--wanhu-tonal-brass','--wanhu-tonal-brass-hi','--wanhu-tonal-brass-soft','--wanhu-tonal-cinnabar',
+  '--wanhu-identity-paper','--wanhu-identity-text','--wanhu-identity-secondary','--wanhu-identity-muted',
+  '--wanhu-identity-faint','--wanhu-identity-gold','--wanhu-identity-gold-hi',
+  '--wanhu-character-gold','--wanhu-character-gold-hi','--wanhu-character-gold-soft',
+  '--wanhu-character-joint','--wanhu-character-rule','--wanhu-character-beam',
+];
+
+for(const alias of retiredSemanticCompatibilityAliases){
+  test(`reject retired semantic compatibility alias: ${alias}`,async()=>{
+    const result=await runAudit({'src/ui/probe.css':`.probe{${alias}:transparent;color:var(${alias})}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/retired Tonal \/ Identity \/ Character compatibility aliases/);
+    assert.ok(result.output.includes(alias+'=2'),result.output);
+  });
+}
+
+test('preserve canonical Theme tokens and remaining HUD material compatibility variables',async()=>{
+  const result=await runAudit({'src/ui/probe.css':`.probe{
+    color:var(--wanhu-color-paper-primary);
+    border-color:var(--wanhu-color-brass-high);
+    background:var(--wanhu-color-brass-soft);
+    filter:var(--wanhu-hud-filter);
+    box-shadow:var(--hud-shadow-primary);
+  }`});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Tonal \/ Identity \/ Character aliases guarded: 23/);
+});
+
+test('semantic compatibility guard matches complete identifiers only',async()=>{
+  // 仅验证完整名称边界；带前后缀的自定义属性不代表推荐的新 Owner。
+  const css=retiredSemanticCompatibilityAliases
+    .map(alias=>`${alias}-fixture:0;--fixture${alias}:0;`)
+    .join('');
+  const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
+  assert.equal(result.status,0,result.output);
+});
