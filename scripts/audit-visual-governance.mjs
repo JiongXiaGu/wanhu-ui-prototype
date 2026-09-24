@@ -115,10 +115,8 @@ const SURFACE_OWNERSHIP_RULES=[
 ];
 
 function escapeRegExp(value){
-  return value.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\const WEATHER_CONTENT_VARIABLE_MARKERS=WEATHER_CONTENT_VARIABLES.map(name=>({
-  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
-}));
-');
+  const special='\\^$.*+?()[]{}|/';
+  return [...value].map(char=>special.includes(char)?'\\\\'+char:char).join('');
 }
 
 function selectorMaterialProperties(text,selector){
