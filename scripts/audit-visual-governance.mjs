@@ -116,7 +116,7 @@ const SURFACE_OWNERSHIP_RULES=[
 
 function escapeRegExp(value){
   const special='\\^$.*+?()[]{}|/';
-  return [...value].map(char=>special.includes(char)?'\\\\'+char:char).join('');
+  return [...value].map(char=>special.includes(char)?String.fromCharCode(92)+char:char).join('');
 }
 
 function selectorMaterialProperties(text,selector){
