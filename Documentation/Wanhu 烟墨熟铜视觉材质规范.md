@@ -120,6 +120,8 @@ Gameplay Persistent HUD 继续遵守同一规则：速度当前档、Information
 
 Loading 是图片主导的外围 Screen，不属于 Global Space 或 Blocking Panel。进度条可以使用 Brass → Brass High → Brass Text 表达当前加载进程；Tip 普通 Hover 只提亮文字/底色，键盘 Focus 使用独立 `--wanhu-control-focus` 轮廓。不能因为进度条使用熟铜，就给整个 Loading 遮罩、提示区域或背景添加金色 Tint。
 
+Global Space 的 Selected / Current 与键盘 Focus 必须能同时表达：Selected 继续使用 Active BG / Active Line，Focus 使用 `--wanhu-control-focus`。New Game 的当前筛选、当前地图、游戏模式等不能用 Active Line 代替 Focus；Save / Load 的辅助动作也遵守同一 Focus 语义。Focus 可以与 Selected 共存，但不能为了显示 Focus 改写 Selected 的业务状态。
+
 Dialog 的 Warning 与 Danger 不相同：
 
 - Warning：Header Tint `rgba(169,132,75,.070)`，顶部细线 `rgba(189,153,89,.78)`，图标 Brass High；
