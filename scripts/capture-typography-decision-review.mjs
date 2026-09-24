@@ -125,6 +125,50 @@ try {
     await shot(name);
   }
 
+  // Global Space Focus 必须独立于 Selected，统一消费当前 Brass Text focus token。
+  await open('new-game', '.new-game-space');
+  const newGameActiveFilter = page.locator('.new-game-map-filters button.is-active').first();
+  await page.keyboard.press('Tab');
+  await newGameActiveFilter.focus();
+  const newGameFilterFocus = await newGameActiveFilter.evaluate(element => {
+    const style = getComputedStyle(element);
+    return {
+      selected: element.classList.contains('is-active'),
+      visible: element.matches(':focus-visible'),
+      outlineColor: style.outlineColor,
+      outlineWidth: style.outlineWidth,
+    };
+  });
+  assert(newGameFilterFocus.selected && newGameFilterFocus.visible, 'New Game 当前筛选与键盘 Focus 必须能同时存在');
+  assert.equal(newGameFilterFocus.outlineColor, 'rgb(209, 180, 122)', 'New Game Focus 必须使用当前 Brass Text focus token');
+  assert(parseFloat(newGameFilterFocus.outlineWidth) >= 1, 'New Game Focus 轮廓必须可见');
+  report.checks.push({ label: 'New Game Selected + Focus', ...newGameFilterFocus });
+  await shot('readability-new-game-focus');
+
+  const selectedMapCard = page.locator('.new-game-map-card.is-selected').first();
+  await selectedMapCard.focus();
+  const newGameCardFocus = await selectedMapCard.evaluate(element => ({
+    selected: element.classList.contains('is-selected'),
+    visible: element.matches(':focus-visible'),
+    borderColor: getComputedStyle(element).borderColor,
+  }));
+  assert(newGameCardFocus.selected && newGameCardFocus.visible, 'New Game 地图 Selected 与 Focus 必须同时可见');
+  assert.equal(newGameCardFocus.borderColor, 'rgb(209, 180, 122)', 'New Game 地图 Focus 边缘必须使用 Control Focus');
+  report.checks.push({ label: 'New Game Card Selected + Focus', ...newGameCardFocus });
+
+  await open('pause-save', '.save-game-space');
+  const saveRename = page.locator('.save-group-rename').first();
+  await page.keyboard.press('Tab');
+  await saveRename.focus();
+  const saveFocus = await saveRename.evaluate(element => {
+    const style = getComputedStyle(element);
+    return { visible: element.matches(':focus-visible'), outlineColor: style.outlineColor, outlineWidth: style.outlineWidth };
+  });
+  assert(saveFocus.visible && parseFloat(saveFocus.outlineWidth) >= 1, 'Save utility Focus 必须可见');
+  assert.equal(saveFocus.outlineColor, 'rgb(209, 180, 122)', 'Save utility Focus 必须使用当前 Brass Text focus token');
+  report.checks.push({ label: 'Save Utility Focus', ...saveFocus });
+  await shot('readability-save-focus');
+
   // 当前 LeftContextPanel 不再附加已退役的裸 gameplay-context-panel 类。
   await open('camera', '.gameplay-context-panel--camera');
   await assertFont('.ui-numeric-slider-field>.ui-value-button', 11, '相机参数值可读性');
