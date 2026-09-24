@@ -220,7 +220,29 @@ Phase 1 下一批处理 Global Space 家族剩余旧 Focus 债务（`fullscreen-
 
 验证过程中 Review 实际发现两层问题：第一轮暴露 New Game 选中地图 Card 的透明边框会覆盖 Focus，随后增加显式 `is-selected:focus-visible`；第二轮暴露测试在 120ms `border-color` transition 尚未结束时读取 computed style，随后在 focus 后等待 settle。最终 Build #1503 与 UI Review #469 均通过，`audit:visual` 通过；最终 Readability Report 确认 New Game Filter Focus、选中 Map Card Focus、Save Utility Focus 均为 `rgb(209,180,122)`，且 Selected 与 Focus 可同时存在。已实际查看 New Game / Save Focus 截图。临时 PR #12 已关闭，复用的 `tmp-*` 分支已恢复原 SHA。
 
-Phase 1 下一批处理 Color Tool 相关剩余债务（`scheme-mode.css` / `color-parameter-field.css`）；Dialog / Hover 与 Character 装饰语义继续独立分批。
+### Phase 1 进度：Batch 7 已完成
+
+第七批只处理 Color Tool 的旧 Focus 配色债务，不改 Color Tool 布局、MaterialPreset / BuildingScheme Workspace、Surface Recipe、HEX/RGB/HSV 结构、保存方案流程或 Dialog：
+
+- `src/tools/color-tool/modes/scheme/scheme-mode.css` 与 `src/ui/color/color-parameter-field.css` 退役旧 `rgba(201,165,95,...)` Focus halo，统一到当前 `--wanhu-control-focus`；
+- Hover 继续使用中性 Control Hover，Selected 继续使用 Active 语义，Favorite 仍只使用 Brass Text；
+- 两个目标 CSS 已从 Ratchet Baseline 移除；
+- Review 新增 HEX / RGB / HSV Focus，以及 Material Family / Scheme Filter 的 Selected + Focus computed-style 断言，确认 Focus 与业务选中状态可以同时存在。
+
+验证：Build #1508 与 UI Review #471 通过，`audit:visual` 通过；已实际查看 `readability-color-tool-focus.png` 与 `color-scheme-focus.png`。临时 PR #13 已关闭且未合并。
+
+### Phase 1 进度：Batch 8 已完成
+
+第八批只处理 Dialog Focus 债务，不改变 Dialog 几何、Backdrop、Surface、Warning / Danger 色彩语义、输入结构或 Confirm 流程：
+
+- `src/ui/dialog/dialog.css` 的普通按钮、Choice Grid 与 Choice Trigger 退役旧 201/165/95 Focus fallback；
+- Focus 改为独立 `--wanhu-control-focus` outline，Primary / Selected / Danger 原有 border / fill / text 继续表达自身业务语义，因此 Focus 不再通过改写业务边框冒充 Selected 或 Danger；
+- `dialog.css` 已从 Ratchet Baseline 移除；
+- Dialog Review 新增 Primary Focus、Choice Selected + Focus、Danger Focus 的真实页面断言与截图。
+
+验证：Build #1512 与 UI Review #473 通过，`audit:visual` 通过；已实际查看 Confirm / Choice / Danger Focus 截图，Danger 仍保持朱砂语义，Choice 当前项仍保持 Selected，键盘 Focus 为独立细熟铜轮廓。
+
+复核 Ratchet 时确认 `src/ui/hover/hover-overlay.css` 仍有一处退役 `#c9aa68`（Rich Hover 内容 Accent），因此它继续留在 Baseline；`src/ui/wanhu-character.css` 的旧 210/179/111 Structural Accent 也继续独立处理。Phase 1 下一步先收敛 Hover，再单独审查 Character，避免把内容强调、结构装饰和共享 Control 状态混改。
 
 ## Phase 2：Semantic Token 收敛
 
