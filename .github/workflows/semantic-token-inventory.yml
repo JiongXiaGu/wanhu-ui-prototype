@@ -1,0 +1,53 @@
+name: Semantic Token Inventory
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/semantic-token-inventory.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Collect source and exact HUD references
+        run: |
+          mkdir -p semantic-token-inventory
+          git rev-parse HEAD > semantic-token-inventory/source-sha.txt
+          git archive --format=tar HEAD src scripts Documentation .github AGENTS.md README.md package.json > semantic-token-inventory/review-source.tar
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const names = new Set(['--hud-text','--hud-text-secondary','--hud-icon','--hud-accent','--hud-accent-text','--wanhu-hud-paper','--wanhu-hud-text','--wanhu-hud-muted','--wanhu-hud-faint','--wanhu-hud-gold']);
+          const hits = [];
+          function walk(dir) {
+            for (const entry of fs.readdirSync(dir, {withFileTypes:true})) {
+              const file = path.join(dir, entry.name);
+              if (entry.isDirectory()) walk(file);
+              else if (/\.(css|tsx?|mjs)$/.test(file)) {
+                const lines = fs.readFileSync(file, 'utf8').split('\n');
+                lines.forEach((text, index) => {
+                  const found = [...text.matchAll(/--[\w-]+/g)].map(m => m[0]).filter(n => names.has(n));
+                  if (found.length) hits.push({file, line:index+1, names:found, text});
+                });
+              }
+            }
+          }
+          walk('src');
+          const report = {source:process.env.GITHUB_SHA, aliases:[...names], hits};
+          fs.writeFileSync('semantic-token-inventory/hud-foreground-inventory.json', JSON.stringify(report, null, 2));
+          for (const name of names) console.log(name, hits.filter(h => h.names.includes(name)).length);
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: semantic-token-inventory
+          path: semantic-token-inventory/
+          if-no-files-found: error
+          retention-days: 1
