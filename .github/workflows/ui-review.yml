@@ -16,6 +16,8 @@ on:
       - 'package.json'
       - 'vite.config.*'
       - '.github/workflows/ui-review.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
