@@ -16,11 +16,11 @@ const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
 const RETIRED_COMMAND_VISUAL_ALIAS_MARKERS=[
   {id:'legacy-command-surface-alias',re:/--command-surface-(?:lg|md|sm)-(?:top|bottom)\b/gi},
   {id:'legacy-command-border-alias',re:/--command-border\b/gi},
-  {id:'legacy-command-divider-alias',re:/--command-divider\b/gi},
+  {id:'legacy-command-divider-alias',re:/--command-divider(?!-)\b/gi},
   {id:'legacy-command-hover-alias',re:/--command-hover\b/gi},
   {id:'legacy-command-active-alias',re:/--command-active-(?:top|bottom|line)\b/gi},
   {id:'legacy-command-primary-alias',re:/--command-primary-(?:top|bottom|hover-top|hover-bottom)\b/gi},
-  {id:'legacy-command-icon-alias',re:/--command-icon(?:-hover|-active)?\b/gi},
+  {id:'legacy-command-icon-alias',re:/--command-icon(?:-hover|-active)?(?!-)\b/gi},
   {id:'legacy-command-tooltip-alias',re:/--command-tooltip-(?:bg|edge|shadow)\b/gi},
   {id:'legacy-command-blur-alias',re:/--command-blur(?:-(?:lg|md|sm))?\b/gi},
 ];
@@ -98,7 +98,7 @@ for(const file of files){
       file + ': retired shared --paper / --gold* variables are fully retired and may not return. '
       + 'Use current wanhu semantic Theme tokens.'
     );
-  }else if(!LEGACY_SHARED_COLOR_BASELINE_FILES.has(file)){
+  }else if(markers.length && !LEGACY_SHARED_COLOR_BASELINE_FILES.has(file)){
     errors.push(
       file + ': retired shared palette literal introduced outside the Phase 1 baseline. '
       + 'Use current wanhu Theme / Surface / Control tokens or document a real content-color exception.'
