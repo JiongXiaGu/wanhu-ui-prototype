@@ -13,16 +13,32 @@ const SRC_ROOT='src';
 const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
 ]);
 
+/* 按完整变量名匹配，不能把 icon-size / divider-height 等几何误判为视觉别名。 */
+function commandAlias(pattern){
+  return new RegExp(String.raw`(?<![-\w])--command-${pattern}(?![-\w])`,'gi');
+}
+
+/* 同一退役 Hue 的 rgb / rgba、逗号 / 空格写法属于同一债务。
+   这里只检查数值 RGB 字面量，不承担完整 CSS 颜色表达式求值。 */
+function retiredRgb(red,green,blue){
+  const channel=value=>String.raw`${value}(?:\.0+)?`;
+  const [r,g,b]=[red,green,blue].map(channel);
+  return new RegExp(
+    String.raw`\brgba?\(\s*(?:${r}\s*,\s*${g}\s*,\s*${b}(?=\s*[,\)])|${r}\s+${g}\s+${b}(?=\s*[/\)]))`,
+    'gi',
+  );
+}
+
 const RETIRED_COMMAND_VISUAL_ALIAS_MARKERS=[
-  {id:'legacy-command-surface-alias',re:/--command-surface-(?:lg|md|sm)-(?:top|bottom)\b/gi},
-  {id:'legacy-command-border-alias',re:/--command-border\b/gi},
-  {id:'legacy-command-divider-alias',re:/--command-divider(?!-)\b/gi},
-  {id:'legacy-command-hover-alias',re:/--command-hover\b/gi},
-  {id:'legacy-command-active-alias',re:/--command-active-(?:top|bottom|line)\b/gi},
-  {id:'legacy-command-primary-alias',re:/--command-primary-(?:top|bottom|hover-top|hover-bottom)\b/gi},
-  {id:'legacy-command-icon-alias',re:/--command-icon(?:-hover|-active)?(?!-)\b/gi},
-  {id:'legacy-command-tooltip-alias',re:/--command-tooltip-(?:bg|edge|shadow)\b/gi},
-  {id:'legacy-command-blur-alias',re:/--command-blur(?:-(?:lg|md|sm))?\b/gi},
+  {id:'legacy-command-surface-alias',re:commandAlias('surface-(?:lg|md|sm)-(?:top|bottom)')},
+  {id:'legacy-command-border-alias',re:commandAlias('border')},
+  {id:'legacy-command-divider-alias',re:commandAlias('divider')},
+  {id:'legacy-command-hover-alias',re:commandAlias('hover')},
+  {id:'legacy-command-active-alias',re:commandAlias('active-(?:top|bottom|line)')},
+  {id:'legacy-command-primary-alias',re:commandAlias('primary-(?:top|bottom|hover-top|hover-bottom)')},
+  {id:'legacy-command-icon-alias',re:commandAlias('icon(?:-hover|-active)?')},
+  {id:'legacy-command-tooltip-alias',re:commandAlias('tooltip-(?:bg|edge|shadow)')},
+  {id:'legacy-command-blur-alias',re:commandAlias('blur(?:-(?:lg|md|sm))?')},
 ];
 
 const RETIRED_SHARED_COLOR_MARKERS=[
@@ -31,10 +47,10 @@ const RETIRED_SHARED_COLOR_MARKERS=[
   {id:'legacy-paper-hex',re:/#efe9dd/gi},
   {id:'legacy-brass-hex',re:/#c9a55f/gi},
   {id:'legacy-brass-high-hex',re:/#e2c27d/gi},
-  {id:'legacy-brass-rgb',re:/rgba\(201\s*,\s*165\s*,\s*95\s*,/gi},
-  {id:'legacy-character-brass-rgb',re:/rgba\(210\s*,\s*179\s*,\s*111\s*,/gi},
+  {id:'legacy-brass-rgb',re:retiredRgb(201,165,95)},
+  {id:'legacy-character-brass-rgb',re:retiredRgb(210,179,111)},
   {id:'legacy-card-brass-hex',re:/#c9aa68/gi},
-  {id:'legacy-card-brass-rgb',re:/rgba\(201\s*,\s*170\s*,\s*104\s*,/gi},
+  {id:'legacy-card-brass-rgb',re:retiredRgb(201,170,104)},
 ];
 
 async function walk(dir){
@@ -72,13 +88,16 @@ for(const file of files){
 
   const commandAliases=[];
   for(const marker of RETIRED_COMMAND_VISUAL_ALIAS_MARKERS){
-    const count=countMatches(text,marker.re);
-    if(count>0)commandAliases.push({id:marker.id,count});
+    const matches=[...text.matchAll(new RegExp(marker.re.source,marker.re.flags))];
+    if(matches.length){
+      commandAliases.push({id:marker.id,count:matches.length,names:[...new Set(matches.map(match=>match[0]))]});
+    }
   }
   if(commandAliases.length){
     errors.push(
       file + ': retired command visual compatibility aliases may not return. '
-      + 'Use canonical --wanhu-command-* / --wanhu-color-* semantic tokens; keep only command geometry variables.'
+      + 'Use canonical --wanhu-command-* / --wanhu-color-* semantic tokens; keep only command geometry variables. '
+      + commandAliases.map(marker=>marker.id + '=' + marker.count + ' [' + marker.names.join(', ') + ']').join('; ')
     );
   }
 
