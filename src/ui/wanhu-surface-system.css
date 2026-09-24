@@ -288,9 +288,6 @@
 .gameplay-screen .gameplay-top-shell.has-navigation .gameplay-top-status{
   border-bottom-color:var(--wanhu-surface-info-rule);
 }
-.gameplay-screen--management .gameplay-top-status{
-  box-shadow:0 16px 44px rgba(3,6,5,.32),inset 0 1px 0 rgba(255,255,255,.02);
-}
 .gameplay-screen .gameplay-top-status__world-state,
 .gameplay-screen .gameplay-top-status__clock{color:#9a9d99}
 .gameplay-screen .gameplay-top-status__weather-state{color:#bcb6aa}
