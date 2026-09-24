@@ -74,6 +74,24 @@ const RETIRED_WORK_SURFACE_COMPATIBILITY_ALIAS_MARKERS=RETIRED_WORK_SURFACE_COMP
   name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
 }));
 
+/* Phase 3 Batch 15：Environment 不再拥有 Context Surface 的兼容桥接。 */
+const RETIRED_CONTEXT_SURFACE_COMPATIBILITY_ALIASES=[
+  '--weather-mist-surface','--weather-mist-card','--weather-mist-card-hover',
+  '--weather-edge','--weather-rule',
+];
+const RETIRED_CONTEXT_SURFACE_COMPATIBILITY_ALIAS_MARKERS=RETIRED_CONTEXT_SURFACE_COMPATIBILITY_ALIASES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
+}));
+
+/* Weather 内容变量属于 Feature 内容层，不允许 Surface System 再次覆盖。 */
+const WEATHER_CONTENT_VARIABLES=[
+  '--weather-paper','--weather-text','--weather-muted','--weather-faint',
+  '--weather-gold','--weather-gold-focus','--weather-gold-soft',
+];
+const WEATHER_CONTENT_VARIABLE_MARKERS=WEATHER_CONTENT_VARIABLES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
+}));
+
 const RETIRED_SHARED_COLOR_MARKERS=[
   {id:'legacy-paper-var',re:/--paper\b/gi},
   {id:'legacy-gold-var',re:/--gold(?:-hi|-fill)?\b/gi},
@@ -173,7 +191,35 @@ for(const file of files){
     );
   }
 
-  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0){
+  const contextSurfaceCompatibilityAliases=[];
+  for(const marker of RETIRED_CONTEXT_SURFACE_COMPATIBILITY_ALIAS_MARKERS){
+    const count=countMatches(text,marker.re);
+    if(count)contextSurfaceCompatibilityAliases.push({name:marker.name,count});
+  }
+  if(contextSurfaceCompatibilityAliases.length){
+    errors.push(
+      file + ': retired Context / Environment Surface compatibility aliases may not return. '
+      + 'Environment content must consume the shared --wanhu-surface-context-* recipe through the common shell. '
+      + contextSurfaceCompatibilityAliases.map(marker=>marker.name + '=' + marker.count).join('; ')
+    );
+  }
+
+  const misplacedWeatherContentVariables=[];
+  if(file==='src/ui/wanhu-surface-system.css'){
+    for(const marker of WEATHER_CONTENT_VARIABLE_MARKERS){
+      const count=countMatches(text,marker.re);
+      if(count)misplacedWeatherContentVariables.push({name:marker.name,count});
+    }
+    if(misplacedWeatherContentVariables.length){
+      errors.push(
+        file + ': Weather content variables must not be owned or overridden by the shared Surface System. '
+        + 'Keep them in weather-mist-glass.css; Surface System owns only --wanhu-surface-context-* material recipe. '
+        + misplacedWeatherContentVariables.map(marker=>marker.name + '=' + marker.count).join('; ')
+      );
+    }
+  }
+
+  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -205,6 +251,8 @@ console.log('Retired command visual aliases guarded: ' + RETIRED_COMMAND_VISUAL_
 console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
 console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.length);
 console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.length);
+console.log('Retired Context / Environment Surface aliases guarded: ' + RETIRED_CONTEXT_SURFACE_COMPATIBILITY_ALIASES.length);
+console.log('Weather content variables protected from Surface ownership: ' + WEATHER_CONTENT_VARIABLES.length);
 
 if(debt.length){
   console.log('\nPhase 1 legacy palette debt:');

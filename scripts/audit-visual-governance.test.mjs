@@ -237,3 +237,63 @@ test('Work Surface guard matches complete identifiers only',async()=>{
   const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
   assert.equal(result.status,0,result.output);
 });
+
+
+const retiredContextSurfaceCompatibilityAliases=[
+  '--weather-mist-surface','--weather-mist-card','--weather-mist-card-hover',
+  '--weather-edge','--weather-rule',
+];
+
+for(const alias of retiredContextSurfaceCompatibilityAliases){
+  test(`reject retired Context / Environment Surface alias: ${alias}`,async()=>{
+    const result=await runAudit({'src/gameplay/probe.css':`.probe{${alias}:transparent;background:var(${alias})}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/retired Context \/ Environment Surface compatibility aliases/);
+    assert.ok(result.output.includes(alias+'=2'),result.output);
+  });
+}
+
+test('Weather content variables stay out of shared Surface System',async()=>{
+  const result=await runAudit({
+    'src/ui/wanhu-surface-system.css':`.probe{
+      --weather-paper:#fff;--weather-text:#fff;--weather-muted:#aaa;--weather-faint:#888;
+      --weather-gold:#a9844b;--weather-gold-focus:#c5a469;--weather-gold-soft:rgba(169,132,75,.105);
+    }`,
+    'src/gameplay/weather-mist-glass.css':'.weather{color:var(--wanhu-color-paper-primary)}',
+  });
+  assert.equal(result.status,1,result.output);
+  assert.match(result.output,/Weather content variables must not be owned or overridden by the shared Surface System/);
+  for(const name of ['--weather-paper','--weather-text','--weather-muted','--weather-faint','--weather-gold','--weather-gold-focus','--weather-gold-soft']){
+    assert.ok(result.output.includes(name+'=1'),result.output);
+  }
+});
+
+test('preserve Weather content owner and canonical Context Surface recipe',async()=>{
+  const result=await runAudit({
+    'src/gameplay/weather-mist-glass.css':`.weather{
+      --weather-paper:var(--wanhu-color-paper-primary);
+      --weather-text:#cbc6bd;--weather-muted:#9d9f9a;--weather-faint:#858984;
+      --weather-gold:var(--wanhu-color-brass);
+      --weather-gold-focus:var(--wanhu-color-brass-high);
+      --weather-gold-soft:var(--wanhu-color-brass-soft);
+      color:var(--weather-paper);
+    }`,
+    'src/ui/wanhu-surface-system.css':`.context{
+      background:var(--wanhu-surface-context-bg);
+      border-color:var(--wanhu-surface-context-edge);
+      box-shadow:var(--wanhu-surface-context-shadow);
+      backdrop-filter:var(--wanhu-surface-context-filter);
+    }`,
+  });
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Context \/ Environment Surface aliases guarded: 5/);
+  assert.match(result.output,/Weather content variables protected from Surface ownership: 7/);
+});
+
+test('Context Surface guard matches complete identifiers only',async()=>{
+  const css=retiredContextSurfaceCompatibilityAliases
+    .map(alias=>`${alias}-fixture:0;--fixture${alias}:0;`)
+    .join('');
+  const result=await runAudit({'src/gameplay/probe.css':`.probe{${css}}`});
+  assert.equal(result.status,0,result.output);
+});

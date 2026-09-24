@@ -37,21 +37,8 @@
   color:#aaa9a2;
 }
 
-/* Environment is content-specialized, not material-specialized. */
-.gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-context-panel--weather{
-  --weather-mist-surface:var(--wanhu-surface-context-bg);
-  --weather-mist-card:var(--wanhu-surface-context-card);
-  --weather-mist-card-hover:var(--wanhu-surface-context-card-hover);
-  --weather-paper:var(--wanhu-color-paper-primary);
-  --weather-text:#cbc6bd;
-  --weather-muted:#9d9f9a;
-  --weather-faint:#858984;
-  --weather-edge:var(--wanhu-surface-context-edge);
-  --weather-rule:var(--wanhu-surface-context-rule);
-  --weather-gold:var(--wanhu-color-brass);
-  --weather-gold-focus:var(--wanhu-color-brass-high);
-  --weather-gold-soft:var(--wanhu-color-brass-soft);
-}
+/* Environment panels consume the shared Context Surface directly.
+   Weather-specific content variables live only in weather-mist-glass.css. */
 
 /* ---------------------------------------------------------------------
    Work Surface — Design Workspace

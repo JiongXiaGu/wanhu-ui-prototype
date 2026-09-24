@@ -1,12 +1,13 @@
 /* Environment content skin.
    Shell/header/footer/common controls are shared with Camera and placement panels via gameplay-context-panel.css.
-   This file owns only weather-specific content: presets, world summary and time/season rhythm. */
+   This file owns only weather-specific content: presets, world summary and time/season rhythm.
+   Material/root/edge/filter ownership stays in wanhu-surface-system.css. */
 
 .gameplay-context-panel--weather{
   --weather-paper:var(--wanhu-color-paper-primary,#eee9df);
   --weather-text:#cbc6bd;
   --weather-muted:#9d9f9a;
-  --weather-faint:#7e8381;
+  --weather-faint:#858984;
   --weather-gold:var(--wanhu-color-brass,#a9844b);
   --weather-gold-focus:var(--wanhu-color-brass-high,#bd9959);
   --weather-gold-soft:var(--wanhu-color-brass-soft,rgba(169,132,75,.105));
