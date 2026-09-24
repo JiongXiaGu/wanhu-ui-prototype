@@ -4,7 +4,7 @@
 .gameplay-screen .gameplay-top-status__resources>.gameplay-top-resource-slot{position:relative;width:112px;min-width:112px;height:34px;padding:0 4px;display:flex;align-items:center;justify-content:center;color:inherit;border-right:0}
 .gameplay-top-resource-shortcut{position:relative;width:102px;min-width:102px;height:34px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:var(--wanhu-color-icon);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:background var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease}
 .gameplay-top-resource-shortcut .ui-icon{width:var(--wanhu-icon-md,18px);height:var(--wanhu-icon-md,18px);flex:0 0 var(--wanhu-icon-md,18px);color:var(--wanhu-color-icon);transition:color var(--wanhu-motion-control,120ms) ease}
-.gameplay-top-resource-shortcut b{min-width:48px;color:var(--hud-text,#e5dfd4);font-size:12px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.006em;text-align:right}
+.gameplay-top-resource-shortcut b{min-width:48px;font-size:12px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.006em;text-align:right}
 .gameplay-top-resource-shortcut:hover{background:var(--wanhu-control-hover);color:var(--wanhu-color-icon-hover)}
 .gameplay-top-resource-shortcut:hover .ui-icon{color:var(--wanhu-color-icon-hover)}
 .gameplay-top-resource-shortcut:active{transform:translateY(1px)}

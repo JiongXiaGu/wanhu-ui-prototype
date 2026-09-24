@@ -111,7 +111,7 @@ test('RGB channels must match whole numeric values',async()=>{
 
 test('scan nested runtime CSS, but exclude review studies and non-CSS files',async()=>{
   const files={
-    'src/review/nested/study.css':'.study{color:#c9a55f;background:var(--command-hover)}',
+    'src/review/nested/study.css':'.study{color:#c9a55f;background:var(--command-hover);color:var(--hud-text)}',
     'src/example.ts':'const historicalExample = "--command-hover";',
     'src/ui/nested/clean.css':'.clean{color:var(--wanhu-color-paper-primary)}',
   };
@@ -121,4 +121,37 @@ test('scan nested runtime CSS, but exclude review studies and non-CSS files',asy
   const dirty=await runAudit({...files,'src/ui/nested/dirty.css':'.dirty{color:var(--command-icon)}'});
   assert.equal(dirty.status,1,dirty.output);
   assert.match(dirty.output,/src\/ui\/nested\/dirty\.css/);
+});
+
+
+const retiredHudAliases=[
+  '--hud-text','--hud-text-secondary','--hud-icon','--hud-accent','--hud-accent-text',
+  '--wanhu-hud-paper','--wanhu-hud-text','--wanhu-hud-muted','--wanhu-hud-faint','--wanhu-hud-gold',
+];
+
+for(const alias of retiredHudAliases){
+  test(`reject retired HUD foreground alias: ${alias}`,async()=>{
+    const result=await runAudit({'src/ui/probe.css':`.probe{${alias}:transparent;color:var(${alias})}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/retired HUD foreground compatibility aliases/);
+    assert.ok(result.output.includes(alias+'=2'),result.output);
+  });
+}
+
+test('preserve HUD material, background, geometry and canonical foreground',async()=>{
+  const result=await runAudit({'src/ui/probe.css':`.probe{
+    --hud-radius-sm:10px;--hud-accent-bg:rgba(169,132,75,.075);
+    --hud-border-soft:rgba(238,233,223,.075);--hud-surface-ambient-top:rgba(29,35,36,.66);
+    --wanhu-hud-filter:blur(16px);--wanhu-hud-filter-soft:blur(13px);
+    color:var(--wanhu-color-paper-primary);background:var(--hud-accent-bg);
+  }`});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired HUD foreground aliases guarded: 10/);
+});
+
+test('HUD guard matches complete identifiers, not prefixes or suffixes',async()=>{
+  // 仅验证词法边界，不授权新建前景 Owner。
+  const css=retiredHudAliases.map(alias=>`${alias}-fixture:0;--fixture${alias}:0;`).join('');
+  const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
+  assert.equal(result.status,0,result.output);
 });

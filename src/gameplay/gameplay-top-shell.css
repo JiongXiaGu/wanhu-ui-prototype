@@ -97,9 +97,9 @@
 .gameplay-screen .gameplay-top-status__resources>span:last-child{border-right:0}
 .gameplay-screen .gameplay-top-status__resources .ui-icon{width:15px;height:15px;opacity:.88;}
 .gameplay-screen .gameplay-top-status__resources small{font-size:var(--wanhu-type-caption,10px);letter-spacing:.018em}
+/* 指标数值与速度按钮的最终前景由 Surface System 持有；本层不重建兼容色。 */
 .gameplay-screen .gameplay-top-status__resources b{
   margin-left:auto;
-  color:var(--hud-text,#e5dfd4);
   font-size:11px;
   font-weight:560;
   font-variant-numeric:tabular-nums;
@@ -124,13 +124,12 @@
   border:0;
   border-radius:var(--hud-radius-sm,10px);
   background:transparent;
-  color:var(--hud-icon,#858d85);
   cursor:pointer;
   transition:background var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease;
 }
 .gameplay-top-speed-button .ui-icon{width:15px;height:15px;}
 .gameplay-top-speed-button:hover{background:var(--wanhu-control-hover);color:var(--wanhu-color-icon-hover)}
-.gameplay-top-speed-button.is-active{background:var(--hud-accent-bg);color:var(--hud-accent-text)}
+.gameplay-top-speed-button.is-active{background:var(--hud-accent-bg)}
 .gameplay-top-speed-button:active{transform:translateY(1px)}
 
 /* Top HUD tooltips are rendered by the global Hover Overlay. */

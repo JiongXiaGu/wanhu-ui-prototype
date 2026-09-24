@@ -7,6 +7,7 @@ on:
     paths:
       - 'src/**'
       - 'scripts/capture-ui-review.mjs'
+      - 'scripts/capture-hud-foreground-review.mjs'
       - 'scripts/capture-input-dialog-system-review.mjs'
       - 'scripts/capture-typography-decision-review.mjs'
       - 'scripts/capture-tool-usability-review.mjs'
@@ -58,6 +59,19 @@ jobs:
           done
           cat /tmp/wanhu-vite.log
           exit 1
+      - name: Capture HUD foreground contract
+        run: node scripts/capture-hud-foreground-review.mjs
+      - name: Upload HUD foreground review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hud-foreground-review
+          path: |
+            review-screenshots/hud-foreground-*.png
+            review-screenshots/hud-foreground-report.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 9
       - name: Capture and assert UI review
         run: node scripts/capture-ui-review.mjs
       - name: Capture shared dialog system

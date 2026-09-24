@@ -89,12 +89,6 @@
   --hud-rule:rgba(239,233,221,.065);
   --hud-shadow-primary:0 18px 44px rgba(5,8,7,.25),inset 0 1px 0 rgba(255,255,255,.020);
   --hud-shadow-secondary:0 12px 30px rgba(5,8,7,.19),inset 0 1px 0 rgba(255,255,255,.014);
-
-  --hud-text:#e5dfd4;
-  --hud-text-secondary:#949b93;
-  --hud-icon:#858d85;
-  --hud-accent:var(--wanhu-color-brass,#a9844b);
-  --hud-accent-text:var(--wanhu-color-brass-high,#bd9959);
   --hud-accent-bg:rgba(169,132,75,.075);
 }
 

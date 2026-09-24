@@ -41,6 +41,15 @@ const RETIRED_COMMAND_VISUAL_ALIAS_MARKERS=[
   {id:'legacy-command-blur-alias',re:commandAlias('blur(?:-(?:lg|md|sm))?')},
 ];
 
+/* HUD 前景别名已退役；只枚举完整名称，不禁止仍在使用的材质、背景或几何变量。 */
+const RETIRED_HUD_FOREGROUND_ALIASES=[
+  '--hud-text','--hud-text-secondary','--hud-icon','--hud-accent','--hud-accent-text',
+  '--wanhu-hud-paper','--wanhu-hud-text','--wanhu-hud-muted','--wanhu-hud-faint','--wanhu-hud-gold',
+];
+const RETIRED_HUD_FOREGROUND_ALIAS_MARKERS=RETIRED_HUD_FOREGROUND_ALIASES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
+}));
+
 const RETIRED_SHARED_COLOR_MARKERS=[
   {id:'legacy-paper-var',re:/--paper\b/gi},
   {id:'legacy-gold-var',re:/--gold(?:-hi|-fill)?\b/gi},
@@ -101,7 +110,20 @@ for(const file of files){
     );
   }
 
-  if(markers.length===0 && commandAliases.length===0){
+  const hudAliases=[];
+  for(const marker of RETIRED_HUD_FOREGROUND_ALIAS_MARKERS){
+    const count=countMatches(text,marker.re);
+    if(count)hudAliases.push({name:marker.name,count});
+  }
+  if(hudAliases.length){
+    errors.push(
+      file + ': retired HUD foreground compatibility aliases may not return. '
+      + 'Use the existing Surface foreground owner / canonical --wanhu-color-* tokens; preserve HUD material and geometry. '
+      + hudAliases.map(marker=>marker.name + '=' + marker.count).join('; ')
+    );
+  }
+
+  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -130,6 +152,7 @@ console.log('---------------------------------');
 console.log('Runtime CSS scanned: ' + files.length);
 console.log('Legacy palette debt files: ' + debt.length);
 console.log('Retired command visual aliases guarded: ' + RETIRED_COMMAND_VISUAL_ALIAS_MARKERS.length);
+console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
 
 if(debt.length){
   console.log('\nPhase 1 legacy palette debt:');
