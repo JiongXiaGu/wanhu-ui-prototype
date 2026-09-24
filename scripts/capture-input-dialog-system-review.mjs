@@ -23,7 +23,14 @@ async function expectDialogTone(dialog,tone){
   if(tone!=='neutral'&&iconCount!==1)throw new Error(`${tone} Dialog must show one semantic status icon.`);
   const header=dialog.locator('.ui-dialog__header');
   const headerStyle=await header.evaluate(node=>({backgroundImage:getComputedStyle(node).backgroundImage,backgroundColor:getComputedStyle(node).backgroundColor}));
-  if(tone!=='neutral'&&headerStyle.backgroundImage==='none')throw new Error(`${tone} Dialog header must use a semantic tint.`);
+  if(tone!=='neutral'){
+    if(headerStyle.backgroundImage!=='none')throw new Error(`${tone} Dialog header must not depend on a Web-only gradient. image=${headerStyle.backgroundImage}`);
+    const tint=headerStyle.backgroundColor.match(/rgba?\(([^)]+)\)/);
+    if(!tint)throw new Error(`${tone} Dialog header must expose a solid semantic tint. background=${headerStyle.backgroundColor}`);
+    const channels=tint[1].split(',').map(value=>Number.parseFloat(value.trim()));
+    const alpha=channels.length>3?channels[3]:1;
+    if(alpha<=0)throw new Error(`${tone} Dialog header semantic tint must be visible. background=${headerStyle.backgroundColor}`);
+  }
   const accent=await dialog.evaluate(node=>getComputedStyle(node,'::before').backgroundColor);
   if(tone!=='neutral'&&(accent==='transparent'||accent==='rgba(0, 0, 0, 0)'))throw new Error(`${tone} Dialog must expose a top semantic accent line.`);
 }
