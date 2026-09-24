@@ -94,7 +94,7 @@
   background:rgba(152,84,71,.060)!important;
 }
 .archive-footer-action:focus-visible,
-.save-group-rename:focus-visible{outline:1px solid rgba(201,165,95,.28);outline-offset:1px}
+.save-group-rename:focus-visible{outline:1px solid var(--wanhu-control-focus);outline-offset:1px}
 .archive-footer-action:disabled{opacity:.28!important;cursor:default!important}
 
 /* Keep the real primary flow actions slightly stronger without turning them into large cards. */
