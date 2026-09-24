@@ -84,21 +84,21 @@ USS 不是完整 CSS 变量系统。Web 原型不要把迁移成立建立在以�
 
 共享 Token 应尽量直接提供最终语义值，例如完整 RGBA、长度或时间，而不是拆成需要浏览器二次计算的通道。
 
-## Unity-Compatible Core
+## Unity 6.6 Visual Parity
 
-所有新 UI 都必须先保证 **Unity-Compatible Core** 独立成立。
+正式 Web Runtime 是 Unity 6000.6.2f1 最终 UI 的布局 / 美术 / 交互参考。目标不是“Web 保留增强、Unity 提供降级”，而是 **Web 与 Unity 的正式视觉结果尽量一致**。
 
-移除以下 Web 增强后，界面仍必须保持层级、可读性、状态辨识与“烟墨熟铜”身份：
+允许 Web 与 Unity 使用不同技术实现同一视觉，例如 CSS 背景色对应 USS `background-color`，或 Web / Unity 共用同一张 PNG / 9-slice / Sprite；但正式 Web 美术不应长期依赖 Unity 6.6 无法等价复现的浏览器专属效果。
 
-- Gradient；
-- 复杂 `box-shadow` / Inset / Spread；
-- `brightness()` / `saturate()`；
-- 动态 Blur；
-- 只能由浏览器 CSS 计算得到的 Token。
+对以下能力采用统一策略：
 
-Web Enhancement 可以存在，但只能是附加表现，不能负责核心信息层级或交互状态。
+- Gradient：正式视觉确有价值时转为 Web / Unity 共用资产或共享绘制方案；价值不高时改为纯色 / Alpha / Border，不保留 Web 独占渐变。
+- CSS `box-shadow` / Inset / Spread：改为实线 Edge、独立结构元素、共用 Sprite / 9-slice 或经过项目验证的 Unity 等价方案。
+- `brightness()` / `saturate()`：改为明确状态色、Overlay、Alpha 或集中材质方案，不让普通控件依赖浏览器 Filter。
+- Blur / Backdrop：只保留已经明确具有 Unity 6.6 对应实现路径的共享 Surface 能力；正式视觉不得在 Blur 关闭后改变信息层级。
+- CSS 变量组合：Web 可使用变量组织代码，但迁移契约提供最终语义值，不要求 USS 执行浏览器式颜色数学。
 
-当前 Web Review 已为共享 Segmented / Slider 增加 Unity-Compatible Core 专项：测试在最终待测节点上关闭 Gradient、box-shadow 与相关 transition，再验证 Selected / Fill / Focus 是否仍由纯色和 Outline 成立。该专项属于 **Web 迁移证据**，用于防止设计重新依赖浏览器特效；它不等于 Unity 6000.6 Player / Editor 已完成实现或性能验证。
+共享 Segmented / Slider 已先建立无 Gradient / box-shadow 也能成立的状态语言；该工作作为向 Visual Parity 迁移的过渡证据。后续应继续调整正式 Web 样式本身，使正常 Web 截图直接接近 Unity 6.6 目标，而不是长期保留两套视觉。
 
 ## Surface 决策
 
@@ -137,7 +137,7 @@ Web CSS 不与 USS 逐字等价。Grid、伪元素、Mask、渐变、复杂 Shad
 
 ## 当前 CI 策略
 
-配色、Surface 与 Control 主体治理已进入收尾；在收尾 B 完成兼容存量分类与 Baseline 冻结前：
+配色、Surface 与 Control 的旧样式治理已结束，当前进入 Unity 6.6 Visual Parity 收敛；在完成兼容存量分类与 Baseline 冻结前：
 
 - 现有迁移硬 Guard 继续阻塞回归；
 - Gradient / box-shadow / brightness / saturate / USS 变量组合等新兼容项先进入 `audit:unity` **Telemetry / Warning**；

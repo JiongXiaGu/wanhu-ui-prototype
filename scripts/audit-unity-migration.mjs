@@ -89,6 +89,7 @@ const metrics={
 };
 const backdropFiles=new Set();
 const gridFiles=new Set();
+const parityByFile=new Map();
 const lucideIcons=new Set();
 const lucideRuntimeFiles=new Set();
 
@@ -227,17 +228,28 @@ for(const file of files){
     metrics.pseudoElements+=count(/::before|::after/g,text);
     metrics.imageFilters+=count(/(^|[;{]\s*)filter\s*:/gm,text);
 
-    // Unity 6000.6.2f1 compatibility telemetry.
-    // These are intentionally warning-only while Theme / Surface / Control cleanup is still active.
-    // After visual governance converges, freeze the measured baseline and convert suitable metrics to ratchets.
-    metrics.linearGradients+=count(/linear-gradient\s*\(/gi,text);
-    metrics.radialGradients+=count(/radial-gradient\s*\(/gi,text);
-    metrics.boxShadows+=count(/\bbox-shadow\s*:/gi,text);
-    metrics.brightnessFilters+=count(/\bbrightness\s*\(/gi,text);
-    metrics.saturateFilters+=count(/\bsaturate\s*\(/gi,text);
-    metrics.composedColorVariables+=count(/\brgba?\s*\(\s*var\s*\(/gi,text);
-    metrics.variableMath+=count(/\b(?:calc|min|max|clamp)\s*\([^;{}\n]*var\s*\(/gi,text);
-    metrics.backdropTransitions+=count(/\btransition(?:-property)?\s*:[^;{}\n]*backdrop-filter\b/gi,text);
+    // Unity 6000.6.2f1 Visual Parity inventory.
+    // Formal Web visuals should converge toward effects that Unity 6.6 can reproduce.
+    // This pass reports per-file ownership first; a later pass freezes the classified baseline into ratchets.
+    const parity={
+      linear:count(/linear-gradient\s*\(/gi,text),
+      radial:count(/radial-gradient\s*\(/gi,text),
+      shadow:count(/\bbox-shadow\s*:/gi,text),
+      brightness:count(/\bbrightness\s*\(/gi,text),
+      saturate:count(/\bsaturate\s*\(/gi,text),
+      composedColor:count(/\brgba?\s*\(\s*var\s*\(/gi,text),
+      variableMath:count(/\b(?:calc|min|max|clamp)\s*\([^;{}\n]*var\s*\(/gi,text),
+      backdropTransition:count(/\btransition(?:-property)?\s*:[^;{}\n]*backdrop-filter\b/gi,text),
+    };
+    if(Object.values(parity).some(Boolean))parityByFile.set(file,parity);
+    metrics.linearGradients+=parity.linear;
+    metrics.radialGradients+=parity.radial;
+    metrics.boxShadows+=parity.shadow;
+    metrics.brightnessFilters+=parity.brightness;
+    metrics.saturateFilters+=parity.saturate;
+    metrics.composedColorVariables+=parity.composedColor;
+    metrics.variableMath+=parity.variableMath;
+    metrics.backdropTransitions+=parity.backdropTransition;
 
     if(/@import\s+url\(/.test(text)){
       warnings.push(`${file}: external web-font import is Web-only; Unity must use imported font assets.`);
@@ -270,7 +282,7 @@ if(metrics.imageFilters){
   warnings.push(`CSS filter migration debt: ${metrics.imageFilters} declarations. Plan Tint/Overlay/Material equivalents.`);
 }
 if(metrics.linearGradients || metrics.radialGradients){
-  warnings.push(`Unity 6000.6.2f1 gradient compatibility debt: linear=${metrics.linearGradients}, radial=${metrics.radialGradients}. Do not add new visual dependencies; audit remains telemetry-only until the current color/surface cleanup converges.`);
+  warnings.push(`Unity 6000.6.2f1 Visual Parity inventory: linear=${metrics.linearGradients}, radial=${metrics.radialGradients}. Formal Web visuals must converge to Unity-equivalent implementations; current pass is inventory before per-file ratchets are frozen.`);
 }
 if(metrics.boxShadows){
   warnings.push(`CSS box-shadow migration debt: ${metrics.boxShadows} declarations. Unity hierarchy must remain readable with solid tint/alpha/edge even when Web shadow is removed.`);
@@ -313,6 +325,19 @@ console.log(`Browser API references: ${metrics.browserApis}`);
 if(lucideIcons.size){
   console.log('\nIcon source manifest:');
   console.log([...lucideIcons].sort().join(', '));
+}
+
+if(parityByFile.size){
+  console.log('\nUnity 6.6 Visual Parity inventory by file:');
+  const rows=[...parityByFile.entries()].map(([file,value])=>({
+    file,
+    value,
+    score:value.linear*5+value.radial*5+value.shadow*3+value.brightness*4+value.saturate*4+value.backdropTransition*4+value.composedColor*2+value.variableMath,
+  })).sort((a,b)=>b.score-a.score || a.file.localeCompare(b.file));
+  for(const row of rows){
+    const v=row.value;
+    console.log(`- ${row.file}: linear=${v.linear}, radial=${v.radial}, shadow=${v.shadow}, brightness=${v.brightness}, saturate=${v.saturate}, rgbaVar=${v.composedColor}, mathVar=${v.variableMath}, backdropTransition=${v.backdropTransition}, score=${row.score}`);
+  }
 }
 
 if(warnings.length){

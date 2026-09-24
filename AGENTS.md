@@ -30,7 +30,9 @@
 - `brightness()` / `saturate()` 当前依赖项目自定义滤镜，不作为每个小控件可任意组合的基础状态语言。
 - `backdrop-filter` 只允许共享 Surface 的静态能力；不动画 Blur Radius，不把它用于 World Space / 非 URP 的必要交互。
 - USS 变量按最终语义 Token 使用；不依赖 `rgb(var(...))`、`rgba(var(...))` 或变量数学运算。
-- 当前配色 / Surface / Control 治理尚在并行收敛。兼容审计现阶段对上述 Web-only 特效先做**非阻塞统计与警告**，不以历史存量打断正在进行的视觉整理；整理完成后再冻结 Baseline，升级为“只减不增”的 Ratchet Guard。
+- 正式 Web Runtime 是 Unity 6000.6.2f1 最终美术的布局 / 视觉参考，不维护“Web 更华丽、Unity 再降级”的第二套正式美术。Web 与 Unity 可以使用不同实现技术，但正式视觉结果必须可等价复现。
+- 对 Unity 6.6 无法直接等价实现的 Gradient / CSS box-shadow / browser-only filter，不继续作为正式 Web 美术增强长期保留；确有必要的效果应改为纯色 / Alpha / Border / 结构，或改用 Web / Unity 共用纹理、9-slice / Sprite / 共享绘制方案。
+- 兼容审计进入视觉一致性阶段：先按文件与 Owner 输出存量并分类，再冻结“只减不增” Baseline；后续新增 UI 默认不得扩大 Unity 6.6 无法等价复现的正式视觉依赖。
 
 ## 取色与样式权威
 
@@ -84,7 +86,7 @@ SVG 仅作 Source Master，64×64 PNG 是 Web / Unity 共用 Runtime Asset，src
 
 ## 开发与交付
 
-Web 只验证美术、构图、信息和交互，不把 React / CSS 当最终游戏架构。默认直接提交 main，不建临时分支，不强制 Vercel。
+Web 只验证美术、构图、信息和交互，不把 React / CSS 当最终游戏架构；但正式 Web 截图应尽量就是 Unity 6.6 的目标美术，不把明显不可迁移的浏览器效果当成正式视觉基线。默认直接提交 main，不建临时分支，不强制 Vercel。
 
 先执行 icons:check、audit:scale、audit:visual、audit:unity、相关单元检查和 build。视觉治理 Guard 使用 Ratchet：已有旧色债务逐批清理，新文件不得扩散退役共享色。不能本地运行时说明实际使用的 Actions 日志，不声称本地测试成功。局部 Control / Surface 组件图不能冒充真实页面和交互验收。
 
