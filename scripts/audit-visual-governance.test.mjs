@@ -138,12 +138,12 @@ for(const alias of retiredHudAliases){
   });
 }
 
-test('preserve HUD material, background, geometry and canonical foreground',async()=>{
+test('preserve HUD geometry and canonical foreground',async()=>{
   const result=await runAudit({'src/ui/probe.css':`.probe{
-    --hud-radius-sm:10px;--hud-accent-bg:rgba(169,132,75,.075);
-    --hud-border-soft:rgba(238,233,223,.075);--hud-surface-ambient-top:rgba(29,35,36,.66);
-    --wanhu-hud-filter:blur(16px);--wanhu-hud-filter-soft:blur(13px);
-    color:var(--wanhu-color-paper-primary);background:var(--hud-accent-bg);
+    --hud-edge:16px;--hud-radius-sm:10px;--hud-radius-md:14px;
+    --hud-core-width:880px;--hud-bottom-panel-height:84px;
+    color:var(--wanhu-color-paper-primary);
+    border-color:var(--wanhu-color-brass-high);
   }`});
   assert.equal(result.status,0,result.output);
   assert.match(result.output,/Retired HUD foreground aliases guarded: 10/);
@@ -176,13 +176,13 @@ for(const alias of retiredSemanticCompatibilityAliases){
   });
 }
 
-test('preserve canonical Theme tokens and remaining HUD material compatibility variables',async()=>{
+test('preserve canonical Theme and Surface tokens',async()=>{
   const result=await runAudit({'src/ui/probe.css':`.probe{
     color:var(--wanhu-color-paper-primary);
     border-color:var(--wanhu-color-brass-high);
     background:var(--wanhu-color-brass-soft);
-    filter:var(--wanhu-hud-filter);
-    box-shadow:var(--hud-shadow-primary);
+    box-shadow:var(--wanhu-surface-info-shadow);
+    backdrop-filter:var(--wanhu-surface-elevated-filter);
   }`});
   assert.equal(result.status,0,result.output);
   assert.match(result.output,/Retired Tonal \/ Identity \/ Character aliases guarded: 23/);
