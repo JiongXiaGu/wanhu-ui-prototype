@@ -14,7 +14,6 @@ const SRC_ROOT='src';
  * Remove a file from this set as soon as its retired shared colors are cleaned.
  */
 const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
-  'src/ui/dialog/dialog.css',
   'src/ui/hover/hover-overlay.css',
   'src/ui/wanhu-character.css',
 ]);
