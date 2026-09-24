@@ -78,7 +78,7 @@
   background:var(--wanhu-control-active-line);
 }
 .new-game-map-filters button:focus-visible{
-  outline:1px solid var(--wanhu-control-active-line);
+  outline:1px solid var(--wanhu-control-focus);
   outline-offset:-2px;
 }
 
@@ -123,7 +123,7 @@
   border-color:var(--wanhu-control-border-soft);
 }
 .new-game-map-card:focus-visible{
-  border-color:var(--wanhu-control-border-hover);
+  border-color:var(--wanhu-control-focus);
   box-shadow:0 0 0 2px rgba(169,132,75,.045);
 }
 .new-game-map-card:active{transform:translateY(1px)}
@@ -321,7 +321,7 @@
   background:var(--wanhu-control-active-bg);
 }
 .new-game-segmented button:focus-visible{
-  outline:1px solid var(--wanhu-control-active-line);
+  outline:1px solid var(--wanhu-control-focus);
   outline-offset:2px;
 }
 
@@ -357,7 +357,7 @@
   outline:0;
   border-color:var(--ui-field-border-focus);
   background:var(--ui-field-surface-focus);
-  box-shadow:0 0 0 3px rgba(201,165,95,.045);
+  box-shadow:0 0 0 3px rgba(169,132,75,.045);
 }
 
 .new-game-randomize-button{
