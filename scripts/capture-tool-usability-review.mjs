@@ -430,7 +430,17 @@ try {
   assert(count >= 4, '建筑目录需要足够的条目用于多位置锚定检查');
   for (const index of [...new Set([0, Math.min(3, count - 1), Math.min(4, count - 1), count - 1])]) {
     await page.keyboard.press('Tab'); await cards.nth(index).focus();
-    await checkHoverCard('建筑条目/' + index, cards.nth(index)); await shot('inspector-building-' + index);
+    await checkHoverCard('建筑条目/' + index, cards.nth(index));
+    if (index === 0) {
+      const accentFact = page.locator('.ui-hover-card__fact dd.is-accent').first();
+      assert.equal(await accentFact.count(), 1, '建筑 Rich Hover 必须存在一个内容强调 Fact');
+      const accentColor = await accentFact.evaluate(element => getComputedStyle(element).color);
+      assert.equal(accentColor, 'rgb(209, 180, 122)', 'Rich Hover 小字号内容强调必须消费 Brass Text，而不是旧 Card Brass');
+      report.checks.push({ label: 'Rich Hover Brass Text accent', accentColor });
+      await page.screenshot({ path: `${out}/hover-design-accent.png` });
+      report.screenshots.push('hover-design-accent');
+    }
+    await shot('inspector-building-' + index);
   }
   await page.keyboard.press('Escape');
   await page.waitForSelector('.workspace--catalog', { state: 'detached' });
