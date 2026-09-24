@@ -196,3 +196,44 @@ test('semantic compatibility guard matches complete identifiers only',async()=>{
   const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
   assert.equal(result.status,0,result.output);
 });
+
+
+const retiredWorkSurfaceCompatibilityAliases=[
+  '--workspace-glass-surface','--workspace-glass-body','--workspace-glass-rail',
+  '--workspace-glass-card','--workspace-glass-card-hover',
+  '--workspace-edge','--workspace-rule','--workspace-gold','--workspace-gold-soft',
+];
+
+for(const alias of retiredWorkSurfaceCompatibilityAliases){
+  test(`reject retired Work Surface compatibility alias: ${alias}`,async()=>{
+    const result=await runAudit({'src/ui/probe.css':`.probe{${alias}:transparent;background:var(${alias})}`});
+    assert.equal(result.status,1,result.output);
+    assert.match(result.output,/retired Work Surface compatibility aliases/);
+    assert.ok(result.output.includes(alias+'=2'),result.output);
+  });
+}
+
+test('preserve canonical Work Surface recipe and Workspace content variables',async()=>{
+  const result=await runAudit({'src/ui/probe.css':`.probe{
+    --workspace-paper:var(--wanhu-color-paper-primary);
+    --workspace-text:var(--wanhu-color-text-secondary);
+    --workspace-muted:#a19f99;
+    --workspace-faint:var(--wanhu-color-paper-tertiary);
+    --workspace-jade:#9b9e99;
+    color:var(--workspace-paper);
+    background:var(--wanhu-surface-work-sheet-bg);
+    border-color:var(--wanhu-surface-work-edge);
+    box-shadow:var(--wanhu-surface-work-shadow);
+    backdrop-filter:var(--wanhu-surface-work-filter);
+  }`});
+  assert.equal(result.status,0,result.output);
+  assert.match(result.output,/Retired Work Surface aliases guarded: 9/);
+});
+
+test('Work Surface guard matches complete identifiers only',async()=>{
+  const css=retiredWorkSurfaceCompatibilityAliases
+    .map(alias=>`${alias}-fixture:0;--fixture${alias}:0;`)
+    .join('');
+  const result=await runAudit({'src/ui/probe.css':`.probe{${css}}`});
+  assert.equal(result.status,0,result.output);
+});

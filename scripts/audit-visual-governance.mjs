@@ -64,6 +64,16 @@ const RETIRED_SEMANTIC_COMPATIBILITY_ALIAS_MARKERS=RETIRED_SEMANTIC_COMPATIBILIT
   name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
 }));
 
+/* Phase 3 Batch 14：Work Surface 旧桥接名已无 Consumer，Surface 只保留正式 Recipe。 */
+const RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES=[
+  '--workspace-glass-surface','--workspace-glass-body','--workspace-glass-rail',
+  '--workspace-glass-card','--workspace-glass-card-hover',
+  '--workspace-edge','--workspace-rule','--workspace-gold','--workspace-gold-soft',
+];
+const RETIRED_WORK_SURFACE_COMPATIBILITY_ALIAS_MARKERS=RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.map(name=>({
+  name,re:new RegExp(String.raw`(?<![-\w])${name}(?![-\w])`,'g'),
+}));
+
 const RETIRED_SHARED_COLOR_MARKERS=[
   {id:'legacy-paper-var',re:/--paper\b/gi},
   {id:'legacy-gold-var',re:/--gold(?:-hi|-fill)?\b/gi},
@@ -150,7 +160,20 @@ for(const file of files){
     );
   }
 
-  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0){
+  const workSurfaceCompatibilityAliases=[];
+  for(const marker of RETIRED_WORK_SURFACE_COMPATIBILITY_ALIAS_MARKERS){
+    const count=countMatches(text,marker.re);
+    if(count)workSurfaceCompatibilityAliases.push({name:marker.name,count});
+  }
+  if(workSurfaceCompatibilityAliases.length){
+    errors.push(
+      file + ': retired Work Surface compatibility aliases may not return. '
+      + 'Use canonical --wanhu-surface-work-* recipe tokens or the existing Workspace content owner. '
+      + workSurfaceCompatibilityAliases.map(marker=>marker.name + '=' + marker.count).join('; ')
+    );
+  }
+
+  if(markers.length===0 && commandAliases.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -181,6 +204,7 @@ console.log('Legacy palette debt files: ' + debt.length);
 console.log('Retired command visual aliases guarded: ' + RETIRED_COMMAND_VISUAL_ALIAS_MARKERS.length);
 console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
 console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.length);
+console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.length);
 
 if(debt.length){
   console.log('\nPhase 1 legacy palette debt:');
