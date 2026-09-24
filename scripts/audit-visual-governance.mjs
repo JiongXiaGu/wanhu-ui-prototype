@@ -14,8 +14,6 @@ const SRC_ROOT='src';
  * Remove a file from this set as soon as its retired shared colors are cleaned.
  */
 const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
-  'src/fullscreen-actions.css',
-  'src/new-game/new-game-space.css',
   'src/tools/color-tool/modes/scheme/scheme-mode.css',
   'src/ui/color/color-parameter-field.css',
   'src/ui/dialog/dialog.css',
