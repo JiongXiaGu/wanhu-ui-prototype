@@ -76,6 +76,8 @@ jobs:
             review-screenshots/readability-settings.png
             review-screenshots/readability-save.png
             review-screenshots/readability-save-focus.png
+            review-screenshots/readability-color-tool-focus.png
+            review-screenshots/color-scheme-focus.png
             review-screenshots/loading-space.png
             review-screenshots/readability-report.json
           if-no-files-found: error
