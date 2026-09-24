@@ -70,6 +70,27 @@ const RETIRED_DIALOG_SELECT_OWNER_SELECTORS=[
   '.ui-dialog-choice-trigger','.ui-dialog-choice-menu',
 ];
 
+/* Phase 4 Batch 21：Primary Button Surface 由 Theme Token 唯一持有，Consumer 只保留几何与前景差异。 */
+const PRIMARY_CONTROL_RECIPE_OWNER_FILE='src/ui/wanhu-theme-tokens.css';
+const PRIMARY_CONTROL_RECIPE_VARIABLES=[
+  '--wanhu-control-primary-border','--wanhu-control-primary-border-hover',
+  '--wanhu-control-primary-bg-top','--wanhu-control-primary-bg-bottom',
+  '--wanhu-control-primary-hover-top','--wanhu-control-primary-hover-bottom',
+];
+const PRIMARY_CONTROL_RECIPE_DECLARATION_MARKERS=PRIMARY_CONTROL_RECIPE_VARIABLES.map(name=>({
+  name,re:new RegExp(escapeRegExp(name)+String.raw`\s*:`,'g'),
+}));
+const PRIMARY_CONTROL_CONSUMER_RULES=[
+  {file:'src/ui/ui-visual-system.css',selectors:[
+    {selector:'.global-space-primary',tokens:['--wanhu-control-primary-border','--wanhu-control-primary-bg-top','--wanhu-control-primary-bg-bottom']},
+    {selector:'.global-space-primary:hover:not(:disabled)',tokens:['--wanhu-control-primary-border-hover','--wanhu-control-primary-hover-top','--wanhu-control-primary-hover-bottom']},
+  ]},
+  {file:'src/ui/dialog/dialog.css',selectors:[
+    {selector:'.ui-dialog-button.is-primary',tokens:['--wanhu-control-primary-border','--wanhu-control-primary-bg-top','--wanhu-control-primary-bg-bottom']},
+    {selector:'.ui-dialog-button.is-primary:hover:not(:disabled)',tokens:['--wanhu-control-primary-border-hover','--wanhu-control-primary-hover-top','--wanhu-control-primary-hover-bottom']},
+  ]},
+];
+
 /* HUD 前景别名已退役；只枚举完整名称，不禁止仍在使用的材质、背景或几何变量。 */
 const RETIRED_HUD_FOREGROUND_ALIASES=[
   '--hud-text','--hud-text-secondary','--hud-icon','--hud-accent','--hud-accent-text',
@@ -305,6 +326,38 @@ for(const file of files){
     }
   }
 
+  const primaryControlRecipeOwnershipViolations=[];
+  if(file!==PRIMARY_CONTROL_RECIPE_OWNER_FILE){
+    for(const marker of PRIMARY_CONTROL_RECIPE_DECLARATION_MARKERS){
+      const count=countMatches(text,marker.re);
+      if(count)primaryControlRecipeOwnershipViolations.push({name:marker.name,count});
+    }
+  }
+
+  const primaryControlConsumerViolations=[];
+  const primaryConsumerRule=PRIMARY_CONTROL_CONSUMER_RULES.find(rule=>rule.file===file);
+  if(primaryConsumerRule){
+    for(const item of primaryConsumerRule.selectors){
+      const blockRe=new RegExp(escapeRegExp(item.selector)+String.raw`\s*\{([^}]*)\}`,'is');
+      const match=text.match(blockRe);
+      if(!match)continue;
+      const missing=item.tokens.filter(token=>!match[1].includes('var('+token+')'));
+      if(missing.length)primaryControlConsumerViolations.push({selector:item.selector,missing});
+    }
+  }
+
+  if(primaryControlRecipeOwnershipViolations.length || primaryControlConsumerViolations.length){
+    errors.push(
+      file + ': shared Primary Control Surface recipe must use canonical --wanhu-control-primary-* tokens. '
+      + 'Theme tokens own values; Global Space / Dialog may keep geometry and foreground only. '
+      + primaryControlRecipeOwnershipViolations.map(marker=>marker.name + '=' + marker.count).join('; ')
+      + (primaryControlConsumerViolations.length
+        ? (primaryControlRecipeOwnershipViolations.length ? '; ' : '')
+          + primaryControlConsumerViolations.map(item=>item.selector + ' missing [' + item.missing.join(', ') + ']').join('; ')
+        : '')
+    );
+  }
+
   const hudAliases=[];
   for(const marker of RETIRED_HUD_FOREGROUND_ALIAS_MARKERS){
     const count=countMatches(text,marker.re);
@@ -453,7 +506,7 @@ for(const file of files){
     }
   }
 
-  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && controlRecipeOwnershipViolations.length===0 && retiredSegmentedOwnerSelectors.length===0 && retiredDialogSelectOwnerSelectors.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
+  if(markers.length===0 && commandAliases.length===0 && controlVisualAliases.length===0 && controlRecipeOwnershipViolations.length===0 && retiredSegmentedOwnerSelectors.length===0 && retiredDialogSelectOwnerSelectors.length===0 && primaryControlRecipeOwnershipViolations.length===0 && primaryControlConsumerViolations.length===0 && hudAliases.length===0 && semanticCompatibilityAliases.length===0 && workSurfaceCompatibilityAliases.length===0 && contextSurfaceCompatibilityAliases.length===0 && misplacedWeatherContentVariables.length===0 && globalSpaceSurfaceAliases.length===0 && hudSurfaceAliases.length===0 && surfaceOwnershipViolations.length===0 && hudSurfaceOwnershipViolations.length===0 && !retiredEdgeElevationOwner && legacyPauseSelectors.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
@@ -486,6 +539,8 @@ console.log('Retired Phase 4 control visual aliases guarded: ' + RETIRED_PHASE4_
 console.log('Shared Control recipe owner variables guarded: ' + CONTROL_RECIPE_VARIABLES.length);
 console.log('Retired Segmented legacy owner selectors guarded: ' + RETIRED_SEGMENTED_OWNER_SELECTORS.length);
 console.log('Retired Dialog Select owner selectors guarded: ' + RETIRED_DIALOG_SELECT_OWNER_SELECTORS.length);
+console.log('Shared Primary Control recipe owner variables guarded: ' + PRIMARY_CONTROL_RECIPE_VARIABLES.length);
+console.log('Primary Control canonical consumer files guarded: ' + PRIMARY_CONTROL_CONSUMER_RULES.length);
 console.log('Retired HUD foreground aliases guarded: ' + RETIRED_HUD_FOREGROUND_ALIASES.length);
 console.log('Retired Tonal / Identity / Character aliases guarded: ' + RETIRED_SEMANTIC_COMPATIBILITY_ALIASES.length);
 console.log('Retired Work Surface aliases guarded: ' + RETIRED_WORK_SURFACE_COMPATIBILITY_ALIASES.length);

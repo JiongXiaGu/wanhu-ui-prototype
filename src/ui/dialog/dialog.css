@@ -100,13 +100,13 @@
 }
 .ui-dialog-button.is-primary{
   min-width:112px;
-  border-color:rgba(189,153,89,.22);
-  background:linear-gradient(180deg,rgba(169,132,75,.082),rgba(169,132,75,.032));
+  border-color:var(--wanhu-control-primary-border);
+  background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
   color:var(--wanhu-color-brass-high,#bd9959);
 }
 .ui-dialog-button.is-primary:hover:not(:disabled){
-  border-color:rgba(189,153,89,.34);
-  background:linear-gradient(180deg,rgba(169,132,75,.115),rgba(169,132,75,.048));
+  border-color:var(--wanhu-control-primary-border-hover);
+  background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
   color:#d9ba72;
 }
 .ui-dialog-button.is-danger{

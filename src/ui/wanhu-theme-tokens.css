@@ -216,6 +216,12 @@
   --wanhu-control-active-bg:rgba(169,132,75,.075);
   --wanhu-control-active-line:rgba(169,132,75,.78);
   --wanhu-control-focus:var(--wanhu-color-brass-text);
+  --wanhu-control-primary-border:rgba(189,153,89,.22);
+  --wanhu-control-primary-border-hover:rgba(189,153,89,.34);
+  --wanhu-control-primary-bg-top:rgba(169,132,75,.082);
+  --wanhu-control-primary-bg-bottom:rgba(169,132,75,.032);
+  --wanhu-control-primary-hover-top:rgba(169,132,75,.115);
+  --wanhu-control-primary-hover-bottom:rgba(169,132,75,.048);
 
 
 }

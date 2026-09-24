@@ -42,8 +42,8 @@
 
 .global-space-primary{
   min-width:124px;
-  border-color:rgba(169,132,75,.20);
-  background:linear-gradient(180deg,rgba(169,132,75,.082),rgba(169,132,75,.038));
+  border-color:var(--wanhu-control-primary-border);
+  background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
   color:var(--wanhu-color-brass-text);
 }
 .global-space-primary::after{
@@ -60,8 +60,8 @@
 }
 .global-space-primary:hover:not(:disabled){
   color:var(--wanhu-color-brass-text);
-  border-color:rgba(169,132,75,.32);
-  background:linear-gradient(180deg,rgba(169,132,75,.115),rgba(169,132,75,.054));
+  border-color:var(--wanhu-control-primary-border-hover);
+  background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
 }
 .global-space-primary:hover:not(:disabled)::after{
   left:8px;
