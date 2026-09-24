@@ -209,17 +209,7 @@
   --wanhu-control-active-line:rgba(169,132,75,.78);
   --wanhu-control-focus:var(--wanhu-color-brass-text);
 
-  /* 已有组件的兼容别名；不在历史样式里另建一套 Palette。 */
-  --wanhu-tonal-ink-950:var(--wanhu-color-ink-950);
-  --wanhu-tonal-ink-900:var(--wanhu-color-ink-900);
-  --wanhu-tonal-ink-800:var(--wanhu-color-ink-800);
-  --wanhu-tonal-paper:var(--wanhu-color-paper-primary);
-  --wanhu-tonal-secondary:var(--wanhu-color-paper-secondary);
-  --wanhu-tonal-tertiary:var(--wanhu-color-paper-tertiary);
-  --wanhu-tonal-brass:var(--wanhu-color-brass);
-  --wanhu-tonal-brass-hi:var(--wanhu-color-brass-high);
-  --wanhu-tonal-brass-soft:var(--wanhu-color-brass-soft);
-  --wanhu-tonal-cinnabar:var(--wanhu-color-cinnabar);
+  /* 仅保留仍有 Runtime 消费的 HUD 材质兼容变量；退役前景与旧语义别名不得回流。 */
   --hud-accent-bg:var(--wanhu-color-brass-soft);
   --hud-border-strong:rgba(238,233,223,.12);
   --hud-border-soft:rgba(238,233,223,.075);
@@ -238,19 +228,6 @@
   --hud-surface-blocking-bottom:var(--wanhu-surface-blocking-bottom);
   --wanhu-hud-filter:blur(16px) saturate(.92) brightness(.98);
   --wanhu-hud-filter-soft:blur(13px) saturate(.94) brightness(.985);
-  --wanhu-identity-paper:var(--wanhu-color-paper-primary);
-  --wanhu-identity-text:var(--wanhu-color-text-secondary);
-  --wanhu-identity-secondary:var(--wanhu-color-paper-secondary);
-  --wanhu-identity-muted:var(--wanhu-color-text-muted);
-  --wanhu-identity-faint:var(--wanhu-color-paper-tertiary);
-  --wanhu-identity-gold:var(--wanhu-color-brass);
-  --wanhu-identity-gold-hi:var(--wanhu-color-brass-high);
-  --wanhu-character-gold:var(--wanhu-color-brass);
-  --wanhu-character-gold-hi:var(--wanhu-color-brass-high);
-  --wanhu-character-gold-soft:rgba(169,132,75,.14);
-  --wanhu-character-joint:rgba(189,153,89,.78);
-  --wanhu-character-rule:rgba(218,213,203,.13);
-  --wanhu-character-beam:rgba(231,226,216,.24);
 }
 
 /* 昼夜共用色相，只微调自身密度；不建立独立 Night Theme。 */
