@@ -118,6 +118,8 @@ Brass 服务 Current / Selected / On / Focus / Primary，以及已定义的警�
 
 Gameplay Persistent HUD 继续遵守同一规则：速度当前档、Information View 当前项可使用熟铜 Selected / On；System Menu 普通 Hover 只做中性提亮和中性边缘。Compass 的“北”、北针和建造态南北轴属于方向内容强调，不是按钮 Hover，因此允许使用当前 Brass Hue，但不由此把 Compass 其它刻度、圆环或整块 Surface 染成金色。
 
+Loading 是图片主导的外围 Screen，不属于 Global Space 或 Blocking Panel。进度条可以使用 Brass → Brass High → Brass Text 表达当前加载进程；Tip 普通 Hover 只提亮文字/底色，键盘 Focus 使用独立 `--wanhu-control-focus` 轮廓。不能因为进度条使用熟铜，就给整个 Loading 遮罩、提示区域或背景添加金色 Tint。
+
 Dialog 的 Warning 与 Danger 不相同：
 
 - Warning：Header Tint `rgba(169,132,75,.070)`，顶部细线 `rgba(189,153,89,.78)`，图标 Brass High；
