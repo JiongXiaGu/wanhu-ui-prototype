@@ -352,6 +352,21 @@ Feature 只选择 Surface 角色，不私有维护大型表面的完整背景配
 
 > 新增一个同类页面时，Feature 不需要复制五六条 Background / Shadow / Blur 才能“像现有 UI”。
 
+
+### Phase 3 进度：Batch 14 已完成
+
+第一批先收敛 Work / Catalog Surface 的所有权，不改变当前视觉 Recipe：
+
+- `wanhu-surface-system.css` 删除 14 个 Workspace 兼容定义；Workspace 的内容前景变量继续由内容层持有；
+- 其中 9 个已经无 Runtime Consumer 的旧桥接名正式退役并加入 Guard；
+- `wanhu-edge-elevation.css` 删除已经被最终 Surface System 覆盖的 Design Workspace Edge / Shadow / Separator 配方，不再保留“看似正式、实际不生效”的第二套 Work Surface；
+- Work Root、Header、Body、Rail、Filter、Design Card 继续直接消费 `--wanhu-surface-work-*` 与共享 Material Noise；
+- Blueprint Preview / Media 内容色、Source Badge、Management Topic 与用户自选颜色不在本批范围。
+
+验证：Runtime 提交 `cfdf0ad0a481e237a530923643aaa56eb614c0a8` 的 Build #1539（Run `36005674047`）与 UI Review #483（Run `36005674329`）通过；视觉治理回归增至 109 项，64 个 Runtime CSS 的旧共享色债务仍为 0。已实际查看本次 Design 与 Blueprint Workspace 完整截图，未发现因清理失效配方导致的视觉变化。
+
+下一批按同一方式处理 Context / Environment Surface，先证明 Bridge / Override 的真实消费关系，再删除；不通过“相似颜色”猜测归并。
+
 ## Phase 4：Control 与 Overlay 收敛
 
 目标：基础控件与浮层不再因 Feature 不同而出现近似但不同的状态色。
