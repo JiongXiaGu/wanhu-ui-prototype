@@ -7,13 +7,10 @@
    --------------------------------------------------------------------- */
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface{
   background-color:var(--wanhu-surface-context-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-surface-context-highlight),var(--wanhu-surface-context-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
   border-color:var(--wanhu-surface-context-edge);
-  box-shadow:var(--wanhu-surface-context-shadow);
   backdrop-filter:var(--wanhu-surface-context-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-context-filter);
 }
@@ -24,10 +21,9 @@
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface>.left-context-panel__header{
   background:var(--wanhu-surface-context-header);
   border-bottom-color:var(--wanhu-surface-context-rule);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface>.left-context-panel__body{
-  background:linear-gradient(180deg,rgba(255,255,255,.003),var(--wanhu-surface-context-body));
+  background:var(--wanhu-surface-context-body);
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .gameplay-left-context-surface>.left-context-panel__footer{
   background:var(--wanhu-surface-context-footer);
@@ -45,13 +41,10 @@
    --------------------------------------------------------------------- */
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog{
   background-color:var(--wanhu-surface-work-sheet-bg);
-  background-image:
-    linear-gradient(180deg,rgba(255,255,255,.016),rgba(0,0,0,.024)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
   border-color:var(--wanhu-surface-work-edge);
-  box-shadow:var(--wanhu-surface-work-shadow);
   backdrop-filter:var(--wanhu-surface-work-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-work-filter);
 }
@@ -59,11 +52,9 @@
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-header{
   background:rgba(255,255,255,.006);
   border-bottom-color:var(--wanhu-surface-work-rule);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.014);
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-body{
   background:var(--wanhu-surface-work-body-overlay);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.006);
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--catalog .workspace-primary-rail{
   background:transparent;
@@ -85,11 +76,11 @@
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .design-item-card:hover{
   background:var(--wanhu-surface-work-card-hover);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+  border-color:var(--wanhu-control-border-soft);
 }
 .gameplay-screen:not([data-glass-study]):not([data-edge-study]) .workspace--design .design-item-card:focus-visible{
   background:var(--wanhu-surface-work-focus);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.018);
+  border-color:var(--wanhu-control-border-soft);
 }
 
 
@@ -102,23 +93,16 @@
   -webkit-backdrop-filter:var(--wanhu-pause-scene-filter);
 }
 .gameplay-screen .pause-atmosphere{
-  background:radial-gradient(
-    ellipse at 50% 46%,
-    transparent 0 34%,
-    var(--wanhu-pause-vignette) 78%,
-    rgba(6,8,7,.22) 100%
-  );
+  background:transparent;
 }
 .gameplay-screen .pause-command-surface{
   background-color:var(--wanhu-pause-surface-bg);
-  background-image:linear-gradient(180deg,var(--wanhu-pause-surface-highlight),var(--wanhu-pause-surface-shade));
   border-color:var(--wanhu-pause-surface-edge);
-  box-shadow:var(--wanhu-pause-surface-shadow);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
 }
 .gameplay-screen .pause-heading{
-  background:linear-gradient(180deg,var(--wanhu-pause-header-bg),rgba(255,255,255,.003));
+  background:var(--wanhu-pause-header-bg);
   border-bottom-color:var(--wanhu-pause-header-rule);
 }
 .gameplay-screen .pause-heading h2{
@@ -158,14 +142,10 @@
    --------------------------------------------------------------------- */
 .wanhu-global-space{
   color:var(--wanhu-color-paper-primary);
-  background-color:transparent;
-  background-image:
-    radial-gradient(ellipse at 50% 42%,rgba(255,249,238,.016),transparent 48%),
-    linear-gradient(180deg,var(--wanhu-global-space-top),var(--wanhu-global-space-bottom)),
-    linear-gradient(180deg,var(--wanhu-global-space-highlight),var(--wanhu-global-space-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:no-repeat,no-repeat,no-repeat,repeat;
-  background-size:auto,auto,auto,256px 256px;
+  background-color:var(--wanhu-global-space-bg);
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
   backdrop-filter:var(--wanhu-global-space-filter);
   -webkit-backdrop-filter:var(--wanhu-global-space-filter);
 }
@@ -185,7 +165,6 @@
 .wanhu-global-space .global-space-footer{
   background:var(--wanhu-global-space-footer-bg)!important;
   border-top-color:var(--wanhu-global-space-rule)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.010);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
 }
@@ -226,14 +205,15 @@
 .settings-space .settings-space__tabs button:hover{color:var(--wanhu-color-text-secondary);background:var(--wanhu-control-hover)}
 .settings-space .settings-space__tabs button.is-active{
   color:var(--wanhu-color-brass-high);
-  background:linear-gradient(180deg,rgba(169,132,75,.025),rgba(169,132,75,.006));
+  background:rgba(169,132,75,.022);
 }
 .settings-space .settings-space__tabs button::after{background:var(--wanhu-control-active-line)}
 .settings-space .settings-section__title{color:var(--wanhu-color-paper-secondary)}
 .settings-space .settings-section__title i{
-  background:linear-gradient(90deg,var(--wanhu-global-space-rule),rgba(238,233,223,.018) 72%,transparent);
+  background:var(--wanhu-global-space-rule);
+  opacity:.55;
 }
-.settings-space .settings-row{background:transparent;box-shadow:inset 0 -1px 0 rgba(238,233,223,.022)}
+.settings-space .settings-row{background:transparent;border-bottom:1px solid rgba(238,233,223,.022)}
 .settings-space .settings-row:hover{background:var(--wanhu-global-space-row-hover)}
 .settings-space .settings-row__label b{color:var(--wanhu-color-text-secondary)}
 .settings-space .settings-row:hover .settings-row__label b{color:var(--wanhu-color-paper-primary)}
@@ -250,8 +230,6 @@
 .gameplay-screen .management-space__panel{
   border-color:var(--wanhu-management-surface-edge);
   background-color:var(--wanhu-management-surface-bg);
-  background-image:linear-gradient(180deg,var(--wanhu-management-surface-highlight),var(--wanhu-management-surface-shade));
-  box-shadow:var(--wanhu-management-surface-shadow);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
 }
@@ -260,9 +238,8 @@
    Elevated Surface — Information View picker
    --------------------------------------------------------------------- */
 .gameplay-screen .gameplay-top-map-panel{
-  background:linear-gradient(180deg,var(--wanhu-surface-elevated-top),var(--wanhu-surface-elevated-bottom));
+  background:var(--wanhu-surface-elevated-bg);
   border-color:var(--wanhu-surface-elevated-edge);
-  box-shadow:var(--wanhu-surface-elevated-shadow);
   backdrop-filter:var(--wanhu-surface-elevated-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-elevated-filter);
 }
@@ -275,13 +252,10 @@
    --------------------------------------------------------------------- */
 .gameplay-screen .gameplay-top-status{
   background-color:var(--wanhu-surface-info-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-surface-info-highlight),var(--wanhu-surface-info-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
   border-color:var(--wanhu-surface-info-edge);
-  box-shadow:var(--wanhu-surface-info-shadow);
   backdrop-filter:var(--wanhu-surface-info-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-info-filter);
 }
@@ -302,8 +276,8 @@
 .gameplay-screen .gameplay-top-speed-button:hover{color:var(--wanhu-color-icon-hover);background:rgba(255,255,255,.035)}
 .gameplay-screen .gameplay-top-speed-button.is-active{
   color:var(--wanhu-color-brass-high);
-  background:linear-gradient(180deg,rgba(169,132,75,.13),rgba(169,132,75,.030));
-  box-shadow:inset 0 0 0 1px rgba(189,153,89,.055);
+  border:1px solid rgba(189,153,89,.10);
+  background:rgba(169,132,75,.080);
 }
 
 /* ---------------------------------------------------------------------
@@ -311,16 +285,13 @@
    --------------------------------------------------------------------- */
 .gameplay-screen .gameplay-top-navigation{
   background-color:var(--wanhu-surface-control-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-surface-control-highlight),var(--wanhu-surface-control-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
   border-top-color:var(--wanhu-surface-control-edge-top);
   border-right-color:var(--wanhu-surface-control-edge-side);
   border-bottom-color:var(--wanhu-surface-control-edge-bottom);
   border-left-color:var(--wanhu-surface-control-edge-side);
-  box-shadow:var(--wanhu-surface-control-shadow);
   backdrop-filter:var(--wanhu-surface-control-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-control-filter);
 }
@@ -330,16 +301,13 @@
 .gameplay-screen .gameplay-top-navigation__button.is-active{
   color:var(--wanhu-color-brass-high);
   background:var(--wanhu-control-active-bg);
-  box-shadow:inset 0 0 0 1px rgba(189,153,89,.045);
 }
 .gameplay-screen .gameplay-top-navigation__button.is-active::before{
   background:var(--wanhu-control-active-line);
-  box-shadow:0 0 8px rgba(169,132,75,.20);
 }
 .gameplay-screen .gameplay-top-navigation__separator{background:var(--wanhu-surface-control-rule)}
 .gameplay-screen .gameplay-top-navigation__dot{
   background:var(--wanhu-color-brass-high);
-  box-shadow:0 0 7px rgba(169,132,75,.38);
 }
 
 /* ---------------------------------------------------------------------
@@ -348,36 +316,27 @@
    material family. Size/density differ; hue and state language do not.
    --------------------------------------------------------------------- */
 .gameplay-screen .bottom-command-surface{
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-repeat:repeat;
+  background-size:256px 256px;
 }
 .gameplay-screen .bottom-command-surface--lg{
   background-color:var(--wanhu-bottom-command-lg-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-bottom-command-lg-highlight),var(--wanhu-bottom-command-lg-shade)),
-    var(--wanhu-material-noise);
+  background-image:var(--wanhu-material-noise);
   border-color:var(--wanhu-bottom-command-lg-edge);
-  box-shadow:var(--wanhu-bottom-command-lg-shadow);
   backdrop-filter:var(--wanhu-bottom-command-lg-filter);
   -webkit-backdrop-filter:var(--wanhu-bottom-command-lg-filter);
 }
 .gameplay-screen .bottom-command-surface--md{
   background-color:var(--wanhu-bottom-command-md-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-bottom-command-md-highlight),var(--wanhu-bottom-command-md-shade)),
-    var(--wanhu-material-noise);
+  background-image:var(--wanhu-material-noise);
   border-color:var(--wanhu-bottom-command-md-edge);
-  box-shadow:var(--wanhu-bottom-command-md-shadow);
   backdrop-filter:var(--wanhu-bottom-command-md-filter);
   -webkit-backdrop-filter:var(--wanhu-bottom-command-md-filter);
 }
 .gameplay-screen .bottom-command-surface--sm{
   background-color:var(--wanhu-bottom-command-sm-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-bottom-command-sm-highlight),var(--wanhu-bottom-command-sm-shade)),
-    var(--wanhu-material-noise);
+  background-image:var(--wanhu-material-noise);
   border-color:var(--wanhu-bottom-command-sm-edge);
-  box-shadow:var(--wanhu-bottom-command-sm-shadow);
   backdrop-filter:var(--wanhu-bottom-command-sm-filter);
   -webkit-backdrop-filter:var(--wanhu-bottom-command-sm-filter);
 }
@@ -391,15 +350,14 @@
   background-repeat:repeat;
   background-size:256px 256px;
   border-color:var(--wanhu-surface-ambient-edge);
-  box-shadow:0 10px 26px rgba(2,4,5,.22),inset 0 1px 0 rgba(255,255,255,.024);
   backdrop-filter:var(--wanhu-surface-ambient-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-ambient-filter);
   color:#7d8381;
   opacity:.96;
 }
 .gameplay-screen .gameplay-system-menu-button:hover{
-  background-color:rgba(33,39,41,.44);
-  background-image:linear-gradient(180deg,rgba(31,40,36,.78),rgba(22,29,26,.68));
+  background-color:rgba(27,34,31,.72);
+  background-image:var(--wanhu-material-noise);
   border-color:var(--wanhu-control-border-soft);
   color:var(--wanhu-color-icon-hover);
   opacity:1;
@@ -410,13 +368,10 @@
    --------------------------------------------------------------------- */
 .gameplay-screen .gameplay-operation-hints{
   background-color:var(--wanhu-surface-readout-bg);
-  background-image:
-    linear-gradient(180deg,var(--wanhu-surface-readout-highlight),var(--wanhu-surface-readout-shade)),
-    var(--wanhu-material-noise);
-  background-repeat:repeat,repeat;
-  background-size:auto,256px 256px;
+  background-image:var(--wanhu-material-noise);
+  background-repeat:repeat;
+  background-size:256px 256px;
   border-color:var(--wanhu-surface-readout-edge);
-  box-shadow:var(--wanhu-surface-readout-shadow);
   backdrop-filter:var(--wanhu-surface-readout-filter);
   -webkit-backdrop-filter:var(--wanhu-surface-readout-filter);
 }
@@ -439,9 +394,7 @@
 }
 .game-canvas .ui-modal-surface{
   background-color:var(--wanhu-dialog-surface-bg);
-  background-image:linear-gradient(180deg,var(--wanhu-dialog-surface-highlight),var(--wanhu-dialog-surface-shade));
   border-color:var(--wanhu-dialog-surface-edge);
-  box-shadow:var(--wanhu-dialog-surface-shadow);
   backdrop-filter:none;
   -webkit-backdrop-filter:none;
 }
@@ -462,12 +415,12 @@
 }
 .game-canvas .ui-dialog.is-tone-warning::before{background:var(--wanhu-dialog-accent-warning)}
 .game-canvas .ui-dialog.is-tone-warning .ui-dialog__header{
-  background:linear-gradient(90deg,var(--wanhu-dialog-header-warning),rgba(169,132,75,.018) 72%,transparent);
+  background:var(--wanhu-dialog-header-warning);
 }
 .game-canvas .ui-dialog.is-tone-warning .ui-dialog__tone-icon{color:var(--wanhu-color-brass-high)}
 .game-canvas .ui-dialog.is-tone-danger::before{background:var(--wanhu-dialog-accent-danger)}
 .game-canvas .ui-dialog.is-tone-danger .ui-dialog__header{
-  background:linear-gradient(90deg,var(--wanhu-dialog-header-danger),rgba(152,84,71,.018) 72%,transparent);
+  background:var(--wanhu-dialog-header-danger);
 }
 .game-canvas .ui-dialog.is-tone-danger .ui-dialog__tone-icon{color:#c87f73}
 

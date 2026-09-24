@@ -62,7 +62,7 @@
   --wanhu-surface-context-card:transparent;
   --wanhu-surface-context-card-hover:rgba(255,255,255,.040);
   --wanhu-surface-context-shadow:0 20px 50px rgba(6,8,7,.34),inset 0 1px 0 rgba(255,255,255,.028);
-  --wanhu-surface-context-filter:blur(16px) saturate(.82) brightness(.99);
+  --wanhu-surface-context-filter:blur(16px);
 
   --wanhu-surface-work-sheet-bg:rgba(43,45,42,.78);
   --wanhu-surface-work-body-overlay:rgba(21,23,21,.22);
@@ -72,7 +72,7 @@
   --wanhu-surface-work-card-hover:rgba(255,255,255,.045);
   --wanhu-surface-work-focus:rgba(169,132,75,.055);
   --wanhu-surface-work-shadow:0 18px 44px rgba(2,4,5,.28),inset 0 1px 0 rgba(255,255,255,.028);
-  --wanhu-surface-work-filter:blur(20px) saturate(.86) brightness(.985);
+  --wanhu-surface-work-filter:blur(20px);
 
   --wanhu-surface-blocking-top:rgba(42,44,41,.95);
   --wanhu-surface-blocking-bottom:rgba(30,32,29,.97);
@@ -83,12 +83,13 @@
   --wanhu-surface-blocking-menu:rgba(34,36,33,.98);
   --wanhu-surface-blocking-menu-hover:rgba(255,255,255,.048);
   --wanhu-surface-blocking-shadow:0 24px 64px rgba(2,4,5,.40),inset 0 1px 0 rgba(255,255,255,.028);
+  --wanhu-global-space-bg:rgba(40,42,39,.96);
   --wanhu-global-space-top:rgba(48,50,46,.94);
   --wanhu-global-space-bottom:rgba(31,34,31,.965);
   --wanhu-global-space-highlight:rgba(255,249,238,.014);
   --wanhu-global-space-shade:rgba(7,9,8,.055);
   --wanhu-global-space-backdrop:rgba(9,11,10,.10);
-  --wanhu-global-space-filter:blur(7px) saturate(.78) brightness(.88);
+  --wanhu-global-space-filter:blur(7px);
   --wanhu-global-space-header-bg:rgba(255,255,255,.010);
   --wanhu-global-space-tabs-bg:rgba(255,255,255,.005);
   --wanhu-global-space-footer-bg:rgba(8,10,9,.070);
@@ -100,7 +101,7 @@
   /* 暂停菜单保持已确认的无颗粒面板；背景弱化与面板本体分离。 */
   --wanhu-pause-dim:rgba(12,14,13,.44);
   --wanhu-pause-vignette:rgba(6,8,7,.145);
-  --wanhu-pause-scene-filter:blur(8px) brightness(.70) saturate(.80);
+  --wanhu-pause-scene-filter:blur(8px);
   --wanhu-pause-surface-bg:rgba(40,42,39,.955);
   --wanhu-pause-surface-highlight:rgba(255,249,238,.016);
   --wanhu-pause-surface-shade:rgba(8,10,9,.048);
@@ -143,7 +144,7 @@
   --wanhu-surface-info-edge:rgba(238,233,223,.12);
   --wanhu-surface-info-rule:rgba(238,233,223,.045);
   --wanhu-surface-info-shadow:0 16px 40px rgba(2,4,5,.30),inset 0 1px 0 rgba(255,255,255,.045);
-  --wanhu-surface-info-filter:blur(20px) saturate(.92) brightness(.98);
+  --wanhu-surface-info-filter:blur(20px);
   --wanhu-surface-info-highlight:rgba(255,255,255,.030);
   --wanhu-surface-info-shade:rgba(0,0,0,.035);
   --wanhu-surface-control-bg:rgba(24,30,32,.41);
@@ -152,7 +153,7 @@
   --wanhu-surface-control-edge-bottom:rgba(238,233,223,.018);
   --wanhu-surface-control-rule:rgba(238,233,223,.050);
   --wanhu-surface-control-shadow:0 11px 28px rgba(2,4,5,.22),inset 0 1px 0 rgba(255,255,255,.032);
-  --wanhu-surface-control-filter:blur(20px) saturate(.93) brightness(.985);
+  --wanhu-surface-control-filter:blur(20px);
   --wanhu-surface-control-highlight:rgba(255,255,255,.024);
   --wanhu-surface-control-shade:rgba(0,0,0,.025);
 
@@ -161,19 +162,19 @@
   --wanhu-bottom-command-lg-shade:rgba(8,10,9,.045);
   --wanhu-bottom-command-lg-edge:rgba(238,233,223,.018);
   --wanhu-bottom-command-lg-shadow:0 16px 38px rgba(6,8,7,.25),inset 0 1px 0 rgba(255,255,255,.022);
-  --wanhu-bottom-command-lg-filter:blur(20px) saturate(.86) brightness(.99);
+  --wanhu-bottom-command-lg-filter:blur(20px);
   --wanhu-bottom-command-md-bg:rgba(43,45,42,.80);
   --wanhu-bottom-command-md-highlight:rgba(255,249,238,.028);
   --wanhu-bottom-command-md-shade:rgba(8,10,9,.060);
   --wanhu-bottom-command-md-edge:rgba(238,233,223,.055);
   --wanhu-bottom-command-md-shadow:0 16px 40px rgba(6,8,7,.30),inset 0 1px 0 rgba(255,255,255,.026);
-  --wanhu-bottom-command-md-filter:blur(18px) saturate(.84) brightness(.99);
+  --wanhu-bottom-command-md-filter:blur(18px);
   --wanhu-bottom-command-sm-bg:rgba(48,50,46,.42);
   --wanhu-bottom-command-sm-highlight:rgba(255,249,238,.018);
   --wanhu-bottom-command-sm-shade:rgba(8,10,9,.035);
   --wanhu-bottom-command-sm-edge:rgba(238,233,223,.016);
   --wanhu-bottom-command-sm-shadow:0 12px 30px rgba(6,8,7,.20),inset 0 1px 0 rgba(255,255,255,.018);
-  --wanhu-bottom-command-sm-filter:blur(20px) saturate(.88) brightness(.995);
+  --wanhu-bottom-command-sm-filter:blur(20px);
   --wanhu-command-divider:rgba(238,233,223,.052);
   --wanhu-command-hover:rgba(255,255,255,.045);
   --wanhu-command-active-top:rgba(169,132,75,.070);
@@ -190,17 +191,18 @@
   --wanhu-surface-ambient-soft-bg:rgba(24,30,32,.40);
   --wanhu-surface-ambient-edge:rgba(238,233,223,.016);
   --wanhu-surface-ambient-shadow:0 12px 30px rgba(2,4,5,.23),inset 0 1px 0 rgba(255,255,255,.025);
-  --wanhu-surface-ambient-filter:blur(20px) saturate(.94) brightness(.985);
+  --wanhu-surface-ambient-filter:blur(20px);
   --wanhu-surface-ambient-highlight:rgba(255,255,255,.022);
   --wanhu-surface-ambient-shade:rgba(0,0,0,.022);
   --wanhu-surface-readout-bg:rgba(22,28,30,.45);
   --wanhu-surface-readout-edge:rgba(238,233,223,.016);
   --wanhu-surface-readout-shadow:0 10px 26px rgba(2,4,5,.22),inset 0 1px 0 rgba(255,255,255,.022);
-  --wanhu-surface-readout-filter:blur(20px) saturate(.93) brightness(.985);
+  --wanhu-surface-readout-filter:blur(20px);
   --wanhu-surface-readout-highlight:rgba(255,255,255,.020);
   --wanhu-surface-readout-shade:rgba(0,0,0,.024);
 
   /* Elevated Surface — transient information picker above persistent HUD. */
+  --wanhu-surface-elevated-bg:rgba(27,38,32,.79);
   --wanhu-surface-elevated-top:rgba(33,44,38,.80);
   --wanhu-surface-elevated-bottom:rgba(21,31,26,.76);
   --wanhu-surface-elevated-edge:rgba(239,233,221,.09);
@@ -236,24 +238,26 @@
   --wanhu-surface-context-edge:rgba(238,233,223,.10);
   --wanhu-surface-context-rule:rgba(238,233,223,.065);
   --wanhu-surface-context-card-hover:rgba(255,255,255,.040);
-  --wanhu-surface-context-filter:blur(16px) saturate(.80) brightness(1.01);
+  --wanhu-surface-context-filter:blur(16px);
   --wanhu-surface-work-sheet-bg:rgba(47,49,46,.80);
   --wanhu-surface-work-body-overlay:rgba(23,25,23,.24);
   --wanhu-surface-work-rule:rgba(238,233,223,.070);
-  --wanhu-surface-work-filter:blur(20px) saturate(.84) brightness(1.0);
+  --wanhu-surface-work-filter:blur(20px);
   --wanhu-bottom-command-lg-bg:rgba(50,52,49,.60);
   --wanhu-bottom-command-md-bg:rgba(47,49,46,.82);
   --wanhu-bottom-command-sm-bg:rgba(52,54,50,.44);
-  --wanhu-bottom-command-lg-filter:blur(20px) saturate(.84) brightness(1.0);
-  --wanhu-bottom-command-md-filter:blur(18px) saturate(.82) brightness(1.0);
-  --wanhu-bottom-command-sm-filter:blur(20px) saturate(.86) brightness(1.0);
+  --wanhu-bottom-command-lg-filter:blur(20px);
+  --wanhu-bottom-command-md-filter:blur(18px);
+  --wanhu-bottom-command-sm-filter:blur(20px);
   --wanhu-pause-dim:rgba(10,12,11,.50);
   --wanhu-pause-surface-bg:rgba(37,39,36,.95);
-  --wanhu-pause-scene-filter:blur(9px) brightness(.72) saturate(.72);
+  --wanhu-pause-scene-filter:blur(9px);
+  --wanhu-global-space-bg:rgba(42,45,41,.96);
   --wanhu-global-space-top:rgba(51,53,49,.95);
   --wanhu-global-space-bottom:rgba(34,37,34,.97);
-  --wanhu-global-space-filter:blur(7px) saturate(.74) brightness(.92);
+  --wanhu-global-space-filter:blur(7px);
   --wanhu-surface-info-bg:rgba(28,34,36,.52);
+  --wanhu-surface-elevated-bg:rgba(28,34,36,.79);
   --wanhu-surface-elevated-top:rgba(34,40,42,.80);
   --wanhu-surface-elevated-bottom:rgba(21,27,29,.78);
 }
