@@ -13,6 +13,18 @@ const SRC_ROOT='src';
 const LEGACY_SHARED_COLOR_BASELINE_FILES=new Set([
 ]);
 
+const RETIRED_COMMAND_VISUAL_ALIAS_MARKERS=[
+  {id:'legacy-command-surface-alias',re:/--command-surface-(?:lg|md|sm)-(?:top|bottom)\b/gi},
+  {id:'legacy-command-border-alias',re:/--command-border\b/gi},
+  {id:'legacy-command-divider-alias',re:/--command-divider\b/gi},
+  {id:'legacy-command-hover-alias',re:/--command-hover\b/gi},
+  {id:'legacy-command-active-alias',re:/--command-active-(?:top|bottom|line)\b/gi},
+  {id:'legacy-command-primary-alias',re:/--command-primary-(?:top|bottom|hover-top|hover-bottom)\b/gi},
+  {id:'legacy-command-icon-alias',re:/--command-icon(?:-hover|-active)?\b/gi},
+  {id:'legacy-command-tooltip-alias',re:/--command-tooltip-(?:bg|edge|shadow)\b/gi},
+  {id:'legacy-command-blur-alias',re:/--command-blur(?:-(?:lg|md|sm))?\b/gi},
+];
+
 const RETIRED_SHARED_COLOR_MARKERS=[
   {id:'legacy-paper-var',re:/--paper\b/gi},
   {id:'legacy-gold-var',re:/--gold(?:-hi|-fill)?\b/gi},
@@ -58,12 +70,24 @@ for(const file of files){
     if(count>0)markers.push({id:marker.id,count});
   }
 
-  if(markers.length===0){
+  const commandAliases=[];
+  for(const marker of RETIRED_COMMAND_VISUAL_ALIAS_MARKERS){
+    const count=countMatches(text,marker.re);
+    if(count>0)commandAliases.push({id:marker.id,count});
+  }
+  if(commandAliases.length){
+    errors.push(
+      file + ': retired command visual compatibility aliases may not return. '
+      + 'Use canonical --wanhu-command-* / --wanhu-color-* semantic tokens; keep only command geometry variables.'
+    );
+  }
+
+  if(markers.length===0 && commandAliases.length===0){
     if(LEGACY_SHARED_COLOR_BASELINE_FILES.has(file))cleanBaselineFiles.push(file);
     continue;
   }
 
-  debt.push({file,markers});
+  if(markers.length)debt.push({file,markers});
 
   const retiredVariableMarkers=markers.filter(marker=>
     marker.id==='legacy-paper-var' || marker.id==='legacy-gold-var'
@@ -86,6 +110,7 @@ console.log('Wanhu Web visual governance audit');
 console.log('---------------------------------');
 console.log('Runtime CSS scanned: ' + files.length);
 console.log('Legacy palette debt files: ' + debt.length);
+console.log('Retired command visual aliases guarded: ' + RETIRED_COMMAND_VISUAL_ALIAS_MARKERS.length);
 
 if(debt.length){
   console.log('\nPhase 1 legacy palette debt:');
