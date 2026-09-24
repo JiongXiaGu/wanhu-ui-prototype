@@ -35,7 +35,7 @@
   border:0;
   border-radius:8px;
   background:transparent;
-  color:var(--command-icon,#8a8d87);
+  color:var(--wanhu-color-icon);
   display:flex;
   flex-direction:row;
   align-items:center;
@@ -64,8 +64,8 @@
 
 .gameplay-screen .main-dock__mode-button:hover,
 .gameplay-screen .main-dock__category-button:hover{
-  background:var(--command-hover,rgba(255,255,255,.030));
-  color:var(--command-icon-hover,#d8d3ca);
+  background:var(--wanhu-command-hover);
+  color:var(--wanhu-color-icon-hover);
 }
 .gameplay-screen .main-dock__mode-button:hover span,
 .gameplay-screen .main-dock__category-button:hover span{color:#b9b9b3}
@@ -81,7 +81,7 @@
   position:absolute;
   height:2px;
   border-radius:2px;
-  background:var(--command-active-line,rgba(169,132,75,.84));
+  background:var(--wanhu-command-active-line);
   opacity:0;
   pointer-events:none;
 }
@@ -93,7 +93,7 @@
 }
 
 .gameplay-screen .main-dock__mode-button.is-active{
-  color:var(--command-icon-active,#bd9959);
+  color:var(--wanhu-color-brass-high);
   background:linear-gradient(180deg,rgba(169,132,75,.060),rgba(169,132,75,.016));
 }
 .gameplay-screen .main-dock__mode-button.is-active span{
@@ -104,7 +104,7 @@
   height:44px;
   flex:0 0 1px;
   margin:0 8px;
-  background:var(--command-divider,rgba(238,233,223,.052));
+  background:var(--wanhu-command-divider);
 }
 
 .gameplay-screen .main-dock__categories{
@@ -125,7 +125,7 @@
   border:0;
   border-radius:var(--command-control-radius,10px);
   background:transparent;
-  color:var(--command-icon,#8a8d87);
+  color:var(--wanhu-color-icon);
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -143,7 +143,7 @@
 }
 
 .gameplay-screen .main-dock__category-button.is-active{
-  color:var(--command-icon-active,#bd9959);
+  color:var(--wanhu-color-brass-high);
   background:linear-gradient(180deg,rgba(169,132,75,.048),rgba(169,132,75,.010));
 }
 .gameplay-screen .main-dock__category-button.is-active span{color:#b9a46f}
