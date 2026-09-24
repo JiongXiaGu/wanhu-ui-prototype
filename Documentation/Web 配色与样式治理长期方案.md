@@ -367,6 +367,21 @@ Feature 只选择 Surface 角色，不私有维护大型表面的完整背景配
 
 下一批按同一方式处理 Context / Environment Surface，先证明 Bridge / Override 的真实消费关系，再删除；不通过“相似颜色”猜测归并。
 
+
+### Phase 3 进度：Batch 15 已完成
+
+第二批收敛 Context / Environment Surface 的 Owner，不改变现有 Context Recipe：
+
+- `wanhu-surface-system.css` 删除 Weather 专属的 12 个覆盖定义；
+- 5 个无 Runtime Consumer 的旧材质桥接名正式退役：`weather-mist-surface / card / card-hover / edge / rule`；
+- 7 个 Weather 内容变量回归 `weather-mist-glass.css` 单一 Owner；其中 `weather-faint` 固定为此前最终 computed value `#858984`，避免因删除后加载覆盖而改变结果；
+- 新增 Ownership Guard，禁止 Shared Surface System 再次定义 Weather 内容变量；
+- Context Root / Header / Body / Footer 继续直接消费 `--wanhu-surface-context-*`，Noise / Edge / Shadow / Filter / Day-Night Recipe 不改值。
+
+验证：Runtime 提交 `315613beba2f0239b193ef12a863147fd97b2d57` 的 Build #1541（Run `36009252490`）与 UI Review #484（Run `36009252514`）全部通过。视觉治理回归增至 117 项，64 个 Runtime CSS 的旧共享色债务仍为 0。已实际查看本次 Environment 完整页面，Tool Usability Report 为 97 checks、`errors: []`。
+
+下一批转向 Blocking / Global Space Surface，仍遵循“先证明真实覆盖与 Consumer，再删旧 Owner”的顺序，不提前整理 Control 状态。
+
 ## Phase 4：Control 与 Overlay 收敛
 
 目标：基础控件与浮层不再因 Feature 不同而出现近似但不同的状态色。
