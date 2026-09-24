@@ -352,7 +352,17 @@ test('preserve Global Space geometry and canonical Surface owner',async()=>{
       .global-space-footer{border-top-width:1px;border-top-style:solid;color:var(--wanhu-color-paper-tertiary)}
     `,
     'src/new-game/new-game-space.css':'.new-game-space{position:absolute;inset:0;display:flex}',
-    'src/ui/ui-visual-system.css':'.global-space-primary{color:var(--wanhu-color-brass-high)}',
+    'src/ui/ui-visual-system.css':`
+      .global-space-primary{
+        border-color:var(--wanhu-control-primary-border);
+        background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+        color:var(--wanhu-color-brass-high);
+      }
+      .global-space-primary:hover:not(:disabled){
+        border-color:var(--wanhu-control-primary-border-hover);
+        background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+      }
+    `,
     'src/ui/wanhu-surface-system.css':`
       .wanhu-global-space{background-image:var(--wanhu-material-noise);backdrop-filter:var(--wanhu-global-space-filter)}
       .wanhu-global-space .global-space-header{background:var(--wanhu-global-space-header-bg);border-bottom-color:var(--wanhu-global-space-rule)}
