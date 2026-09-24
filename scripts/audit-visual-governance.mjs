@@ -338,11 +338,13 @@ for(const file of files){
   const primaryConsumerRule=PRIMARY_CONTROL_CONSUMER_RULES.find(rule=>rule.file===file);
   if(primaryConsumerRule){
     for(const item of primaryConsumerRule.selectors){
-      const blockRe=new RegExp(escapeRegExp(item.selector)+String.raw`\s*\{([^}]*)\}`,'is');
-      const match=text.match(blockRe);
-      if(!match)continue;
-      const missing=item.tokens.filter(token=>!match[1].includes('var('+token+')'));
-      if(missing.length)primaryControlConsumerViolations.push({selector:item.selector,missing});
+      const blockRe=new RegExp(escapeRegExp(item.selector)+String.raw`\s*\{([^}]*)\}`,'gis');
+      const blocks=[...text.matchAll(blockRe)];
+      if(!blocks.length)continue;
+      const canonicalBlock=blocks.find(match=>item.tokens.every(token=>match[1].includes('var('+token+')')));
+      if(canonicalBlock)continue;
+      const missing=item.tokens.filter(token=>!blocks.some(match=>match[1].includes('var('+token+')')));
+      primaryControlConsumerViolations.push({selector:item.selector,missing});
     }
   }
 

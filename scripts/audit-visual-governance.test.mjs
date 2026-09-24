@@ -617,3 +617,21 @@ test('preserve Primary Button geometry and foreground differences while consumin
   });
   assert.equal(result.status,0,result.output);
 });
+
+test('Primary consumer guard tolerates shared base block before canonical variant block',async()=>{
+  const result=await runAudit({
+    'src/ui/ui-visual-system.css':`
+      .global-space-secondary,
+      .global-space-primary{border:1px solid var(--wanhu-control-border-soft);background:rgba(255,255,255,.012)}
+      .global-space-primary{
+        border-color:var(--wanhu-control-primary-border);
+        background:linear-gradient(180deg,var(--wanhu-control-primary-bg-top),var(--wanhu-control-primary-bg-bottom));
+      }
+      .global-space-primary:hover:not(:disabled){
+        border-color:var(--wanhu-control-primary-border-hover);
+        background:linear-gradient(180deg,var(--wanhu-control-primary-hover-top),var(--wanhu-control-primary-hover-bottom));
+      }
+    `,
+  });
+  assert.equal(result.status,0,result.output);
+});
