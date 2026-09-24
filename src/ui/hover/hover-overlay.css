@@ -29,10 +29,10 @@
   max-width:320px;
   min-height:30px;
   padding:7px 9px;
-  border:1px solid var(--command-tooltip-edge,rgba(238,233,223,.080));
+  border:1px solid var(--wanhu-command-tooltip-edge);
   border-radius:var(--hud-radius-sm,10px);
-  background:var(--command-tooltip-bg,rgba(25,26,24,.985));
-  box-shadow:var(--command-tooltip-shadow,0 8px 22px rgba(6,8,7,.26));
+  background:var(--wanhu-command-tooltip-bg);
+  box-shadow:var(--wanhu-command-tooltip-shadow);
   color:var(--wanhu-color-paper-secondary,#c1bcb2);
   font-size:var(--wanhu-type-tooltip,12px);
 }
