@@ -114,6 +114,8 @@ Pause 是独立 Screen Space，不套用小型 Dialog 的几何。默认 Pause �
 
 普通 Hover：`--wanhu-control-hover:rgba(255,255,255,.045)`。Selected / On：`--wanhu-control-active-bg:rgba(169,132,75,.075)`，状态线为 `rgba(169,132,75,.78)`；Focus 独立表达，不代替 Selected。
 
+Primary Action 的共享 Surface Recipe 由 Theme Token 唯一持有：默认 Border `--wanhu-control-primary-border:rgba(189,153,89,.22)`，背景 Top / Bottom 分别为 `rgba(169,132,75,.082)` / `rgba(169,132,75,.032)`；Hover Border 为 `rgba(189,153,89,.34)`，背景 Top / Bottom 为 `rgba(169,132,75,.115)` / `rgba(169,132,75,.048)`。Global Space Primary 与 Dialog Primary 直接消费这组 Token，但 Geometry、前景字色与局部装饰仍由各自组件持有。Warning / Danger 不消费 Primary Recipe。
+
 Brass 服务 Current / Selected / On / Focus / Primary，以及已定义的警告和收藏等语义；不是所有可点击项、所有标题和所有边缘的默认色。
 
 Gameplay Persistent HUD 继续遵守同一规则：速度当前档、Information View 当前项可使用熟铜 Selected / On；System Menu 普通 Hover 只做中性提亮和中性边缘。Compass 的“北”、北针和建造态南北轴属于方向内容强调，不是按钮 Hover，因此允许使用当前 Brass Hue，但不由此把 Compass 其它刻度、圆环或整块 Surface 染成金色。
