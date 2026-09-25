@@ -109,7 +109,7 @@ try{
         assert.equal(activeLineStyle.opacity,'1','Control Tray Active 结构线必须可见');
         assert.equal(activeLineStyle.height,2,'Control Tray Active 结构线高度必须保持 2px');
         assert(activeLineStyle.width>=18 && activeLineStyle.width<=24,'Control Tray Active 结构线宽度不得偏离既有比例');
-        assert.equal(activeLineStyle.backgroundColor,'rgb(169, 132, 75)','Control Tray Active 必须消费当前熟铜状态线');
+        assert.equal(activeLineStyle.backgroundColor,'rgba(169, 132, 75, 0.78)','Control Tray Active 必须消费当前熟铜状态线');
         assert.equal(retiredPseudo,'none','Control Tray Active 不得继续依赖 ::before');
         report.checks.push({label:'1080/day/control-tray-real-active-line',activeLineStyle,retiredPseudo});
         await shot('hud-control-tray-active');
