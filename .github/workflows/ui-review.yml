@@ -17,6 +17,22 @@ on:
       - 'package.json'
       - 'vite.config.*'
       - '.github/workflows/ui-review.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'scripts/capture-ui-review.mjs'
+      - 'scripts/capture-hud-foreground-review.mjs'
+      - 'scripts/capture-input-dialog-system-review.mjs'
+      - 'scripts/capture-typography-decision-review.mjs'
+      - 'scripts/capture-tool-usability-review.mjs'
+      - 'scripts/capture-building-selection-review.mjs'
+      - 'public/assets/**'
+      - 'index.html'
+      - 'package.json'
+      - 'vite.config.*'
+      - '.github/workflows/ui-review.yml'
   workflow_dispatch:
 
 concurrency:
