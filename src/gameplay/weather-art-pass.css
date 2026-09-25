@@ -9,36 +9,18 @@
 .weather-time-track__segments,
 .weather-season-track__segments{
   display:block;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),inset 0 -4px 7px rgba(0,0,0,.055);
 }
 
 /* 00:00 -> dawn -> noon -> dusk -> 24:00. */
 .weather-time-track__segments{
-  background-image:linear-gradient(
-    90deg,
-    #444a59 0%,
-    #5f6070 16%,
-    #8c8177 27%,
-    #a69e8d 39%,
-    #b0a790 50%,
-    #9d8776 66%,
-    #756468 78%,
-    #575361 88%,
-    #444a59 100%
-  );
+  background-image:url('/assets/ui/materials/weather-time-strip.png');
+  background-size:100% 100%;
+  background-repeat:no-repeat;
 }
 
 /* Spring -> summer -> autumn -> winter. */
 .weather-season-track__segments{
-  background-image:linear-gradient(
-    90deg,
-    #827a78 0%,
-    #85827a 16%,
-    #7d8477 29%,
-    #77806f 42%,
-    #807a69 55%,
-    #958166 69%,
-    #858078 82%,
-    #788083 100%
-  );
+  background-image:url('/assets/ui/materials/weather-season-strip.png');
+  background-size:100% 100%;
+  background-repeat:no-repeat;
 }
