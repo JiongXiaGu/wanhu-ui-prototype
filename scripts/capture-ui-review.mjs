@@ -754,6 +754,41 @@ if ((await page.locator('.city-wall-transition-stair-preview__platform').count()
 if ((await page.getByText('高差楼梯 · 自由放置', { exact: true }).count()) !== 1) {
   throw new Error('City wall transition stair operation hints should describe simple free placement.');
 }
+const transitionStairPreviewParity = await page.locator('.city-wall-transition-stair-preview').evaluate(node => ({ filter: getComputedStyle(node).filter }));
+const transitionStairPlatformParity = await page.locator('.city-wall-transition-stair-preview__platform').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow, backgroundColor: style.backgroundColor };
+});
+const transitionStairStepParity = await page.locator('.city-wall-transition-stair-preview__step').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow, backgroundColor: style.backgroundColor };
+});
+const transitionStairSide = page.locator('.city-wall-transition-stair-preview__side');
+const transitionStairSideParity = await transitionStairSide.evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, overflow: style.overflow };
+});
+const transitionStairSideFill = transitionStairSide.locator('.city-wall-transition-stair-preview__side-fill');
+if ((await transitionStairSideFill.count()) !== 1) {
+  throw new Error('Transition stair diagonal side volume must use one real clipped fill element.');
+}
+const transitionStairSideFillParity = await transitionStairSideFill.evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundColor: style.backgroundColor, transform: style.transform };
+});
+if (transitionStairPreviewParity.filter !== 'none') throw new Error('Transition stair preview must not depend on CSS drop-shadow.');
+if (transitionStairPlatformParity.backgroundImage !== 'none' || transitionStairPlatformParity.boxShadow !== 'none') {
+  throw new Error('Transition stair platforms must use solid fill without Gradient/Inset Shadow.');
+}
+if (transitionStairStepParity.backgroundImage !== 'none' || transitionStairStepParity.boxShadow !== 'none') {
+  throw new Error('Transition stair steps must use solid fill without Gradient/Inset Shadow.');
+}
+if (transitionStairSideParity.backgroundImage !== 'none' || transitionStairSideParity.overflow !== 'hidden') {
+  throw new Error('Transition stair side must clip a real fill element instead of using a diagonal CSS Gradient.');
+}
+if (transitionStairSideFillParity.backgroundColor === 'rgba(0, 0, 0, 0)' || transitionStairSideFillParity.transform === 'none') {
+  throw new Error('Transition stair real side fill must stay visible and rotated.');
+}
 await page.screenshot({ path: outDir + '/city-wall-transition-stair-25-free.png' });
 
 await transitionStairUtility.getByRole('button', { name: '高差楼梯右转', exact: true }).click();
