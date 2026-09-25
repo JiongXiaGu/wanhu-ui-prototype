@@ -233,6 +233,13 @@ try {
   await page.waitForSelector('.material-color-editor');
   await settle();
 
+  const hueStripState = await page.locator('.material-color-editor__hue-range').evaluate(element => ({
+    backgroundImage: getComputedStyle(element).backgroundImage,
+  }));
+  assert(hueStripState.backgroundImage.includes('hue-strip.png'), 'Color Tool Hue 必须消费 Web / Unity 共用 hue-strip.png');
+  assert(!hueStripState.backgroundImage.includes('linear-gradient'), 'Color Tool Hue 不得恢复 CSS Gradient');
+  report.checks.push({ label: 'Color Tool shared Hue Strip asset', ...hueStripState });
+
   const colorHexInput = page.getByRole('textbox', { name: '十六进制颜色', exact: true });
   await page.keyboard.press('Tab');
   await colorHexInput.focus();

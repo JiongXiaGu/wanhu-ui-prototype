@@ -282,7 +282,7 @@
   -webkit-appearance:none;
   border:0;
   border-radius:999px;
-  background:linear-gradient(90deg,#f33 0%,#ff3 16.66%,#3f3 33.33%,#3ff 50%,#33f 66.66%,#f3f 83.33%,#f33 100%);
+  background:#f33 url('/assets/ui/materials/hue-strip.png') center/100% 100% no-repeat;
   cursor:pointer;
 }
 .material-color-editor__hue-range::-webkit-slider-thumb{
