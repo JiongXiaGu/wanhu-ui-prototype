@@ -30,6 +30,7 @@ export function MainMenu({ background, onAction }: MainMenuProps) {
           const Icon = item.icon;
           return (
             <button key={item.key} title={item.detail} className={`menu-row ${index === 0 ? 'is-primary' : ''}`} onClick={() => onAction(item.key)}>
+              <i className="menu-row__active-line" aria-hidden="true" />
               <span className="menu-icon"><Icon size={17} /></span>
               <span className="menu-copy"><b>{item.title}</b>{item.meta && <small>{item.meta}</small>}</span>
             </button>
