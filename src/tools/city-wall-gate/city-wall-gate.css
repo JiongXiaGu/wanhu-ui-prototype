@@ -14,7 +14,6 @@
   height:280px;
   translate:-50% -50%;
   pointer-events:none;
-  filter:drop-shadow(0 6px 9px rgba(5,8,7,.32));
   --gate-opening-width:84px;
   --gate-opening-height:85px;
   --gate-depth:54px;
@@ -29,8 +28,7 @@
 .city-wall-gate-connected-preview__front-face{
   position:absolute;left:0;top:24px;width:164px;height:134px;
   border:1px solid rgba(228,221,207,.48);
-  background:linear-gradient(180deg,rgba(98,96,85,.68),rgba(48,50,46,.72));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05)
+  background:rgba(73,73,65,.70)
 }
 .city-wall-gate-free-preview__roof,
 .city-wall-gate-connected-preview__roof{
@@ -54,8 +52,7 @@
   max-width:112px;max-height:106px;
   border:1px solid rgba(220,213,198,.44);
   border-radius:44px 44px 0 0;
-  background:rgba(17,20,18,.72);
-  box-shadow:inset 0 5px 14px rgba(0,0,0,.28)
+  background:rgba(17,20,18,.78)
 }
 .city-wall-gate-free-preview__clearance,
 .city-wall-gate-connected-preview__clearance{
@@ -83,15 +80,14 @@
 .city-wall-gate-connected-preview__wall{
   position:absolute;left:20px;right:20px;top:118px;height:72px;
   border:1px solid rgba(224,217,203,.34);
-  background:linear-gradient(180deg,rgba(84,84,75,.54),rgba(44,47,43,.62));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)
+  background:rgba(62,65,59,.59)
 }
 .city-wall-gate-connected-preview__wall-edge{position:absolute;left:20px;right:20px;height:1px;background:rgba(189,153,89,.30)}
 .city-wall-gate-connected-preview__wall-edge--front{top:116px}
 .city-wall-gate-connected-preview__wall-edge--back{top:192px}
 .city-wall-gate-connected-preview__volume{top:46px}
 .city-wall-gate-connected-preview__connection{
-  position:absolute;top:149px;width:10px;height:10px;border:1px solid rgba(189,153,89,.82);border-radius:50%;background:rgba(31,35,31,.96);box-shadow:0 0 0 3px rgba(189,153,89,.08)
+  position:absolute;top:149px;width:10px;height:10px;border:2px solid rgba(189,153,89,.72);border-radius:50%;background:rgba(31,35,31,.96)
 }
 .city-wall-gate-connected-preview__connection--left{left:116px}
 .city-wall-gate-connected-preview__connection--right{right:116px}
