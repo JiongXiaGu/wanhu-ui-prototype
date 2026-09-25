@@ -143,7 +143,10 @@ try {
           const rect = element.getBoundingClientRect();
           return { opacity: style.opacity, width: rect.width, height: rect.height, boxShadow: style.boxShadow };
         }),
-        primaryRow.evaluate(element => getComputedStyle(element, '::before').display),
+        primaryRow.evaluate(element => {
+          const style = getComputedStyle(element, '::before');
+          return { content: style.content, boxShadow: style.boxShadow, backgroundImage: style.backgroundImage };
+        }),
         menuList.evaluate(element => {
           const style = getComputedStyle(element, '::after');
           return { backgroundImage: style.backgroundImage, backgroundColor: style.backgroundColor };
@@ -156,7 +159,9 @@ try {
       assert.equal(activeLineStyle.opacity, '1', 'Main Menu Primary 真实状态线必须可见');
       assert.equal(activeLineStyle.width, 2, 'Main Menu Primary 真实状态线必须保持 2px');
       assert.equal(activeLineStyle.boxShadow, 'none', 'Main Menu Primary 状态线不得依赖 Glow');
-      assert.equal(retiredPseudo, 'none', 'Main Menu Primary 不得继续依赖 ::before 状态线');
+      assert(['none', 'normal'].includes(retiredPseudo.content), 'Main Menu Primary 不得继续生成 ::before 状态线');
+      assert.equal(retiredPseudo.boxShadow, 'none', 'Main Menu Primary 退役伪元素不得保留 Glow');
+      assert.equal(retiredPseudo.backgroundImage, 'none', 'Main Menu Primary 退役伪元素不得保留图像状态');
       assert.equal(listDecoration.backgroundImage, 'none', 'Main Menu 底部装饰线不得依赖 Gradient');
       report.checks.push({ label: 'Main Menu Unity 6.6 visual parity', shadeStyle, primaryStyle, activeLineStyle, retiredPseudo, listDecoration });
     }
