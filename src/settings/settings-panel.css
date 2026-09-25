@@ -7,11 +7,11 @@
 .settings-space .global-space-heading h1{margin:0;font-size:24px;font-weight:620;line-height:1;letter-spacing:.045em}
 .settings-space__tabs{flex:0 0 66px;display:flex;align-items:stretch;justify-content:center;gap:8px;padding:6px 34px 5px;border-bottom:1px solid transparent}
 .settings-space__tabs button{position:relative;width:118px;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:8px;font:inherit;font-size:var(--wanhu-type-label,12px);font-weight:500;letter-spacing:.015em;cursor:pointer;transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-fast,100ms) ease}
-.settings-space__tabs button::after{content:'';position:absolute;left:36%;right:36%;bottom:2px;height:2px;border-radius:2px;opacity:0;transform:scaleX(.6);transition:opacity var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-control,120ms) ease}
+.settings-space__tab-indicator{position:absolute;left:36%;right:36%;bottom:2px;height:2px;border-radius:2px;opacity:0;transform:scaleX(.6);pointer-events:none;transition:opacity var(--wanhu-motion-control,120ms) ease,transform var(--wanhu-motion-control,120ms) ease}
 .settings-space__tabs button:hover{transform:translateY(-1px)}
 .settings-space__tabs button:active{transform:translateY(0)}
 .settings-space__tabs button:focus-visible{outline:1px solid var(--wanhu-control-focus);outline-offset:-2px}
-.settings-space__tabs button.is-active::after{opacity:1;transform:scaleX(1)}
+.settings-space__tabs button.is-active .settings-space__tab-indicator{opacity:1;transform:scaleX(1)}
 .settings-space__content{flex:1 1 auto;min-height:0;width:var(--settings-content-width);max-width:calc(100% - 120px);align-self:center;overflow:hidden;padding:24px 0 18px}
 .settings-list{height:100%;overflow-y:auto;overflow-x:hidden;padding:2px 12px 38px 4px;animation:settings-content-enter var(--wanhu-motion-control,120ms) var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1)) both}
 .settings-section{display:flex;flex-direction:column;margin:0 0 30px}

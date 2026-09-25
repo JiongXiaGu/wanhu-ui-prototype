@@ -122,6 +122,18 @@ try {
     ['management-finance', 'readability-finance'],
   ]) {
     await open(scenario);
+    if (scenario === 'settings') {
+      const activeTab = page.locator('.settings-space__tabs button.is-active').first();
+      const indicator = activeTab.locator('.settings-space__tab-indicator');
+      assert.equal(await indicator.count(), 1, 'Settings Active Tab 必须使用真实结构状态线');
+      const indicatorStyle = await indicator.evaluate(element => {
+        const style = getComputedStyle(element);
+        return { opacity: style.opacity, height: style.height, transform: style.transform };
+      });
+      assert.equal(indicatorStyle.opacity, '1', 'Settings Active Tab 状态线必须可见');
+      assert(parseFloat(indicatorStyle.height) >= 2, 'Settings Active Tab 状态线高度必须保持可辨识');
+      report.checks.push({ label: 'Settings real active tab indicator', ...indicatorStyle });
+    }
     await shot(name);
   }
 
