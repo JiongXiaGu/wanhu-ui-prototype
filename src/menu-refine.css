@@ -1,8 +1,6 @@
 /* Main Menu — restrained, low-ornament command list. */
 .main-menu-shade{
-  background:
-    linear-gradient(90deg,rgba(5,9,7,.998) 0%,rgba(6,10,8,.995) 18%,rgba(7,11,9,.985) 29%,rgba(8,12,10,.84) 38%,rgba(8,12,10,.40) 48%,rgba(8,12,10,.10) 61%,rgba(8,12,10,.16) 100%),
-    linear-gradient(180deg,rgba(9,12,10,.16),rgba(9,12,10,.03) 56%,rgba(9,12,10,.54));
+  background:rgba(8,12,10,.06) url('/assets/ui/materials/main-menu-scrim.png') center/cover no-repeat;
 }
 .top-meta,.main-footer,.kicker{display:none}
 .main-menu-list{width:470px;border-top:0;background:none}
@@ -12,8 +10,9 @@
 .menu-copy{gap:3px}
 .menu-copy b{font-size:17px;font-weight:500;letter-spacing:.025em}
 .menu-copy small{font-size:var(--wanhu-type-caption,10px);color:#858c84;letter-spacing:.015em}
-.menu-row:hover{padding-left:18px;background:linear-gradient(90deg,rgba(239,233,221,.032),rgba(239,233,221,.01) 72%,transparent);color:var(--wanhu-color-paper-primary,#eee9df)}
-.menu-row.is-primary{height:72px;padding-left:18px;border-left:0;color:var(--wanhu-color-paper-primary,#eee9df);background:linear-gradient(90deg,rgba(169,132,75,.085),rgba(169,132,75,.015) 76%,transparent)}
-.menu-row.is-primary::before{content:'';position:absolute;left:0;top:15px;bottom:15px;width:2px;background:var(--wanhu-color-brass,#a9844b);box-shadow:0 0 12px rgba(169,132,75,.10)}
+.menu-row:hover{padding-left:18px;background:rgba(239,233,221,.022);color:var(--wanhu-color-paper-primary,#eee9df)}
+.menu-row.is-primary{height:72px;padding-left:18px;border-left:0;color:var(--wanhu-color-paper-primary,#eee9df);background:rgba(169,132,75,.052)}
+.menu-row__active-line{position:absolute;left:0;top:15px;bottom:15px;width:2px;background:var(--wanhu-color-brass,#a9844b);opacity:0;pointer-events:none}
+.menu-row.is-primary .menu-row__active-line{opacity:1}
 .menu-row.is-primary .menu-icon{color:#b9b6ab}
-.main-menu-list::after{content:'';position:absolute;left:0;right:46px;bottom:0;height:1px;background:linear-gradient(90deg,rgba(239,233,221,.055),transparent);pointer-events:none}
+.main-menu-list::after{content:'';position:absolute;left:0;right:46px;bottom:0;height:1px;background:rgba(239,233,221,.045);pointer-events:none}
