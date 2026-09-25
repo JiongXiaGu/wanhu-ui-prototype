@@ -112,7 +112,7 @@ try{
         assert.equal(activeLineStyle.backgroundColor,'rgba(169, 132, 75, 0.78)','Control Tray Active 必须消费当前熟铜状态线');
         assert.equal(retiredPseudo,'none','Control Tray Active 不得继续依赖 ::before');
         report.checks.push({label:'1080/day/control-tray-real-active-line',activeLineStyle,retiredPseudo});
-        await shot('hud-control-tray-active');
+        await shot('hud-foreground-control-tray-active');
         await page.keyboard.press('Escape');
         await page.waitForSelector('.gameplay-left-context-surface',{state:'detached'});
         await idle();
