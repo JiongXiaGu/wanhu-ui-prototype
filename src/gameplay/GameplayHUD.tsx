@@ -147,6 +147,7 @@ export function GameplayHUD({
               {...hover.bind(tooltipFromLabel("相机"))}
               onClick={() => onContextPanelChange('camera')}
             >
+              <i className="gameplay-top-navigation__active-line" aria-hidden="true" />
               <Camera />
             </button>
             <button
@@ -156,6 +157,7 @@ export function GameplayHUD({
               {...hover.bind(tooltipFromLabel("环境控制"))}
               onClick={() => onContextPanelChange('weather')}
             >
+              <i className="gameplay-top-navigation__active-line" aria-hidden="true" />
               <CloudSun />
             </button>
           </div>
@@ -174,6 +176,7 @@ export function GameplayHUD({
                   {...hover.bind(tooltipFromLabel(item.label))}
                   onClick={() => onManagementChange(item.id)}
                 >
+                  <i className="gameplay-top-navigation__active-line" aria-hidden="true" />
                   <Icon />
                 </button>
               );
@@ -190,6 +193,7 @@ export function GameplayHUD({
               {...hover.bind(tooltipFromLabel("信息视图"))}
               onClick={onToggleMapPanel}
             >
+              <i className="gameplay-top-navigation__active-line" aria-hidden="true" />
               <Layers3 />
               {mapView !== 'default' && <i className="gameplay-top-navigation__dot" />}
             </button>
