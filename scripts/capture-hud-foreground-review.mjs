@@ -93,6 +93,31 @@ try{
       report.checks.push({label:label+'/surface-and-geometry',tray,status});
       await shot(`hud-foreground-${period}-${height}`);
 
+      if(height===1080 && period==='day'){
+        const environment=page.getByRole('button',{name:'环境控制',exact:true});
+        await environment.click();
+        await page.waitForSelector('.gameplay-context-panel--weather');
+        await settle();
+        const activeLine=environment.locator('.gameplay-top-navigation__active-line');
+        assert.equal(await activeLine.count(),1,'Control Tray Active 必须使用真实结构线');
+        const activeLineStyle=await activeLine.evaluate(node=>{
+          const css=getComputedStyle(node);
+          const rect=node.getBoundingClientRect();
+          return {display:css.display,opacity:css.opacity,backgroundColor:css.backgroundColor,width:rect.width,height:rect.height};
+        });
+        const retiredPseudo=await environment.evaluate(node=>getComputedStyle(node,'::before').display);
+        assert.equal(activeLineStyle.opacity,'1','Control Tray Active 结构线必须可见');
+        assert.equal(activeLineStyle.height,2,'Control Tray Active 结构线高度必须保持 2px');
+        assert(activeLineStyle.width>=18 && activeLineStyle.width<=24,'Control Tray Active 结构线宽度不得偏离既有比例');
+        assert.equal(activeLineStyle.backgroundColor,'rgba(169, 132, 75, 0.78)','Control Tray Active 必须消费当前熟铜状态线');
+        assert.equal(retiredPseudo,'none','Control Tray Active 不得继续依赖 ::before');
+        report.checks.push({label:'1080/day/control-tray-real-active-line',activeLineStyle,retiredPseudo});
+        await shot('hud-foreground-control-tray-active');
+        await page.keyboard.press('Escape');
+        await page.waitForSelector('.gameplay-left-context-surface',{state:'detached'});
+        await idle();
+      }
+
       await accelerated.hover();await settle();
       await checkColor(label+'/speed-hover',accelerated,'rgb(216, 211, 202)');
       await checkColor(label+'/speed-hover-icon',accelerated.locator('.ui-icon'),'rgb(216, 211, 202)');

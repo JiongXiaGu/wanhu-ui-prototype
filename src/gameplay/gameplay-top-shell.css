@@ -190,13 +190,22 @@
 .gameplay-top-navigation__scene .gameplay-top-navigation__button{width:42px;flex:0 0 42px}
 .gameplay-top-navigation__button .ui-icon{width:18px;height:18px;pointer-events:none}
 .gameplay-top-navigation__button:active{transform:translateY(1px)}
-.gameplay-top-navigation__button.is-active::before{
-  content:'';
+.gameplay-screen .gameplay-top-shell .gameplay-top-navigation__button.is-active::before{
+  display:none;
+}
+.gameplay-top-navigation__active-line{
   position:absolute;
   left:27%;
   right:27%;
   bottom:-1px;
   height:2px;
+  border-radius:1px;
+  background:var(--wanhu-control-active-line);
+  opacity:0;
+  pointer-events:none;
+}
+.gameplay-top-navigation__button.is-active .gameplay-top-navigation__active-line{
+  opacity:1;
 }
 .gameplay-top-navigation__separator{
   width:1px;
