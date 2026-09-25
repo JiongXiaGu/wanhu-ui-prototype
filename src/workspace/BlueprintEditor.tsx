@@ -92,6 +92,7 @@ export function BlueprintEditor({ draft, onCancel, onRephotograph, onSave }: Blu
               role="img"
               aria-label="蓝图预览图"
             >
+              <i className="blueprint-editor__preview-shade" aria-hidden="true" />
               <span>4:3</span>
               <button
                 type="button"
