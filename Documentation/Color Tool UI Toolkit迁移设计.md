@@ -374,6 +374,7 @@ CatalogWorkspace
 - 每页最多 8 项；
 - Rail 与 Source Filter 是正交维度；
 - Rail Page Indicator 与 Category Selected 使用不同视觉语义；
+- Material Preset 的 Category Selected 竖线与 Source Selected 横线使用真实子元素 / VisualElement，不依赖 `::before` / `::after`；
 - Catalog Geometry 只有一个 Owner。
 
 ### Unity 建议
