@@ -86,11 +86,13 @@ SVG 仅作 Source Master，64×64 PNG 是 Web / Unity 共用 Runtime Asset，src
 
 ## 开发与交付
 
-Web 只验证美术、构图、信息和交互，不把 React / CSS 当最终游戏架构；但正式 Web 截图应尽量就是 Unity 6.6 的目标美术，不把明显不可迁移的浏览器效果当成正式视觉基线。默认直接提交 main，不建临时分支，不强制 Vercel。
+Web 只验证美术、构图、信息和交互，不把 React / CSS 当最终游戏架构；但正式 Web 截图应尽量就是 Unity 6.6 的目标美术，不把明显不可迁移的浏览器效果当成正式视觉基线。
+
+Unity 6.6 Visual Parity、共享美术、跨页面视觉治理默认使用 **模块分支 + Draft PR**，不直接并行写 main。一个 Feature PR 只能属于一个模块，建议 2–5 个 Runtime 文件、最多 1 个专项 Review 脚本，硬上限 6 个 Runtime 文件；跨模块必须继续拆分。PR 由 `check-pr-scope.mjs` 判定模块并只运行对应 Review Group；只有 main 才运行全量 UI Review。通过的模块 PR 由集成门串行合入 main，每次合入后等待 main 全量回归通过，再合下一项。普通纯文档或用户明确要求的独立小修仍可按任务决定是否直推 main。
 
 先执行 icons:check、audit:scale、audit:visual、audit:unity、相关单元检查和 build。视觉治理 Guard 使用 Ratchet：已有旧色债务逐批清理，新文件不得扩散退役共享色。不能本地运行时说明实际使用的 Actions 日志，不声称本地测试成功。局部 Control / Surface 组件图不能冒充真实页面和交互验收。
 
-重要 UI 修改须 Build + UI Review，并下载、实际打开关键完整截图；发现问题继续修复。全局改动覆盖 Settings / Archive / Management / Workspace / Tool / Dialog、昼夜与缩放。矩阵不足时补充受影响状态，不为局部试验机械堆积截图。
+重要 UI 修改须 Build + UI Review，并下载、实际打开关键完整截图；发现问题继续修复。Feature PR 只跑模块对应的 Targeted Review Group，避免一个小模块机械跑完整截图矩阵；main 集成后才运行 Core / HUD / Dialog / Readability / Tools / Selection 六组全量回归。全局改动覆盖 Settings / Archive / Management / Workspace / Tool / Dialog、昼夜与缩放；矩阵不足时补充受影响状态。
 
 Main Dock 同时检查设计/蓝图两态；Secondary Bar 至少检查 Terrain / Color / Selection / Building / Road / Tree / City Wall 的结构和文字；Hover 同时检查多种 Catalog、边缘与 Modal 清理。交付报告实际 main SHA、对应 Actions、实际审图范围，关键图直接展示在回复中。Web 通过不等于 Unity Player 验证。
 

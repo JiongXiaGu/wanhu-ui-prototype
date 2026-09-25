@@ -2,32 +2,24 @@ name: UI Review
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'src/**'
-      - 'scripts/capture-ui-review.mjs'
-      - 'scripts/capture-hud-foreground-review.mjs'
-      - 'scripts/capture-input-dialog-system-review.mjs'
-      - 'scripts/capture-typography-decision-review.mjs'
-      - 'scripts/capture-tool-usability-review.mjs'
-      - 'scripts/capture-building-selection-review.mjs'
+      - 'scripts/capture-*-review.mjs'
+      - 'scripts/ui-review-modules.mjs'
+      - 'scripts/check-pr-scope.mjs'
       - 'public/assets/**'
       - 'index.html'
       - 'package.json'
       - 'vite.config.*'
       - '.github/workflows/ui-review.yml'
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'src/**'
-      - 'scripts/capture-ui-review.mjs'
-      - 'scripts/capture-hud-foreground-review.mjs'
-      - 'scripts/capture-input-dialog-system-review.mjs'
-      - 'scripts/capture-typography-decision-review.mjs'
-      - 'scripts/capture-tool-usability-review.mjs'
-      - 'scripts/capture-building-selection-review.mjs'
+      - 'scripts/capture-*-review.mjs'
+      - 'scripts/ui-review-modules.mjs'
+      - 'scripts/check-pr-scope.mjs'
       - 'public/assets/**'
       - 'index.html'
       - 'package.json'
@@ -43,7 +35,33 @@ permissions:
   contents: read
 
 jobs:
-  capture:
+  scope:
+    runs-on: ubuntu-latest
+    outputs:
+      module: ${{ steps.classify.outputs.module }}
+      reviews: ${{ steps.classify.outputs.reviews }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: classify
+        name: Classify review scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/changed-files.txt
+            node scripts/check-pr-scope.mjs --input /tmp/changed-files.txt
+          else
+            echo "module=full" >> "$GITHUB_OUTPUT"
+            echo "reviews=core,hud,dialog,readability,tools,selection" >> "$GITHUB_OUTPUT"
+          fi
+
+  core:
+    needs: scope
+    if: ${{ contains(needs.scope.outputs.reviews, 'core') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -68,16 +86,58 @@ jobs:
         run: |
           npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
           for i in {1..20}; do
-            if curl -fsS http://127.0.0.1:4173 >/dev/null; then
-              exit 0
-            fi
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/wanhu-vite.log
+          exit 1
+      - name: Capture core UI review
+        run: node scripts/capture-ui-review.mjs
+      - name: Upload core UI review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-review-core
+          path: review-screenshots/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 7
+
+  hud:
+    needs: scope
+    if: ${{ contains(needs.scope.outputs.reviews, 'hud') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install Playwright package
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Start Vite review server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
             sleep 1
           done
           cat /tmp/wanhu-vite.log
           exit 1
       - name: Capture HUD foreground contract
         run: node scripts/capture-hud-foreground-review.mjs
-      - name: Upload HUD foreground review
+      - name: Upload HUD review
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -88,43 +148,41 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           compression-level: 9
-      - name: Capture and assert UI review
-        run: node scripts/capture-ui-review.mjs
+
+  dialog:
+    needs: scope
+    if: ${{ contains(needs.scope.outputs.reviews, 'dialog') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install Playwright package
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Start Vite review server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/wanhu-vite.log
+          exit 1
       - name: Capture shared dialog system
         run: node scripts/capture-input-dialog-system-review.mjs
-      - name: Capture typography decision surfaces
-        run: node scripts/capture-typography-decision-review.mjs
-      - name: Upload visual governance review
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: visual-governance-review
-          path: |
-            review-screenshots/readability-main-menu.png
-            review-screenshots/readability-new-game.png
-            review-screenshots/readability-new-game-focus.png
-            review-screenshots/readability-settings.png
-            review-screenshots/readability-save.png
-            review-screenshots/readability-save-focus.png
-            review-screenshots/readability-color-tool-focus.png
-            review-screenshots/color-scheme-focus.png
-            review-screenshots/loading-space.png
-            review-screenshots/readability-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
-      - name: Capture tool usability and layout
-        run: node scripts/capture-tool-usability-review.mjs
-      - name: Capture building selection flow
-        run: node scripts/capture-building-selection-review.mjs
-      - name: Upload UI review screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-review
-          path: review-screenshots/
-          if-no-files-found: error
-          retention-days: 7
       - name: Upload dialog review
         if: always()
         uses: actions/upload-artifact@v4
@@ -134,111 +192,135 @@ jobs:
           if-no-files-found: error
           retention-days: 7
           compression-level: 9
-      - name: Upload hover surface review
+
+  readability:
+    needs: scope
+    if: ${{ contains(needs.scope.outputs.reviews, 'readability') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install Playwright package
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Start Vite review server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/wanhu-vite.log
+          exit 1
+      - name: Capture readability and decision surfaces
+        run: node scripts/capture-typography-decision-review.mjs
+      - name: Upload visual governance review
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hover-surface-review
+          name: visual-governance-review
           path: |
-            review-screenshots/hover-*.png
-            review-screenshots/tool-usability-report.json
+            review-screenshots/readability-*.png
+            review-screenshots/color-scheme-focus.png
+            review-screenshots/loading-space.png
+            review-screenshots/readability-report.json
           if-no-files-found: error
           retention-days: 7
           compression-level: 9
-      - name: Upload main dock review
+
+  tools:
+    needs: scope
+    if: ${{ contains(needs.scope.outputs.reviews, 'tools') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install Playwright package
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Start Vite review server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/wanhu-vite.log
+          exit 1
+      - name: Capture tool usability and layout
+        run: node scripts/capture-tool-usability-review.mjs
+      - name: Upload tool review
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: main-dock-review
+          name: tool-review
           path: |
-            review-screenshots/main-dock-*.png
+            review-screenshots/*.png
             review-screenshots/tool-usability-report.json
           if-no-files-found: error
           retention-days: 7
-          compression-level: 9
-      - name: Upload top shell review
-        if: always()
-        uses: actions/upload-artifact@v4
+          compression-level: 8
+
+  selection:
+    needs: scope
+    if: ${{ contains(needs.scope.outputs.reviews, 'selection') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          name: top-shell-review
-          path: |
-            review-screenshots/top-control-tray.png
-            review-screenshots/tool-usability-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
-      - name: Upload blueprint workspace review
-        if: always()
-        uses: actions/upload-artifact@v4
+          node-version: 22
+      - name: Install app dependencies
+        run: npm install --prefer-offline --no-audit --no-fund
+      - name: Cache Playwright browser
+        id: cache-playwright
+        uses: actions/cache@v4
         with:
-          name: blueprint-workspace-review
-          path: |
-            review-screenshots/blueprint-workspace-*.png
-            review-screenshots/tool-usability-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
-      - name: Upload blueprint authoring review
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: blueprint-authoring-review
-          path: |
-            review-screenshots/blueprint-workflow-*.png
-            review-screenshots/tool-usability-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
-      - name: Upload workspace pager review
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: workspace-pager-review
-          path: |
-            review-screenshots/workspace-pager-*.png
-            review-screenshots/tool-usability-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
-      - name: Upload secondary action review
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: secondary-action-review
-          path: |
-            review-screenshots/secondary-action-*.png
-            review-screenshots/tool-usability-report.json
-            review-screenshots/building-selection-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
-      - name: Upload operation hints review
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: operation-hints-review
-          path: |
-            review-screenshots/operation-hints-*.png
-            review-screenshots/tool-usability-report.json
-            review-screenshots/building-selection-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
-      - name: Upload placement review
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: placement-review
-          path: |
-            review-screenshots/placement-building-84.png
-            review-screenshots/placement-building-utility-two-rows.png
-            review-screenshots/placement-road-84.png
-            review-screenshots/placement-tree-84.png
-            review-screenshots/placement-city-wall-84.png
-            review-screenshots/tool-usability-report.json
-          if-no-files-found: error
-          retention-days: 7
-          compression-level: 9
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-1.55.0-chromium
+      - name: Install Playwright package
+        run: npm install --no-save --prefer-offline --no-audit --no-fund playwright@1.55.0
+      - name: Install Chromium
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Start Vite review server
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 4173 > /tmp/wanhu-vite.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/wanhu-vite.log
+          exit 1
+      - name: Capture building selection flow
+        run: node scripts/capture-building-selection-review.mjs
       - name: Upload building selection review
         if: always()
         uses: actions/upload-artifact@v4
@@ -247,17 +329,28 @@ jobs:
           path: |
             review-screenshots/building-selection-*.png
             review-screenshots/building-selection-report.json
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 7
-      - name: Upload world utility review
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: world-utility-review
-          path: |
-            review-screenshots/usability-world-utility-two-rows.png
-            review-screenshots/usability-world-utility-demolition-active.png
-            review-screenshots/usability-world-utility-workspace-balanced.png
-            review-screenshots/tool-usability-report.json
-          if-no-files-found: warn
-          retention-days: 7
+          compression-level: 8
+
+  gate:
+    if: always()
+    needs: [scope, core, hud, dialog, readability, tools, selection]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require selected review groups to pass
+        env:
+          SCOPE: ${{ needs.scope.result }}
+          CORE: ${{ needs.core.result }}
+          HUD: ${{ needs.hud.result }}
+          DIALOG: ${{ needs.dialog.result }}
+          READABILITY: ${{ needs.readability.result }}
+          TOOLS: ${{ needs.tools.result }}
+          SELECTION: ${{ needs.selection.result }}
+        run: |
+          for result in "$SCOPE" "$CORE" "$HUD" "$DIALOG" "$READABILITY" "$TOOLS" "$SELECTION"; do
+            if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+              echo "UI Review group failed: $result"
+              exit 1
+            fi
+          done
