@@ -11,6 +11,7 @@ on:
       - 'public/assets/**'
       - 'index.html'
       - 'package.json'
+      - 'package-lock.json'
       - 'vite.config.*'
       - '.github/workflows/ui-review.yml'
   pull_request:
@@ -23,6 +24,7 @@ on:
       - 'public/assets/**'
       - 'index.html'
       - 'package.json'
+      - 'package-lock.json'
       - 'vite.config.*'
       - '.github/workflows/ui-review.yml'
   workflow_dispatch:
@@ -70,7 +72,7 @@ jobs:
         with:
           node-version: 22
       - name: Install app dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Cache Playwright browser
         id: cache-playwright
         uses: actions/cache@v4
@@ -114,7 +116,7 @@ jobs:
         with:
           node-version: 22
       - name: Install app dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Cache Playwright browser
         id: cache-playwright
         uses: actions/cache@v4
@@ -160,7 +162,7 @@ jobs:
         with:
           node-version: 22
       - name: Install app dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Cache Playwright browser
         id: cache-playwright
         uses: actions/cache@v4
@@ -204,7 +206,7 @@ jobs:
         with:
           node-version: 22
       - name: Install app dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Cache Playwright browser
         id: cache-playwright
         uses: actions/cache@v4
@@ -252,7 +254,7 @@ jobs:
         with:
           node-version: 22
       - name: Install app dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Cache Playwright browser
         id: cache-playwright
         uses: actions/cache@v4
@@ -298,7 +300,7 @@ jobs:
         with:
           node-version: 22
       - name: Install app dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Cache Playwright browser
         id: cache-playwright
         uses: actions/cache@v4
