@@ -32,33 +32,14 @@
   align-items:center;
 }
 
-/* Design Workspace selection markers are real children so Unity can map them
-   to explicit VisualElements instead of browser pseudo-elements. */
-.gameplay-screen .workspace--design .workspace-primary-rail__page>button.is-active::before,
+/* Context Filter: current component owns the fill; Character contributes only the tenon node. */
 .gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after{
-  display:none;
-}
-
-.gameplay-screen .workspace--design .design-workspace__rail-active-line{
-  position:absolute;
-  left:0;
-  top:7px;
-  bottom:7px;
-  width:2px;
-  border-radius:0 2px 2px 0;
-  background:var(--wanhu-control-active-line);
-  box-shadow:none;
-  opacity:0;
-  pointer-events:none;
-}
-.gameplay-screen .workspace--design .workspace-primary-rail__page>button.is-active .design-workspace__rail-active-line{
-  opacity:1;
-}
-
-.gameplay-screen .workspace--design .design-workspace__filter-active-node{
+  content:'';
   position:absolute;
   left:5px;
+  right:auto;
   top:50%;
+  bottom:auto;
   width:4px;
   height:4px;
   border:0;
@@ -66,12 +47,8 @@
   background:var(--wanhu-color-brass-high);
   background-image:none;
   box-shadow:none;
-  opacity:0;
-  pointer-events:none;
   transform:translateY(-50%) rotate(45deg);
   transform-origin:center;
-}
-.gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active .design-workspace__filter-active-node{
   animation:wanhu-character-filter-node-enter .14s .04s cubic-bezier(.2,.72,.24,1) both;
 }
 
@@ -143,7 +120,7 @@
 
 @media (prefers-reduced-motion:reduce){
   .gameplay-screen .workspace--design,
-  .gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active .design-workspace__filter-active-node,
+  .gameplay-screen .workspace--design .workspace-context-filter__scroll>button.is-active::after,
   .gameplay-screen .command-bar .category-row button.is-active::before,
   .gameplay-screen .command-bar .category-row button.is-active::after{animation:none}
 }
