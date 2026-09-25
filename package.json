@@ -15,16 +15,16 @@
     "audit:visual": "node scripts/audit-visual-governance.mjs"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
+    "@vitejs/plugin-react": "6.1.1",
     "lucide-react": "1.47.0",
-    "vite": "latest",
-    "typescript": "latest",
-    "react": "latest",
-    "react-dom": "latest"
+    "vite": "8.3.1",
+    "typescript": "7.0.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "sharp": "0.35.4"
   }
 }
