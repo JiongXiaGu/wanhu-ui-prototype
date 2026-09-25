@@ -54,8 +54,7 @@
 
 /* Main Dock: keep the reviewed platform-base language unchanged. */
 .gameplay-screen .command-bar .category-row button.is-active{
-  background:linear-gradient(180deg,transparent 12%,var(--wanhu-command-active-bottom) 54%,var(--wanhu-command-active-top) 100%);
-  box-shadow:inset 0 -1px 0 rgba(255,255,255,.025);
+  background:var(--wanhu-control-active-bg);
 }
 .gameplay-screen .command-bar .category-row button.is-active::before{
   content:'';
@@ -88,7 +87,7 @@
 /* Mode rail remains subordinate, but its active state uses the same construction family. */
 .gameplay-screen .command-bar .mode-rail button{position:relative}
 .gameplay-screen .command-bar .mode-rail button.is-active{
-  background:linear-gradient(90deg,var(--wanhu-command-active-top),var(--wanhu-command-active-bottom) 72%,transparent);
+  background:var(--wanhu-control-active-bg);
 }
 .gameplay-screen .command-bar .mode-rail button.is-active::after{
   content:'';
