@@ -20,7 +20,7 @@
 .context-utility-toolbar__button .ui-icon{width:var(--command-icon-size,20px);height:var(--command-icon-size,20px);pointer-events:none}
 .context-utility-toolbar__button:hover:not(:disabled){background:var(--wanhu-command-hover);color:var(--wanhu-color-icon-hover)}
 .context-utility-toolbar__button:active:not(:disabled){transform:translateY(1px)}
-.context-utility-toolbar__button.is-active{color:var(--wanhu-color-brass-high);background:linear-gradient(180deg,var(--wanhu-command-active-top),var(--wanhu-command-active-bottom))}
+.context-utility-toolbar__button.is-active{color:var(--wanhu-color-brass-high);background:var(--wanhu-control-active-bg)}
 .context-utility-toolbar__button.is-active::before{content:'';position:absolute;left:11px;right:11px;top:0;height:2px;border-radius:0 0 2px 2px;background:var(--wanhu-command-active-line)}
 .context-utility-toolbar__button:focus-visible{outline:1px solid var(--wanhu-control-focus);outline-offset:1px}
 .context-utility-toolbar__button:disabled{opacity:.27;cursor:default;background:transparent;transform:none}
@@ -29,6 +29,6 @@
 
 .context-utility-toolbar__button.is-danger{color:#a57a72}
 .context-utility-toolbar__button.is-danger:hover:not(:disabled){background:rgba(152,84,71,.080);color:#cf8e82}
-.context-utility-toolbar__button.is-danger.is-active{color:#d09184;background:linear-gradient(180deg,rgba(152,84,71,.12),rgba(152,84,71,.035))}
+.context-utility-toolbar__button.is-danger.is-active{color:#d09184;background:rgba(152,84,71,.085)}
 .context-utility-toolbar__button.is-danger.is-active::before{background:rgba(207,142,130,.82)}
 .context-utility-toolbar__button.is-danger:focus-visible{outline-color:rgba(207,142,130,.52)}

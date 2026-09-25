@@ -94,7 +94,7 @@
 
 .gameplay-screen .main-dock__mode-button.is-active{
   color:var(--wanhu-color-brass-high);
-  background:linear-gradient(180deg,rgba(169,132,75,.060),rgba(169,132,75,.016));
+  background:var(--wanhu-control-active-bg);
 }
 .gameplay-screen .main-dock__mode-button.is-active span{
   color:#bea76f;
@@ -144,7 +144,7 @@
 
 .gameplay-screen .main-dock__category-button.is-active{
   color:var(--wanhu-color-brass-high);
-  background:linear-gradient(180deg,rgba(169,132,75,.048),rgba(169,132,75,.010));
+  background:var(--wanhu-control-active-bg);
 }
 .gameplay-screen .main-dock__category-button.is-active span{color:#b9a46f}
 .gameplay-screen .main-dock__category-button.is-active .main-dock__state-line{opacity:.92}

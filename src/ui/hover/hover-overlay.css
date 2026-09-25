@@ -32,7 +32,6 @@
   border:1px solid var(--wanhu-command-tooltip-edge);
   border-radius:var(--hud-radius-sm,10px);
   background:var(--wanhu-command-tooltip-bg);
-  box-shadow:var(--wanhu-command-tooltip-shadow);
   color:var(--wanhu-color-paper-secondary,#c1bcb2);
   font-size:var(--wanhu-type-tooltip,12px);
 }
@@ -91,10 +90,6 @@
   background-image:var(--wanhu-material-noise);
   background-repeat:repeat;
   background-size:256px 256px;
-  box-shadow:
-    0 20px 44px rgba(3,5,4,.36),
-    0 6px 16px rgba(3,5,4,.24),
-    inset 0 1px 0 rgba(255,255,255,.11);
   color:#d8d5ce;
 }
 
@@ -112,7 +107,7 @@
   left:16px;
   right:16px;
   height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.17) 22%,rgba(255,255,255,.08) 76%,transparent);
+  background:rgba(255,255,255,.10);
 }
 .ui-hover-card__content{
   position:relative;

@@ -113,7 +113,7 @@
 .secondary-action-bar .placement-action-bar__button--mode.is-active,
 .secondary-action-bar .placement-action-bar__button--quick.is-active{
   color:var(--wanhu-color-brass-high);
-  background:linear-gradient(180deg,rgba(169,132,75,.050),rgba(169,132,75,.010));
+  background:var(--wanhu-control-active-bg);
 }
 .secondary-action-bar .placement-action-bar__button--mode.is-active>.placement-action-bar__state-line,
 .secondary-action-bar .placement-action-bar__button--quick.is-active>.placement-action-bar__state-line,
@@ -128,13 +128,14 @@
 .secondary-action-bar .placement-action-bar__button--quick{color:var(--wanhu-color-icon)}
 .secondary-action-bar .placement-action-bar__button--confirm{
   color:var(--wanhu-color-brass-high);
-  background:linear-gradient(180deg,rgba(169,132,75,.070),rgba(169,132,75,.018));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.016);
+  border:1px solid var(--wanhu-control-primary-border);
+  background:var(--wanhu-control-primary-bg);
 }
 .secondary-action-bar .placement-action-bar__button--confirm .placement-action-bar__label{color:#bda56d}
 .secondary-action-bar .placement-action-bar__button--confirm:hover:not(:disabled){
   color:var(--wanhu-color-brass-high,#bd9959);
-  background:linear-gradient(180deg,rgba(169,132,75,.095),rgba(169,132,75,.028));
+  border-color:var(--wanhu-control-primary-border-hover);
+  background:var(--wanhu-control-primary-hover-bg);
 }
 .secondary-action-bar .placement-action-bar__button--exit,
 .secondary-action-bar .placement-action-bar__button--cancel{color:var(--wanhu-color-paper-secondary,#c1bcb2)}

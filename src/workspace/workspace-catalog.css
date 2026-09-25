@@ -47,7 +47,7 @@
 .gameplay-screen .workspace--catalog .workspace-primary-rail__favorite-divider{
   flex:0 0 1px;
   margin:5px 8px 6px 10px;
-  background:linear-gradient(90deg,rgba(239,233,221,.065),rgba(239,233,221,.012));
+  background:rgba(239,233,221,.040);
 }
 .gameplay-screen .workspace--catalog .workspace-primary-rail__content.has-favorite-shortcut .workspace-primary-rail__page{
   height:auto;
@@ -103,7 +103,6 @@
   border-radius:2px;
   background:var(--wanhu-color-paper-primary);
   opacity:.92;
-  box-shadow:0 0 8px rgba(238,233,223,.12);
 }
 
 
@@ -217,7 +216,6 @@
   border-radius:2px;
   background:var(--wanhu-color-paper-primary);
   opacity:.92;
-  box-shadow:0 0 8px rgba(238,233,223,.12);
 }
 
 .gameplay-screen .workspace--catalog .workspace-content-pager-marker{

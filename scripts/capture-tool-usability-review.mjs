@@ -405,7 +405,7 @@ try {
       const base = getComputedStyle(element, '::before');
       const node = getComputedStyle(element, '::after');
       return {
-        backgroundImage: style.backgroundImage,
+        backgroundColor: style.backgroundColor,
         baseColor: base.backgroundColor,
         nodeColor: node.backgroundColor,
         nodeShadow: node.boxShadow,
@@ -416,7 +416,7 @@ try {
   assert(characterWorkspaceNode.boxShadow === 'none' || characterWorkspaceNode.boxShadow === '', 'Design Workspace 榫节点不得保留历史 Glow');
   assert.equal(characterWorkspaceNode.width, '4px', 'Design Workspace 榫节点结构尺寸不得回退');
   assert.equal(characterWorkspaceNode.height, '4px', 'Design Workspace 榫节点结构尺寸不得回退');
-  assert(characterDockCategory.backgroundImage.includes('169, 132, 75'), 'Category Selected 底座必须使用当前 Command Active Brass Hue');
+  assert(characterDockCategory.backgroundColor.includes('169, 132, 75'), 'Category Selected 底座必须使用当前 Command Active Brass Hue');
   assert.equal(characterDockCategory.baseColor, 'rgb(169, 132, 75)', 'Category 底部结构线必须使用当前 Brass');
   assert.equal(characterDockCategory.nodeColor, 'rgb(197, 164, 105)', 'Category 榫节点必须使用当前 Brass High');
   assert(characterDockCategory.nodeShadow === 'none' || characterDockCategory.nodeShadow === '', 'Category 榫节点不得保留历史 Glow');
@@ -740,9 +740,9 @@ try {
   const characterDockMode = await activeDockMode.evaluate(element => {
     const style = getComputedStyle(element);
     const marker = getComputedStyle(element, '::after');
-    return { backgroundImage: style.backgroundImage, markerColor: marker.backgroundColor, markerShadow: marker.boxShadow };
+    return { backgroundColor: style.backgroundColor, markerColor: marker.backgroundColor, markerShadow: marker.boxShadow };
   });
-  assert(characterDockMode.backgroundImage.includes('169, 132, 75'), 'Mode Rail Selected 必须使用当前 Command Active Brass Hue');
+  assert(characterDockMode.backgroundColor.includes('169, 132, 75'), 'Mode Rail Selected 必须使用当前 Command Active Brass Hue');
   assert.equal(characterDockMode.markerColor, 'rgb(169, 132, 75)', 'Mode Rail 结构线必须使用当前 Brass');
   assert(!JSON.stringify(characterDockMode).includes('210, 179, 111'), 'Character Mode Rail 不得继续渲染旧 210/179/111 Hue');
   report.checks.push({ label: 'Character Main Dock mode accent', characterDockMode });
