@@ -809,9 +809,50 @@ try {
   await open('weather', '.gameplay-context-panel--weather');
   await checkPersistentHints('环境控制', 'context-weather');
   await operationHintsShot('weather');
-  await page.getByRole('button', { name: '场景模拟', exact: true }).click();
+
+  const [timeStripState, seasonStripState] = await Promise.all([
+    page.locator('.weather-time-track__segments').evaluate(node => {
+      const style = getComputedStyle(node);
+      return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+    }),
+    page.locator('.weather-season-track__segments').evaluate(node => {
+      const style = getComputedStyle(node);
+      return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+    }),
+  ]);
+  assert(timeStripState.backgroundImage.includes('weather-time-strip.png'), 'Weather Time Track 必须使用 Web / Unity 共用 weather-time-strip.png');
+  assert(seasonStripState.backgroundImage.includes('weather-season-strip.png'), 'Weather Season Track 必须使用 Web / Unity 共用 weather-season-strip.png');
+  assert(!timeStripState.backgroundImage.includes('gradient') && !seasonStripState.backgroundImage.includes('gradient'), 'Weather Track 不得恢复 CSS Gradient');
+  assert.equal(timeStripState.boxShadow, 'none', 'Weather Time Strip 不得依赖 inset shadow');
+  assert.equal(seasonStripState.boxShadow, 'none', 'Weather Season Strip 不得依赖 inset shadow');
+
   const time = page.getByRole('slider', { name: '日内时间', exact: true });
-  await time.focus(); await time.press('End'); await page.waitForSelector('.gameplay-screen[data-time-of-day="night"]');
+  await time.focus();
+  const [timeTrackFocus, timeThumbFocus] = await Promise.all([
+    page.locator('.weather-time-track').evaluate(node => {
+      const style = getComputedStyle(node);
+      return {
+        boxShadow: style.boxShadow,
+        outlineWidth: style.outlineWidth,
+        outlineColor: style.outlineColor,
+        borderColor: style.borderTopColor,
+      };
+    }),
+    page.locator('.weather-time-track__thumb').evaluate(node => {
+      const style = getComputedStyle(node);
+      return { boxShadow: style.boxShadow, borderColor: style.borderTopColor, backgroundColor: style.backgroundColor };
+    }),
+  ]);
+  assert.equal(timeTrackFocus.boxShadow, 'none', 'Weather Track Focus 不得依赖 box-shadow');
+  assert(parseFloat(timeTrackFocus.outlineWidth) >= 1, 'Weather Track Focus 必须使用真实 Outline');
+  assert.notEqual(timeTrackFocus.outlineColor, 'rgba(0, 0, 0, 0)', 'Weather Track Focus Outline 必须可见');
+  assert.equal(timeThumbFocus.boxShadow, 'none', 'Weather Thumb Focus 不得依赖 Glow/Shadow');
+  assert.notEqual(timeThumbFocus.borderColor, 'rgba(0, 0, 0, 0)', 'Weather Thumb 必须保留明确边缘');
+  report.checks.push({ label: 'Weather Unity 6.6 visual parity', timeStripState, seasonStripState, timeTrackFocus, timeThumbFocus });
+  await page.screenshot({ path: `${out}/weather-unity-parity.png` }); report.screenshots.push('weather-unity-parity');
+
+  await page.getByRole('button', { name: '场景模拟', exact: true }).click();
+  await time.press('End'); await page.waitForSelector('.gameplay-screen[data-time-of-day="night"]');
   await page.keyboard.press('Escape'); await page.waitForSelector('.gameplay-left-context-surface', { state: 'detached' });
   await page.getByRole('button', { name: '建筑', exact: true }).click(); await page.waitForSelector('.workspace--catalog');
   const nightCard = page.locator('.design-item-card').first(); await nightCard.focus(); await checkHoverCard('夜景目录', nightCard); await shot('inspector-night');
