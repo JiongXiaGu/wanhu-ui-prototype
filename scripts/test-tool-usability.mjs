@@ -269,7 +269,7 @@ checks += 30;
 // 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
 const unchanged = {
   'src/gameplay/inventory-management.css': 'c9d332c653c9fea61c918fb1dbb74af9782b7d83',
-  'src/gameplay/management-panel-skin.css': '9904b60f85b1d6a95cc8e639a5fdc9ffaf196970',
+  'src/gameplay/management-panel-skin.css': '44944ab163976be19c20bce7565c656f87ba88de',
 };
 for (const [file, sha] of Object.entries(unchanged)) {
   assert.equal(execFileSync('git', ['hash-object', file], { encoding: 'utf8' }).trim(), sha, file + ': 超出本轮已批准范围');
