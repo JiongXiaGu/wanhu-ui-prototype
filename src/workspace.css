@@ -421,7 +421,7 @@
   align-items:center;
   gap:14px;
   overflow:hidden;
-  border:1px solid transparent;
+  border:0;
   border-radius:8px;
   outline:0;
   background:rgba(255,255,255,.012);
@@ -434,12 +434,10 @@
   transition-timing-function:ease,ease,ease;
 }
 .workspace-item-card:hover{
-  border-color:var(--wanhu-control-border-soft);
   background:var(--wanhu-control-hover);
   transform:none;
 }
 .workspace-item-card:focus-visible{
-  border-color:var(--wanhu-control-focus);
   background:var(--wanhu-control-hover);
   outline:1px solid var(--wanhu-control-focus);
   outline-offset:1px;
@@ -547,7 +545,6 @@
 .workspace-item-card-shell.is-menu-open{z-index:12}
 
 .workspace-item-card.is-selected{
-  border-color:var(--wanhu-control-active-border-soft);
   background:var(--wanhu-control-active-bg);
 }
 .workspace-item-card.is-selected .workspace-item-card__state-line{opacity:.82}
