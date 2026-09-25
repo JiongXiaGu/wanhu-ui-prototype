@@ -23,19 +23,19 @@
   background:var(--ui-field-surface);
   color:var(--ui-field-text);
   cursor:pointer;
-  transition-property:border-color,background,box-shadow,transform;
-  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
-  transition-timing-function:ease,ease,ease,ease;
+  transition-property:border-color,background,transform;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-fast,100ms);
+  transition-timing-function:ease,ease,ease;
 }
 .ui-color-parameter-field__control:hover:not(:disabled){
   border-color:var(--ui-field-border-hover);
   background:var(--ui-field-surface-hover);
 }
 .ui-color-parameter-field__control:focus-visible{
-  outline:0;
+  outline:1px solid var(--wanhu-control-focus);
+  outline-offset:2px;
   border-color:var(--ui-field-border-focus);
   background:var(--ui-field-surface-focus);
-  box-shadow:0 0 0 1px var(--wanhu-control-focus);
 }
 .ui-color-parameter-field__control:active:not(:disabled){transform:translateY(1px)}
 .ui-color-parameter-field__control:disabled{cursor:default;opacity:var(--ui-field-disabled)}
@@ -50,22 +50,19 @@
   border:1px solid rgba(238,233,223,.060);
   border-radius:5px;
   background:rgba(255,255,255,.010);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),inset 0 -1px 0 rgba(0,0,0,.09);
   pointer-events:none;
 }
 .ui-color-parameter-field__fill{
   position:absolute;
   inset:0;
   display:block;
-  opacity:.74;
-  filter:saturate(.90) brightness(.96);
-  transition-property:opacity,filter;
-  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
-  transition-timing-function:ease,ease;
+  opacity:.76;
+  transition-property:opacity;
+  transition-duration:var(--wanhu-motion-control,120ms);
+  transition-timing-function:ease;
 }
 .ui-color-parameter-field__control:hover:not(:disabled) .ui-color-parameter-field__fill{
-  opacity:.82;
-  filter:saturate(.96) brightness(.99);
+  opacity:.88;
 }
 
 .ui-color-parameter-field__meta{
