@@ -360,7 +360,13 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
       style={{ backgroundImage: `url(${sceneBackground})` }}
     >
       <div className="game-vignette" />
-      <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true" />
+      <div className={`map-view-layer map-view-layer--${state.mapView}`} aria-hidden="true">
+        <span className="map-view-layer__spot is-a"><i /><i /><i /></span>
+        <span className="map-view-layer__spot is-b"><i /><i /><i /></span>
+        <span className="map-view-layer__spot is-c"><i /><i /><i /></span>
+        <span className="map-view-layer__band is-a" />
+        <span className="map-view-layer__band is-b" />
+      </div>
 
       <BuildingSelectionLayer
         selection={state.selection}
