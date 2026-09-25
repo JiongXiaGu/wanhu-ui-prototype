@@ -381,7 +381,7 @@ export function SettingsPanel({ context, onClose, onApply }: SettingsPanelProps)
       <nav className="settings-space__tabs" aria-label="设置分类">
         {categories.map(({ key, icon: Icon }) => (
           <button key={key} type="button" className={active === key ? 'is-active' : ''} onClick={() => setActive(key)}>
-            <Icon size={16} /><span>{key}</span>
+            <Icon size={16} /><span>{key}</span><i className="settings-space__tab-indicator" aria-hidden="true" />
           </button>
         ))}
       </nav>
