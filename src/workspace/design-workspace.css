@@ -9,3 +9,58 @@
 @media (max-width:1500px){
   .gameplay-screen .workspace--design{width:1160px}
 }
+
+/* W1 Style Lock: Design selection markers are explicit elements for UI Toolkit.
+   Higher specificity retires the older pseudo-element rendering only inside
+   Design Workspace; other Catalog consumers keep their current implementation. */
+.gameplay-screen .workspace--catalog.workspace--design .workspace-primary-rail__page>button.is-active::before,
+.gameplay-screen .workspace--catalog.workspace--design .workspace-context-filter__scroll>button.is-active::after{
+  display:none;
+}
+
+.gameplay-screen .workspace--catalog.workspace--design .design-workspace__rail-active-line{
+  position:absolute;
+  left:0;
+  top:7px;
+  bottom:7px;
+  width:2px;
+  border-radius:0 2px 2px 0;
+  background:var(--wanhu-control-active-line);
+  box-shadow:none;
+  opacity:0;
+  pointer-events:none;
+}
+.gameplay-screen .workspace--catalog.workspace--design .workspace-primary-rail__page>button.is-active .design-workspace__rail-active-line{
+  opacity:1;
+}
+
+.gameplay-screen .workspace--catalog.workspace--design .design-workspace__filter-active-node{
+  position:absolute;
+  left:5px;
+  top:50%;
+  width:4px;
+  height:4px;
+  border:0;
+  border-radius:1px;
+  background:var(--wanhu-color-brass-high);
+  box-shadow:none;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-50%) rotate(45deg);
+  transform-origin:center;
+}
+.gameplay-screen .workspace--catalog.workspace--design .workspace-context-filter__scroll>button.is-active .design-workspace__filter-active-node{
+  animation:design-workspace-filter-node-enter .14s .04s cubic-bezier(.2,.72,.24,1) both;
+}
+
+@keyframes design-workspace-filter-node-enter{
+  from{opacity:0;transform:translateY(-50%) rotate(45deg) scale(.35)}
+  to{opacity:1;transform:translateY(-50%) rotate(45deg) scale(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .gameplay-screen .workspace--catalog.workspace--design .workspace-context-filter__scroll>button.is-active .design-workspace__filter-active-node{
+    animation:none;
+    opacity:1;
+  }
+}
