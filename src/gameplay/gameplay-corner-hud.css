@@ -7,12 +7,11 @@
   pointer-events:none;
   z-index:24;
   opacity:.88;
-  transition:opacity var(--wanhu-motion-surface,160ms) ease,filter var(--wanhu-motion-surface,160ms) ease;
+  transition:opacity var(--wanhu-motion-surface,160ms) ease;
 }
 
 .gameplay-compass-hud.is-build-mode{
   opacity:1;
-  filter:drop-shadow(0 8px 18px rgba(4,8,6,.16));
 }
 
 .gameplay-compass-hud__dial{
@@ -22,13 +21,9 @@
   overflow:hidden;
   border:1px solid rgba(238,233,223,.105);
   border-radius:50%;
-  background:radial-gradient(circle at 50% 46%,rgba(43,49,50,.72) 0 20%,rgba(29,35,36,.76) 46%,rgba(19,24,26,.82) 76%,rgba(14,18,20,.84) 100%);
-  box-shadow:
-    0 12px 30px rgba(2,4,5,.28),
-    inset 0 1px 0 rgba(255,255,255,.035),
-    inset 0 0 0 7px rgba(255,255,255,.008);
-  backdrop-filter:blur(13px) saturate(.92) brightness(.98);
-  -webkit-backdrop-filter:blur(13px) saturate(.92) brightness(.98);
+  background:rgba(25,31,32,.82);
+  backdrop-filter:blur(13px);
+  -webkit-backdrop-filter:blur(13px);
 }
 
 .gameplay-compass-hud__dial::before,
@@ -58,14 +53,22 @@
   position:absolute;
   inset:4px;
   border-radius:50%;
-  background:repeating-conic-gradient(
-    from 0deg,
-    rgba(239,233,221,.20) 0deg 1deg,
-    transparent 1deg 22.5deg
-  );
-  -webkit-mask:radial-gradient(circle,transparent 0 78%,#000 79% 83%,transparent 84%);
-  mask:radial-gradient(circle,transparent 0 78%,#000 79% 83%,transparent 84%);
+  pointer-events:none;
   opacity:.62;
+}
+.gameplay-compass-hud__tick{
+  position:absolute;
+  left:calc(50% - .5px);
+  top:1px;
+  width:1px;
+  height:4px;
+  background:rgba(239,233,221,.18);
+  transform:rotate(var(--compass-tick-angle,0deg));
+  transform-origin:50% 33px;
+}
+.gameplay-compass-hud__tick.is-major{
+  height:6px;
+  background:rgba(239,233,221,.28);
 }
 
 .gameplay-compass-hud__axis{
@@ -79,7 +82,7 @@
 .gameplay-compass-hud__axis--vertical{width:1px;height:44px}
 .gameplay-compass-hud__axis--horizontal{width:44px;height:1px}
 .gameplay-compass-hud.is-build-mode .gameplay-compass-hud__axis--vertical{
-  background:linear-gradient(180deg,rgba(169,132,75,.32),rgba(239,233,221,.07) 48%,rgba(239,233,221,.11));
+  background:rgba(169,132,75,.24);
 }
 
 .gameplay-compass-hud__cardinal{
@@ -104,7 +107,6 @@
   color:var(--wanhu-color-brass-high);
   font-size:10px;
   transform:translateX(-50%);
-  text-shadow:0 0 10px rgba(169,132,75,.18);
 }
 .gameplay-compass-hud__cardinal--south{
   left:50%;
@@ -145,7 +147,6 @@
   border-left:4px solid transparent;
   border-right:4px solid transparent;
   border-bottom:16px solid var(--wanhu-color-brass-high);
-  filter:drop-shadow(0 0 6px rgba(169,132,75,.18));
 }
 .gameplay-compass-hud__needle-south{
   bottom:0;
@@ -159,10 +160,9 @@
   top:50%;
   width:7px;
   height:7px;
-  border:1px solid rgba(228,218,192,.62);
+  border:2px solid rgba(228,218,192,.52);
   border-radius:50%;
   background:rgba(20,28,24,.96);
-  box-shadow:0 0 0 3px rgba(20,28,24,.36);
   transform:translate(-50%,-50%);
 }
 
@@ -181,29 +181,4 @@
 }
 .gameplay-system-menu-button .ui-icon{width:19px;height:19px;}
 .gameplay-system-menu-button:active{transform:translateY(1px)}
-.gameplay-system-menu-button[data-tooltip]::after{
-  content:attr(data-tooltip);
-  position:absolute;
-  right:0;
-  top:calc(100% + 7px);
-  min-width:max-content;
-  padding:6px 8px;
-  opacity:0;
-  visibility:hidden;
-  color:#d8d4ca;
-  background:rgba(17,23,20,.985);
-  border:1px solid rgba(239,233,221,.09);
-  border-radius:var(--hud-radius-sm,10px);
-  box-shadow:0 8px 24px rgba(4,7,6,.28);
-  pointer-events:none;
-  white-space:nowrap;
-  font-size:var(--wanhu-type-tooltip,10px);
-  transition:opacity var(--wanhu-motion-fast,100ms) ease,transform var(--wanhu-motion-fast,100ms) ease,visibility var(--wanhu-motion-fast,100ms) ease;
-  transform:translateY(-3px);
-}
-.gameplay-system-menu-button[data-tooltip]:hover::after{
-  opacity:1;
-  visibility:visible;
-  transform:translateY(0);
-  transition-delay:var(--wanhu-tooltip-delay,320ms);
-}
+

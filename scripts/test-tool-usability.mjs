@@ -86,6 +86,8 @@ const hoverCss = await readFile('src/ui/hover/hover-overlay.css', 'utf8');
 const toolActionSourceForHover = await readFile('src/tools/ToolActionBar.tsx', 'utf8');
 const utilitySourceForHover = await readFile('src/gameplay/ContextUtilityToolbar.tsx', 'utf8');
 const gameplayHudSourceForHover = await readFile('src/gameplay/GameplayHUD.tsx', 'utf8');
+const gameplayCornerHudSource = await readFile('src/gameplay/GameplayCornerHud.tsx', 'utf8');
+const gameplayCornerHudCss = await readFile('src/gameplay/gameplay-corner-hud.css', 'utf8');
 const designWorkspaceSourceForHover = await readFile('src/workspace/DesignWorkspace.tsx', 'utf8');
 const materialWorkspaceSourceForHover = await readFile('src/tools/color-tool/modes/surface/MaterialPresetWorkspace.tsx', 'utf8');
 const buildingSchemeWorkspaceSourceForHover = await readFile('src/tools/color-tool/modes/scheme/BuildingSchemeWorkspace.tsx', 'utf8');
@@ -141,6 +143,9 @@ assert(topShellCss.includes('.gameplay-top-navigation{') && topShellCss.includes
 assert(topShellCss.includes('.gameplay-top-navigation__scene .gameplay-top-navigation__button{width:42px;flex:0 0 42px}') && topShellCss.includes('.gameplay-top-navigation__management .gameplay-top-navigation__button{width:50px;flex:0 0 50px}') && topShellCss.includes('.gameplay-top-navigation__view .gameplay-top-navigation__button{width:42px;flex:0 0 42px}'), 'Top Control Tray 必须保持 2×42 / 5×50 / 1×42 的稳定分组');
 assert(topShellCss.includes('border:0;') && topShellCss.includes('background:transparent;') && topShellCss.includes('.gameplay-top-navigation__button .ui-icon{width:18px;height:18px;pointer-events:none}'), 'Top Control Tray Button 必须保留浏览器样式 Reset 与 18px 图标 Geometry');
 assert(!topShellCss.includes('[data-tooltip]::after') && surfaceSystemCss.includes('.gameplay-screen .gameplay-top-navigation__button.is-active::before') && surfaceSystemCss.includes('.gameplay-screen .gameplay-top-navigation__dot'), 'Top Control Tray 旧伪元素 Tooltip 不得恢复，状态材质必须由 Surface System 持有');
+assert(gameplayCornerHudSource.includes('Array.from({ length: 16 }') && gameplayCornerHudSource.includes('gameplay-compass-hud__tick'), 'Compass 刻度必须使用真实结构元素，不能恢复 Gradient / Mask 生成');
+assert(gameplayCornerHudSource.includes('useHoverOverlay') && gameplayCornerHudSource.includes("hover.bind(tooltipFromLabel('菜单'))") && !gameplayCornerHudSource.includes('data-tooltip="菜单"'), 'System Menu Tooltip 必须消费共享 HoverOverlay');
+assert(!gameplayCornerHudCss.includes('repeating-conic-gradient') && !gameplayCornerHudCss.includes('mask:radial-gradient') && !gameplayCornerHudCss.includes('[data-tooltip]::after'), 'Corner HUD 不得恢复 Web-only Compass Gradient / Mask 或私有 Tooltip');
 assert(workspaceCss.includes('position:absolute') && workspaceCss.includes('display:flex') && workspaceCss.includes('flex-direction:column'), 'Workspace Shell 结构必须由 workspace.css 自己持有');
 assert(uiStateSource.includes("export type Workspace = 'none' | 'design' | 'blueprint'") && uiStateSource.includes('isBlueprintDockCategory') && uiStateSource.includes("mode === 'blueprint'"), 'Blueprint Dock Category 必须打开共享 Workspace Space');
 assert(mainSource.includes("import './workspace/blueprint-workspace.css';"), 'Blueprint Workspace 必须拥有独立业务 Card Variant 样式入口');

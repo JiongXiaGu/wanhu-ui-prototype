@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { Menu } from '../ui/icons/runtime-icons.generated';
+import { tooltipFromLabel, useHoverOverlay } from '../ui/hover/HoverOverlay';
 
 interface CompassHudProps {
   headingDegrees?: number;
@@ -21,7 +22,15 @@ export function GameplayCompassHud({ headingDegrees = 0, buildMode = false }: Co
     >
       <div className="gameplay-compass-hud__dial" aria-hidden="true">
         <div className="gameplay-compass-hud__rose">
-          <i className="gameplay-compass-hud__ticks" />
+          <span className="gameplay-compass-hud__ticks" aria-hidden="true">
+            {Array.from({ length: 16 }, (_, index) => (
+              <i
+                className={`gameplay-compass-hud__tick ${index % 4 === 0 ? 'is-major' : ''}`}
+                key={index}
+                style={{ '--compass-tick-angle': `${index * 22.5}deg` } as CSSProperties}
+              />
+            ))}
+          </span>
           <i className="gameplay-compass-hud__axis gameplay-compass-hud__axis--vertical" />
           <i className="gameplay-compass-hud__axis gameplay-compass-hud__axis--horizontal" />
 
@@ -42,12 +51,13 @@ export function GameplayCompassHud({ headingDegrees = 0, buildMode = false }: Co
 }
 
 export function GameplaySystemMenuButton({ onClick }: SystemMenuButtonProps) {
+  const hover = useHoverOverlay();
   return (
     <button
       type="button"
       className="gameplay-system-menu-button"
       aria-label="菜单"
-      data-tooltip="菜单"
+      {...hover.bind(tooltipFromLabel('菜单'))}
       onClick={onClick}
     >
       <Menu />
