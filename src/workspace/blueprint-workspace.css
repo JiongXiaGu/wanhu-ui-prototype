@@ -91,10 +91,15 @@
   isolation:isolate;
 }
 
-.blueprint-workspace__card:hover,
+.blueprint-workspace__card:hover{
+  background:#202824;
+  outline:1px solid rgba(238,233,223,.075);
+  outline-offset:-1px;
+}
 .blueprint-workspace__card:focus-visible{
   background:#202824;
-  box-shadow:inset 0 0 0 1px rgba(238,233,223,.075);
+  outline:1px solid var(--wanhu-control-focus);
+  outline-offset:-1px;
 }
 
 .blueprint-workspace__card:active{
@@ -114,27 +119,28 @@
   z-index:0;
   display:block;
   background-repeat:no-repeat;
-  filter:brightness(.79) saturate(.72) contrast(.98);
+  opacity:.78;
   transform:scale(1.015);
-  transition-property:filter,transform;
+  transition-property:opacity,transform;
   transition-duration:var(--wanhu-motion-surface,160ms),var(--wanhu-motion-space,200ms);
   transition-timing-function:ease,var(--wanhu-motion-ease-out,cubic-bezier(.2,.72,.25,1));
 }
 
 .blueprint-workspace__card:hover .blueprint-workspace__preview,
 .blueprint-workspace__card:focus-visible .blueprint-workspace__preview{
-  filter:brightness(.90) saturate(.82) contrast(1);
+  opacity:.90;
   transform:scale(1.03);
 }
 
 .blueprint-workspace__shade{
   position:absolute;
-  inset:0;
+  left:0;
+  right:0;
+  bottom:0;
+  height:54%;
   z-index:1;
   pointer-events:none;
-  background:
-    linear-gradient(180deg,rgba(8,12,10,.05) 0%,rgba(8,12,10,.02) 42%,rgba(8,12,10,.78) 100%),
-    linear-gradient(90deg,rgba(8,12,10,.14),transparent 42%,rgba(8,12,10,.05));
+  background:rgba(8,12,10,.58);
 }
 
 .blueprint-workspace__shade::after{
@@ -144,7 +150,7 @@
   right:0;
   bottom:0;
   height:1px;
-  background:linear-gradient(90deg,transparent,rgba(238,233,223,.14) 20%,rgba(238,233,223,.05) 76%,transparent);
+  background:rgba(238,233,223,.08);
   opacity:.65;
 }
 
@@ -171,7 +177,6 @@
   letter-spacing:.01em;
   white-space:nowrap;
   text-overflow:ellipsis;
-  text-shadow:0 2px 8px rgba(4,7,6,.58);
 }
 
 .blueprint-workspace__empty{

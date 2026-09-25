@@ -20,10 +20,10 @@
 .management-space--topic-resource{--management-topic-accent:var(--wanhu-topic-resource-accent);--management-topic-tint:var(--wanhu-topic-resource-tint);--management-topic-chart:var(--wanhu-topic-resource-chart)}
 .management-space--topic-governance{--management-topic-accent:var(--wanhu-topic-governance-accent);--management-topic-tint:var(--wanhu-topic-governance-tint);--management-topic-chart:var(--wanhu-topic-governance-chart)}
 .management-space--topic-defense{--management-topic-accent:var(--wanhu-topic-defense-accent);--management-topic-tint:var(--wanhu-topic-defense-tint);--management-topic-chart:var(--wanhu-topic-defense-chart)}
-.management-space__scrim{background:rgba(5,8,9,.38);backdrop-filter:blur(2px) saturate(.78) brightness(.82);-webkit-backdrop-filter:blur(2px) saturate(.78) brightness(.82)}
+.management-space__scrim{background:rgba(5,8,9,.38);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .management-space__panel{border-radius:16px}
-.management-space__header{position:relative;height:64px;flex-basis:64px;padding:0 18px 0 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom-color:var(--management-rule);background:linear-gradient(90deg,var(--management-topic-tint),transparent 68%),var(--wanhu-management-header-bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.014)}
-.management-space__header::before{content:'';position:absolute;left:0;top:0;width:46%;height:2px;background:linear-gradient(90deg,var(--management-topic-accent),transparent);opacity:.78}
+.management-space__header{position:relative;height:64px;flex-basis:64px;padding:0 18px 0 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom-color:var(--management-rule);background:var(--management-topic-tint)}
+.management-space__header::before{content:'';position:absolute;left:0;top:0;width:46%;height:2px;background:var(--management-topic-accent);opacity:.58}
 .management-space__heading{gap:10px}
 .management-space__heading-icon{width:20px;height:20px;display:grid;place-items:center;border:0;border-radius:0;background:transparent;color:var(--management-topic-accent)}
 .management-space__heading-icon .ui-icon{width:20px;height:20px}
@@ -42,7 +42,7 @@
 .management-section{border-top-color:var(--management-rule-strong);background:transparent}
 .management-section__title{height:46px;padding:0 14px;border-bottom-color:var(--management-rule)}
 .management-section__title b{color:var(--management-secondary);font-size:var(--wanhu-type-subheading);font-weight:500}
-.management-section__title>i{background:linear-gradient(90deg,var(--management-rule-strong),transparent 88%)}
+.management-section__title>i{background:var(--management-rule-strong);opacity:.55}
 .management-section__title>span{color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-caption)}
 .management-task-list{padding:2px 12px 12px}
 .management-task-row{min-height:80px;border-bottom-color:var(--management-rule);border-radius:8px;padding:10px 8px}
@@ -56,20 +56,20 @@
 .management-note-row{border-bottom-color:var(--management-rule)}
 .management-note-row small{color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-label)}
 .management-note-row b{color:var(--management-secondary);font-size:var(--wanhu-type-reading);font-weight:500;font-variant-numeric:tabular-nums}
-.management-space__quiet-graph{border-bottom-color:var(--management-rule-strong);background:repeating-linear-gradient(180deg,transparent 0 41px,rgba(238,233,223,.022) 42px)}
-.management-space__quiet-graph span{background:linear-gradient(180deg,var(--management-topic-chart),rgba(124,128,123,.16));border-top-color:var(--management-topic-accent)}
+.management-space__quiet-graph{border-bottom-color:var(--management-rule-strong);background:transparent}
+.management-space__quiet-graph span{background:var(--management-topic-chart);border-top-color:var(--management-topic-accent);opacity:.78}
 .management-finance-trend .management-section__title>span .is-income{background:var(--management-topic-accent)}
 .management-finance-trend .management-section__title>span .is-expense{background:var(--management-faint)}
-.finance-chart{background:repeating-linear-gradient(180deg,transparent 0 49px,rgba(238,233,223,.024) 50px)}
+.finance-chart{background:transparent}
 .finance-chart__bars{border-bottom-color:var(--management-rule-strong)}
-.finance-chart__bars .is-income{background:linear-gradient(180deg,var(--management-topic-chart),rgba(120,106,80,.22));border-top-color:var(--management-topic-accent)}
-.finance-chart__bars .is-expense{background:linear-gradient(180deg,rgba(154,158,153,.46),rgba(91,96,92,.22));border-top-color:rgba(178,181,176,.30)}
+.finance-chart__bars .is-income{background:var(--management-topic-chart);border-top-color:var(--management-topic-accent)}
+.finance-chart__bars .is-expense{background:rgba(130,138,132,.38);border-top-color:rgba(178,181,176,.30)}
 .finance-chart__month small{color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-caption)}
 .finance-breakdown-row{border-bottom-color:var(--management-rule)}
 .finance-breakdown-row span{color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-label)}
 .finance-breakdown-row b{color:var(--management-secondary);font-size:var(--wanhu-type-reading);font-variant-numeric:tabular-nums}
 .finance-breakdown-row>i{background:rgba(238,233,223,.065)}
-.finance-breakdown-row>i em{background:linear-gradient(90deg,rgba(255,255,255,.12),var(--management-topic-accent))}
+.finance-breakdown-row>i em{background:var(--management-topic-accent);opacity:.72}
 .finance-tax-row{border-bottom-color:var(--management-rule)}
 .finance-tax-row b{color:var(--management-secondary);font-size:var(--wanhu-type-reading);font-weight:500}
 .finance-tax-row small{color:var(--wanhu-color-paper-secondary);font-size:var(--wanhu-type-caption)}
