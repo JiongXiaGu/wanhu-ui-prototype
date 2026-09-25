@@ -117,6 +117,7 @@ try {
     ['menu', 'readability-main-menu'],
     ['new-game', 'readability-new-game'],
     ['settings', 'readability-settings'],
+    ['loading', 'readability-loading'],
     ['pause', 'readability-pause'],
     ['pause-save', 'readability-save'],
     ['management-finance', 'readability-finance'],
@@ -133,6 +134,47 @@ try {
       assert.equal(indicatorStyle.opacity, '1', 'Settings Active Tab 状态线必须可见');
       assert(parseFloat(indicatorStyle.height) >= 2, 'Settings Active Tab 状态线高度必须保持可辨识');
       report.checks.push({ label: 'Settings real active tab indicator', ...indicatorStyle });
+    }
+    if (scenario === 'loading') {
+      const loading = page.locator('.loading-space');
+      const [beforeStyle, afterStyle, shadeStyle, tipStyle, trackStyle, fillStyle] = await Promise.all([
+        loading.evaluate(element => {
+          const style = getComputedStyle(element, '::before');
+          return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+        }),
+        loading.evaluate(element => {
+          const style = getComputedStyle(element, '::after');
+          return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+        }),
+        page.locator('.loading-space__shade').evaluate(element => {
+          const style = getComputedStyle(element);
+          return { backdropFilter: style.backdropFilter || style.webkitBackdropFilter || 'none', backgroundImage: style.backgroundImage };
+        }),
+        page.locator('.loading-space__tip').evaluate(element => {
+          const style = getComputedStyle(element);
+          return { textShadow: style.textShadow };
+        }),
+        page.locator('.loading-space__track').evaluate(element => {
+          const style = getComputedStyle(element);
+          return { boxShadow: style.boxShadow, borderWidth: style.borderTopWidth };
+        }),
+        page.locator('.loading-space__track i').evaluate(element => {
+          const style = getComputedStyle(element);
+          return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow, width: element.getBoundingClientRect().width };
+        }),
+      ]);
+      assert(beforeStyle.backgroundImage.includes('loading-scrim.png'), 'Loading 必须使用 Web / Unity 共用 Scrim PNG');
+      assert(!beforeStyle.backgroundImage.includes('gradient'), 'Loading Scrim 不得继续依赖 CSS Gradient');
+      assert.equal(afterStyle.boxShadow, 'none', 'Loading 外层不得继续依赖 Inset box-shadow');
+      assert.equal(shadeStyle.backdropFilter, 'none', 'Loading 不得拥有私有 backdrop-filter');
+      assert.equal(shadeStyle.backgroundImage, 'none', 'Loading Shade 不得恢复 Web-only Gradient');
+      assert.equal(tipStyle.textShadow, 'none', 'Loading Tip 不得依赖 text-shadow 保证可读性');
+      assert.equal(trackStyle.boxShadow, 'none', 'Loading Progress Track 不得依赖 inset box-shadow');
+      assert.notEqual(trackStyle.borderWidth, '0px', 'Loading Progress Track 必须使用可迁移实线边缘');
+      assert.equal(fillStyle.backgroundImage, 'none', 'Loading Progress Fill 不得依赖 Gradient');
+      assert.equal(fillStyle.boxShadow, 'none', 'Loading Progress Fill 不得依赖 Glow');
+      assert(fillStyle.width > 0, 'Loading Review 必须显示真实进度');
+      report.checks.push({ label: 'Loading Unity 6.6 visual parity', beforeStyle, afterStyle, shadeStyle, tipStyle, trackStyle, fillStyle });
     }
     await shot(name);
   }
