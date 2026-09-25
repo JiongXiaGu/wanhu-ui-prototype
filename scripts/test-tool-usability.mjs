@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { execFileSync } from 'node:child_process';
 import { stripTypeScriptTypes } from 'node:module';
 import sharp from 'sharp';
 import { CUSTOM_ICON_PATHS, renderCustomIcon } from './icons/custom-icon-sources.mjs';
@@ -271,13 +270,5 @@ const roadDock = await readFile('src/tools/road-placement/RoadPlacementDock.tsx'
 assert(!roadDock.includes('quickActions') && !roadDock.includes('reverse-direction'), '道路对象动作必须移出中下 Placement Main Bar');
 checks += 30;
 
-// 本轮明确排除的内容必须保持原样；后续用户批准相应模块的新任务时可调整阶段保护。
-const unchanged = {
-  'src/gameplay/inventory-management.css': 'c9d332c653c9fea61c918fb1dbb74af9782b7d83',
-  'src/gameplay/management-panel-skin.css': '44944ab163976be19c20bce7565c656f87ba88de',
-};
-for (const [file, sha] of Object.entries(unchanged)) {
-  assert.equal(execFileSync('git', ['hash-object', file], { encoding: 'utf8' }).trim(), sha, file + ': 超出本轮已批准范围');
-  checks++;
-}
+// PR 模块边界由 scripts/check-pr-scope.mjs 负责；通用功能测试不再用文件 SHA 锁表达阶段范围。
 console.log(`Tool usability checks: PASS (${checks} geometry / custom icon / scope checks).`);
