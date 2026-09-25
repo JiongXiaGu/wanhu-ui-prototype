@@ -355,6 +355,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                       title={displayLabel.length > 6 ? displayLabel : undefined}
                       onClick={() => selectPrimary(key)}
                     >
+                      <i className="design-workspace__rail-active-line" aria-hidden="true" />
                       <Icon size={16} />
                       <span>{displayLabel}</span>
                     </button>
@@ -375,6 +376,7 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                     aria-pressed={filter === key}
                     onClick={() => selectFilter(key)}
                   >
+                    <i className="design-workspace__filter-active-node" aria-hidden="true" />
                     {label}
                   </button>
                 ))}
