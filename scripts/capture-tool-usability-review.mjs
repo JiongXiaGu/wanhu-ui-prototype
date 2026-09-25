@@ -394,12 +394,21 @@ try {
   await checkPersistentHints('建筑目录', 'workspace-building');
   await operationHintsShot('workspace-building');
   const activeDesignFilter = page.locator('.workspace--design .workspace-context-filter__scroll>button.is-active').first();
+  const activeDesignRail = page.locator('.workspace--design .workspace-primary-rail__page>button.is-active').first();
   const activeDockCategory = page.locator('.main-dock__category-button.is-active').first();
-  const [characterWorkspaceNode, characterDockCategory] = await Promise.all([
-    activeDesignFilter.evaluate(element => {
-      const node = getComputedStyle(element, '::after');
-      return { backgroundColor: node.backgroundColor, boxShadow: node.boxShadow, width: node.width, height: node.height, transform: node.transform };
+  const [characterWorkspaceNode, designRailLine, designPseudoState, characterDockCategory] = await Promise.all([
+    activeDesignFilter.locator('.design-workspace__filter-active-node').evaluate(element => {
+      const node = getComputedStyle(element);
+      return { backgroundColor: node.backgroundColor, boxShadow: node.boxShadow, width: node.width, height: node.height, opacity: node.opacity, transform: node.transform };
     }),
+    activeDesignRail.locator('.design-workspace__rail-active-line').evaluate(element => {
+      const line = getComputedStyle(element);
+      return { backgroundColor: line.backgroundColor, width: line.width, height: line.height, opacity: line.opacity };
+    }),
+    Promise.all([
+      activeDesignFilter.evaluate(element => getComputedStyle(element, '::after').display),
+      activeDesignRail.evaluate(element => getComputedStyle(element, '::before').display),
+    ]).then(([filterAfter, railBefore]) => ({ filterAfter, railBefore })),
     activeDockCategory.evaluate(element => {
       const style = getComputedStyle(element);
       const base = getComputedStyle(element, '::before');
@@ -416,12 +425,18 @@ try {
   assert(characterWorkspaceNode.boxShadow === 'none' || characterWorkspaceNode.boxShadow === '', 'Design Workspace 榫节点不得保留历史 Glow');
   assert.equal(characterWorkspaceNode.width, '4px', 'Design Workspace 榫节点结构尺寸不得回退');
   assert.equal(characterWorkspaceNode.height, '4px', 'Design Workspace 榫节点结构尺寸不得回退');
+  assert.equal(characterWorkspaceNode.opacity, '1', 'Design Workspace 榫节点必须保持可见');
+  assert.equal(designRailLine.width, '2px', 'Design Workspace Rail Selected 必须保持 2px 结构线');
+  assert(parseFloat(designRailLine.height) >= 14, 'Design Workspace Rail Selected 结构线高度不得回退');
+  assert.equal(designRailLine.opacity, '1', 'Design Workspace Rail Selected 结构线必须可见');
+  assert.equal(designPseudoState.filterAfter, 'none', 'Design Workspace Filter Selected 不得再依赖 ::after');
+  assert.equal(designPseudoState.railBefore, 'none', 'Design Workspace Rail Selected 不得再依赖 ::before');
   assert(characterDockCategory.backgroundColor.includes('169, 132, 75'), 'Category Selected 底座必须使用当前 Command Active Brass Hue');
   assert.equal(characterDockCategory.baseColor, 'rgb(169, 132, 75)', 'Category 底部结构线必须使用当前 Brass');
   assert.equal(characterDockCategory.nodeColor, 'rgb(197, 164, 105)', 'Category 榫节点必须使用当前 Brass High');
   assert(characterDockCategory.nodeShadow === 'none' || characterDockCategory.nodeShadow === '', 'Category 榫节点不得保留历史 Glow');
-  assert(!JSON.stringify({ characterWorkspaceNode, characterDockCategory }).includes('210, 179, 111'), 'Character Workspace / Category 不得继续渲染旧 210/179/111 Hue');
-  report.checks.push({ label: 'Character Workspace + Category structural accent', characterWorkspaceNode, characterDockCategory });
+  assert(!JSON.stringify({ characterWorkspaceNode, designRailLine, characterDockCategory }).includes('210, 179, 111'), 'Character Workspace / Category 不得继续渲染旧 210/179/111 Hue');
+  report.checks.push({ label: 'Design Workspace real selection markers + Category structural accent', characterWorkspaceNode, designRailLine, designPseudoState, characterDockCategory });
   await page.screenshot({ path: `${out}/character-workspace-node.png` }); report.screenshots.push('character-workspace-node');
 
   const designRailPagerMarks = page.locator('.workspace--design .workspace-rail-pager button span');
