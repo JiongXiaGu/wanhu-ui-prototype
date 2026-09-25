@@ -123,6 +123,56 @@ async function assertParameterFieldFillsRow(rootSelector, label) {
 }
 
 await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
+
+// Map View Visual Parity: formal overlays use real Spot/Band elements rather than CSS Gradient/Filter.
+const mapViewButton = page.getByRole('button', { name: '信息视图', exact: true });
+await mapViewButton.click();
+await page.waitForSelector('.gameplay-top-map-panel');
+for (const mapReview of [
+  { label: '地价', mode: 'land-value', visible: '.map-view-layer__spot' },
+  { label: '道路', mode: 'traffic', visible: '.map-view-layer__band' },
+  { label: '水利', mode: 'water', visible: '.map-view-layer__spot' },
+]) {
+  if (!(await page.locator('.gameplay-top-map-panel').count())) {
+    await mapViewButton.click();
+    await page.waitForSelector('.gameplay-top-map-panel');
+  }
+  const mapPanel = page.locator('.gameplay-top-map-panel');
+  await mapPanel.getByRole('button', { name: mapReview.label, exact: true }).click();
+  await page.waitForTimeout(160);
+  const layer = page.locator('.map-view-layer--' + mapReview.mode);
+  if ((await layer.count()) !== 1) throw new Error('Map View layer missing: ' + mapReview.mode);
+  const layerStyle = await layer.evaluate(node => {
+    const style = getComputedStyle(node);
+    return {
+      backgroundImage: style.backgroundImage,
+      filter: style.filter,
+      backdropFilter: style.backdropFilter || style.webkitBackdropFilter || 'none',
+      opacity: style.opacity,
+    };
+  });
+  if (layerStyle.backgroundImage !== 'none') throw new Error('Map View must not depend on CSS Gradient: ' + mapReview.mode + ' ' + layerStyle.backgroundImage);
+  if (layerStyle.filter !== 'none') throw new Error('Map View must not depend on CSS filter: ' + mapReview.mode + ' ' + layerStyle.filter);
+  if (layerStyle.backdropFilter !== 'none') throw new Error('Map View must not depend on backdrop-filter: ' + mapReview.mode + ' ' + layerStyle.backdropFilter);
+  if (Number(layerStyle.opacity) < .9) throw new Error('Map View layer must be visible: ' + mapReview.mode);
+  const visibleParts = await layer.locator(mapReview.visible).evaluateAll(nodes =>
+    nodes.filter(node => {
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      return style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    }).length
+  );
+  if (visibleParts < 1) throw new Error('Map View structural parts missing: ' + mapReview.mode);
+  await page.screenshot({ path: `${outDir}/map-view-${mapReview.mode}.png` });
+}
+if (!(await page.locator('.gameplay-top-map-panel').count())) {
+  await mapViewButton.click();
+  await page.waitForSelector('.gameplay-top-map-panel');
+}
+await page.locator('.gameplay-top-map-panel').getByRole('button', { name: '默认', exact: true }).click();
+await page.waitForTimeout(100);
+if (await page.locator('.gameplay-top-map-panel').count()) await mapViewButton.click();
+
 const worldUtility = page.locator('.context-utility-toolbar[data-utility-context="world"]');
 await worldUtility.getByRole('button', { name: '地形编辑', exact: true }).click();
 await page.waitForSelector('.terrain-edit-prototype');
