@@ -343,6 +343,22 @@ if ((await wallPanel.getAttribute('data-wall-facing')) !== 'outside-auto') {
 if ((await page.getByText('城墙 · 范围模式', { exact: true }).count()) !== 1) {
   throw new Error('City wall operation hints should match range mode.');
 }
+const rangePreviewParity = await page.locator('.city-wall-range-preview').evaluate(node => ({ filter: getComputedStyle(node).filter }));
+const rangeWallParity = await page.locator('.city-wall-range-preview__wall').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+});
+const rangeHandleParity = await page.locator('.city-wall-range-preview__handle').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { borderWidth: style.borderTopWidth, boxShadow: style.boxShadow };
+});
+if (rangePreviewParity.filter !== 'none') throw new Error('City wall range preview must not depend on CSS filter.');
+if (rangeWallParity.backgroundImage !== 'none' || rangeWallParity.boxShadow !== 'none') {
+  throw new Error('City wall range wall must use solid fill + border without Gradient/Inset Shadow.');
+}
+if (rangeHandleParity.borderWidth !== '2px' || rangeHandleParity.boxShadow !== 'none') {
+  throw new Error('City wall range handle must use a 2px solid edge instead of Glow.');
+}
 await page.screenshot({ path: outDir + '/city-wall-15-construction-range.png' });
 
 await wallBar.getByRole('button', { name: '定宽延伸', exact: true }).click();
@@ -376,6 +392,22 @@ if ((await page.locator('.city-wall-fixed-preview__wall').count()) !== 2) {
 }
 if ((await page.getByText('城墙 · 定宽延伸', { exact: true }).count()) !== 1) {
   throw new Error('City wall operation hints should rebind to fixed-width mode.');
+}
+const fixedPreviewParity = await page.locator('.city-wall-fixed-preview').evaluate(node => ({ filter: getComputedStyle(node).filter }));
+const fixedWallParity = await page.locator('.city-wall-fixed-preview__wall').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+});
+const fixedNodeParity = await page.locator('.city-wall-fixed-preview__node').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { borderWidth: style.borderTopWidth, boxShadow: style.boxShadow };
+});
+if (fixedPreviewParity.filter !== 'none') throw new Error('City wall fixed preview must not depend on CSS filter.');
+if (fixedWallParity.backgroundImage !== 'none' || fixedWallParity.boxShadow !== 'none') {
+  throw new Error('City wall fixed wall must use solid fill + border without Gradient/Inset Shadow.');
+}
+if (fixedNodeParity.borderWidth !== '2px' || fixedNodeParity.boxShadow !== 'none') {
+  throw new Error('City wall fixed node must use a 2px solid edge instead of Glow.');
 }
 
 await wallUtility.getByRole('button', { name: '交换正反面', exact: true }).click();
@@ -466,6 +498,17 @@ if ((await page.locator('.city-wall-gate-free-preview__volume').count()) !== 1) 
 if ((await page.getByText('城门 · 自由放置', { exact: true }).count()) !== 1) {
   throw new Error('Gate operation hints should match free mode.');
 }
+const freeGateParity = await page.locator('.city-wall-gate-free-preview').evaluate(node => ({ filter: getComputedStyle(node).filter }));
+const freeGateFaceParity = await page.locator('.city-wall-gate-free-preview__front-face').evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+});
+const freeGateOpeningParity = await page.locator('.city-wall-gate-free-preview__opening').evaluate(node => ({ boxShadow: getComputedStyle(node).boxShadow }));
+if (freeGateParity.filter !== 'none') throw new Error('Free gate preview must not depend on CSS drop-shadow.');
+if (freeGateFaceParity.backgroundImage !== 'none' || freeGateFaceParity.boxShadow !== 'none') {
+  throw new Error('Free gate front face must use a solid fill without Gradient/Inset Shadow.');
+}
+if (freeGateOpeningParity.boxShadow !== 'none') throw new Error('Free gate opening must not depend on inset shadow.');
 await page.screenshot({ path: outDir + '/city-wall-gate-18-free.png' });
 
 await gateBar.getByRole('button', { name: '城墙连接', exact: true }).click();
@@ -509,6 +552,20 @@ if (!depthLabel || !depthLabel.includes('10.0 m') || !depthLabel.includes('墙�
 }
 if ((await page.getByText('城门 · 城墙连接', { exact: true }).count()) !== 1) {
   throw new Error('Gate operation hints should rebind to wall-connected mode.');
+}
+const connectedGateWallParity = await page.locator('.city-wall-gate-connected-preview__wall').evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+});
+const connectedGateAnchorParity = await page.locator('.city-wall-gate-connected-preview__connection').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { borderWidth: style.borderTopWidth, boxShadow: style.boxShadow };
+});
+if (connectedGateWallParity.backgroundImage !== 'none' || connectedGateWallParity.boxShadow !== 'none') {
+  throw new Error('Connected gate wall must use solid fill + edge without Gradient/Inset Shadow.');
+}
+if (connectedGateAnchorParity.borderWidth !== '2px' || connectedGateAnchorParity.boxShadow !== 'none') {
+  throw new Error('Connected gate anchor must use a 2px solid edge instead of Glow.');
 }
 await page.screenshot({ path: outDir + '/city-wall-gate-19-connected.png' });
 
