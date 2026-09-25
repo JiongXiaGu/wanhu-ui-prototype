@@ -128,7 +128,6 @@
   height:31px;
   border:1px solid rgba(255,255,255,.10);
   border-radius:5px;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.10);
 }
 
 /* Color Tool Surface page stack ----------------------------------------------
@@ -215,13 +214,12 @@
   background:transparent;
   opacity:1;
   transform:none;
-  transition-property:background,border-color,box-shadow;
-  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
+  transition-property:background,border-color;
+  transition-duration:var(--wanhu-motion-control,120ms),var(--wanhu-motion-control,120ms);
 }
 .material-workflow-control__option.is-active .material-workflow-control__indicator{
   border-color:rgba(189,153,89,.92);
   background:rgba(189,153,89,.90);
-  box-shadow:0 0 0 2px rgba(189,153,89,.07);
 }
 .material-property-group .runtime-parameter-row{
   padding-left:0;
@@ -245,7 +243,6 @@
   border:1px solid rgba(238,233,223,.095);
   border-radius:10px;
   cursor:crosshair;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.028),inset 0 0 18px rgba(0,0,0,.10);
   touch-action:none;
 }
 .material-color-editor__sv:focus-visible{
@@ -260,7 +257,6 @@
   border:2px solid rgba(255,255,255,.92);
   border-radius:50%;
   background:transparent;
-  box-shadow:0 1px 5px rgba(0,0,0,.52),inset 0 0 0 1px rgba(0,0,0,.28);
   pointer-events:none;
 }
 .material-color-editor__hue-row{
@@ -297,7 +293,6 @@
   border:2px solid rgba(238,233,223,.95);
   border-radius:6px;
   background:rgba(38,43,41,.92);
-  box-shadow:0 2px 5px rgba(0,0,0,.34);
 }
 .material-color-editor__hue-range::-moz-range-thumb{
   width:10px;
@@ -305,7 +300,6 @@
   border:2px solid rgba(238,233,223,.95);
   border-radius:6px;
   background:rgba(38,43,41,.92);
-  box-shadow:0 2px 5px rgba(0,0,0,.34);
 }
 .material-color-editor__values{
   padding-top:9px;
@@ -336,7 +330,6 @@
   height:30px;
   border:1px solid rgba(255,255,255,.18);
   border-radius:8px;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);
 }
 .material-color-editor__hex-control .ui-text-input{
   min-width:0;
