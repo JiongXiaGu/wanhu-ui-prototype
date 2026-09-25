@@ -19,6 +19,7 @@ export const MODULES = [
   ]},
   { id:'main-menu', reviews:['readability'], matchers:[
     /^src\/menu\//,
+    /^src\/menu-refine\.css$/,
   ]},
   { id:'loading', reviews:['readability'], matchers:[
     /^src\/loading\//,

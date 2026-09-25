@@ -123,6 +123,48 @@ try {
     ['management-finance', 'readability-finance'],
   ]) {
     await open(scenario);
+    if (scenario === 'menu') {
+      const menuShade = page.locator('.main-menu-shade');
+      const menuList = page.locator('.main-menu-list');
+      const primaryRow = page.locator('.menu-row.is-primary').first();
+      const activeLine = primaryRow.locator('.menu-row__active-line');
+      assert.equal(await activeLine.count(), 1, 'Main Menu Primary 必须使用真实结构状态线');
+      const [shadeStyle, primaryStyle, activeLineStyle, retiredPseudo, listDecoration] = await Promise.all([
+        menuShade.evaluate(element => {
+          const style = getComputedStyle(element);
+          return { backgroundImage: style.backgroundImage, backgroundColor: style.backgroundColor };
+        }),
+        primaryRow.evaluate(element => {
+          const style = getComputedStyle(element);
+          return { backgroundImage: style.backgroundImage, backgroundColor: style.backgroundColor };
+        }),
+        activeLine.evaluate(element => {
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          return { opacity: style.opacity, width: rect.width, height: rect.height, boxShadow: style.boxShadow };
+        }),
+        primaryRow.evaluate(element => {
+          const style = getComputedStyle(element, '::before');
+          return { content: style.content, boxShadow: style.boxShadow, backgroundImage: style.backgroundImage };
+        }),
+        menuList.evaluate(element => {
+          const style = getComputedStyle(element, '::after');
+          return { backgroundImage: style.backgroundImage, backgroundColor: style.backgroundColor };
+        }),
+      ]);
+      assert(shadeStyle.backgroundImage.includes('main-menu-scrim.png'), 'Main Menu 必须使用 Web / Unity 共用 main-menu-scrim.png');
+      assert(!shadeStyle.backgroundImage.includes('gradient'), 'Main Menu Shade 不得恢复 CSS Gradient');
+      assert.equal(primaryStyle.backgroundImage, 'none', 'Main Menu Primary Row 不得依赖 Gradient');
+      assert.notEqual(primaryStyle.backgroundColor, 'rgba(0, 0, 0, 0)', 'Main Menu Primary Row 必须有稳定纯色状态底');
+      assert.equal(activeLineStyle.opacity, '1', 'Main Menu Primary 真实状态线必须可见');
+      assert.equal(activeLineStyle.width, 2, 'Main Menu Primary 真实状态线必须保持 2px');
+      assert.equal(activeLineStyle.boxShadow, 'none', 'Main Menu Primary 状态线不得依赖 Glow');
+      assert(['none', 'normal'].includes(retiredPseudo.content), 'Main Menu Primary 不得继续生成 ::before 状态线');
+      assert.equal(retiredPseudo.boxShadow, 'none', 'Main Menu Primary 退役伪元素不得保留 Glow');
+      assert.equal(retiredPseudo.backgroundImage, 'none', 'Main Menu Primary 退役伪元素不得保留图像状态');
+      assert.equal(listDecoration.backgroundImage, 'none', 'Main Menu 底部装饰线不得依赖 Gradient');
+      report.checks.push({ label: 'Main Menu Unity 6.6 visual parity', shadeStyle, primaryStyle, activeLineStyle, retiredPseudo, listDecoration });
+    }
     if (scenario === 'settings') {
       const activeTab = page.locator('.settings-space__tabs button.is-active').first();
       const indicator = activeTab.locator('.settings-space__tab-indicator');
