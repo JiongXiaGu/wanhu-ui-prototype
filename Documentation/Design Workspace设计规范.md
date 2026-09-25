@@ -75,7 +75,7 @@ Primary Rail 当前约 `146px`，必须支持最多 **6 个汉字**的常规分�
 
 Rail Pager 使用固定视觉槽位，并与 Category Selected 使用不同视觉语义：
 
-- Category Selected：继续使用熟铜色短竖线，表达“当前选择”；
+- Category Selected：继续使用熟铜色短竖线，表达“当前选择”；Rail Selected 竖线与 Context Filter 的熟铜榫节点均使用真实子元素 / VisualElement，不依赖 `::before` / `::after`；
 - Rail Pager 沿纵向分页轴表达：当前页使用约 `3×14px` Paper White 竖线，未选中页使用约 `3×3px` 中性灰圆点；
 - Pager 不使用熟铜；Hover 只提亮未选中圆点，不把圆点变成线；
 - 只有一组分类时仍保留一根 Paper White 竖线 Marker，因此布局不会因为页数变化而跳动；
