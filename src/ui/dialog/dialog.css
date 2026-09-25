@@ -32,6 +32,19 @@
   padding:0 32px 26px;
   animation:none;
 }
+.game-canvas .ui-dialog.ui-modal-surface::before{display:none}
+.ui-dialog__tone-line{
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:0;
+  top:0;
+  height:2px;
+  background:transparent;
+  pointer-events:none;
+}
+.ui-dialog.is-tone-warning .ui-dialog__tone-line{background:var(--wanhu-dialog-accent-warning)}
+.ui-dialog.is-tone-danger .ui-dialog__tone-line{background:var(--wanhu-dialog-accent-danger)}
 .ui-dialog__header{
   position:relative;
   margin:0 -32px;

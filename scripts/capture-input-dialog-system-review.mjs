@@ -31,8 +31,18 @@ async function expectDialogTone(dialog,tone){
     const alpha=channels.length>3?channels[3]:1;
     if(alpha<=0)throw new Error(`${tone} Dialog header semantic tint must be visible. background=${headerStyle.backgroundColor}`);
   }
-  const accent=await dialog.evaluate(node=>getComputedStyle(node,'::before').backgroundColor);
-  if(tone!=='neutral'&&(accent==='transparent'||accent==='rgba(0, 0, 0, 0)'))throw new Error(`${tone} Dialog must expose a top semantic accent line.`);
+  const toneLine=dialog.locator('.ui-dialog__tone-line');
+  if(await toneLine.count()!==1)throw new Error('Dialog must expose exactly one real semantic tone line.');
+  const accent=await toneLine.evaluate(node=>{
+    const style=getComputedStyle(node);
+    const rect=node.getBoundingClientRect();
+    return {backgroundColor:style.backgroundColor,display:style.display,width:rect.width,height:rect.height};
+  });
+  const retiredPseudo=await dialog.evaluate(node=>getComputedStyle(node,'::before').display);
+  if(retiredPseudo!=='none')throw new Error(`${tone} Dialog must not depend on the retired ::before tone line.`);
+  if(Math.abs(accent.height-2)>.1)throw new Error(`${tone} Dialog tone line must remain 2px high. height=${accent.height}`);
+  if(tone==='neutral'&&accent.backgroundColor!=='rgba(0, 0, 0, 0)')throw new Error(`Neutral Dialog tone line must remain transparent. background=${accent.backgroundColor}`);
+  if(tone!=='neutral'&&(accent.backgroundColor==='transparent'||accent.backgroundColor==='rgba(0, 0, 0, 0)'))throw new Error(`${tone} Dialog must expose a visible top semantic accent line.`);
 }
 
 async function expectKeyboardFocus(element,label){
