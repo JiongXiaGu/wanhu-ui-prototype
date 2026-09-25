@@ -184,3 +184,42 @@
   color:#747a75;
   font-size:var(--wanhu-type-micro,9.5px);
 }
+
+/* W1 Style Lock: Material Preset selected markers are explicit elements.
+   This locally retires inherited Catalog pseudo-elements without changing
+   shared Workspace ownership or geometry. */
+.gameplay-screen .workspace--catalog.workspace--material-preset .material-preset-workspace__rail-list>button.is-active::before,
+.gameplay-screen .workspace--catalog.workspace--material-preset .material-preset-workspace__source-filter .workspace-context-filter__scroll>button.is-active::after{
+  display:none;
+}
+
+.material-preset-workspace__rail-active-line{
+  position:absolute;
+  left:0;
+  top:7px;
+  bottom:7px;
+  width:2px;
+  border-radius:0 2px 2px 0;
+  background:var(--wanhu-control-active-line);
+  opacity:0;
+  pointer-events:none;
+}
+.material-preset-workspace__rail-list>button.is-active .material-preset-workspace__rail-active-line{
+  opacity:1;
+}
+
+.material-preset-workspace__source-active-line{
+  position:absolute;
+  left:32%;
+  right:32%;
+  bottom:0;
+  height:2px;
+  border-radius:1px;
+  background:var(--wanhu-control-active-line);
+  opacity:0;
+  pointer-events:none;
+}
+.material-preset-workspace__source-filter .workspace-context-filter__scroll>button.is-active .material-preset-workspace__source-active-line{
+  opacity:1;
+}
+

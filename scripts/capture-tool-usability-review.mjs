@@ -372,6 +372,35 @@ try {
   assert(await materialCards.count() > 0, '材质方案 Workspace 必须存在可悬浮条目');
   const materialSourceBadges = page.locator('.material-preset-workspace .workspace-item-card__source.is-compact');
   assert(await materialSourceBadges.count() > 0, '材质方案 Card 来源必须复用共享 Compact Source Badge');
+
+  const activeMaterialRail = page.locator('.material-preset-workspace__rail-list>button.is-active').first();
+  const activeMaterialSource = page.locator('.material-preset-workspace__source-filter .workspace-context-filter__scroll>button.is-active').first();
+  const [materialRailLine, materialSourceLine, materialPresetPseudoState] = await Promise.all([
+    activeMaterialRail.locator('.material-preset-workspace__rail-active-line').evaluate(element => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return { width: rect.width, height: rect.height, opacity: style.opacity, backgroundColor: style.backgroundColor };
+    }),
+    activeMaterialSource.locator('.material-preset-workspace__source-active-line').evaluate(element => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return { width: rect.width, height: rect.height, opacity: style.opacity, backgroundColor: style.backgroundColor };
+    }),
+    Promise.all([
+      activeMaterialRail.evaluate(element => getComputedStyle(element, '::before').display),
+      activeMaterialSource.evaluate(element => getComputedStyle(element, '::after').display),
+    ]).then(([railBefore, sourceAfter]) => ({ railBefore, sourceAfter })),
+  ]);
+  assert.equal(materialRailLine.width, 2, '材质方案 Rail Selected 必须保持 2px 真实结构线');
+  assert(materialRailLine.height >= 14, '材质方案 Rail Selected 真实结构线高度不得回退');
+  assert.equal(materialRailLine.opacity, '1', '材质方案 Rail Selected 真实结构线必须可见');
+  assert.equal(materialSourceLine.height, 2, '材质方案 Source Selected 必须保持 2px 真实结构线');
+  assert(materialSourceLine.width >= 16, '材质方案 Source Selected 真实结构线宽度不得回退');
+  assert.equal(materialSourceLine.opacity, '1', '材质方案 Source Selected 真实结构线必须可见');
+  assert.equal(materialPresetPseudoState.railBefore, 'none', '材质方案 Rail Selected 不得继续依赖 ::before');
+  assert.equal(materialPresetPseudoState.sourceAfter, 'none', '材质方案 Source Selected 不得继续依赖 ::after');
+  report.checks.push({ label: 'Color Tool Material Preset real selection markers', materialRailLine, materialSourceLine, materialPresetPseudoState });
+  await page.screenshot({ path: `${out}/color-tool-material-preset-style-lock.png` }); report.screenshots.push('color-tool-material-preset-style-lock');
   await materialCards.first().hover(); await page.waitForTimeout(540);
   await checkHoverCard('材质方案锚定', materialCards.first());
   await page.screenshot({ path: `${out}/hover-material-preset-top.png` }); report.screenshots.push('hover-material-preset-top');

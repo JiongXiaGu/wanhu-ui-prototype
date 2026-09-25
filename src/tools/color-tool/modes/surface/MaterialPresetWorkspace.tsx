@@ -617,6 +617,7 @@ export function MaterialPresetWorkspace({
                     onDragLeave={() => dropTarget && setDragTargetFamily(null)}
                     onDrop={(event) => dropOnCategory(event, id)}
                   >
+                    <i className="material-preset-workspace__rail-active-line" aria-hidden="true" />
                     <UiIcon icon={icon} size={15} />
                     <span>{label}</span>
                     {draggingPreset && id !== 'all' && <small>移动到这里</small>}
@@ -638,6 +639,7 @@ export function MaterialPresetWorkspace({
                   aria-pressed={source === id}
                   onClick={() => selectSource(id)}
                 >
+                  <i className="material-preset-workspace__source-active-line" aria-hidden="true" />
                   {label}
                 </button>
               ))}
