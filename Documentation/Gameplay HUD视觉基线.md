@@ -50,6 +50,7 @@
 - 只显示图标；
 - Tooltip 提供名称；
 - Control Tray 才拥有 Management Selected；
+- Control Tray 的 Active 状态线使用真实子元素 / VisualElement，不依赖 `::before` / `::after`；
 - Tool 中隐藏 Control Tray，只保留 Persistent Status Row。
 
 Top Shell 使用偏轻的 Smoked Graphite；Persistent Status 比 Control Tray 更稳定，但两层不换 Hue。
