@@ -26,6 +26,14 @@ jobs:
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/changed-files.txt
           node scripts/check-pr-scope.mjs --input /tmp/changed-files.txt
       - run: npm install
+      - name: Export resolved package lock
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: w0-2-generated-package-lock
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 1
       - run: npm run icons:check
       - run: npm run audit:scale
       - name: Test visual governance guard
