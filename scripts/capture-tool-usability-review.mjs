@@ -652,6 +652,56 @@ try {
       && Math.abs((editorPreviewBox.y + editorPreviewBox.height) - (rephotoBox.y + rephotoBox.height) - 8) < 2,
     '重新拍摄必须固定在蓝图预览图内部右下角',
   );
+
+  const previewShade = editorPreview.locator('.blueprint-editor__preview-shade');
+  assert.equal(await previewShade.count(), 1, 'Blueprint Editor Preview 必须使用真实底部 Shade 元素');
+  const [previewStyle, previewShadeStyle, retiredPreviewPseudo] = await Promise.all([
+    editorPreview.evaluate(node => {
+      const style = getComputedStyle(node);
+      return { boxShadow: style.boxShadow };
+    }),
+    previewShade.evaluate(node => {
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      return { backgroundColor: style.backgroundColor, height: rect.height, width: rect.width };
+    }),
+    editorPreview.evaluate(node => {
+      const style = getComputedStyle(node, '::after');
+      return { content: style.content, backgroundImage: style.backgroundImage };
+    }),
+  ]);
+  assert.equal(previewStyle.boxShadow, 'none', 'Blueprint Editor Preview 不得依赖 inset box-shadow');
+  assert.notEqual(previewShadeStyle.backgroundColor, 'rgba(0, 0, 0, 0)', 'Blueprint Editor Preview Shade 必须可见');
+  assert(previewShadeStyle.height > 0 && previewShadeStyle.width > 0, 'Blueprint Editor Preview Shade 必须有真实几何');
+  assert(['none', 'normal'].includes(retiredPreviewPseudo.content), 'Blueprint Editor Preview 不得继续生成 ::after Gradient');
+  assert.equal(retiredPreviewPseudo.backgroundImage, 'none', 'Blueprint Editor Preview 不得恢复 CSS Gradient');
+
+  const selectedBlueprintCategory = createEditorSurface.locator('.blueprint-editor__category button.is-active').first();
+  const categoryParity = await selectedBlueprintCategory.evaluate(node => {
+    const style = getComputedStyle(node);
+    return { borderWidth: style.borderTopWidth, borderColor: style.borderTopColor, boxShadow: style.boxShadow };
+  });
+  assert.equal(categoryParity.borderWidth, '1px', 'Blueprint Editor Category Selected 必须使用真实 Border');
+  assert.notEqual(categoryParity.borderColor, 'rgba(0, 0, 0, 0)', 'Blueprint Editor Category Selected Border 必须可见');
+  assert.equal(categoryParity.boxShadow, 'none', 'Blueprint Editor Category Selected 不得依赖 inset shadow');
+
+  const editorCancelButton = createEditorSurface.getByRole('button', { name: '取消', exact: true });
+  await editorCancelButton.hover();
+  const actionHoverParity = await editorCancelButton.evaluate(node => {
+    const style = getComputedStyle(node);
+    return { filter: style.filter, backgroundColor: style.backgroundColor };
+  });
+  assert.equal(actionHoverParity.filter, 'none', 'Blueprint Editor Action Hover 不得依赖 brightness/filter');
+  assert.notEqual(actionHoverParity.backgroundColor, 'rgba(0, 0, 0, 0)', 'Blueprint Editor Action Hover 必须有明确背景状态');
+  report.checks.push({
+    label: 'Blueprint Editor Unity 6.6 visual parity',
+    previewStyle,
+    previewShadeStyle,
+    retiredPreviewPseudo,
+    categoryParity,
+    actionHoverParity,
+  });
+
   await page.screenshot({ path: `${out}/blueprint-workflow-editor.png` }); report.screenshots.push('blueprint-workflow-editor');
 
   const createBlueprintEditor = page.locator('.blueprint-editor[data-blueprint-editor="create"]');
