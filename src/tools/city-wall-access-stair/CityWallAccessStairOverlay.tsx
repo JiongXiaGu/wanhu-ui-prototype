@@ -107,7 +107,7 @@ export function CityWallAccessStairOverlay({
               style={{ left: (index * 12.5) + '%', bottom: (index * 12.5) + '%' }}
             />
           ))}
-          <i className="city-wall-access-stair-preview__side" />
+          <i className="city-wall-access-stair-preview__side"><b className="city-wall-access-stair-preview__side-fill" /></i>
         </span>
         <span className="city-wall-access-stair-preview__low">LOW</span>
         <span className="city-wall-access-stair-preview__high">HIGH</span>

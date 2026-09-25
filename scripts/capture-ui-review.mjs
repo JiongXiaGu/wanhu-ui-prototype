@@ -643,6 +643,34 @@ if ((await page.locator('.city-wall-access-stair-preview__step').count()) !== 8)
 if ((await page.getByText('登城梯 · 自由放置', { exact: true }).count()) !== 1) {
   throw new Error('City wall access stair operation hints should describe simple free placement.');
 }
+const accessStairPreviewParity = await page.locator('.city-wall-access-stair-preview').evaluate(node => ({ filter: getComputedStyle(node).filter }));
+const accessStairStepParity = await page.locator('.city-wall-access-stair-preview__step').first().evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow, backgroundColor: style.backgroundColor };
+});
+const accessStairSide = page.locator('.city-wall-access-stair-preview__side');
+const accessStairSideParity = await accessStairSide.evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundImage: style.backgroundImage, overflow: style.overflow };
+});
+const accessStairSideFill = accessStairSide.locator('.city-wall-access-stair-preview__side-fill');
+if ((await accessStairSideFill.count()) !== 1) {
+  throw new Error('Access stair diagonal side volume must use one real clipped fill element.');
+}
+const accessStairSideFillParity = await accessStairSideFill.evaluate(node => {
+  const style = getComputedStyle(node);
+  return { backgroundColor: style.backgroundColor, transform: style.transform };
+});
+if (accessStairPreviewParity.filter !== 'none') throw new Error('Access stair preview must not depend on CSS drop-shadow.');
+if (accessStairStepParity.backgroundImage !== 'none' || accessStairStepParity.boxShadow !== 'none') {
+  throw new Error('Access stair steps must use solid fill without Gradient/Inset Shadow.');
+}
+if (accessStairSideParity.backgroundImage !== 'none' || accessStairSideParity.overflow !== 'hidden') {
+  throw new Error('Access stair side must clip a real fill element instead of using a diagonal CSS Gradient.');
+}
+if (accessStairSideFillParity.backgroundColor === 'rgba(0, 0, 0, 0)' || accessStairSideFillParity.transform === 'none') {
+  throw new Error('Access stair real side fill must stay visible and rotated.');
+}
 await page.screenshot({ path: outDir + '/city-wall-access-stair-22-free.png' });
 
 await accessStairUtility.getByRole('button', { name: '登城梯右转', exact: true }).click();
