@@ -3,7 +3,6 @@ import { Bookmark, Building2, Grid2X2, House, Landmark, MoreHorizontal, Pencil, 
 import type { BlueprintDockCategory } from '../app/ui-state';
 import type { MotionPhase } from '../ui/motion';
 import { useHoverOverlay, type HoverCardDefinition } from '../ui/hover/HoverOverlay';
-import { ToggleSwitch } from '../ui/Controls';
 import {
   BLUEPRINT_CATEGORY_LABELS,
   BLUEPRINT_SIZE_LABELS,
@@ -192,18 +191,16 @@ export function BlueprintWorkspace({
       <div className="workspace-body">
         <nav className="workspace-primary-rail blueprint-workspace__rail" aria-label="蓝图规模">
           <div className="workspace-primary-rail__content has-favorite-shortcut">
-            <div className="workspace-primary-rail__favorite-row">
-              <span className="workspace-primary-rail__favorite-label">
-                <Bookmark size={16} aria-hidden="true" />
-                <span>收藏</span>
-              </span>
-              <ToggleSwitch
-                label="仅显示收藏蓝图"
-                value={favoriteOnly}
-                className="workspace-primary-rail__favorite-toggle"
-                onChange={setFavoriteFilter}
-              />
-            </div>
+            <button
+              type="button"
+              className={'workspace-primary-rail__favorite ' + (favoriteOnly ? 'is-active' : '')}
+              aria-label={favoriteOnly ? '关闭收藏筛选' : '仅显示收藏蓝图'}
+              aria-pressed={favoriteOnly}
+              onClick={() => setFavoriteFilter(!favoriteOnly)}
+            >
+              <Bookmark size={16} aria-hidden="true" />
+              <span>收藏</span>
+            </button>
             <i className="workspace-primary-rail__favorite-divider" aria-hidden="true" />
             <span className="workspace-rail-pager-marker" aria-hidden="true" />
             <div className="workspace-primary-rail__page">
