@@ -3,7 +3,8 @@ import type { GameplayUiState } from '../app/ui-state';
 import { gameplayUiReducer, isBlueprintDockCategory, isDesignDockCategory, selectGameplaySpace } from '../app/ui-state';
 import { DesignWorkspace } from '../workspace/DesignWorkspace';
 import { DESIGN_WORKSPACES } from '../workspace/design-workspace-model';
-import { BlueprintWorkspace } from '../workspace/BlueprintWorkspace';
+import { BlueprintWorkspace, type BlueprintWorkspaceViewState } from '../workspace/BlueprintWorkspace';
+import { WorkshopPublisherSpace } from '../workspace/WorkshopPublisherSpace';
 import { BlueprintEditor, type BlueprintEditorDraft } from '../workspace/BlueprintEditor';
 import {
   BLUEPRINT_BUILTIN_ITEMS,
@@ -59,6 +60,8 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
   const [customBlueprints, setCustomBlueprints] = useState<BlueprintWorkspaceItem[]>(() => BLUEPRINT_CUSTOM_SEED_ITEMS.map((item) => ({ ...item })));
   const [blueprintEditorDraft, setBlueprintEditorDraft] = useState<BlueprintEditorDraft | null>(null);
   const [blueprintCaptureSession, setBlueprintCaptureSession] = useState<{ draft: BlueprintEditorDraft; returnToEditor: boolean } | null>(null);
+  const [workshopPublisherOpen, setWorkshopPublisherOpen] = useState(false);
+  const [workshopReturnView, setWorkshopReturnView] = useState<BlueprintWorkspaceViewState | null>(null);
   const [buildingAppearance, setBuildingAppearance] = useState<Record<string, { schemeId: string; weathering: number }>>(() => (
     Object.fromEntries(BUILDING_SELECTIONS.map((building) => [building.id, { ...building.appearance }]))
   ));
@@ -151,7 +154,7 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
   useEffect(() => {
     function handleGameplayEscape(event: KeyboardEvent) {
-      if (event.key !== 'Escape' || event.defaultPrevented || state.paused) return;
+      if (event.key !== 'Escape' || event.defaultPrevented || state.paused || workshopPublisherOpen) return;
 
       if (state.workspace !== 'none' && document.activeElement instanceof HTMLElement && document.activeElement.closest('.workspace-search')) return;
 
@@ -207,7 +210,13 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
 
     window.addEventListener('keydown', handleGameplayEscape);
     return () => window.removeEventListener('keydown', handleGameplayEscape);
-  }, [blueprintCaptureSession, state.buildingSchemeOpen, state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace, state.worldDemolitionMode]);
+  }, [blueprintCaptureSession, state.buildingSchemeOpen, state.contextPanel, state.management, state.mapPanelOpen, state.mapView, state.paused, state.selection, state.tool, state.workspace, state.worldDemolitionMode, workshopPublisherOpen]);
+
+  useEffect(() => {
+    if (workshopPublisherOpen || !workshopReturnView || state.workspace !== 'blueprint') return;
+    const frame = window.requestAnimationFrame(() => setWorkshopReturnView(null));
+    return () => window.cancelAnimationFrame(frame);
+  }, [state.workspace, workshopPublisherOpen, workshopReturnView]);
 
   function createBlueprintDraft(category: import('../app/ui-state').BlueprintDockCategory): BlueprintEditorDraft {
     return {
@@ -350,6 +359,20 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
         dialogs.toast('已移除「' + name + '」', 'warning');
       },
     });
+  }
+
+  if (workshopPublisherOpen) {
+    return (
+      <section
+        className={`screen gameplay-screen gameplay-screen--workshop-publisher ${isNight ? 'is-night' : 'is-day'}`}
+        data-time-of-day={isNight ? 'night' : 'day'}
+        data-workshop-publisher="open"
+        style={{ backgroundImage: `url(${sceneBackground})` }}
+      >
+        <div className="game-vignette" />
+        <WorkshopPublisherSpace onClose={() => setWorkshopPublisherOpen(false)} />
+      </section>
+    );
   }
 
   return (
@@ -510,8 +533,13 @@ export function GameplayScreen({ background, nightBackground, initialState, onMa
           category={renderedWorkspace.category}
           items={blueprintCatalogItems}
           motionPhase={workspacePresence.phase}
+          initialViewState={workshopReturnView ?? undefined}
           onClose={() => dispatch({ type: 'CLOSE_WORKSPACE' })}
           onCreate={startBlueprintPhotography}
+          onOpenWorkshop={(viewState) => {
+            setWorkshopReturnView(viewState);
+            setWorkshopPublisherOpen(true);
+          }}
           onEdit={editBlueprint}
           onDelete={deleteBlueprint}
           onSelectItem={(item) => dialogs.toast('蓝图“' + item.name + '”的放置流程将在下一阶段接入。')}
