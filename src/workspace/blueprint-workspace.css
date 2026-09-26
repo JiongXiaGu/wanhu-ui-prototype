@@ -132,27 +132,8 @@
   transform:scale(1.03);
 }
 
-.blueprint-workspace__shade{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:54%;
-  z-index:1;
-  pointer-events:none;
-  background:rgba(8,12,10,.58);
-}
-
-.blueprint-workspace__shade::after{
-  content:'';
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:1px;
-  background:rgba(238,233,223,.08);
-  opacity:.65;
-}
+/* Preview 已通过统一 opacity 压暗。不要再在底部叠加大面积实色 Scrim，
+   否则 Unity 6.6 兼容实现会形成明显的矩形黑带。 */
 
 .blueprint-workspace__caption{
   position:absolute;
