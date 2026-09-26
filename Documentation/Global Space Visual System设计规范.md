@@ -1,10 +1,10 @@
 # Global Space Visual System 设计规范
 
-Settings / Load / Save / New Game 属于同一类长时全屏系统空间。它们的信息架构不同，但视觉母版必须相同。
+Settings / Load / Save / New Game 属于同一类长时全屏系统空间；下一阶段的 Workshop Publisher 也加入同一 Global Space 家族。各页面信息架构不同，但视觉母版必须相同。
 
 ## 1. 共享契约
 
-四页 Root 必须使用：
+当前四页与后续 Workshop Publisher 的 Root 必须使用：
 
 ```text
 .wanhu-global-space
@@ -27,7 +27,7 @@ settings / archive / save / new-game geometry CSS
 
 ## 2. 必须一致
 
-Settings / Load / Save / New Game 在相同视觉状态下必须共享：
+Settings / Load / Save / New Game / Workshop Publisher 在相同视觉状态下必须共享：
 
 - Smoked Graphite Hue；
 - Global Noise；
@@ -51,6 +51,7 @@ Settings / Load / Save / New Game 在相同视觉状态下必须共享：
 - Load 游戏组列表；
 - Save 当前游戏摘要；
 - New Game 地图浏览 / 开局方案双栏结构。
+- Workshop Publisher 的发布新内容 / 草稿 / 已发布导航、内容包编辑器与发布管理列表。
 
 ## 4. 状态语义
 
@@ -67,7 +68,7 @@ Settings / Load / Save / New Game 在相同视觉状态下必须共享：
 
 ## 6. 验收门槛
 
-Settings / Load / Save / New Game 必须继续遵守同一个 Global Space 所有权链：
+Settings / Load / Save / New Game 必须继续遵守同一个 Global Space 所有权链；Workshop Publisher 实现后也必须遵守相同链路：
 
 - Root 使用 `.wanhu-global-space`；
 - Header / Footer 使用共享 Global Space Class；
