@@ -95,3 +95,19 @@ W3.1 的度量由 `scripts/capture-typography-decision-review.mjs` 输出到 `re
 W3.1 只建立基线，不把现有 9.5 / 10 / 10.5 / 11.5 / 14.2px 等历史局部值机械改成共享档位。先确认偏移来自字体度量、line-height、控件 padding、图标几何还是缩放取整，再在 W3.2 以后修改正确 Owner。
 
 Review 脚本自身的 CI 路由按组执行：Typography Decision Review 只触发 Readability，不再因为单独修改 Review 脚本而机械跑六组全量回归。
+
+
+### W3.1 实测结论
+
+W3.1 已在正式 Runtime Consumer 上完成 1920×1080 / 3840×2160 双分辨率度量。
+
+关键结果：
+
+- 11 个跨分辨率样本的逻辑字号、控件高度、文字中心与 Icon/Text 相对位置在 1080p / 4K 下完全一致；Web 固定逻辑画布缩放不是当前文字偏移根因。
+- Settings Tab、Settings Label、Parameter Label / Value、Archive 标题、分辨率与键位字段的文字中心偏差在 0～-0.5px。
+- 16px Panel / Design Workspace 标题的文本中心约为 -0.63px；更值得关注的是其 CJK 实际文字框约 24px，而 CSS line box 仅约 17.28px。Unity TextCore 的 ascender / descender 与 line-height 处理需要优先对照这一类标题。
+- Main Dock / Secondary Action 的 +15.172px 不属于垂直居中错误：这两类控件本来就是 Icon Top / Label Bottom，测得的是标签相对整个 64px Button 的位置。
+- Design Building Card 最终 Computed Style 为 11.5px；`workspace.css` 中较早出现的 14.2px 通用规则被更具体的 `.building-card b` 覆盖。后续 Typography 判断必须以最终 Consumer + Computed Style 为准。
+- 测量场景实际加载了 Noto Sans SC。Noto Serif SC 在这些场景中未被使用，因此 FontFaceSet 未进入 loaded 状态；这不能单独解释为字体资源缺失。
+
+因此 W3.2 优先处理 **Heading Baseline / Line Box Parity**，不先批量统一小字号，也不修改固定 Canvas 缩放。
