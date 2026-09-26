@@ -133,8 +133,8 @@ async function collectTypographyMetrics(width, height, extended = false) {
 
   await open('gameplay', '.gameplay-top-navigation');
   samples.mainDockCategory = await measureTypographySample('.main-dock__category-button', `${key}/Main Dock Category`);
-  samples.topHudResourceLabel = await measureTypographySample('.gameplay-top-status__resources small', `${key}/Top HUD Resource Label`);
-  samples.topHudResourceValue = await measureTypographySample('.gameplay-top-status__resources b', `${key}/Top HUD Resource Value`);
+  samples.topHudResourceLabel = await measureTypographySample('.gameplay-top-resource-shortcut small', `${key}/Top HUD Resource Label`);
+  samples.topHudResourceValue = await measureTypographySample('.gameplay-top-resource-shortcut b', `${key}/Top HUD Resource Value`);
 
   await open('terrain-edit', '.terrain-edit-prototype');
   samples.panelTitle = await measureTypographySample('.left-context-panel__title', `${key}/Panel Title`);
