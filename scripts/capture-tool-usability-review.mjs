@@ -421,6 +421,22 @@ try {
   assert(await materialCards.count() > 0, '材质方案 Workspace 必须存在可悬浮条目');
   const materialSourceBadges = page.locator('.material-preset-workspace .workspace-item-card__source.is-compact');
   assert(await materialSourceBadges.count() > 0, '材质方案 Card 来源必须复用共享 Compact Source Badge');
+  const materialFavoriteToggle = page.locator('.material-preset-workspace__rail .workspace-primary-rail__favorite-toggle');
+  assert.equal(await materialFavoriteToggle.count(), 1, '材质方案收藏筛选必须使用共享 Toggle');
+  assert.equal(await materialFavoriteToggle.getAttribute('aria-pressed'), 'false', '材质方案收藏 Toggle 初始应关闭');
+  await materialFavoriteToggle.click();
+  await settle();
+  assert.equal(await page.locator('.material-preset-workspace').getAttribute('data-material-favorite'), 'true', '材质方案收藏 Toggle 必须可开启');
+  await page.locator('.material-preset-workspace__rail-list').getByRole('button', { name: '木材', exact: true }).click();
+  await settle();
+  assert.equal(await page.locator('.material-preset-workspace').getAttribute('data-material-favorite'), 'true', '切换材质分类不得隐式关闭收藏 Toggle');
+  assert.equal(await page.locator('.material-preset-workspace').getAttribute('data-material-preset-category'), 'wood', '收藏筛选应与材质分类正交组合');
+  await page.screenshot({ path: `${out}/color-tool-material-favorite-toggle.png` }); report.screenshots.push('color-tool-material-favorite-toggle');
+  await materialFavoriteToggle.click();
+  await settle();
+  assert.equal(await page.locator('.material-preset-workspace').getAttribute('data-material-favorite'), 'false', '材质方案收藏 Toggle 必须可独立关闭');
+  await page.locator('.material-preset-workspace__rail-list').getByRole('button', { name: '全部', exact: true }).click();
+  await settle();
 
   const activeMaterialRail = page.locator('.material-preset-workspace__rail-list>button.is-active').first();
   const activeMaterialSource = page.locator('.material-preset-workspace__source-filter .workspace-context-filter__scroll>button.is-active').first();
@@ -463,6 +479,30 @@ try {
     await checkPersistentHints('配色/' + mode, 'color-' + mode);
     await shot('color-' + mode);
   }
+
+  await page.getByRole('button', { name: '选择建筑 重檐楼阁 03', exact: true }).click();
+  await settle();
+  await page.getByRole('button', { name: '打开建筑配色方案', exact: true }).click();
+  await page.waitForSelector('.building-scheme-workspace');
+  await settle();
+  const buildingSchemeWorkspace = page.locator('.building-scheme-workspace');
+  const buildingFavoriteToggle = buildingSchemeWorkspace.locator('.building-scheme-workspace__rail .workspace-primary-rail__favorite-toggle');
+  assert.equal(await buildingFavoriteToggle.count(), 1, '建筑配色收藏筛选必须使用共享 Toggle');
+  assert.equal(await buildingFavoriteToggle.getAttribute('aria-pressed'), 'false', '建筑配色收藏 Toggle 初始应关闭');
+  await buildingFavoriteToggle.click();
+  await settle();
+  assert.equal(await buildingSchemeWorkspace.getAttribute('data-building-scheme-favorite'), 'true', '建筑配色收藏 Toggle 必须可开启');
+  await buildingSchemeWorkspace.locator('.building-scheme-workspace__rail-list').getByRole('button', { name: '素雅', exact: true }).click();
+  await settle();
+  assert.equal(await buildingSchemeWorkspace.getAttribute('data-building-scheme-favorite'), 'true', '切换配色风格不得隐式关闭收藏 Toggle');
+  assert.equal(await buildingSchemeWorkspace.getAttribute('data-building-scheme-style'), 'elegant', '收藏筛选应与配色风格正交组合');
+  await page.screenshot({ path: `${out}/color-tool-building-scheme-favorite-toggle.png` }); report.screenshots.push('color-tool-building-scheme-favorite-toggle');
+  await buildingFavoriteToggle.click();
+  await settle();
+  assert.equal(await buildingSchemeWorkspace.getAttribute('data-building-scheme-favorite'), 'false', '建筑配色收藏 Toggle 必须可独立关闭');
+  await buildingSchemeWorkspace.getByRole('button', { name: '关闭建筑配色方案工作区', exact: true }).click();
+  await page.waitForSelector('.building-scheme-workspace', { state: 'detached' });
+
   assert.equal(await colorBar.getByRole('button', { name: '取消配色', exact: true }).count(), 0, '不应展示并不存在的回退操作');
   await colorBar.getByRole('button', { name: '完成配色', exact: true }).click();
   await page.waitForSelector('.color-tool-toolbar-cluster', { state: 'detached' });

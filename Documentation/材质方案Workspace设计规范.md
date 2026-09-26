@@ -34,6 +34,8 @@
 规则：
 
 - Source × MaterialFamily 组合筛选；
+- Rail 顶部“收藏”使用共享 Toggle，只控制 favoriteOnly；它与 Source / MaterialFamily 正交组合，不再作为会抢占 Category Selected 的导航按钮；
+- 切换 MaterialFamily 不得隐式关闭收藏 Toggle；开启/关闭收藏也不得把当前分类重置为“全部”；
 - `全部` 只作为 Filter，不是可保存分类；
 - Rail 每页最多 7 项，当前使用两页；
 - Workspace 宽约 1040px，避免与左侧 Surface Panel 重叠；

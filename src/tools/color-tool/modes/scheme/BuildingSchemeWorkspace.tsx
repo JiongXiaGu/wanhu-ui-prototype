@@ -14,6 +14,7 @@ import {
 } from '../../../../ui/icons/runtime-icons.generated';
 import { useEffect, useMemo, useState } from 'react';
 import { useHoverOverlay, type HoverCardDefinition } from '../../../../ui/hover/HoverOverlay';
+import { ToggleSwitch } from '../../../../ui/Controls';
 import type { MotionPhase } from '../../../../ui/motion';
 
 export type BuildingSchemeStyle =
@@ -249,16 +250,14 @@ export function BuildingSchemeWorkspace({
 
   function selectStyle(next: BuildingSchemeStyleFilter) {
     hover.clear();
-    setFavoriteOnly(false);
     setStyle(next);
     setPage(0);
     setMenuSchemeId('');
   }
 
-  function selectFavorites() {
+  function setFavoriteFilter(next: boolean) {
     hover.clear();
-    setFavoriteOnly(true);
-    setStyle('all');
+    setFavoriteOnly(next);
     setPage(0);
     setMenuSchemeId('');
   }
@@ -303,15 +302,18 @@ export function BuildingSchemeWorkspace({
       <div className="workspace-body building-scheme-workspace__body">
         <aside className="workspace-primary-rail building-scheme-workspace__rail" aria-label="配色风格筛选">
           <div className="workspace-primary-rail__content has-favorite-shortcut">
-            <button
-              type="button"
-              className={'workspace-primary-rail__favorite ' + (favoriteOnly ? 'is-active' : '')}
-              aria-pressed={favoriteOnly}
-              onClick={selectFavorites}
-            >
-              <Bookmark aria-hidden="true" />
-              <span>收藏</span>
-            </button>
+            <div className="workspace-primary-rail__favorite-row">
+              <span className="workspace-primary-rail__favorite-label">
+                <Bookmark aria-hidden="true" />
+                <span>收藏</span>
+              </span>
+              <ToggleSwitch
+                label="仅显示收藏建筑配色方案"
+                value={favoriteOnly}
+                className="workspace-primary-rail__favorite-toggle"
+                onChange={setFavoriteFilter}
+              />
+            </div>
             <i className="workspace-primary-rail__favorite-divider" aria-hidden="true" />
             {stylePageCount > 1 ? (
               <div className="workspace-rail-pager" aria-label="配色风格组">
@@ -329,7 +331,7 @@ export function BuildingSchemeWorkspace({
                 ))}
               </div>
             ) : (
-              !favoriteOnly && <span className="workspace-rail-pager-marker" aria-hidden="true" />
+              <span className="workspace-rail-pager-marker" aria-hidden="true" />
             )}
             <div className="workspace-primary-rail__page building-scheme-workspace__rail-list" key={stylePage}>
               {visibleStyleFilters.map(({ id, label, icon: Icon }) => (
