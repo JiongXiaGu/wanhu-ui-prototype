@@ -256,8 +256,12 @@
 .gameplay-top-map-grid button.is-active{border-color:rgba(169,132,75,.24);background:var(--wanhu-control-active-bg);color:var(--wanhu-color-brass-text)}
 .gameplay-top-map-grid button.is-active::before{content:'';position:absolute;left:-1px;top:9px;bottom:9px;width:2px;background:var(--wanhu-control-active-line)}
 .gameplay-top-map-legend{height:24px;margin-top:8px;display:grid;grid-template-columns:18px 1fr 18px;align-items:center;gap:6px;color:#757d75;font-size:var(--wanhu-type-micro,9.5px)}
-.gameplay-top-map-legend i{height:3px;background:linear-gradient(90deg,rgba(90,146,116,.8),rgba(198,176,91,.9),rgba(177,91,74,.92))}
-.gameplay-top-map-legend span:last-child{text-align:right}
+.gameplay-top-map-legend__scale{height:3px;display:flex;overflow:hidden}
+.gameplay-top-map-legend__segment{display:block;flex:1 1 0;min-width:0;height:100%}
+.gameplay-top-map-legend__segment--low{background:rgba(90,146,116,.8)}
+.gameplay-top-map-legend__segment--mid{background:rgba(198,176,91,.9)}
+.gameplay-top-map-legend__segment--high{background:rgba(177,91,74,.92)}
+.gameplay-top-map-legend>span:last-child{text-align:right}
 @keyframes gameplay-top-map-enter{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
 .gameplay-screen--management .management-space__panel{top:120px;height:834px}

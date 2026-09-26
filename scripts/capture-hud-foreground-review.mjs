@@ -116,6 +116,46 @@ try{
         await page.keyboard.press('Escape');
         await page.waitForSelector('.gameplay-left-context-surface',{state:'detached'});
         await idle();
+
+        const mapViewButton=page.getByRole('button',{name:'信息视图',exact:true});
+        await mapViewButton.click();
+        await page.waitForSelector('.gameplay-top-map-panel');
+        let mapPanel=page.locator('.gameplay-top-map-panel');
+        await mapPanel.getByRole('button',{name:'地价',exact:true}).click();
+        if (!(await page.locator('.gameplay-top-map-panel').count())) {
+          await mapViewButton.click();
+          await page.waitForSelector('.gameplay-top-map-panel');
+        }
+        mapPanel=page.locator('.gameplay-top-map-panel');
+        await settle();
+        const legendScale=page.locator('.gameplay-top-map-legend__scale');
+        assert.equal(await legendScale.count(),1,'Map Legend 必须使用一个真实色段容器');
+        const legendScaleStyle=await legendScale.evaluate(node=>{
+          const css=getComputedStyle(node);
+          return {display:css.display,backgroundImage:css.backgroundImage,height:node.getBoundingClientRect().height};
+        });
+        assert.equal(legendScaleStyle.display,'flex','Map Legend 色段必须可直接映射为 UITK Flex Row');
+        assert.equal(legendScaleStyle.backgroundImage,'none','Map Legend 不得继续依赖 CSS Gradient');
+        assert(legendScaleStyle.height>=3,'Map Legend 色带必须保持可见高度');
+        const legendSegments=await legendScale.locator('.gameplay-top-map-legend__segment').evaluateAll(nodes=>nodes.map(node=>{
+          const css=getComputedStyle(node);
+          const rect=node.getBoundingClientRect();
+          return {className:node.className,backgroundColor:css.backgroundColor,width:rect.width,height:rect.height};
+        }));
+        assert.equal(legendSegments.length,3,'Map Legend 必须固定为低 / 中 / 高三个真实色段');
+        assert.deepEqual(legendSegments.map(item=>item.backgroundColor),[
+          'rgba(90, 146, 116, 0.8)',
+          'rgba(198, 176, 91, 0.9)',
+          'rgba(177, 91, 74, 0.92)',
+        ],'Map Legend 三段颜色必须保持原有低 / 中 / 高语义');
+        assert(legendSegments.every(item=>item.width>0 && item.height>=3),'Map Legend 三段必须实际可见');
+        assert(Math.max(...legendSegments.map(item=>item.width))-Math.min(...legendSegments.map(item=>item.width))<1,'Map Legend 三段宽度必须均分');
+        report.checks.push({label:'1080/day/map-legend-real-segments',legendScaleStyle,legendSegments});
+        await shot('hud-foreground-map-legend-parity');
+        await mapPanel.getByRole('button',{name:'默认',exact:true}).click();
+        if (await page.locator('.gameplay-top-map-panel').count()) await mapViewButton.click();
+        await page.waitForSelector('.gameplay-top-map-panel',{state:'detached'});
+        await idle();
       }
 
       await accelerated.hover();await settle();
