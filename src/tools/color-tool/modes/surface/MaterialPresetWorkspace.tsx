@@ -11,7 +11,6 @@ import {
 import { useDialogSystem } from '../../../../ui/dialog/DialogSystem';
 import { useHoverOverlay, type HoverCardDefinition } from '../../../../ui/hover/HoverOverlay';
 import { UiIcon, type UiIconId } from '../../../../ui/icons/UiIcon';
-import { ToggleSwitch } from '../../../../ui/Controls';
 import type { MotionPhase } from '../../../../ui/motion';
 
 export type MaterialFamily =
@@ -563,18 +562,16 @@ export function MaterialPresetWorkspace({
       <div className="workspace-body material-preset-workspace__body">
         <aside className="workspace-primary-rail material-preset-workspace__rail" aria-label="材质方案分类">
           <div className="workspace-primary-rail__content has-favorite-shortcut">
-            <div className="workspace-primary-rail__favorite-row">
-              <span className="workspace-primary-rail__favorite-label">
-                <Bookmark aria-hidden="true" />
-                <span>收藏</span>
-              </span>
-              <ToggleSwitch
-                label="仅显示收藏材质方案"
-                value={favoriteOnly}
-                className="workspace-primary-rail__favorite-toggle"
-                onChange={setFavoriteFilter}
-              />
-            </div>
+            <button
+              type="button"
+              className={'workspace-primary-rail__favorite ' + (favoriteOnly ? 'is-active' : '')}
+              aria-label={favoriteOnly ? '关闭收藏筛选' : '仅显示收藏材质方案'}
+              aria-pressed={favoriteOnly}
+              onClick={() => setFavoriteFilter(!favoriteOnly)}
+            >
+              <Bookmark aria-hidden="true" />
+              <span>收藏</span>
+            </button>
             <i className="workspace-primary-rail__favorite-divider" aria-hidden="true" />
             {categoryPageCount > 1 ? (
               <div className="workspace-rail-pager" aria-label="材质分类组">
