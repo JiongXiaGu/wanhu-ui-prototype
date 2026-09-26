@@ -291,7 +291,6 @@ export function BlueprintWorkspace({
                               backgroundSize: item.previewSize,
                             }}
                           />
-                          <span className="blueprint-workspace__shade" aria-hidden="true" />
                           <span className={'workspace-item-card__source is-media ' + (item.source === 'workshop' ? 'is-workshop' : item.source === 'mine' ? 'is-user' : 'is-system')}>{badge}</span>
                           <span className="blueprint-workspace__caption">
                             <b className="workspace-item-card__title-row">

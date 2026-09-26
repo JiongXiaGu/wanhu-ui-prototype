@@ -14,7 +14,7 @@ Rail 顶部另有独立“收藏”快捷入口。当前选择收藏会启用 fa
 
 ## Media Card
 
-1080p 基线为 Workspace 约 1240×330，每页 4×1 张 4:3 Card。Preview 覆盖 Card，底部暗渐变只承载名称与名称后的收藏星，不在图片外另加大块文字区。占地/尺寸已退到 Rich Hover / 详情，右下不再常驻这项信息。
+1080p 基线为 Workspace 约 1240×330，每页 4×1 张 4:3 Card。Preview 覆盖 Card，并通过整张预览的统一透明度压暗来保证文字可读；不再叠加底部大面积实色 Scrim，避免 Unity 6.6 兼容实现形成明显矩形黑带。名称与名称后的收藏星直接叠在 Preview 上，不在图片外另加大块文字区。占地/尺寸已退到 Rich Hover / 详情，右下不再常驻这项信息。
 
 所有来源均显示左上 Source Badge，右上常驻 `···` 操作入口。名称后星不额外占用图片四角。来源 Badge、星和菜单的公共样式由 `src/workspace.css` 持有；业务图片、遮罩和 Caption 由 `src/workspace/blueprint-workspace.css` 持有。
 
