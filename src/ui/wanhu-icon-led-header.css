@@ -103,10 +103,13 @@
 
 .gameplay-screen .workspace--design .workspace-title>b,
 .gameplay-screen .gameplay-context-panel__title{
+  height:24px;
+  display:flex;
+  align-items:center;
   color:var(--wanhu-color-paper-primary,#eee9df);
   font-size:var(--wanhu-type-panel-title,16px);
   font-weight:600;
-  line-height:1.08;
+  line-height:normal;
   letter-spacing:.012em;
 }
 .gameplay-screen .gameplay-context-panel__heading-copy{gap:3px}
