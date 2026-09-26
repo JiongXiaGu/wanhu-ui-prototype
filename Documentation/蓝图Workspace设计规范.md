@@ -8,7 +8,7 @@ Main Dock 蓝图模式分类为 `全部 / 民居 / 商业 / 工坊 / 管理 / �
 
 目录结构为 `Header + Primary Rail + Context Filter + Content Stage + Pager`。Main Dock Category 表示用途；Rail 的 `全部 / 小型 / 中型 / 大型` 表示数据中声明的规模；顶部 `全部 / 系统内置 / 创意工坊 / 我的蓝图` 表示来源。规模不从占地数字临时猜测。
 
-Rail 顶部另有独立“收藏” Toggle。它只控制 `favoriteOnly`，与规模和来源筛选正交组合：开启/关闭收藏不会改写当前规模，切换规模也不会隐式关闭收藏。收藏不是第五种资源来源，也不占用 Rail Selected 状态；规模 Selected 与收藏 Toggle 可以同时成立。
+Rail 顶部保留原有“收藏”按钮外观，但交互语义是独立可开关筛选：重复点击可开启/关闭 `favoriteOnly`。它与规模和来源筛选正交组合，开启/关闭收藏不会改写当前规模，切换规模也不会隐式关闭收藏。收藏不是第五种资源来源；收藏按钮的 On 状态可与规模 Selected 同时成立。
 
 筛选改变时回到第一页，清理 Hover。Rail 单页仍保留 Paper White 竖线，Content 单页保留 Paper White 横线；多页为当前方向线 + 其余灰点。Pager 不使用熟铜；分类 Selected 才使用熟铜语义。
 
