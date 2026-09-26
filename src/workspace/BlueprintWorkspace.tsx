@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type WheelEvent } from 'react';
-import { Bookmark, Building2, Grid2X2, House, Landmark, MoreHorizontal, Pencil, Plus, ScrollText, Trash2, X } from '../ui/icons/runtime-icons.generated';
+import { Bookmark, Building2, Grid2X2, House, Landmark, MoreHorizontal, Pencil, Plus, ScrollText, Store, Trash2, X } from '../ui/icons/runtime-icons.generated';
 import type { BlueprintDockCategory } from '../app/ui-state';
 import type { MotionPhase } from '../ui/motion';
 import { useHoverOverlay, type HoverCardDefinition } from '../ui/hover/HoverOverlay';
@@ -36,12 +36,21 @@ interface WheelPagingState {
   lockedUntil: number;
 }
 
+export interface BlueprintWorkspaceViewState {
+  size: BlueprintSize;
+  source: BlueprintSource;
+  favoriteOnly: boolean;
+  page: number;
+}
+
 interface BlueprintWorkspaceProps {
   category: BlueprintDockCategory;
   items: readonly BlueprintWorkspaceItem[];
   motionPhase?: MotionPhase;
+  initialViewState?: BlueprintWorkspaceViewState;
   onClose: () => void;
   onCreate: (category: BlueprintDockCategory) => void;
+  onOpenWorkshop?: (viewState: BlueprintWorkspaceViewState) => void;
   onEdit: (item: BlueprintWorkspaceItem) => void;
   onDelete: (item: BlueprintWorkspaceItem) => void;
   onSelectItem?: (item: BlueprintWorkspaceItem) => void;
@@ -78,22 +87,24 @@ export function BlueprintWorkspace({
   category,
   items,
   motionPhase = 'steady',
+  initialViewState,
   onClose,
   onCreate,
+  onOpenWorkshop,
   onEdit,
   onDelete,
   onSelectItem,
 }: BlueprintWorkspaceProps) {
   const hover = useHoverOverlay();
-  const [size, setSize] = useState<BlueprintSize>('all');
-  const [source, setSource] = useState<BlueprintSource>('all');
-  const [favoriteOnly, setFavoriteOnly] = useState(false);
+  const [size, setSize] = useState<BlueprintSize>(() => initialViewState?.size ?? 'all');
+  const [source, setSource] = useState<BlueprintSource>(() => initialViewState?.source ?? 'all');
+  const [favoriteOnly, setFavoriteOnly] = useState(() => initialViewState?.favoriteOnly ?? false);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set([
     'bp-residential-jiangnan-courtyard',
     'bp-residential-riverside-home',
     'bp-commercial-street-row',
   ]));
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(() => initialViewState?.page ?? 0);
   const [menuItemId, setMenuItemId] = useState('');
   const wheel = useRef<WheelPagingState>({ accumulated: 0, lockedUntil: 0 });
 
@@ -236,6 +247,21 @@ export function BlueprintWorkspace({
               ))}
             </div>
             <div className="blueprint-workspace__actions">
+              {onOpenWorkshop && (
+                <button
+                  type="button"
+                  className="blueprint-workspace__action"
+                  aria-label="打开创意工坊发布管理"
+                  onClick={() => {
+                    hover.clear();
+                    setMenuItemId('');
+                    onOpenWorkshop({ size, source, favoriteOnly, page: safePage });
+                  }}
+                >
+                  <Store size={14} aria-hidden="true" />
+                  <span>创意工坊</span>
+                </button>
+              )}
               <button
                 type="button"
                 className="blueprint-workspace__action is-primary"
