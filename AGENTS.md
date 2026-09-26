@@ -94,6 +94,21 @@ Unity 6.6 Visual Parity、共享美术、跨页面视觉治理默认使用 **模
 
 重要 UI 修改须 Build + UI Review，并下载、实际打开关键完整截图；发现问题继续修复。Feature PR 只跑模块对应的 Targeted Review Group，避免一个小模块机械跑完整截图矩阵；main 集成后才运行 Core / HUD / Dialog / Readability / Tools / Selection 六组全量回归。全局改动覆盖 Settings / Archive / Management / Workspace / Tool / Dialog、昼夜与缩放；矩阵不足时补充受影响状态。
 
+### GitHub Actions 事件点检查
+
+Agent 不得用连续轮询等待 Actions 完成。状态查询只发生在明确事件点：
+
+- 创建 / 更新 PR 后允许检查一次，用于确认 Build 与 Targeted Review 是否被正确触发；
+- 若该次查询显示仍在运行，立即停止查询同一 Run，转做静态审查、下一阶段只读定位、文档整理或其它不依赖该结果的工作；
+- 只有完成了一个新的有价值工作步骤、修复并推送了新提交、或收到用户下一条消息后，才允许再次检查；
+- 同一提交在没有新事件发生时，不连续调用 run / job / step 状态接口；
+- 失败时只读取一次失败 Job 的必要日志，直接定位并修复；不通过反复查询确认同一个失败事实；
+- Artifact 只在相关 Job 已明确完成后下载；不提前反复检查 Artifact 是否出现；
+- main 全量回归只用于最终 Gate。等待期间可以只读分析下一批，但不得提前提交下一批 Runtime；Gate 通过后再开始写入；
+- 纯文档 / 纯交接修改不为了“等绿”重复查询 Actions，也不因为无 Runtime 变化强制人工审图。
+
+目标是把时间花在修改、审查和定位上，而不是把 Actions 执行时间变成 Agent 的轮询循环。
+
 Main Dock 同时检查设计/蓝图两态；Secondary Bar 至少检查 Terrain / Color / Selection / Building / Road / Tree / City Wall 的结构和文字；Hover 同时检查多种 Catalog、边缘与 Modal 清理。交付报告实际 main SHA、对应 Actions、实际审图范围，关键图直接展示在回复中。Web 通过不等于 Unity Player 验证。
 
 文档和代码同轮同步；纯文档变更不为绿色状态重跑 UI Review。正式文档记录稳定职责、边界、生命周期和不变量，不重复实现；阶段记录放 Documentation/开发记录，审查放带日期的 Documentation/代码审查，历史快照与当前入口隔离，不建 _AI 层。
