@@ -167,3 +167,26 @@ W3.5 只提升新游戏右侧详情中承担持续阅读与信息比较的正文
 - 1080p 下右侧 410px 详情栏不得因本批产生额外纵向滚动，Facts 数值不得截断。
 
 本批仍不修改 Compass、Pause、Management 或其它页面。
+
+
+## W3.6 Typography 收尾
+
+W3 已完成，不继续以“全仓小字号清零”为目标。
+
+最终源码审计：
+
+- Hardcoded px font-size：96；
+- Token-backed font-size：211；
+- `<10px`：6；
+- `<9.5px` Typography Floor 违规：0；
+- 允许的 Symbolic Text below floor：2。
+
+剩余 6 个 `<10px` 的职责：
+
+- `gameplay-corner-hud.css`：8px 通用方位字、9px South，属于 Compass 仪表 / 象征标记；保留。
+- `pause-layer.css`：9.5px Pause Heading 辅助副标题；不属于持续阅读正文，留到 Pause 专项时评估。
+- `city-management.css`：9.5px Task Row 状态字；Management / Inventory 仍按既有决策暂缓优化，不在 W3 顺手改。
+- `placement-parameter-controls.css`：`.bp-segment-row.ui-labeled-control-row>span` 9.5px 当前没有真实 Consumer；当前 DOM 使用 `left-context-panel__labeled-control`，属于死 selector，后续代码清理时删除。
+- `terrain-edit.css`：`.terrain-edit-note` 9.5px 当前没有 TSX Consumer；属于死 selector，后续代码清理时删除。
+
+因此 W3 的完成标准是：真实可读 / 可交互 Consumer 已有语义字号与稳定 baseline，1080p / 4K 一致，已知小字号均有明确职责或生命周期；不是把所有源码字面值机械改成 11px 以上。
