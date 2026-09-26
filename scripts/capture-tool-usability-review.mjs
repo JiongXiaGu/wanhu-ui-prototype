@@ -50,7 +50,30 @@ async function checkTopControlTray() {
   ]);
   assert(trayBox, 'Top Control Tray 必须可测量');
   assert(Math.abs(trayBox.width - 400) < 1 && Math.abs(trayBox.height - 38) < 1, 'Top Control Tray 必须保持 400×38');
-  assert.equal(display, 'grid', 'Top Control Tray 必须保持单行 Grid，而不是退化为 Block');
+  assert.equal(display, 'flex', 'Top Control Tray 必须使用可直接映射 UI Toolkit 的单行 Flex');
+  const flexGeometry = await tray.evaluate((node) => {
+    const read = (selector) => {
+      const element = node.querySelector(selector);
+      if (!element) return null;
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return { width: rect.width, height: rect.height, flexBasis: style.flexBasis };
+    };
+    return {
+      scene: read('.gameplay-top-navigation__scene'),
+      management: read('.gameplay-top-navigation__management'),
+      view: read('.gameplay-top-navigation__view'),
+      separators: [...node.querySelectorAll('.gameplay-top-navigation__separator')].map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { width: rect.width, height: rect.height, flexBasis: getComputedStyle(element).flexBasis };
+      }),
+    };
+  });
+  assert(flexGeometry.scene && Math.abs(flexGeometry.scene.width - 84) < 1, 'Top Control Tray Scene Group 必须固定 84px');
+  assert(flexGeometry.view && Math.abs(flexGeometry.view.width - 44) < 1, 'Top Control Tray View Group 必须固定 44px');
+  assert(flexGeometry.management && flexGeometry.management.width > 240, 'Top Control Tray Management Group 必须弹性填充中央空间');
+  assert.equal(flexGeometry.separators.length, 2, 'Top Control Tray 必须保留两个真实 Separator');
+  assert(flexGeometry.separators.every(item => Math.abs(item.width - 1) < .1 && Math.abs(item.height - 18) < 1), 'Top Control Tray Separator 必须保持 1×18');
   assert.equal(sceneButtons, 2, 'Top Control Tray Scene Group 必须有 2 个按钮');
   assert.equal(managementButtons, 5, 'Top Control Tray Management Group 必须有 5 个按钮');
   assert.equal(viewButtons, 1, 'Top Control Tray View Group 必须有 1 个按钮');
@@ -76,7 +99,7 @@ async function checkTopControlTray() {
   const rowBottom = Math.max(...buttonMetrics.map(item => item.y));
   assert(rowBottom - rowTop < 11, 'Top Control Tray 按钮必须保持同一横向行，不得退化成 2 / 5 / 1 三行');
 
-  report.checks.push({ label: 'Top Control Tray Geometry', trayBox, display, sceneButtons, managementButtons, viewButtons, buttonMetrics });
+  report.checks.push({ label: 'Top Control Tray Geometry', trayBox, display, sceneButtons, managementButtons, viewButtons, flexGeometry, buttonMetrics });
 }
 
 async function checkMainDock(label, expectedMode, expectedCategoryCount) {
