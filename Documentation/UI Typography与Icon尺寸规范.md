@@ -126,3 +126,19 @@ Web 侧正式规则改为：
 - 不用 `top:-1px`、`translateY()` 或页面私有 Padding 修正 baseline。
 
 Blueprint 18px Title 在 W3.1 中已经测得文字框与元素框一致、中心偏移为 0，暂不改动。
+
+
+## W3.3 Tool Text Floor
+
+W3.3 只处理真实可见且承担阅读 / 操作职责的 Tool 文字，不把所有小字号一次性抬高。
+
+本批规则：
+
+- Building / Road Placement 的 Runtime Parameter Label 使用 Caption 11px；
+- Building Terrain Summary 的标签使用 Caption 11px，数值使用 Label 12px；
+- Terrain Slope Metrics 的标签使用 Caption 11px，数值使用 Label 12px；
+- 不修改 Main Dock / Secondary Action 已确认的 11px；
+- 不修改 Compass 方位字等仪表装饰小字；这类 8 / 9 / 10px 有不同职责，不能机械套普通表单字号；
+- 不修改当前没有真实 DOM Consumer 的历史 selector，只在单独清理任务中处理死样式。
+
+Tools Review 直接读取 Computed Style 并检查字号与截断，避免只验证源码字面值。

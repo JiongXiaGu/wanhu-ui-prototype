@@ -10,7 +10,7 @@
   transition-duration:var(--wanhu-motion-control,120ms);
 }
 .gameplay-screen .building-placement-prototype .ui-parameter-row:hover{background:rgba(255,255,255,.010)}
-.gameplay-screen .building-placement-prototype .ui-parameter-row>span{font-size:9.5px}
+.gameplay-screen .building-placement-prototype .ui-parameter-row>span{font-size:var(--wanhu-type-caption,11px)}
 .bp-segment-row.ui-labeled-control-row{
   min-height:44px;
   padding:0;
@@ -31,4 +31,4 @@
   transition-duration:var(--wanhu-motion-control,120ms);
 }
 .gameplay-screen .road-placement-prototype .ui-parameter-row:hover{background:rgba(255,255,255,.010)}
-.gameplay-screen .road-placement-prototype .ui-parameter-row>span{font-size:9.5px}
+.gameplay-screen .road-placement-prototype .ui-parameter-row>span{font-size:var(--wanhu-type-caption,11px)}

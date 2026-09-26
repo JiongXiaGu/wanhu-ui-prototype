@@ -19,11 +19,12 @@
   gap:14px;
   min-height:24px;
   color:#8f9491;
-  font-size:9.5px;
+  font-size:var(--wanhu-type-caption,11px);
   font-variant-numeric:tabular-nums;
 }
 .bp-terrain-metrics b{
   color:#c1bdb4;
+  font-size:var(--wanhu-type-label,12px);
   font-weight:560;
 }
 

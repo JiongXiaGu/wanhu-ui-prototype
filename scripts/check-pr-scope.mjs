@@ -12,6 +12,7 @@ const files=readFileSync(process.argv[inputIndex+1],'utf8')
   .filter(Boolean);
 
 const modules=new Set();
+const reviewModules=new Set();
 const unclassified=[];
 let runtimeFiles=0;
 let reviewScripts=0;
@@ -22,7 +23,7 @@ for(const file of files){
   const result=classifyFile(file);
   if(result.reviewScript) reviewScripts++;
   if(result.kind==='module'){ modules.add(result.module); runtimeFiles++; }
-  else if(result.kind==='review'){ modules.add(result.module); }
+  else if(result.kind==='review'){ reviewModules.add(result.module); }
   else if(result.kind==='unclassified'){ unclassified.push(file); runtimeFiles++; }
   else if(result.kind==='infra') infraTouched=true;
   else if(result.kind==='toolchain') toolchainTouched=true;
@@ -31,12 +32,27 @@ for(const file of files){
 const errors=[];
 if(unclassified.length) errors.push('Unclassified Runtime files: '+unclassified.join(', '));
 if(modules.size>1) errors.push('PR crosses module boundaries: '+[...modules].join(' + '));
+if(reviewModules.size>1 && !infraTouched) errors.push('PR changes multiple standalone review groups: '+[...reviewModules].join(' + '));
 if(reviewScripts>1 && !infraTouched) errors.push('Feature PR may change at most one capture review script; found '+reviewScripts+'.');
 if(runtimeFiles>6) errors.push('Feature PR exceeds 6 Runtime files; split the visual intent into smaller PRs. Runtime files='+runtimeFiles+'.');
 if(toolchainTouched && modules.size) errors.push('Toolchain/package changes must not be mixed with a Feature module PR.');
 
 let module='docs';
-if(modules.size===1) module=[...modules][0];
+if(modules.size===1) {
+  module=[...modules][0];
+  const featureDefinition=moduleById(module);
+  for(const reviewModule of reviewModules){
+    const reviewDefinition=moduleById(reviewModule);
+    if(!featureDefinition || !reviewDefinition){
+      errors.push('No review mapping for feature/review pairing: '+module+' + '+reviewModule);
+      continue;
+    }
+    const incompatible=reviewDefinition.reviews.filter(group=>!featureDefinition.reviews.includes(group));
+    if(incompatible.length){
+      errors.push('Targeted review script does not belong to feature module '+module+': '+reviewModule+' requires '+incompatible.join(','));
+    }
+  }
+}else if(reviewModules.size===1) module=[...reviewModules][0];
 else if(toolchainTouched) module='toolchain';
 else if(infraTouched) module='review-infra';
 
@@ -44,7 +60,7 @@ const definition=moduleById(module);
 if(!definition) errors.push('No review mapping for module: '+module);
 
 console.log('PR scope module:',module);
-console.log('Changed files:',files.length,'Runtime files:',runtimeFiles,'Review scripts:',reviewScripts,'Infra touched:',infraTouched);
+console.log('Changed files:',files.length,'Runtime files:',runtimeFiles,'Review scripts:',reviewScripts,'Review modules:',[...reviewModules].join(',')||'(none)','Infra touched:',infraTouched);
 if(definition) console.log('Review groups:',definition.reviews.join(',')||'(none)');
 
 if(errors.length){
