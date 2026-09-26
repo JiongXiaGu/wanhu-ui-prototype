@@ -1,0 +1,244 @@
+/* Workshop Publisher：只持有全屏内容布局；Global Space 材质由共享 Surface System 持有。 */
+.workshop-publisher-space{
+  --page-action-half-width:740px;
+  position:absolute;
+  inset:0;
+  z-index:24;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.workshop-publisher-space__header{
+  flex:0 0 92px;
+  justify-content:center;
+}
+
+.workshop-publisher-space__body{
+  width:min(1480px,calc(100% - 128px));
+  flex:1 1 auto;
+  min-height:0;
+  align-self:center;
+  display:flex;
+  gap:34px;
+  padding:26px 0 22px;
+}
+
+.workshop-publisher-space__nav{
+  flex:0 0 260px;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  padding-right:28px;
+  border-right:1px solid var(--wanhu-global-space-rule);
+}
+
+.workshop-publisher-space__nav-heading{
+  flex:0 0 48px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 10px;
+  color:var(--wanhu-color-paper-secondary);
+  border-bottom:1px solid var(--wanhu-global-space-rule);
+  font-size:var(--wanhu-type-label);
+  font-weight:500;
+  letter-spacing:.02em;
+}
+
+.workshop-publisher-space__nav-heading .ui-icon{
+  color:var(--wanhu-color-icon);
+}
+
+.workshop-publisher-space__nav-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding-top:12px;
+}
+
+.workshop-publisher-space__nav-list button{
+  position:relative;
+  height:48px;
+  padding:0 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid transparent;
+  border-radius:8px;
+  background:transparent;
+  color:var(--wanhu-color-paper-secondary);
+  font:inherit;
+  font-size:var(--wanhu-type-label);
+  text-align:left;
+  cursor:pointer;
+  transition:background var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease,color var(--wanhu-motion-control,120ms) ease;
+}
+
+.workshop-publisher-space__nav-list button:hover{
+  color:var(--wanhu-color-text-secondary);
+  background:var(--wanhu-control-hover);
+  border-color:var(--wanhu-control-border-soft);
+}
+
+.workshop-publisher-space__nav-list button.is-active{
+  color:var(--wanhu-color-brass-text);
+  background:var(--wanhu-control-active-bg);
+  border-color:var(--wanhu-control-active-border-soft);
+}
+
+.workshop-publisher-space__nav-list button>i{
+  position:absolute;
+  left:0;
+  top:11px;
+  bottom:11px;
+  width:2px;
+  background:var(--wanhu-control-active-line);
+  opacity:0;
+}
+
+.workshop-publisher-space__nav-list button.is-active>i{opacity:1}
+
+.workshop-publisher-space__content{
+  min-width:0;
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+}
+
+.workshop-publisher-space__content-header{
+  flex:0 0 118px;
+  display:flex;
+  align-items:flex-start;
+  border-bottom:1px solid var(--wanhu-global-space-rule);
+}
+
+.workshop-publisher-space__content-header>div{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.workshop-publisher-space__content-header small{
+  color:var(--wanhu-color-paper-tertiary);
+  font-size:var(--wanhu-type-caption);
+  letter-spacing:.04em;
+}
+
+.workshop-publisher-space__content-header h2{
+  margin:0;
+  color:var(--wanhu-color-paper-primary);
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:.02em;
+}
+
+.workshop-publisher-space__content-header p{
+  max-width:760px;
+  margin:0;
+  color:var(--wanhu-color-text-muted);
+  font-size:var(--wanhu-type-label);
+  line-height:1.7;
+}
+
+.workshop-publisher-space__create-plan{
+  display:flex;
+  gap:14px;
+  padding-top:24px;
+}
+
+.workshop-publisher-space__create-plan article{
+  min-width:0;
+  min-height:142px;
+  flex:1 1 0;
+  padding:18px;
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  border:1px solid var(--wanhu-control-border-soft);
+  border-radius:10px;
+  background:var(--wanhu-global-space-item-bg);
+}
+
+.workshop-publisher-space__create-plan article>b{
+  flex:0 0 28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(197,164,105,.22);
+  border-radius:8px;
+  color:var(--wanhu-color-brass-text);
+  background:var(--wanhu-control-active-bg);
+  font-size:var(--wanhu-type-label);
+  font-weight:600;
+}
+
+.workshop-publisher-space__create-plan article>span{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.workshop-publisher-space__create-plan strong{
+  color:var(--wanhu-color-text-secondary);
+  font-size:var(--wanhu-type-reading);
+  font-weight:560;
+}
+
+.workshop-publisher-space__create-plan small{
+  color:var(--wanhu-color-paper-tertiary);
+  font-size:var(--wanhu-type-label);
+  line-height:1.65;
+}
+
+.workshop-publisher-space__empty{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  color:var(--wanhu-color-paper-tertiary);
+}
+
+.workshop-publisher-space__empty>.ui-icon{
+  width:24px;
+  height:24px;
+  opacity:.72;
+}
+
+.workshop-publisher-space__empty b{
+  color:var(--wanhu-color-text-secondary);
+  font-size:var(--wanhu-type-reading);
+  font-weight:560;
+}
+
+.workshop-publisher-space__empty span{
+  max-width:520px;
+  color:var(--wanhu-color-paper-tertiary);
+  font-size:var(--wanhu-type-label);
+  line-height:1.6;
+  text-align:center;
+}
+
+.workshop-publisher-space__footer{
+  flex:0 0 72px;
+  display:flex;
+  align-items:center;
+}
+
+.workshop-publisher-space__back{
+  min-width:108px;
+  height:38px;
+}
+
+@media (max-width:1500px){
+  .workshop-publisher-space__body{
+    width:min(1340px,calc(100% - 100px));
+    gap:26px;
+  }
+  .workshop-publisher-space__nav{flex-basis:230px;padding-right:22px}
+}
