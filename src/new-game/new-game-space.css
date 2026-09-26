@@ -54,7 +54,7 @@
   background:transparent;
   color:var(--wanhu-color-paper-tertiary);
   font:inherit;
-  font-size:9.5px;
+  font-size:var(--wanhu-type-label,12px);
   cursor:pointer;
   transition:color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease;
 }
@@ -345,7 +345,7 @@
   background:var(--ui-field-surface);
   color:var(--wanhu-color-text-secondary);
   font:inherit;
-  font-size:10px;
+  font-size:var(--wanhu-type-label,12px);
   cursor:pointer;
   transition:color var(--wanhu-motion-control,120ms) ease,border-color var(--wanhu-motion-control,120ms) ease,background var(--wanhu-motion-control,120ms) ease;
 }
@@ -399,7 +399,6 @@
   justify-self:center;
   min-width:176px;
   height:39px;
-  font-size:9.5px;
 }
 .new-game-space__back{
   justify-self:end;
