@@ -124,6 +124,77 @@ async function assertParameterFieldFillsRow(rootSelector, label) {
 
 await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
 
+// W3.1 Workshop Publisher: full-screen Global Space + exact Blueprint view restoration.
+const workshopDock = page.locator('.main-dock');
+await workshopDock.getByRole('button', { name: '蓝图', exact: true }).click();
+await page.waitForTimeout(100);
+await workshopDock.locator('.main-dock__categories').getByRole('button', { name: '全部', exact: true }).click();
+await page.waitForSelector('.workspace--blueprint');
+await page.waitForTimeout(120);
+const workshopBlueprint = page.locator('.workspace--blueprint');
+await workshopBlueprint.locator('.blueprint-workspace__source-filter').getByRole('button', { name: '我的蓝图', exact: true }).click();
+await workshopBlueprint.locator('.blueprint-workspace__rail').getByRole('button', { name: '小型', exact: true }).click();
+await workshopBlueprint.locator('.workspace-primary-rail__favorite').click();
+await page.waitForTimeout(120);
+if ((await workshopBlueprint.getAttribute('data-blueprint-source')) !== 'mine'
+  || (await workshopBlueprint.getAttribute('data-blueprint-size')) !== 'small'
+  || (await workshopBlueprint.getAttribute('data-blueprint-favorite')) !== 'true') {
+  throw new Error('Workshop entry fixture must preserve a non-default Blueprint view state.');
+}
+const workshopAction = workshopBlueprint.getByRole('button', { name: '打开创意工坊发布管理', exact: true });
+const createBlueprintAction = workshopBlueprint.getByRole('button', { name: '新建全部蓝图', exact: true });
+const [workshopActionBox, createBlueprintActionBox] = await Promise.all([
+  workshopAction.boundingBox(),
+  createBlueprintAction.boundingBox(),
+]);
+if (!workshopActionBox || !createBlueprintActionBox
+  || workshopActionBox.x + workshopActionBox.width > createBlueprintActionBox.x + 1) {
+  throw new Error('Workshop action must stay immediately left of New Blueprint.');
+}
+await workshopAction.click();
+await page.waitForSelector('.workshop-publisher-space');
+await page.waitForTimeout(160);
+const workshopSpace = page.locator('.workshop-publisher-space');
+const workshopSpaceBox = await workshopSpace.boundingBox();
+if (!workshopSpaceBox
+  || Math.abs(workshopSpaceBox.width - 1920) > 2
+  || Math.abs(workshopSpaceBox.height - 1080) > 2
+  || !(await workshopSpace.evaluate(node => node.classList.contains('wanhu-global-space')))) {
+  throw new Error('Workshop Publisher must occupy the full canvas and reuse wanhu-global-space.');
+}
+for (const label of ['发布新内容', '草稿', '已发布']) {
+  if ((await workshopSpace.getByRole('button', { name: label, exact: true }).count()) !== 1) {
+    throw new Error('Workshop primary navigation missing: ' + label);
+  }
+}
+if ((await page.locator('.workspace--blueprint').count()) !== 0
+  || (await page.locator('.command-bar').count()) !== 0
+  || (await page.locator('.gameplay-operation-hints').count()) !== 0) {
+  throw new Error('Workshop Publisher must be the only interactive Gameplay content while open.');
+}
+await workshopSpace.getByRole('button', { name: '草稿', exact: true }).click();
+if ((await workshopSpace.getAttribute('data-workshop-section')) !== 'drafts') throw new Error('Workshop drafts navigation failed.');
+await workshopSpace.getByRole('button', { name: '已发布', exact: true }).click();
+if ((await workshopSpace.getAttribute('data-workshop-section')) !== 'published') throw new Error('Workshop published navigation failed.');
+await workshopSpace.getByRole('button', { name: '发布新内容', exact: true }).click();
+if ((await workshopSpace.getAttribute('data-workshop-section')) !== 'create') throw new Error('Workshop create navigation failed.');
+await page.screenshot({ path: outDir + '/workshop-publisher-shell.png' });
+
+await workshopSpace.getByRole('button', { name: '返回蓝图', exact: true }).click();
+await page.waitForSelector('.workshop-publisher-space', { state: 'detached' });
+await page.waitForSelector('.workspace--blueprint');
+await page.waitForTimeout(160);
+const restoredBlueprint = page.locator('.workspace--blueprint');
+if ((await restoredBlueprint.getAttribute('data-blueprint-source')) !== 'mine'
+  || (await restoredBlueprint.getAttribute('data-blueprint-size')) !== 'small'
+  || (await restoredBlueprint.getAttribute('data-blueprint-favorite')) !== 'true') {
+  throw new Error('Closing Workshop Publisher must restore the exact Blueprint filter context.');
+}
+await page.screenshot({ path: outDir + '/workshop-return-blueprint.png' });
+
+// Reset before the rest of the core review.
+await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
+
 // Full-screen Background/Vignette Visual Parity: shared texture replaces CSS Gradient.
 const gameplayVignette = page.locator('.game-vignette');
 const gameplayVignetteStyle = await gameplayVignette.evaluate(node => {

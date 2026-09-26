@@ -13,21 +13,23 @@
 
 由 `src/App.tsx` 管理。
 
-下一阶段规划新增顶层 `workshop` Screen，作为 Workshop Publisher Fullscreen Space。它与 Settings / Load / Save / New Game 同属 Global Space 家族，不作为 Gameplay 内的 Workspace / Tool / Modal 叠加。
+Workshop Publisher 在 Web Prototype 中实现为 **GameplayScreen 持有的全屏 Blocking Space**，不新增 App 顶层 Screen。这样进入发布管理时可以保留 Gameplay reducer、玩家自建蓝图和当前 Blueprint Workspace 上下文，而不为 Web Prototype 额外建立跨 Screen 的数据序列化层。
 
 目标导航：
 
 ```text
 Gameplay / Blueprint Workspace
-→ workshop
+→ Workshop Publisher Fullscreen Space
 → 发布新内容 / 草稿 / 已发布
 
-Close / Esc at root
-→ gameplay
+Close / Root Esc
+→ 原 Gameplay 实例
 → 恢复进入前 Blueprint Workspace 上下文
 ```
 
-进入 `workshop` 时需要保存来源状态，包括 Blueprint Category / Size / Source / FavoriteOnly；返回时恢复这些状态。Workshop 内部 Editor / Blueprint Picker / Published Detail 的 Esc 优先返回上一级，只有 Root Esc 才退出整个 Workshop Screen。
+Workshop 打开期间普通 Gameplay HUD / Workspace / Operation Hints 不渲染，只保留世界背景与 Global Space；Gameplay 状态本身不销毁。Blueprint Workspace 在进入前记录 Size / Source / FavoriteOnly / Page，返回时恢复，Category 继续由原 Gameplay reducer 持有。Workshop 内部未来 Editor / Blueprint Picker / Published Detail 的 Esc 优先返回上一级，只有 Root Esc 才退出整个 Workshop Space。
+
+正式 Unity 可以把这一职责映射为独立 Fullscreen Controller / UIDocument；稳定语义是“全屏阻塞 + 保留 Gameplay 来源状态”，不要求照搬 Web 的组件挂载方式。
 
 ## 2. Gameplay 主空间
 
