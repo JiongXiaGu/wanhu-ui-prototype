@@ -36,13 +36,62 @@
   display:flex;
   flex-direction:column;
 }
-.gameplay-screen .workspace--catalog .workspace-primary-rail__favorite{
-  flex:0 0 27px;
-  height:27px;
-  min-height:27px;
-  padding:0 10px;
+.gameplay-screen .workspace--catalog .workspace-primary-rail__favorite-row{
+  flex:0 0 32px;
+  height:32px;
+  min-height:32px;
+  padding:0 0 0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+}
+
+.gameplay-screen .workspace--catalog .workspace-primary-rail__favorite-label{
+  min-width:0;
+  display:flex;
+  align-items:center;
   gap:8px;
-  border-radius:8px;
+  color:#8c918f;
+  font-size:10.5px;
+  letter-spacing:.022em;
+  white-space:nowrap;
+}
+
+.gameplay-screen .workspace--catalog .workspace-primary-rail__favorite-label>.ui-icon{
+  width:var(--wanhu-icon-sm,16px);
+  height:var(--wanhu-icon-sm,16px);
+  flex:0 0 var(--wanhu-icon-sm,16px);
+  opacity:.82;
+}
+
+/* Rail 的旧通用 button 规则会命中 ToggleSwitch 外层 button；这里仅恢复共享
+   Toggle 的 hit geometry / 中性外壳，Track 与 Thumb 仍完全由 ui-control-system 持有。 */
+.gameplay-screen .workspace--catalog .workspace-primary-rail .workspace-primary-rail__favorite-toggle.ui-toggle{
+  flex:0 0 var(--ui-toggle-hit-width);
+  width:var(--ui-toggle-hit-width);
+  height:var(--ui-toggle-hit-height);
+  min-height:var(--ui-toggle-hit-height);
+  padding:0;
+  display:grid;
+  place-items:center;
+  gap:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  font-size:inherit;
+  letter-spacing:normal;
+  transform:none;
+  transition:none;
+}
+
+.gameplay-screen .workspace--catalog .workspace-primary-rail .workspace-primary-rail__favorite-toggle.ui-toggle:hover,
+.gameplay-screen .workspace--catalog .workspace-primary-rail .workspace-primary-rail__favorite-toggle.ui-toggle:active,
+.gameplay-screen .workspace--catalog .workspace-primary-rail .workspace-primary-rail__favorite-toggle.ui-toggle:focus-visible{
+  background:transparent;
+  color:inherit;
+  transform:none;
 }
 .gameplay-screen .workspace--catalog .workspace-primary-rail__favorite-divider{
   flex:0 0 1px;

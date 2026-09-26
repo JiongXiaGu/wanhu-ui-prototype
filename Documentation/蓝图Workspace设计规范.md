@@ -8,7 +8,7 @@ Main Dock 蓝图模式分类为 `全部 / 民居 / 商业 / 工坊 / 管理 / �
 
 目录结构为 `Header + Primary Rail + Context Filter + Content Stage + Pager`。Main Dock Category 表示用途；Rail 的 `全部 / 小型 / 中型 / 大型` 表示数据中声明的规模；顶部 `全部 / 系统内置 / 创意工坊 / 我的蓝图` 表示来源。规模不从占地数字临时猜测。
 
-Rail 顶部另有独立“收藏”快捷入口。当前选择收藏会启用 favoriteOnly 并把规模恢复 all；选择普通规模会关闭 favoriteOnly。来源筛选继续独立有效，收藏不是第五种资源来源。
+Rail 顶部另有独立“收藏” Toggle。它只控制 `favoriteOnly`，与规模和来源筛选正交组合：开启/关闭收藏不会改写当前规模，切换规模也不会隐式关闭收藏。收藏不是第五种资源来源，也不占用 Rail Selected 状态；规模 Selected 与收藏 Toggle 可以同时成立。
 
 筛选改变时回到第一页，清理 Hover。Rail 单页仍保留 Paper White 竖线，Content 单页保留 Paper White 横线；多页为当前方向线 + 其余灰点。Pager 不使用熟铜；分类 Selected 才使用熟铜语义。
 
@@ -77,6 +77,6 @@ Web Custom Catalog 暂由 GameplayScreen 持有；正式 Unity 应由 BlueprintC
 | `src/workspace/blueprint-workspace.css` | Media 比例、Preview / Shade / Caption |
 | `src/ui/hover/` | 全局只读详情与定位 |
 
-UXML 复用 Catalog Header / Rail / Filter / Pager；Media Card 使用 Preview、Shade、Source Badge、Caption、Favorite、Focus Line 和 Item Menu 子结构。Preview 在 Unity 绑定 Texture2D / RenderTexture 资产，不照抄浏览器背景裁切充当正式资源管线。
+UXML 复用 Catalog Header / Rail / Filter / Pager；Media Card 使用 Preview、Source Badge、Caption、Favorite、Focus Line 和 Item Menu 子结构。Preview 在 Unity 绑定 Texture2D / RenderTexture 资产，不照抄浏览器背景裁切充当正式资源管线。
 
 Controller 持有分类、规模、来源、收藏筛选、分页与菜单状态；用户收藏由正式 Catalog/User Metadata 层持久化。当前 Web 收藏只是 UI 会话内状态验证。UI 不直接拥有库存扣除、碰撞、建造对象列表和放置生命周期。

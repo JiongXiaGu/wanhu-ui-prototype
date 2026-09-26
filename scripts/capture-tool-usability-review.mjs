@@ -573,8 +573,9 @@ try {
   await open('workspace-blueprint-all', '.workspace--blueprint');
   await checkPersistentHints('蓝图目录', 'workspace-blueprint-all');
   const blueprintWorkspace = page.locator('.workspace--blueprint');
-  const blueprintFavoriteRail = blueprintWorkspace.locator('.blueprint-workspace__rail .workspace-primary-rail__favorite');
-  assert.equal(await blueprintFavoriteRail.getByText('收藏', { exact: true }).count(), 1, '蓝图左 Rail 必须提供独立收藏快捷筛选');
+  const blueprintFavoriteToggle = blueprintWorkspace.locator('.blueprint-workspace__rail .workspace-primary-rail__favorite-toggle');
+  assert.equal(await blueprintFavoriteToggle.count(), 1, '蓝图左 Rail 必须使用共享 Toggle 表达收藏筛选');
+  assert.equal(await blueprintFavoriteToggle.getAttribute('aria-pressed'), 'false', '蓝图收藏 Toggle 初始应关闭');
   const blueprintRailLabels = await blueprintWorkspace.locator('.blueprint-workspace__rail .workspace-primary-rail__page>button').evaluateAll(buttons => buttons.map(button => button.textContent?.trim()));
   assert.deepEqual(blueprintRailLabels, ['全部', '小型', '中型', '大型'], '蓝图分类区继续固定为 全部 / 小型 / 中型 / 大型');
   const blueprintSourceLabels = await blueprintWorkspace.locator('.blueprint-workspace__source-filter .workspace-context-filter__scroll>button').evaluateAll(buttons => buttons.map(button => button.textContent?.trim()));
@@ -636,10 +637,17 @@ try {
   report.checks.push({ label: 'Blueprint Workspace 4×1 image cards', blueprintRailLabels, blueprintSourceLabels, blueprintMetrics });
   await blueprintWorkspaceShot('all');
 
-  await blueprintFavoriteRail.click();
+  await blueprintFavoriteToggle.click();
   await settle();
-  assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-favorite'), 'true', '蓝图收藏快捷筛选必须进入 Favorite 状态');
+  assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-favorite'), 'true', '蓝图收藏 Toggle 必须进入 Favorite 状态');
+  assert.equal(await blueprintFavoriteToggle.getAttribute('aria-pressed'), 'true', '蓝图收藏 Toggle 开启后必须暴露 pressed 状态');
   assert((await blueprintWorkspace.locator('.blueprint-workspace__card').count()) > 0, '收藏筛选必须显示已收藏蓝图');
+  await blueprintWorkspace.locator('.blueprint-workspace__rail').getByRole('button', { name: '小型', exact: true }).click();
+  await settle();
+  assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-favorite'), 'true', '切换规模不得隐式关闭收藏 Toggle');
+  await blueprintFavoriteToggle.click();
+  await settle();
+  assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-favorite'), 'false', '蓝图收藏 Toggle 必须可独立关闭');
   await blueprintWorkspace.locator('.blueprint-workspace__rail').getByRole('button', { name: '全部', exact: true }).click();
   await settle();
 
