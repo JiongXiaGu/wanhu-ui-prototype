@@ -13,6 +13,22 @@
 
 由 `src/App.tsx` 管理。
 
+下一阶段规划新增顶层 `workshop` Screen，作为 Workshop Publisher Fullscreen Space。它与 Settings / Load / Save / New Game 同属 Global Space 家族，不作为 Gameplay 内的 Workspace / Tool / Modal 叠加。
+
+目标导航：
+
+```text
+Gameplay / Blueprint Workspace
+→ workshop
+→ 发布新内容 / 草稿 / 已发布
+
+Close / Esc at root
+→ gameplay
+→ 恢复进入前 Blueprint Workspace 上下文
+```
+
+进入 `workshop` 时需要保存来源状态，包括 Blueprint Category / Size / Source / FavoriteOnly；返回时恢复这些状态。Workshop 内部 Editor / Blueprint Picker / Published Detail 的 Esc 优先返回上一级，只有 Root Esc 才退出整个 Workshop Screen。
+
 ## 2. Gameplay 主空间
 
 Gameplay 不使用大量彼此独立的 Modal 叠加，而是按任务职责切换明确 Space。
