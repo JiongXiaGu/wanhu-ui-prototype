@@ -33,6 +33,9 @@ export const MODULES = [
   { id:'loading', reviews:['readability'], matchers:[
     /^src\/loading\//,
   ]},
+  { id:'new-game', reviews:['readability'], matchers:[
+    /^src\/new-game\//,
+  ]},
   { id:'settings-save-load', reviews:['readability','dialog'], matchers:[
     /^src\/(?:settings|archive)\//,
   ]},
