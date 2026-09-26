@@ -142,3 +142,15 @@ W3.3 只处理真实可见且承担阅读 / 操作职责的 Tool 文字，不把
 - 不修改当前没有真实 DOM Consumer 的历史 selector，只在单独清理任务中处理死样式。
 
 Tools Review 直接读取 Computed Style 并检查字号与截断，避免只验证源码字面值。
+
+
+## W3.4 New Game Interactive Text Floor
+
+W3.4 只处理新游戏页面中真实可点击、需要直接阅读的交互文字：
+
+- 地图筛选按钮统一使用 Label 12px；
+- 城市名称 / 随机种子 ValueButton 统一使用 Label 12px；
+- “开始营造”继续由共享 Global Space Primary Button 持有字号，Feature 不再保留被后加载共享 Owner 覆盖的 9.5px 声明；
+- 地图说明、事实信息、方案分组标题等 10 / 10.5px 阅读内容不混入本批，后续按 Reading Layer 单独评估。
+
+Readability Review 使用最终 Computed Style 检查筛选、ValueButton 与 Primary Action，避免把 Feature 文件里的旧低层声明误判为最终字号。
