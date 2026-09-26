@@ -243,8 +243,8 @@
 .new-game-detail__header p{
   margin:0;
   color:var(--wanhu-color-text-muted);
-  font-size:10px;
-  line-height:1.72;
+  font-size:var(--wanhu-type-reading,13px);
+  line-height:var(--wanhu-type-reading-leading,1.65);
 }
 
 .new-game-detail__facts{
@@ -265,7 +265,7 @@
 .new-game-detail__facts b{
   overflow:hidden;
   color:var(--wanhu-color-paper-secondary);
-  font-size:10px;
+  font-size:var(--wanhu-type-body,12px);
   font-weight:520;
   white-space:nowrap;
   text-overflow:ellipsis;
@@ -276,7 +276,7 @@
 .new-game-plan h3{
   margin:0 0 8px;
   color:var(--wanhu-color-paper-secondary);
-  font-size:10.5px;
+  font-size:var(--wanhu-type-subheading,14px);
   font-weight:560;
   letter-spacing:.04em;
 }

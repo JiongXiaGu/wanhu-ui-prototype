@@ -154,3 +154,16 @@ W3.4 只处理新游戏页面中真实可点击、需要直接阅读的交互文
 - 地图说明、事实信息、方案分组标题等 10 / 10.5px 阅读内容不混入本批，后续按 Reading Layer 单独评估。
 
 Readability Review 使用最终 Computed Style 检查筛选、ValueButton 与 Primary Action，避免把 Feature 文件里的旧低层声明误判为最终字号。
+
+
+## W3.5 New Game Reading Layer
+
+W3.5 只提升新游戏右侧详情中承担持续阅读与信息比较的正文层级：
+
+- 地图描述使用 Reading 13px，并消费共享 Reading Leading；
+- 地图 Facts 的值使用 Body 12px；
+- “开局方案”标题使用 Subheading 14px；
+- Facts 标签、字段 Label、Segmented、Badge 与地图尺寸保持既有 11 / 12px 语义，不机械放大；
+- 1080p 下右侧 410px 详情栏不得因本批产生额外纵向滚动，Facts 数值不得截断。
+
+本批仍不修改 Compass、Pause、Management 或其它页面。

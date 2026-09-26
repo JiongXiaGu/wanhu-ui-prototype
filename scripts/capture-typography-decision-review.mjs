@@ -370,6 +370,35 @@ try {
   assert(newGameInteractiveTypography.values.every(row => Math.abs(row.fontSize - 12) < .05 && row.scrollWidth <= row.clientWidth + 1), 'New Game ValueButton 必须使用 12px Label 且不截断: ' + JSON.stringify(newGameInteractiveTypography.values));
   assert(newGameInteractiveTypography.start.length === 1 && Math.abs(newGameInteractiveTypography.start[0].fontSize - 12) < .05, '开始营造必须继续由共享 Global Space Button 提供 12px Label');
   report.checks.push({ label: 'New Game Interactive Typography Floor', ...newGameInteractiveTypography });
+
+  const newGameReadingTypography = await page.evaluate(() => {
+    const read = (selector) => [...document.querySelectorAll(selector)].flatMap((element) => {
+      const rect = element.getBoundingClientRect();
+      if (!rect.width || !rect.height) return [];
+      const style = getComputedStyle(element);
+      return [{
+        text: element.textContent?.trim() ?? '',
+        fontSize: parseFloat(style.fontSize),
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        clientHeight: element.clientHeight,
+        scrollHeight: element.scrollHeight,
+      }];
+    });
+    const detail = document.querySelector('.new-game-detail');
+    return {
+      description: read('.new-game-detail__header p'),
+      facts: read('.new-game-detail__facts b'),
+      planTitle: read('.new-game-plan h3'),
+      detail: detail ? { clientHeight: detail.clientHeight, scrollHeight: detail.scrollHeight } : null,
+    };
+  });
+  assert(newGameReadingTypography.description.length === 1 && Math.abs(newGameReadingTypography.description[0].fontSize - 13) < .05, 'New Game 地图描述必须使用 13px Reading');
+  assert(newGameReadingTypography.facts.length >= 4 && newGameReadingTypography.facts.every(row => Math.abs(row.fontSize - 12) < .05 && row.scrollWidth <= row.clientWidth + 1), 'New Game Facts 数值必须使用 12px Body 且不截断: ' + JSON.stringify(newGameReadingTypography.facts));
+  assert(newGameReadingTypography.planTitle.length === 1 && Math.abs(newGameReadingTypography.planTitle[0].fontSize - 14) < .05, 'New Game 开局方案标题必须使用 14px Subheading');
+  assert(newGameReadingTypography.detail && newGameReadingTypography.detail.scrollHeight <= newGameReadingTypography.detail.clientHeight + 1, 'New Game 右侧详情在 1080p 不应因 Reading Layer 提升产生额外纵向滚动: ' + JSON.stringify(newGameReadingTypography.detail));
+  report.checks.push({ label: 'New Game Reading Layer', ...newGameReadingTypography });
+
   const newGameActiveFilter = page.locator('.new-game-map-filters button.is-active').first();
   await page.keyboard.press('Tab');
   await newGameActiveFilter.focus();
