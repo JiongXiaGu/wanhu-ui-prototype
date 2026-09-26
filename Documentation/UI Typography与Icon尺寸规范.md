@@ -111,3 +111,18 @@ W3.1 已在正式 Runtime Consumer 上完成 1920×1080 / 3840×2160 双分辨�
 - 测量场景实际加载了 Noto Sans SC。Noto Serif SC 在这些场景中未被使用，因此 FontFaceSet 未进入 loaded 状态；这不能单独解释为字体资源缺失。
 
 因此 W3.2 优先处理 **Heading Baseline / Line Box Parity**，不先批量统一小字号，也不修改固定 Canvas 缩放。
+
+
+## W3.2 Heading Baseline / Line Box Parity
+
+Unity 6000.6 UI Toolkit 的正式 USS 属性表不提供 CSS `line-height`。因此 16px 标题不再把 `line-height:1.08` 当作迁移契约。
+
+Web 侧正式规则改为：
+
+- 16px Panel / Design Workspace Title 使用确定的 24px 标题盒；
+- 标题盒自身用 Flex 垂直居中；
+- Web 使用 `line-height:normal` 只用于取消旧的 1.08 覆盖，不作为 Unity 需要复制的能力；
+- Unity 对应实现为固定 Height + `-unity-text-align: middle-left`；
+- 不用 `top:-1px`、`translateY()` 或页面私有 Padding 修正 baseline。
+
+Blueprint 18px Title 在 W3.1 中已经测得文字框与元素框一致、中心偏移为 0，暂不改动。
