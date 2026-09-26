@@ -223,7 +223,11 @@ export function GameplayHUD({
           {mapView !== 'default' && (
             <div className="gameplay-top-map-legend">
               <span>低</span>
-              <i />
+              <span className="gameplay-top-map-legend__scale" aria-hidden="true">
+                <span className="gameplay-top-map-legend__segment gameplay-top-map-legend__segment--low" />
+                <span className="gameplay-top-map-legend__segment gameplay-top-map-legend__segment--mid" />
+                <span className="gameplay-top-map-legend__segment gameplay-top-map-legend__segment--high" />
+              </span>
               <span>高</span>
             </div>
           )}
