@@ -120,8 +120,13 @@ try{
         const mapViewButton=page.getByRole('button',{name:'信息视图',exact:true});
         await mapViewButton.click();
         await page.waitForSelector('.gameplay-top-map-panel');
-        const mapPanel=page.locator('.gameplay-top-map-panel');
+        let mapPanel=page.locator('.gameplay-top-map-panel');
         await mapPanel.getByRole('button',{name:'地价',exact:true}).click();
+        if (!(await page.locator('.gameplay-top-map-panel').count())) {
+          await mapViewButton.click();
+          await page.waitForSelector('.gameplay-top-map-panel');
+        }
+        mapPanel=page.locator('.gameplay-top-map-panel');
         await settle();
         const legendScale=page.locator('.gameplay-top-map-legend__scale');
         assert.equal(await legendScale.count(),1,'Map Legend 必须使用一个真实色段容器');
@@ -148,7 +153,7 @@ try{
         report.checks.push({label:'1080/day/map-legend-real-segments',legendScaleStyle,legendSegments});
         await shot('hud-foreground-map-legend-parity');
         await mapPanel.getByRole('button',{name:'默认',exact:true}).click();
-        await mapViewButton.click();
+        if (await page.locator('.gameplay-top-map-panel').count()) await mapViewButton.click();
         await page.waitForSelector('.gameplay-top-map-panel',{state:'detached'});
         await idle();
       }
