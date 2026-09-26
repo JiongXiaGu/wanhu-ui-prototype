@@ -161,7 +161,7 @@ async function collectTypographyMetrics(width, height, extended = false) {
     await open('load', '.archive-space--load');
     samples.archiveGroup = await measureTypographySample('.archive-group-card__title', `${key}/Archive Group`);
     samples.archiveSave = await measureTypographySample('.archive-save-card__title-row', `${key}/Archive Save`);
-    samples.archiveDateMixed = await measureTypographySample('.archive-save-card__time-row>small', `${key}/Archive Date Mixed`);
+    samples.archiveDateMixed = await measureTypographySample('.archive-save-card__time-row>span', `${key}/Archive Date Mixed`);
   }
 
   report.typographyMetrics.samples[key] = samples;
