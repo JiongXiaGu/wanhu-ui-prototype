@@ -51,7 +51,7 @@ async function assertNoTextOverflow(selector, label) {
 
 async function measureTypographySample(selector, label, index = 0) {
   const locator = page.locator(selector).nth(index);
-  await locator.waitFor({ state: 'visible' });
+  await locator.waitFor({ state: 'visible', timeout: 5000 });
   const sample = await locator.evaluate(element => {
     const canvas = element.closest('.game-canvas');
     const canvasRect = canvas?.getBoundingClientRect();
@@ -148,7 +148,7 @@ async function collectTypographyMetrics(width, height, extended = false) {
   samples.resolutionMixed = await measureTypographySample('[data-setting-id="resolution"] .ui-select__trigger', `${key}/Resolution Mixed`);
   await page.getByRole('button', { name: '操作', exact: true }).click();
   await settle();
-  samples.bindingLatin = await measureTypographySample('.settings-binding-control .ui-binding-field', `${key}/Binding Latin`);
+  samples.bindingLatin = await measureTypographySample('.ui-binding-field.settings-binding-control', `${key}/Binding Latin`);
 
   if (extended) {
     await open('workspace-building', '.workspace--design');
