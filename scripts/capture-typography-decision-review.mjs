@@ -571,8 +571,9 @@ try {
   assertTypographyFontSize(metrics1080.panelTitle, 16, 'Left Context Panel Title');
   assertTypographyFontSize(metrics1080.designWorkspaceTitle, 16, 'Design Workspace Title');
   assertTypographyFontSize(metrics1080.blueprintWorkspaceTitle, 18, 'Blueprint Workspace Title');
-  assert(Math.abs(metrics1080.designCardTitle.fontSize - 14.2) < .05, 'W3.1 必须记录 Design Card 14.2px 历史例外，不在基线阶段偷偷改值');
-  assert(metrics1080.resolutionMixed.kind.han && metrics1080.resolutionMixed.kind.digit, 'Resolution sample 必须覆盖中文 + 数字混排');
+  assert(Math.abs(metrics1080.designCardTitle.fontSize - 11.5) < .05, 'Design Building Card 最终级联应记录为 workspace.css .building-card b 的 11.5px 覆盖，而不是 generic title 的 14.2px');
+  assert(metrics1080.resolutionMixed.kind.digit, 'Resolution sample 必须覆盖数字分辨率');
+  assert(metrics1080.archiveSave.kind.han && metrics1080.archiveSave.kind.digit, 'Archive Save sample 必须覆盖中文 + 数字混排');
   assert(metrics1080.bindingLatin.kind.latin, 'Binding sample 必须覆盖 Latin / shortcut 字形');
   assert(metrics1080.parameterValue.kind.digit && metrics1080.parameterValue.kind.latin, 'Parameter value 必须覆盖数字 + 单位混排');
   report.typographyMetrics.fontFaces = [
