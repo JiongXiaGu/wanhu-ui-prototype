@@ -8,6 +8,8 @@ Main Dock 蓝图模式分类为 `全部 / 民居 / 商业 / 工坊 / 管理 / �
 
 目录结构为 `Header + Primary Rail + Context Filter + Content Stage + Pager`。Main Dock Category 表示用途；Rail 的 `全部 / 小型 / 中型 / 大型` 表示数据中声明的规模；顶部 `全部 / 系统内置 / 创意工坊 / 我的蓝图` 表示来源。规模不从占地数字临时猜测。
 
+下一阶段在顶部 Actions 区把 `创意工坊` 放在 `新建蓝图` 左侧。`创意工坊` 是 Secondary Action，进入独立全屏 Workshop Publisher；`新建蓝图` 继续负责当前 Blueprint Photography → Editor 流程。二者不合并成一个上传按钮。
+
 Rail 顶部保留原有“收藏”按钮外观，但交互语义是独立可开关筛选：重复点击可开启/关闭 `favoriteOnly`。它与规模和来源筛选正交组合，开启/关闭收藏不会改写当前规模，切换规模也不会隐式关闭收藏。收藏不是第五种资源来源；收藏按钮的 On 状态可与规模 Selected 同时成立。
 
 筛选改变时回到第一页，清理 Hover。Rail 单页仍保留 Paper White 竖线，Content 单页保留 Paper White 横线；多页为当前方向线 + 其余灰点。单页与多页 Content Pager 占用同一 Pager Lane 高度，因此从 4 Card 满页切到 1 Card / 稀疏结果时，Source Filter、Content Stage、Card 起点和 Pager 的几何位置保持不变。Pager 不使用熟铜；分类 Selected 才使用熟铜语义。
@@ -33,6 +35,19 @@ System / Workshop / mine 都有常驻入口，默认可“收藏 / 取消收藏�
 编辑打开 Blueprint Editor，可修改名称、分类并重新拍摄；规模、占地、构件数量和预计造价来自蓝图内容数据，只读。删除必须经过共享 Danger Confirm，只删除 Definition / Template，不反向移除已放在城市里的对象。
 
 Card 点击后的真实 Blueprint Placement Preview / Confirm / Cancel 仍未接入，不能为演示外观而伪造完成的放置系统。
+
+## 创意工坊发布与管理
+
+Blueprint Workspace 中的“创意工坊”有两种完全不同的职责，不能混为一个页面：
+
+- 顶部来源筛选“创意工坊”负责浏览 / 收藏 / 使用别人发布的蓝图；
+- 右上 Actions 的“创意工坊”入口负责作者发布与管理自己的 Workshop Content。
+
+发布管理进入全屏 Global Space，使用“发布新内容 / 草稿 / 已发布”一级导航。一个 Workshop Content 可以包含多个“我的蓝图”；第一版不允许把 System / Workshop 来源条目重新打包发布。
+
+发布版本使用 Snapshot：本地蓝图修改只产生“有未发布更改”，不会自动改写已发布版本；玩家明确执行“发布更新”后才产生新版本。Web Prototype 只验证 Draft / Mock Publish / Update / Delete 流程，不声称已接真实 Steam Workshop。
+
+详细契约见 `Documentation/创意工坊发布与管理设计规范.md`。
 
 ## 新建与摄影
 
