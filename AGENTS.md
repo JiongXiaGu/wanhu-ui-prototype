@@ -109,6 +109,28 @@ Agent 不得用连续轮询等待 Actions 完成。状态查询只发生在明�
 
 目标是把时间花在修改、审查和定位上，而不是把 Actions 执行时间变成 Agent 的轮询循环。
 
+### 中等规模三阶段执行
+
+默认不采用“每改一行就开一个批次”，也不把多个视觉意图塞进一个大批。每个工作单元按三阶段闭环：
+
+1. **阶段 A：Scope / Measure**
+   - 只读代码、文档、真实 DOM / Computed Style 与已有 Review；
+   - 固定一个用户可感知意图、一个模块、一个验收组；
+   - 默认把 Runtime 范围收敛到 1–3 个文件；超过 3 个时先判断是否包含两个意图；
+   - 阶段 A 不提交 Runtime，结束条件是“改什么 / 不改什么 / 如何验收”已经确定。
+2. **阶段 B：Implement**
+   - 一次完成同一意图内的 1–3 个 Runtime 文件；
+   - 最多同步修改 1 个与该模块匹配的 Targeted Review 脚本；
+   - 不把同一视觉意图拆成多个微型 PR，也不跨模块顺手整理无关债务；
+   - 文档与本批代码同步更新。
+3. **阶段 C：Review / Closeout**
+   - PR 只跑对应 Targeted Review；
+   - 人工只看 1–3 张能证明本批结果的关键完整截图；
+   - 通过后合入 main；main 全量 Gate 使用事件点检查，不连续轮询；
+   - Gate 运行期间只允许准备下一批的只读 Scope，不提前提交下一批 Runtime。
+
+纯文档 / 纯审计收尾可在前一 Runtime 批 main Gate 已绿后直接提交 main，不为文档重新跑视觉矩阵。目标是让每批既有足够价值，又能在一次修改、一次定向验收、一次合并内闭环。
+
 Main Dock 同时检查设计/蓝图两态；Secondary Bar 至少检查 Terrain / Color / Selection / Building / Road / Tree / City Wall 的结构和文字；Hover 同时检查多种 Catalog、边缘与 Modal 清理。交付报告实际 main SHA、对应 Actions、实际审图范围，关键图直接展示在回复中。Web 通过不等于 Unity Player 验证。
 
 文档和代码同轮同步；纯文档变更不为绿色状态重跑 UI Review。正式文档记录稳定职责、边界、生命周期和不变量，不重复实现；阶段记录放 Documentation/开发记录，审查放带日期的 Documentation/代码审查，历史快照与当前入口隔离，不建 _AI 层。
