@@ -20,6 +20,21 @@ UXML 持有稳定结构；USS 持有布局、前景与材质语义、伪状态�
 
 布局以 Flex-friendly 行列为主。固定容量目录使用明确 Row / Slot，较长列表使用池化或 ListView / MultiColumnListView。浏览器 Grid、伪元素、Mask 和剪贴板 API 只能停留在原型实现或 Web Adapter 层，并明确 Unity 等价物。
 
+### 第一条 Unity Vertical Slice 实施顺序
+
+Web Prep 已完成，Unity 工程按以下顺序落地，不再回头要求 Web 为每一步制作“Unity 镜像 DOM”：
+
+1. `TopShell.uxml / .uss + GameplayTopShellController`；
+2. `MainDock.uxml / .uss + MainDockController`；
+3. `DesignWorkspace.uxml` 固定 2×4 Slot Pool；
+4. `ContextUtilityToolbar.uxml` + Definition Rebind；
+5. Building Placement 的 Shared LeftContext / SecondaryActionBar / Utility；
+6. Shared Dialog Host + Request / Focus / Esc；
+7. `UITransitionController` Presence；
+8. HoverOverlayRoot + Runtime Tooltip / Hover Card。
+
+VS1 的 Web 目标结构已经是 TopStatus `190 / flexible / 190` 与 ControlTray `84 / 1 / flexible / 1 / 44` Flex Row。Unity 不复制 React class 名，只复制稳定结构、语义 Token、几何和状态契约。
+
 ## 样式所有权
 
 | 层级 | 职责 | 不允许承担 |
