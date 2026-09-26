@@ -218,6 +218,24 @@ async function checkToolLayout(label) {
   assert(labels.length > 1 && labels.every(row => row.scrollWidth <= row.clientWidth + 1), label + ': 短标签不得截断');
   report.checks.push({ label, bar, labels });
 }
+
+async function checkVisibleFontSize(selector, expectedPx, label) {
+  const rows = await page.locator(selector).evaluateAll((elements) => elements.flatMap((element) => {
+    const rect = element.getBoundingClientRect();
+    if (!rect.width || !rect.height) return [];
+    const style = getComputedStyle(element);
+    return [{
+      text: element.textContent?.trim() ?? '',
+      fontSize: parseFloat(style.fontSize),
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+    }];
+  }));
+  assert(rows.length > 0, label + ': 未找到可见文字');
+  assert(rows.every(row => Math.abs(row.fontSize - expectedPx) < .05), label + ': 字号不符合共享档位 ' + expectedPx + 'px / ' + JSON.stringify(rows));
+  assert(rows.every(row => row.scrollWidth <= row.clientWidth + 1), label + ': 提升字号后不得截断 / ' + JSON.stringify(rows));
+  report.checks.push({ label: label + '/font-size', expectedPx, rows });
+}
 async function checkHoverCard(label, anchor) {
   await page.waitForSelector('.ui-hover-card[data-ready="true"]'); await settle();
   const surface = page.locator('.ui-hover-card');
@@ -285,6 +303,10 @@ try {
     assert.equal(await terrain.getByRole('button', { name, exact: true }).getAttribute('aria-pressed'), 'true');
     const expectedTerrainContext = ({ '抬高': 'terrain-raise', '降低': 'terrain-lower', '整平': 'terrain-flatten', '平滑': 'terrain-smooth', '坡面': 'terrain-slope' })[name];
     await checkPersistentHints('地形/' + name, expectedTerrainContext);
+    if (name === '坡面') {
+      await checkVisibleFontSize('.terrain-edit-metrics--slope small', 11, '地形坡面指标标签');
+      await checkVisibleFontSize('.terrain-edit-metrics--slope b', 12, '地形坡面指标数值');
+    }
     await shot('terrain-' + name);
   }
   await terrain.getByRole('button', { name: '完成地形编辑', exact: true }).click();
@@ -293,6 +315,9 @@ try {
 
   await open('building-position', '.building-placement-toolbar-cluster');
   await checkToolLayout('建筑放置');
+  await checkVisibleFontSize('.building-placement-prototype .ui-parameter-row>span', 11, '建筑参数标签');
+  await checkVisibleFontSize('.bp-terrain-metrics', 11, '建筑地形摘要');
+  await checkVisibleFontSize('.bp-terrain-metrics b', 12, '建筑地形摘要数值');
   await checkSecondaryActionBar('建筑放置', '.building-placement-toolbar-cluster .secondary-action-bar');
   await checkPlacementBottom('建筑放置');
   assert.equal(await page.locator('.building-placement-toolbar-cluster').getByRole('button', { name: '逆时针旋转', exact: true }).count(), 0, '建筑旋转不得继续留在中下主栏');
@@ -308,6 +333,7 @@ try {
 
   await open('road-smart', '.road-placement-toolbar-cluster');
   await checkToolLayout('道路放置');
+  await checkVisibleFontSize('.road-placement-prototype .ui-parameter-row>span', 11, '道路参数标签');
   await checkSecondaryActionBar('道路放置', '.road-placement-toolbar-cluster .secondary-action-bar');
   await checkPlacementBottom('道路放置');
   assert.equal(await page.locator('.road-placement-toolbar-cluster').getByRole('button', { name: '反转道路方向', exact: true }).count(), 0, '道路反转不得继续留在中下主栏');
