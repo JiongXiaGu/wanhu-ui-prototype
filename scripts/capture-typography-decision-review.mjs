@@ -346,6 +346,30 @@ try {
 
   // Global Space Focus 必须独立于 Selected，统一消费当前 Brass Text focus token。
   await open('new-game', '.new-game-space');
+  const newGameInteractiveTypography = await page.evaluate(() => {
+    const measure = (elements) => [...elements].flatMap((element) => {
+      const rect = element.getBoundingClientRect();
+      if (!rect.width || !rect.height) return [];
+      const style = getComputedStyle(element);
+      return [{
+        text: element.textContent?.trim() ?? '',
+        fontSize: parseFloat(style.fontSize),
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+      }];
+    });
+    return {
+      filters: measure(document.querySelectorAll('.new-game-map-filters button')),
+      values: measure(document.querySelectorAll('.new-game-value-button')),
+      start: measure(document.querySelectorAll('.new-game-space__start')),
+    };
+  });
+  assert(newGameInteractiveTypography.filters.length >= 3, 'New Game 必须保留三个地图筛选');
+  assert(newGameInteractiveTypography.filters.every(row => Math.abs(row.fontSize - 12) < .05 && row.scrollWidth <= row.clientWidth + 1), 'New Game 地图筛选必须使用 12px Label 且不截断: ' + JSON.stringify(newGameInteractiveTypography.filters));
+  assert(newGameInteractiveTypography.values.length >= 1, 'New Game 必须存在可见 ValueButton');
+  assert(newGameInteractiveTypography.values.every(row => Math.abs(row.fontSize - 12) < .05 && row.scrollWidth <= row.clientWidth + 1), 'New Game ValueButton 必须使用 12px Label 且不截断: ' + JSON.stringify(newGameInteractiveTypography.values));
+  assert(newGameInteractiveTypography.start.length === 1 && Math.abs(newGameInteractiveTypography.start[0].fontSize - 12) < .05, '开始营造必须继续由共享 Global Space Button 提供 12px Label');
+  report.checks.push({ label: 'New Game Interactive Typography Floor', ...newGameInteractiveTypography });
   const newGameActiveFilter = page.locator('.new-game-map-filters button.is-active').first();
   await page.keyboard.press('Tab');
   await newGameActiveFilter.focus();
