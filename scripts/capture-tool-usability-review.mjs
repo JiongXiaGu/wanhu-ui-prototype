@@ -673,6 +673,12 @@ try {
   assert(blueprintMetrics.every(item => Math.abs(item.width / item.height - 4 / 3) < .025), '蓝图 Card 必须保持 4:3 图片比例');
   assert(Math.max(...blueprintMetrics.map(item => item.y)) - Math.min(...blueprintMetrics.map(item => item.y)) < 1, '蓝图 4 张 Card 必须保持单行');
   const blueprintWorkspaceBox = await blueprintWorkspace.boundingBox();
+  const blueprintDenseLayout = await Promise.all([
+    blueprintWorkspace.locator('.blueprint-workspace__source-filter').boundingBox(),
+    blueprintWorkspace.locator('.blueprint-workspace__stage').boundingBox(),
+    blueprintWorkspace.locator('.workspace-content-pager').boundingBox(),
+    blueprintCards.first().boundingBox(),
+  ]);
   assert(blueprintWorkspaceBox && Math.abs(blueprintWorkspaceBox.height - 330) < 1, 'Blueprint Workspace 应为 4:3 Card 提供约 330px 高度');
   assert(blueprintMetrics.every(item => item.previewWidth >= item.width - 2 && item.previewHeight >= item.height - 2 && item.backgroundImage && item.backgroundImage !== 'none'), '蓝图 Preview 必须覆盖 Card 主体并绑定场景示例图');
   assert.equal(await blueprintWorkspace.locator('.blueprint-workspace__shade').count(), 0, 'Blueprint Preview 不得恢复覆盖底部大面积的矩形黑色 Scrim');
@@ -688,6 +694,23 @@ try {
   await blueprintWorkspace.locator('.blueprint-workspace__rail').getByRole('button', { name: '小型', exact: true }).click();
   await settle();
   assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-favorite'), 'true', '切换规模不得隐式关闭收藏 Toggle');
+  assert.equal(await blueprintWorkspace.locator('.blueprint-workspace__card').count(), 1, '收藏 × 小型测试夹具应进入单 Card 稀疏布局');
+  const blueprintSparseLayout = await Promise.all([
+    blueprintWorkspace.locator('.blueprint-workspace__source-filter').boundingBox(),
+    blueprintWorkspace.locator('.blueprint-workspace__stage').boundingBox(),
+    blueprintWorkspace.locator('.workspace-content-pager').boundingBox(),
+    blueprintWorkspace.locator('.blueprint-workspace__card').first().boundingBox(),
+  ]);
+  for (let index = 0; index < blueprintDenseLayout.length; index += 1) {
+    const dense = blueprintDenseLayout[index];
+    const sparse = blueprintSparseLayout[index];
+    assert(dense && sparse, 'Blueprint dense/sparse layout elements must be measurable');
+    assert(Math.abs(dense.x - sparse.x) < 1 && Math.abs(dense.y - sparse.y) < 1
+      && Math.abs(dense.width - sparse.width) < 1 && Math.abs(dense.height - sparse.height) < 1,
+    'Blueprint 卡片数量变化不得改变 Filter / Stage / Pager / 首卡几何。dense=' + JSON.stringify(dense) + ' sparse=' + JSON.stringify(sparse));
+  }
+  report.checks.push({ label: 'Blueprint dense/sparse stable layout', blueprintDenseLayout, blueprintSparseLayout });
+  await page.screenshot({ path: `${out}/blueprint-workspace-sparse-stable.png` }); report.screenshots.push('blueprint-workspace-sparse-stable');
   await blueprintFavoriteFilter.click();
   await settle();
   assert.equal(await blueprintWorkspace.getAttribute('data-blueprint-favorite'), 'false', '蓝图收藏筛选 必须可独立关闭');

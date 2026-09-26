@@ -33,6 +33,7 @@ Camera / Environment 已迁移到左下共享 Context Surface。Design Workspace
 统一结构：
 
 `Header + Primary Rail + Context Filter + Search + Content Grid + Pager`
+- 单页 Content Marker 与多页 Pager 必须占用相同高度的 Pager Lane；筛选结果从满页变为稀疏/单项时，不得推动 Context Filter、Content Stage 或 Card 发生上下位移。
 
 - Header：当前一级设计类别标题与关闭按钮；
 - Primary Rail：当前类别的主要子类型；

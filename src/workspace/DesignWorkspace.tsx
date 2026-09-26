@@ -437,7 +437,9 @@ export function DesignWorkspace({ definition, motionPhase = 'steady', onClose, o
                 ))}
               </nav>
             ) : (
-              <span className="workspace-content-pager-marker" aria-hidden="true" />
+              <span className="workspace-content-pager workspace-content-pager--single" aria-hidden="true">
+                <i className="workspace-content-pager-marker" />
+              </span>
             )}
           </div>
         </div>
