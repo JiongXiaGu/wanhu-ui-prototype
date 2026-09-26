@@ -22,9 +22,7 @@
   --wanhu-gameplay-lake: url('/assets/wanhu-gameplay-lake.png');
 }
 
-/* The supplied screenshots already have a soft presentation, so only protect HUD contrast. */
+/* Shared Web / Unity alpha texture: preserve edge attenuation without CSS Gradient. */
 .game-vignette {
-  background:
-    linear-gradient(180deg, rgba(8, 12, 10, .16), transparent 18%, transparent 76%, rgba(8, 12, 10, .20)),
-    linear-gradient(90deg, rgba(8, 12, 10, .06), transparent 24%, transparent 84%, rgba(8, 12, 10, .05));
+  background: transparent url('/assets/ui/materials/game-vignette.png') center / 100% 100% no-repeat;
 }
