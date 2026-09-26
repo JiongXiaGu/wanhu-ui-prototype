@@ -153,6 +153,19 @@ Build 在正式编译前执行 `npm run icons:check`，校验 Manifest、104 对
 
 Vertical Slice 通过后再迁 Settings / Archive / Management。
 
+### VS1：Gameplay Top Shell 结构收敛
+
+第一批先处理 Gameplay Top Shell 的 Web / UXML 结构差异，不改变正式视觉：
+
+- Top Status 从 CSS Grid 改为 Flex Row：WorldState 固定 190、Resources 弹性填充、TimeControls 固定 190；
+- Control Tray 从 CSS Grid 改为 Flex Row：Scene 固定 84、两个真实 Separator 固定 1px、Management 弹性填充、View 固定 44；
+- 纯居中按钮从 Web Grid / place-items 改成 Flex + align / justify center；
+- React DOM 不增加兼容层，继续使用现有真实 Group / Separator / Active Line；
+- Unity UXML 可直接映射为 `TopStatus > WorldState / Resources / TimeControls` 与 `ControlTray > Scene / Separator / Management / Separator / View`；
+- 本批不处理 Map Panel 内部 2×N 目录 Grid；它是独立 Popup 内容结构，后续按固定 Row / Slot 或 ListView 决定。
+
+验收必须保证 940×56 Top Status、400×38 Control Tray、2 / 5 / 1 按钮分组、两个 1×18 Separator、昼夜 Surface 和 Focus / Active 状态保持不变。
+
 ## 7. 数据量策略
 
 - 固定 4×2 Workspace Asset：固定 Slot / Pool，不需要 ListView；
