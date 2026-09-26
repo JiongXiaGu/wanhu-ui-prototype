@@ -49,7 +49,7 @@ Surface Family 不是一条必须逐级增加 Alpha 的公式，也不是实际 
 | Main Dock / Secondary Action Bar | 中下横向工具基座；图标先于短标签 | 一排普通表单按钮或手机菜单 |
 | Left Context / Tool Parameter | 左下窄面板，裸图标标题，两列表单，Body 内滚动 | 每个参数套独立玻璃 Card |
 | Catalog Workspace | 中下横向浏览空间，标题、左 Rail、顶部筛选、内容与分页 | 常驻右侧详情栏或无边界大图库 |
-| Settings / Load / Save / New Game | 共用全屏 Global Space 材质、Header / Footer，保留各自信息架构 | 把全屏页面塞进小型确认弹窗 |
+| Settings / Load / Save / New Game / Workshop Publisher | 共用全屏 Global Space 材质、Header / Footer，保留各自信息架构 | 把全屏页面塞进小型确认弹窗 |
 | Pause | 独立阻塞空间，背景弱化与中央无颗粒 Command Surface 分离 | 给所有小弹窗共用的几何模板 |
 | Management | 中央高密度阅读面板，专题色局限于 Header / 数据 | 每个专题一整套不同颜色的皮肤 |
 | Hover / Popover / Dialog | 按只读、可交互、阻塞三种职责区分 | 一个通用浮层承担所有交互 |
@@ -75,6 +75,8 @@ Design Asset Card 是一次性 Action Button。Hover、Focus、Pressed 是真实
 Blueprint Workspace 基线约 1240×330，每页 4×1 张 Media Card，Preview 保持 4:3。图片覆盖 Card，底部暗渐变只承载名称和名称后的收藏星；来源 Badge 在左上，常驻 `···` 在右上。占地/尺寸、造价、构件、规模和说明进入 Rich Hover / 详情，卡片右下不再常驻占地。
 
 Blueprint 的图片主导构图与 Design 的名称主导构图都属于同一 Catalog 家族。统一的是 Surface、状态、Badge、菜单和分页，不是强迫所有 Card 使用相同比例、尺寸、密度或阅读顺序。
+
+Workshop Publisher 不属于 Catalog Workspace。它是作者侧全屏内容管理空间，复用 Global Space 家族；Blueprint Workspace 只保留浏览入口和进入 Publisher 的动作。多个“我的蓝图”可以组成一个 Workshop Content，不能为了发布管理在 Blueprint Workspace 右侧继续扩常驻管理栏。
 
 ### 来源、收藏与分页
 
