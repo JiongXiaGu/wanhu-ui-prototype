@@ -142,14 +142,15 @@
 }
 
 .workshop-publisher-space__create-plan{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
+  display:flex;
   gap:14px;
   padding-top:24px;
 }
 
 .workshop-publisher-space__create-plan article{
+  min-width:0;
   min-height:142px;
+  flex:1 1 0;
   padding:18px;
   display:flex;
   align-items:flex-start;
@@ -162,8 +163,9 @@
 .workshop-publisher-space__create-plan article>b{
   flex:0 0 28px;
   height:28px;
-  display:grid;
-  place-items:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   border:1px solid rgba(197,164,105,.22);
   border-radius:8px;
   color:var(--wanhu-color-brass-text);
