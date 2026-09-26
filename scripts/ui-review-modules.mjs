@@ -1,5 +1,14 @@
 export const FULL_REVIEW_GROUPS = ['core','hud','dialog','readability','tools','selection'];
 
+export const REVIEW_SCRIPT_MODULES = [
+  { id:'review-core', reviews:['core'], matcher:/^scripts\/capture-ui-review\.mjs$/ },
+  { id:'review-hud', reviews:['hud'], matcher:/^scripts\/capture-hud-foreground-review\.mjs$/ },
+  { id:'review-dialog', reviews:['dialog'], matcher:/^scripts\/capture-input-dialog-system-review\.mjs$/ },
+  { id:'review-readability', reviews:['readability'], matcher:/^scripts\/capture-typography-decision-review\.mjs$/ },
+  { id:'review-tools', reviews:['tools'], matcher:/^scripts\/capture-tool-usability-review\.mjs$/ },
+  { id:'review-selection', reviews:['selection'], matcher:/^scripts\/capture-building-selection-review\.mjs$/ },
+];
+
 export const MODULES = [
   { id:'shared-style', reviews:FULL_REVIEW_GROUPS, matchers:[
     /^src\/ui\/(?:wanhu-theme-tokens|wanhu-surface-system|ui-control-system|ui-visual-system)\.css$/,
@@ -61,6 +70,9 @@ export function classifyFile(file){
   const path=file.replace(/\\/g,'/');
   if(/^Documentation\//.test(path)) return {kind:'support', path};
   if(/^public\/assets\//.test(path)) return {kind:'support', path};
+  for(const module of REVIEW_SCRIPT_MODULES){
+    if(module.matcher.test(path)) return {kind:'review', module:module.id, path, reviewScript:true};
+  }
   if(/^scripts\/capture-.*-review\.mjs$/.test(path)) return {kind:'support', path, reviewScript:true};
   if(/^src\/main\.tsx$/.test(path)) return {kind:'support', path};
   if(/^\.github\//.test(path) || /^scripts\/(?:ui-review-modules|check-pr-scope)\.mjs$/.test(path)) return {kind:'infra', path};
@@ -77,5 +89,5 @@ export function moduleById(id){
   if(id==='full' || id==='review-infra') return {id,reviews:FULL_REVIEW_GROUPS};
   if(id==='toolchain') return {id,reviews:FULL_REVIEW_GROUPS};
   if(id==='docs') return {id,reviews:[]};
-  return MODULES.find(module=>module.id===id);
+  return MODULES.find(module=>module.id===id) ?? REVIEW_SCRIPT_MODULES.find(module=>module.id===id);
 }

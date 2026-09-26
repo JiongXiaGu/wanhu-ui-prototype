@@ -75,3 +75,39 @@ Gameplay 二级中下菜单是图标主导型控件，使用独立的稳定层�
 - Category 使用 Icon Top / Label Bottom；Design / Blueprint Mode 使用独立上下双行 Rail，每行 Icon Left / Label Right；
 - Category Active 使用顶部状态线；Mode Active 不使用状态线，只依靠熟铜图标 / 文字与弱背景；
 - Main Dock 总高 84px；Category 内部高度 64px；Mode Rail 高 64px，由两个约 68×30px 按钮上下组成；图标和标签不得因 Active 改变尺寸。
+
+
+## W3 Typography / Text Layout Parity
+
+W3 不从“某页文字向上或向下挪 1px”开始。先用真实 Runtime Consumer 建立可重复的文字度量基线，再决定 Shared Typography / Control Geometry 的修改。
+
+W3.1 的度量由 `scripts/capture-typography-decision-review.mjs` 输出到 `readability-report.json > typographyMetrics`，至少记录：
+
+- 实际 `font-family / font-size / font-weight / line-height / letter-spacing`；
+- Range 文本框高度与所在控件高度；
+- 文本中心相对控件中心的逻辑像素偏移；
+- 同一控件内 Icon 中心与 Text 中心偏移；
+- Canvas TextMetrics 的 ascent / descent；
+- 中文、数字、Latin 与真实混排样本；
+- 1920×1080 与 3840×2160 下归一化后的几何差异；
+- Browser FontFaceSet 中 Noto Sans SC / Noto Serif SC 的实际加载状态。
+
+W3.1 只建立基线，不把现有 9.5 / 10 / 10.5 / 11.5 / 14.2px 等历史局部值机械改成共享档位。先确认偏移来自字体度量、line-height、控件 padding、图标几何还是缩放取整，再在 W3.2 以后修改正确 Owner。
+
+Review 脚本自身的 CI 路由按组执行：Typography Decision Review 只触发 Readability，不再因为单独修改 Review 脚本而机械跑六组全量回归。
+
+
+### W3.1 实测结论
+
+W3.1 已在正式 Runtime Consumer 上完成 1920×1080 / 3840×2160 双分辨率度量。
+
+关键结果：
+
+- 11 个跨分辨率样本的逻辑字号、控件高度、文字中心与 Icon/Text 相对位置在 1080p / 4K 下完全一致；Web 固定逻辑画布缩放不是当前文字偏移根因。
+- Settings Tab、Settings Label、Parameter Label / Value、Archive 标题、分辨率与键位字段的文字中心偏差在 0～-0.5px。
+- 16px Panel / Design Workspace 标题的文本中心约为 -0.63px；更值得关注的是其 CJK 实际文字框约 24px，而 CSS line box 仅约 17.28px。Unity TextCore 的 ascender / descender 与 line-height 处理需要优先对照这一类标题。
+- Main Dock / Secondary Action 的 +15.172px 不属于垂直居中错误：这两类控件本来就是 Icon Top / Label Bottom，测得的是标签相对整个 64px Button 的位置。
+- Design Building Card 最终 Computed Style 为 11.5px；`workspace.css` 中较早出现的 14.2px 通用规则被更具体的 `.building-card b` 覆盖。后续 Typography 判断必须以最终 Consumer + Computed Style 为准。
+- 测量场景实际加载了 Noto Sans SC。Noto Serif SC 在这些场景中未被使用，因此 FontFaceSet 未进入 loaded 状态；这不能单独解释为字体资源缺失。
+
+因此 W3.2 优先处理 **Heading Baseline / Line Box Parity**，不先批量统一小字号，也不修改固定 Canvas 缩放。

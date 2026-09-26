@@ -22,6 +22,7 @@ for(const file of files){
   const result=classifyFile(file);
   if(result.reviewScript) reviewScripts++;
   if(result.kind==='module'){ modules.add(result.module); runtimeFiles++; }
+  else if(result.kind==='review'){ modules.add(result.module); }
   else if(result.kind==='unclassified'){ unclassified.push(file); runtimeFiles++; }
   else if(result.kind==='infra') infraTouched=true;
   else if(result.kind==='toolchain') toolchainTouched=true;
@@ -43,7 +44,7 @@ const definition=moduleById(module);
 if(!definition) errors.push('No review mapping for module: '+module);
 
 console.log('PR scope module:',module);
-console.log('Changed files:',files.length,'Runtime files:',runtimeFiles,'Review scripts:',reviewScripts);
+console.log('Changed files:',files.length,'Runtime files:',runtimeFiles,'Review scripts:',reviewScripts,'Infra touched:',infraTouched);
 if(definition) console.log('Review groups:',definition.reviews.join(',')||'(none)');
 
 if(errors.length){

@@ -5,7 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 const baseUrl = process.env.REVIEW_BASE_URL || 'http://127.0.0.1:4173';
 const outDir = 'review-screenshots';
 await mkdir(outDir, { recursive: true });
-const report = { referenceResolution: [1920, 1080], checks: [], runtimeErrors: [], screenshots: [] };
+const report = { referenceResolution: [1920, 1080], checks: [], runtimeErrors: [], screenshots: [], typographyMetrics: { samples: {}, scaleComparisons: [], fontFaces: [] } };
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
 page.on('pageerror', error => report.runtimeErrors.push(error.message));
@@ -47,6 +47,129 @@ async function assertNoTextOverflow(selector, label) {
   const failures = rows.filter(row => row.scrollWidth > row.clientWidth + 1);
   assert.equal(failures.length, 0, `${label}: ${JSON.stringify(failures)}`);
   report.checks.push({ label, checked: rows.length, overflowCount: failures.length });
+}
+
+async function measureTypographySample(selector, label, index = 0) {
+  const locator = page.locator(selector).nth(index);
+  await locator.waitFor({ state: 'visible', timeout: 5000 });
+  const sample = await locator.evaluate(element => {
+    const canvas = element.closest('.game-canvas');
+    const canvasRect = canvas?.getBoundingClientRect();
+    const scale = canvas && canvasRect ? canvasRect.width / canvas.clientWidth : 1;
+    const elementRect = element.getBoundingClientRect();
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) {
+      const value = walker.currentNode.textContent?.trim();
+      if (value) textNodes.push(walker.currentNode);
+    }
+    if (!textNodes.length) throw new Error('No visible text nodes for typography sample: ' + element.className);
+    let textRect = null;
+    for (const node of textNodes) {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      for (const rect of range.getClientRects()) {
+        if (!rect.width || !rect.height) continue;
+        textRect = textRect
+          ? {
+              left: Math.min(textRect.left, rect.left),
+              top: Math.min(textRect.top, rect.top),
+              right: Math.max(textRect.right, rect.right),
+              bottom: Math.max(textRect.bottom, rect.bottom),
+            }
+          : { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
+      }
+    }
+    if (!textRect) throw new Error('No measurable text rect for typography sample: ' + element.className);
+    const textElement = textNodes[0].parentElement ?? element;
+    const style = getComputedStyle(textElement);
+    const icon = element.querySelector('.ui-icon');
+    const iconRect = icon?.getBoundingClientRect() ?? null;
+    const text = textNodes.map(node => node.textContent?.trim() ?? '').filter(Boolean).join(' ');
+    const context = document.createElement('canvas').getContext('2d');
+    if (!context) throw new Error('Canvas 2D context unavailable');
+    context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    const measured = context.measureText(text);
+    const textCenterY = (textRect.top + textRect.bottom) / 2;
+    const elementCenterY = elementRect.top + elementRect.height / 2;
+    const normalized = value => Number((value / scale).toFixed(3));
+    const lineHeight = style.lineHeight === 'normal' ? null : parseFloat(style.lineHeight);
+    return {
+      text,
+      kind: {
+        han: /[\u3400-\u9fff]/.test(text),
+        latin: /[A-Za-z]/.test(text),
+        digit: /\d/.test(text),
+      },
+      fontFamily: style.fontFamily,
+      fontSize: parseFloat(style.fontSize),
+      fontWeight: style.fontWeight,
+      lineHeight,
+      letterSpacing: style.letterSpacing === 'normal' ? 0 : parseFloat(style.letterSpacing),
+      canvasScale: Number(scale.toFixed(4)),
+      elementHeight: normalized(elementRect.height),
+      textHeight: normalized(textRect.bottom - textRect.top),
+      verticalOffset: normalized(textCenterY - elementCenterY),
+      iconTextOffset: iconRect ? normalized((iconRect.top + iconRect.height / 2) - textCenterY) : null,
+      actualAscent: Number(measured.actualBoundingBoxAscent.toFixed(3)),
+      actualDescent: Number(measured.actualBoundingBoxDescent.toFixed(3)),
+      fontBoundingAscent: Number((measured.fontBoundingBoxAscent ?? 0).toFixed(3)),
+      fontBoundingDescent: Number((measured.fontBoundingBoxDescent ?? 0).toFixed(3)),
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+      fontSetStatus: document.fonts.status,
+      notoSansLoaded: [...document.fonts].some(face => face.family.replace(/["']/g, '') === 'Noto Sans SC' && face.status === 'loaded'),
+      notoSerifLoaded: [...document.fonts].some(face => face.family.replace(/["']/g, '') === 'Noto Serif SC' && face.status === 'loaded'),
+    };
+  });
+  report.checks.push({ label: `Typography metrics / ${label}`, ...sample });
+  return sample;
+}
+
+async function collectTypographyMetrics(width, height, extended = false) {
+  await page.setViewportSize({ width, height });
+  const key = `${width}x${height}`;
+  const samples = {};
+
+  await open('gameplay', '.gameplay-top-navigation');
+  samples.mainDockCategory = await measureTypographySample('.main-dock__category-button', `${key}/Main Dock Category`);
+  samples.topHudClock = await measureTypographySample('.gameplay-top-status__clock', `${key}/Top HUD Clock Mixed`);
+  samples.topHudResourceValue = await measureTypographySample('.gameplay-top-resource-shortcut', `${key}/Top HUD Resource Value`);
+
+  await open('terrain-edit', '.terrain-edit-prototype');
+  samples.panelTitle = await measureTypographySample('.left-context-panel__title', `${key}/Panel Title`);
+  samples.secondaryAction = await measureTypographySample('.secondary-action-bar .placement-action-bar__button--labeled', `${key}/Secondary Action`);
+  samples.parameterLabel = await measureTypographySample('.runtime-parameter-row>span', `${key}/Parameter Label`);
+  samples.parameterValue = await measureTypographySample('.runtime-parameter-row .ui-value-button', `${key}/Parameter Value`);
+
+  await open('settings', '.settings-space');
+  samples.settingsTab = await measureTypographySample('.settings-space__tabs button', `${key}/Settings Tab`);
+  samples.settingsLabel = await measureTypographySample('.settings-row__label', `${key}/Settings Label`);
+  samples.resolutionMixed = await measureTypographySample('[data-setting-id="resolution"] .ui-select__trigger', `${key}/Resolution Mixed`);
+  await page.getByRole('button', { name: '操作', exact: true }).click();
+  await settle();
+  samples.bindingLatin = await measureTypographySample('.ui-binding-field.settings-binding-control', `${key}/Binding Latin`);
+
+  if (extended) {
+    await open('workspace-building', '.workspace--design');
+    samples.designWorkspaceTitle = await measureTypographySample('.workspace-title', `${key}/Design Workspace Title`);
+    samples.designCardTitle = await measureTypographySample('.workspace-item-card__title', `${key}/Design Card Fractional Title`);
+
+    await open('workspace-blueprint-all', '.workspace--blueprint');
+    samples.blueprintWorkspaceTitle = await measureTypographySample('.workspace-title', `${key}/Blueprint Workspace Title`);
+
+    await open('load', '.archive-space--load');
+    samples.archiveGroup = await measureTypographySample('.archive-group-card__title', `${key}/Archive Group`);
+    samples.archiveSave = await measureTypographySample('.archive-save-card__title-row', `${key}/Archive Save`);
+    samples.archiveDateMixed = await measureTypographySample('.archive-save-card__time-row>span', `${key}/Archive Date Mixed`);
+  }
+
+  report.typographyMetrics.samples[key] = samples;
+  return samples;
+}
+
+function assertTypographyFontSize(sample, expected, label) {
+  assert(Math.abs(sample.fontSize - expected) < .05, `${label}: expected ${expected}px, got ${sample.fontSize}px`);
 }
 
 try {
@@ -437,6 +560,53 @@ try {
   await settle();
   await shot('readability-workspace-night');
 
+  // W3.1 Typography Metrics Baseline：只测量现有真实 Consumer，不在本批修改正式 UI。
+  const metrics1080 = await collectTypographyMetrics(1920, 1080, true);
+  assertTypographyFontSize(metrics1080.mainDockCategory, 11, 'Main Dock Category');
+  assertTypographyFontSize(metrics1080.secondaryAction, 11, 'Secondary Action');
+  assertTypographyFontSize(metrics1080.settingsTab, 12, 'Settings Tab');
+  assertTypographyFontSize(metrics1080.settingsLabel, 12, 'Settings Label');
+  assertTypographyFontSize(metrics1080.archiveGroup, 13, 'Archive Group');
+  assertTypographyFontSize(metrics1080.archiveSave, 14, 'Archive Save');
+  assertTypographyFontSize(metrics1080.panelTitle, 16, 'Left Context Panel Title');
+  assertTypographyFontSize(metrics1080.designWorkspaceTitle, 16, 'Design Workspace Title');
+  assertTypographyFontSize(metrics1080.blueprintWorkspaceTitle, 18, 'Blueprint Workspace Title');
+  assert(Math.abs(metrics1080.designCardTitle.fontSize - 11.5) < .05, 'Design Building Card 最终级联应记录为 workspace.css .building-card b 的 11.5px 覆盖，而不是 generic title 的 14.2px');
+  assert(metrics1080.resolutionMixed.kind.digit, 'Resolution sample 必须覆盖数字分辨率');
+  assert(metrics1080.archiveSave.kind.han && metrics1080.archiveSave.kind.digit, 'Archive Save sample 必须覆盖中文 + 数字混排');
+  assert(metrics1080.bindingLatin.kind.latin, 'Binding sample 必须覆盖 Latin / shortcut 字形');
+  assert(metrics1080.parameterValue.kind.digit && metrics1080.parameterValue.kind.latin, 'Parameter value 必须覆盖数字 + 单位混排');
+  report.typographyMetrics.fontFaces = [
+    { family: 'Noto Sans SC', loaded: metrics1080.settingsLabel.notoSansLoaded },
+    { family: 'Noto Serif SC', loaded: metrics1080.settingsLabel.notoSerifLoaded },
+  ];
+
+  const metrics4k = await collectTypographyMetrics(3840, 2160, false);
+  for (const sampleKey of ['mainDockCategory','topHudClock','topHudResourceValue','panelTitle','secondaryAction','parameterLabel','parameterValue','settingsTab','settingsLabel','resolutionMixed','bindingLatin']) {
+    const a = metrics1080[sampleKey];
+    const b = metrics4k[sampleKey];
+    const comparison = {
+      sample: sampleKey,
+      fontSize1080: a.fontSize,
+      fontSize4k: b.fontSize,
+      lineHeight1080: a.lineHeight,
+      lineHeight4k: b.lineHeight,
+      verticalOffset1080: a.verticalOffset,
+      verticalOffset4k: b.verticalOffset,
+      iconTextOffset1080: a.iconTextOffset,
+      iconTextOffset4k: b.iconTextOffset,
+      elementHeight1080: a.elementHeight,
+      elementHeight4k: b.elementHeight,
+    };
+    assert(Math.abs(a.fontSize - b.fontSize) < .05, sampleKey + ': 4K 不得生成第二套字号');
+    assert(Math.abs(a.elementHeight - b.elementHeight) < .2, sampleKey + ': 4K 归一化控件高度不得漂移');
+    assert(Math.abs(a.verticalOffset - b.verticalOffset) < .2, sampleKey + ': 4K 归一化文字中心不得漂移');
+    if (a.iconTextOffset !== null && b.iconTextOffset !== null) {
+      assert(Math.abs(a.iconTextOffset - b.iconTextOffset) < .2, sampleKey + ': 4K Icon/Text 归一化对齐不得漂移');
+    }
+    report.typographyMetrics.scaleComparisons.push(comparison);
+  }
+
   await open('camera', '.gameplay-context-panel--camera');
   await page.setViewportSize({ width: 3840, height: 2160 });
   await settle();
@@ -445,7 +615,7 @@ try {
   report.checks.push({ label: '4K 逻辑画布缩放', canvas });
   await shot('readability-camera-4k');
   assert.equal(report.runtimeErrors.length, 0, `Runtime errors: ${report.runtimeErrors.join('; ')}`);
-  console.log('Readability / controls / day-night / 4K checks passed.');
+  console.log('Readability / controls / typography metrics / day-night / 4K checks passed.');
 } catch (error) {
   report.failure = String(error.stack || error);
   await page.screenshot({ path: `${outDir}/readability-failure.png` }).catch(() => {});
