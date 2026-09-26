@@ -17,7 +17,7 @@
 8. `Documentation/Unity UI Toolkit迁移准备清单.md`
 9. `Documentation/UI图标资产管线.md`、`Documentation/UI Typography与Icon尺寸规范.md`
 10. `Documentation/工具辨识与局部布局.md`、`Documentation/世界对象选中系统.md`
-11. `Documentation/蓝图Workspace设计规范.md` 和当前任务对应组件规范与代码。
+11. `Documentation/蓝图Workspace设计规范.md`、`Documentation/创意工坊发布与管理设计规范.md` 和当前任务对应组件规范与代码。
 
 目标运行时为 Unity 6.6 + URP + UI Toolkit，但本仓库只治理 Web 视觉原型、设计权威和迁移依据，不在这里维护正式 Unity USS 镜像。Unity 制作 AI 负责后续 UXML / USS / Player 实现。引擎能力以 6.6 专项规范及官方对应版本为准；不使用历史“不能模糊 UI”限制新设计，也不把原生能力写成已经完成 Player 实测。
 
@@ -48,6 +48,7 @@
 - Catalog 共享外壳，不强迫 Card 相同比例。Design 是 4×2、64×64 Preview 的紧凑 Action 条目；Blueprint 是 4×1、4:3 的 Media Variant。Design / Blueprint Action Card 不保留点击后的假 Selected。
 - MaterialPreset / BuildingScheme / Blueprint 的 System / Workshop / User 均保留常驻 `···`，菜单按来源和能力裁剪；收藏可用于只读条目，编辑/删除仅用于实际支持的用户资源。BuildingScheme 不虚构编辑管理能力。Media 来源左上、菜单右上，Compact 来源跟随内容行、菜单最右居中；已收藏名称后加低权重熟铜星。左 Rail 的“收藏”统一保留原有按钮外观，但交互按 Toggle 语义处理：重复点击可开启/关闭 favoriteOnly，并与分类/规模/风格及来源筛选正交组合。
 - Blueprint 左 Rail 保留规模全部/小型/中型/大型，收藏是独立快捷入口；顶部按全部/系统内置/创意工坊/我的蓝图筛选，右侧新建蓝图。创建经过 Photography → 4:3 Preview Editor → 我的蓝图。摄影复用 LeftContextPanel / ToolActionBar / GameplayOperationHints，只验证 Frame 与安全距离，不模拟拖动或滚轮世界运动；Preview 不拥有蓝图对象内容。真实 Blueprint Placement 未接入，不越界制作。
+- Blueprint Workspace 右上 Actions 区下一阶段在“新建蓝图”左侧增加“创意工坊”入口；该入口进入独立 Fullscreen Global Space，不把发布管理塞进 Workspace。Workshop Content 可以包含多个“我的蓝图”；浏览别人内容仍由 Blueprint 来源筛选负责。发布管理按 Draft / Published Snapshot / Provider 分层，Web 不冒充真实 Steamworks。
 - Catalog Rich Hover 固定在当前 Card 上方并水平居中，Feature 不声明私有定位模式，不新增常驻详情栏。`workspace-edge` 仅保留框架级特殊能力，未来确有目录避让需求才显式启用。
 - Rail Pager 当前页为 3×14 Paper White 竖线、其他页 3×3 灰点；Content 当前页为 14×3 Paper White 横线、其他页灰点；单页保留方向正确的白线。单页与多页 Content Pager 必须占用同一高度的 Pager Lane，条目从满页变为稀疏/单项时不得带动 Filter、Content Stage 或 Card 上下位移。Pager 不使用熟铜，分类 Selected 使用熟铜，位置保持可辨间隔。
 - Settings 只按任务调整内部表单，不推翻全屏空间、输入流程和公共样式。Dialog 与 Blueprint Editor 共用近黑高不透明 Backdrop / 烟墨 Modal Surface；Feature 不私有定义 Tint / Edge / Shadow / Blur。Pause 是独立 Screen Space，不机械套小型 Dialog 几何。
