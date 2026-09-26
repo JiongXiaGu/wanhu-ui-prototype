@@ -133,8 +133,8 @@ async function collectTypographyMetrics(width, height, extended = false) {
 
   await open('gameplay', '.gameplay-top-navigation');
   samples.mainDockCategory = await measureTypographySample('.main-dock__category-button', `${key}/Main Dock Category`);
-  samples.topHudResourceLabel = await measureTypographySample('.gameplay-top-resource-shortcut small', `${key}/Top HUD Resource Label`);
-  samples.topHudResourceValue = await measureTypographySample('.gameplay-top-resource-shortcut b', `${key}/Top HUD Resource Value`);
+  samples.topHudClock = await measureTypographySample('.gameplay-top-status__clock', `${key}/Top HUD Clock Mixed`);
+  samples.topHudResourceValue = await measureTypographySample('.gameplay-top-resource-shortcut', `${key}/Top HUD Resource Value`);
 
   await open('terrain-edit', '.terrain-edit-prototype');
   samples.panelTitle = await measureTypographySample('.left-context-panel__title', `${key}/Panel Title`);
@@ -581,7 +581,7 @@ try {
   ];
 
   const metrics4k = await collectTypographyMetrics(3840, 2160, false);
-  for (const sampleKey of ['mainDockCategory','topHudResourceLabel','topHudResourceValue','panelTitle','secondaryAction','parameterLabel','parameterValue','settingsTab','settingsLabel','resolutionMixed','bindingLatin']) {
+  for (const sampleKey of ['mainDockCategory','topHudClock','topHudResourceValue','panelTitle','secondaryAction','parameterLabel','parameterValue','settingsTab','settingsLabel','resolutionMixed','bindingLatin']) {
     const a = metrics1080[sampleKey];
     const b = metrics4k[sampleKey];
     const comparison = {
