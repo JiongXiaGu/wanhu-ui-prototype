@@ -29,16 +29,16 @@ button:focus-visible{outline:1px solid var(--wanhu-control-focus,#d1b47a);outlin
 
 /* Main menu */
 .main-menu-screen{background-size:cover;background-position:center}
-.main-menu-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,11,9,.985) 0%,rgba(8,12,10,.96) 17%,rgba(9,13,11,.84) 31%,rgba(9,13,11,.47) 44%,rgba(9,13,11,.13) 61%,rgba(8,12,10,.2) 100%),linear-gradient(180deg,rgba(9,12,10,.18),rgba(9,12,10,.04) 55%,rgba(9,12,10,.58))}
+.main-menu-shade{position:absolute;inset:0;background:rgba(8,12,10,.06)}
 .brand-block{position:absolute;left:126px;top:102px;z-index:2}
 .kicker{font-size:12px;letter-spacing:.38em;color:var(--wanhu-color-brass,#a9844b);margin-bottom:18px}
 .brand-block h1{font-family:'Noto Serif SC',serif;font-size:96px;font-weight:500;letter-spacing:.1em;margin:0;text-shadow:0 12px 34px rgba(0,0,0,.34)}
 .brand-rule{width:68px;height:1px;background:var(--wanhu-color-brass,#a9844b);margin:24px 0 16px}
 .brand-block p{margin:0;color:#c2beb3;font-size:14px;letter-spacing:.16em}
-.main-menu-list{position:absolute;left:126px;bottom:136px;width:500px;z-index:3;border-top:1px solid rgba(239,233,221,.13);background:linear-gradient(90deg,rgba(18,25,21,.32),rgba(18,25,21,0))}
+.main-menu-list{position:absolute;left:126px;bottom:136px;width:500px;z-index:3;border-top:1px solid rgba(239,233,221,.13);background:transparent}
 .menu-row{width:100%;height:64px;padding:0 14px 0 0;border:0;border-bottom:1px solid rgba(239,233,221,.105);border-radius:0;display:grid;grid-template-columns:42px 34px 1fr 26px;align-items:center;text-align:left;background:transparent;color:#c3c1b8;cursor:pointer;transition:padding var(--wanhu-motion-surface,160ms) ease,background var(--wanhu-motion-surface,160ms) ease,color var(--wanhu-motion-surface,160ms) ease}
-.menu-row:hover{padding-left:8px;background:linear-gradient(90deg,rgba(169,132,75,.11),rgba(169,132,75,.025) 72%,transparent);color:var(--wanhu-color-paper-primary,#eee9df)}
-.menu-row.is-primary{height:82px;color:var(--wanhu-color-paper-primary,#eee9df);background:linear-gradient(90deg,rgba(169,132,75,.16),rgba(169,132,75,.035) 72%,transparent);border-left:2px solid var(--wanhu-color-brass,#a9844b)}
+.menu-row:hover{padding-left:8px;background:rgba(239,233,221,.022);color:var(--wanhu-color-paper-primary,#eee9df)}
+.menu-row.is-primary{height:82px;color:var(--wanhu-color-paper-primary,#eee9df);background:rgba(169,132,75,.052);border-left:2px solid var(--wanhu-color-brass,#a9844b)}
 .menu-icon{display:flex;align-items:center;color:#a0a49a}.menu-copy{display:flex;flex-direction:column;gap:5px}.menu-copy b{font-size:16px;font-weight:500;letter-spacing:.04em}.menu-copy small{font-size:10px;color:#969a91;font-weight:400}
 .toast{position:absolute;right:30px;bottom:30px;z-index:6;display:flex;align-items:center;gap:12px;padding:9px 10px 9px 14px;background:rgba(22,28,25,.97);border:1px solid var(--border);font-size:10px}.toast button,.icon-button{border:0;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer}
 
@@ -47,7 +47,7 @@ button:focus-visible{outline:1px solid var(--wanhu-control-focus,#d1b47a);outlin
 
 /* Gameplay base geometry. Current Top Shell lives in dedicated gameplay files. */
 .gameplay-screen{background-size:cover;background-position:center}
-.game-vignette{position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,12,10,.29),transparent 22%,transparent 70%,rgba(9,12,10,.38)),linear-gradient(90deg,rgba(9,12,10,.14),transparent 25%,transparent 80%,rgba(9,12,10,.1));pointer-events:none}
+.game-vignette{position:absolute;inset:0;pointer-events:none}
 /* Pause geometry lives in gameplay/pause-layer.css; material lives in ui/wanhu-surface-system.css. */
 
 

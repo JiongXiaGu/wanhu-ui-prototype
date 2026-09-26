@@ -124,6 +124,31 @@ async function assertParameterFieldFillsRow(rootSelector, label) {
 
 await open('gameplay', '.context-utility-toolbar[data-utility-context="world"]');
 
+// Full-screen Background/Vignette Visual Parity: shared texture replaces CSS Gradient.
+const gameplayVignette = page.locator('.game-vignette');
+const gameplayVignetteStyle = await gameplayVignette.evaluate(node => {
+  const style = getComputedStyle(node);
+  return {
+    backgroundImage: style.backgroundImage,
+    backgroundColor: style.backgroundColor,
+    pointerEvents: style.pointerEvents,
+  };
+});
+if (!gameplayVignetteStyle.backgroundImage.includes('game-vignette.png')) {
+  throw new Error('Gameplay Vignette must use shared game-vignette.png. image=' + gameplayVignetteStyle.backgroundImage);
+}
+if (gameplayVignetteStyle.backgroundImage.includes('gradient')) {
+  throw new Error('Gameplay Vignette must not depend on CSS Gradient. image=' + gameplayVignetteStyle.backgroundImage);
+}
+if (gameplayVignetteStyle.pointerEvents !== 'none') {
+  throw new Error('Gameplay Vignette must remain input-transparent. pointerEvents=' + gameplayVignetteStyle.pointerEvents);
+}
+const gameplayVignetteBox = await gameplayVignette.boundingBox();
+if (!gameplayVignetteBox || Math.abs(gameplayVignetteBox.width - 1920) > 2 || Math.abs(gameplayVignetteBox.height - 1080) > 2) {
+  throw new Error('Gameplay Vignette must still cover the full 1920x1080 canvas. box=' + JSON.stringify(gameplayVignetteBox));
+}
+await page.screenshot({ path: `${outDir}/gameplay-vignette-parity.png` });
+
 // Map View Visual Parity: formal overlays use real Spot/Band elements rather than CSS Gradient/Filter.
 const mapViewButton = page.getByRole('button', { name: '信息视图', exact: true });
 await mapViewButton.click();
