@@ -1088,7 +1088,7 @@ for (const sourceLabel of ['全部', '系统内置', '创意工坊', '我的方�
 const schemeRail = schemeWorkspace.locator('.material-preset-workspace__rail');
 const materialWorkspaceHeaderPng = schemeWorkspace.locator('.workspace-title .ui-icon[data-ui-icon="palette"]');
 const materialWorkspaceClosePng = schemeWorkspace.locator('.workspace-header .icon-button .ui-icon[data-ui-icon="x"]');
-const materialFavoriteRail = schemeRail.locator('.workspace-primary-rail__favorite');
+const materialFavoriteRail = schemeRail.locator('.workspace-primary-rail__favorite, .workspace-primary-rail__favorite-toggle');
 const materialRailPngIcons = schemeRail.locator('.workspace-primary-rail__page .ui-icon');
 if ((await materialWorkspaceHeaderPng.count()) !== 1
   || (await materialWorkspaceClosePng.count()) !== 1
@@ -1690,8 +1690,8 @@ if (!(await buildingSchemeWorkspace.evaluate((node) => node.classList.contains('
   throw new Error('Scheme mode Workspace must reuse Catalog and coexist with Building Appearance.');
 }
 const buildingStyleRail = buildingSchemeWorkspace.locator('.building-scheme-workspace__rail');
-if ((await buildingStyleRail.locator('.workspace-primary-rail__favorite').count()) !== 1) {
-  throw new Error('Building Scheme rail must expose the shared favorite shortcut.');
+if ((await buildingStyleRail.locator('.workspace-primary-rail__favorite, .workspace-primary-rail__favorite-toggle').count()) !== 1) {
+  throw new Error('Building Scheme rail must expose exactly one shared favorite filter control.');
 }
 for (const styleLabel of ['全部', '素雅', '沉稳', '明快', '华丽']) {
   if ((await buildingStyleRail.getByRole('button', { name: styleLabel, exact: true }).count()) !== 1) {
