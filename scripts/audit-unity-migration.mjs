@@ -2,22 +2,50 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const SRC_ROOT='src';
-const APPROVED_BACKDROP_FILES=new Set([
-  'src/styles.css',
-  'src/workspace.css',
-  'src/workspace/workspace-world-first-glass.css',
-  'src/gameplay/gameplay-corner-hud.css',
-  'src/gameplay/gameplay-top-shell.css',
-  'src/gameplay/city-management.css',
-  'src/gameplay/management-panel-skin.css',
-  'src/gameplay/weather-mist-glass.css',
-  'src/new-game/new-game-space.css',
-  'src/loading/loading-space.css',
-  'src/ui/asset-inspector/asset-inspector.css',
-  'src/ui/ui-control-system.css',
-  'src/ui/ui-visual-system.css',
-  'src/ui/wanhu-surface-system.css',
+
+const PARITY_METRIC_KEYS=[
+  'linear','radial','shadow','filter','brightness','saturate',
+  'composedColor','variableMath','backdrop','backdropTransition',
+];
+const ZERO_PARITY=Object.fromEntries(PARITY_METRIC_KEYS.map(key=>[key,0]));
+const parityBaseline=(owner,values)=>({owner,...ZERO_PARITY,...values});
+
+// W2.12 freeze point. Values are exact current debt, not budgets.
+// Any Runtime reduction must tighten the matching entry in the same PR;
+// any increase or new file with tracked debt fails audit:unity.
+const UNITY_PARITY_BASELINE=new Map([
+  ['src/tools/color-tool/modes/scheme/scheme-mode.css',parityBaseline('world-adapter',{shadow:3})],
+  ['src/tools/color-tool/modes/surface/material-preset-workspace.css',parityBaseline('content-enhancement',{shadow:3})],
+  ['src/fullscreen-actions.css',parityBaseline('ui-enhancement',{shadow:2,variableMath:2})],
+  ['src/tools/blueprint-photography/blueprint-photography.css',parityBaseline('world-adapter',{shadow:2,variableMath:1})],
+  ['src/selection/building-selection.css',parityBaseline('world-adapter',{shadow:2})],
+  ['src/tools/color-tool/modes/lighting/lighting-mode.css',parityBaseline('world-adapter',{shadow:2})],
+  ['src/tools/terrain-edit/terrain-edit.css',parityBaseline('world-adapter',{shadow:2})],
+  ['src/tools/tree-placement/tree-placement.css',parityBaseline('world-adapter',{shadow:2,filter:2})],
+  ['src/workspace/workspace-world-first-glass.css',parityBaseline('surface-enhancement',{shadow:2})],
+  ['src/gameplay/gameplay-hud-layout.css',parityBaseline('layout-adapter',{variableMath:5})],
+  ['src/tools/city-wall-gate/city-wall-gate.css',parityBaseline('layout-adapter',{variableMath:3})],
+  ['src/tools/color-tool/modes/scheme/building-scheme-workspace.css',parityBaseline('content-enhancement',{shadow:1})],
+  ['src/ui/ui-control-system.css',parityBaseline('layout-adapter',{variableMath:3})],
+  ['src/gameplay/gameplay-context-panel.css',parityBaseline('layout-adapter',{variableMath:2})],
+  ['src/ui/ui-motion-system.css',parityBaseline('layout-adapter',{variableMath:2})],
+  ['src/gameplay/gameplay-corner-hud.css',parityBaseline('surface-enhancement',{variableMath:1,backdrop:2})],
+  ['src/gameplay/gameplay-top-shell.css',parityBaseline('layout-adapter',{variableMath:1})],
+  ['src/settings/settings-panel.css',parityBaseline('layout-adapter',{variableMath:1})],
+  ['src/tools/city-wall-access-stair/city-wall-access-stair.css',parityBaseline('layout-adapter',{variableMath:1})],
+  ['src/workspace.css',parityBaseline('surface-enhancement',{filter:1,backdrop:1})],
+  ['src/gameplay/city-management.css',parityBaseline('surface-enhancement',{backdrop:1})],
+  ['src/gameplay/management-panel-skin.css',parityBaseline('surface-enhancement',{backdrop:2})],
+  ['src/new-game/new-game-space.css',parityBaseline('surface-enhancement',{backdrop:1})],
+  ['src/loading/loading-space.css',parityBaseline('surface-enhancement',{backdrop:2})],
+  ['src/ui/wanhu-surface-system.css',parityBaseline('shared-surface',{backdrop:36})],
 ]);
+
+const APPROVED_BACKDROP_FILES=new Set(
+  [...UNITY_PARITY_BASELINE.entries()]
+    .filter(([,baseline])=>baseline.backdrop>0)
+    .map(([file])=>file)
+);
 
 const SHARED_CONTROL_INTERNAL_OWNER_FILES=new Set([
   'src/ui/ui-control-system.css',
@@ -66,6 +94,12 @@ function countNonNoneBoxShadows(text){
     .length;
 }
 
+function countNonNoneImageFilters(text){
+  return [...text.matchAll(/(^|[;{]\s*)filter\s*:\s*([^;}\n]+)/gmi)]
+    .filter(match=>match[2].trim().toLowerCase()!=='none')
+    .length;
+}
+
 function lineHits(text,re){
   return text.split('\n')
     .map((line,index)=>({line:index+1,text:line.trim()}))
@@ -83,6 +117,7 @@ const metrics={
   pseudoElements:0,
   backdropFilters:0,
   imageFilters:0,
+  nonNoneImageFilters:0,
   linearGradients:0,
   radialGradients:0,
   boxShadows:0,
@@ -234,23 +269,24 @@ for(const file of files){
     metrics.pseudoElements+=count(/::before|::after/g,text);
     metrics.imageFilters+=count(/(^|[;{]\s*)filter\s*:/gm,text);
 
-    // Unity 6000.6.2f1 Visual Parity inventory.
-    // Formal Web visuals should converge toward effects that Unity 6.6 can reproduce.
-    // This pass reports per-file ownership first; a later pass freezes the classified baseline into ratchets.
+    // Unity 6000.6.2f1 Visual Parity inventory + W2.12 per-file Ratchet.
     const parity={
       linear:count(/linear-gradient\s*\(/gi,text),
       radial:count(/radial-gradient\s*\(/gi,text),
       shadow:countNonNoneBoxShadows(text),
+      filter:countNonNoneImageFilters(text),
       brightness:count(/\bbrightness\s*\(/gi,text),
       saturate:count(/\bsaturate\s*\(/gi,text),
       composedColor:count(/\brgba?\s*\(\s*var\s*\(/gi,text),
       variableMath:count(/\b(?:calc|min|max|clamp)\s*\([^;{}\n]*var\s*\(/gi,text),
+      backdrop:backdropCount,
       backdropTransition:count(/\btransition(?:-property)?\s*:[^;{}\n]*backdrop-filter\b/gi,text),
     };
     if(Object.values(parity).some(Boolean))parityByFile.set(file,parity);
     metrics.linearGradients+=parity.linear;
     metrics.radialGradients+=parity.radial;
     metrics.boxShadows+=parity.shadow;
+    metrics.nonNoneImageFilters+=parity.filter;
     metrics.brightnessFilters+=parity.brightness;
     metrics.saturateFilters+=parity.saturate;
     metrics.composedColorVariables+=parity.composedColor;
@@ -278,26 +314,45 @@ for(const file of files){
 if(lucideRuntimeFiles.size){
   errors.push(`Lucide Runtime imports are frozen out: ${lucideRuntimeFiles.size} src files still import lucide-react. Runtime must consume committed PNG assets through the local icon adapter / UiIconId contract.`);
 }
+
+// Exact ratchet: decreases must tighten the baseline immediately, so old headroom cannot return later.
+for(const [file,baseline] of UNITY_PARITY_BASELINE){
+  const current=parityByFile.get(file) ?? ZERO_PARITY;
+  for(const key of PARITY_METRIC_KEYS){
+    if(current[key]>baseline[key]){
+      errors.push(`${file}: Unity 6.6 parity ratchet regression for ${key}: current=${current[key]} baseline=${baseline[key]} owner=${baseline.owner}.`);
+    }else if(current[key]<baseline[key]){
+      errors.push(`${file}: Unity 6.6 parity baseline is stale for ${key}: current=${current[key]} baseline=${baseline[key]}. Tighten UNITY_PARITY_BASELINE in the same PR.`);
+    }
+  }
+}
+for(const [file,current] of parityByFile){
+  if(UNITY_PARITY_BASELINE.has(file))continue;
+  const active=PARITY_METRIC_KEYS.filter(key=>current[key]>0).map(key=>`${key}=${current[key]}`);
+  if(active.length){
+    errors.push(`${file}: new unclassified Unity 6.6 parity debt is forbidden: ${active.join(', ')}. Remove it or explicitly classify the existing need before merging.`);
+  }
+}
 if(metrics.cssGrid){
   warnings.push(`CSS Grid migration debt: ${metrics.cssGrid} declarations across ${gridFiles.size} files. Keep every layout expressible as nested Flex/UXML rows and columns.`);
 }
 if(metrics.pseudoElements){
   warnings.push(`Pseudo-element migration debt: ${metrics.pseudoElements} selectors. Structural markers should become real elements before Unity migration.`);
 }
-if(metrics.imageFilters){
-  warnings.push(`CSS filter migration debt: ${metrics.imageFilters} declarations. Plan Tint/Overlay/Material equivalents.`);
+if(metrics.nonNoneImageFilters){
+  warnings.push(`CSS filter migration debt is frozen by per-file Ratchet: non-none=${metrics.nonNoneImageFilters}, total declarations=${metrics.imageFilters}.`);
 }
 if(metrics.linearGradients || metrics.radialGradients){
-  warnings.push(`Unity 6000.6.2f1 Visual Parity inventory: linear=${metrics.linearGradients}, radial=${metrics.radialGradients}. Formal Web visuals must converge to Unity-equivalent implementations; current pass is inventory before per-file ratchets are frozen.`);
+  warnings.push(`Unity 6000.6.2f1 Visual Parity ratchet violation candidate: linear=${metrics.linearGradients}, radial=${metrics.radialGradients}.`);
 }
 if(metrics.boxShadows){
-  warnings.push(`CSS box-shadow migration debt: ${metrics.boxShadows} declarations. Unity hierarchy must remain readable with solid tint/alpha/edge even when Web shadow is removed.`);
+  warnings.push(`CSS box-shadow migration debt is frozen by per-file Ratchet: ${metrics.boxShadows} declarations. Unity hierarchy must remain readable without them.`);
 }
 if(metrics.brightnessFilters || metrics.saturateFilters){
   warnings.push(`Custom filter dependency: brightness=${metrics.brightnessFilters}, saturate=${metrics.saturateFilters}. Keep these centralized and non-essential to control state readability.`);
 }
 if(metrics.composedColorVariables || metrics.variableMath){
-  warnings.push(`USS variable composition debt: rgb/rgba(var())=${metrics.composedColorVariables}, math-with-var=${metrics.variableMath}. Prefer final semantic token values for Unity migration.`);
+  warnings.push(`USS variable composition debt is frozen by per-file Ratchet: rgb/rgba(var())=${metrics.composedColorVariables}, math-with-var=${metrics.variableMath}.`);
 }
 if(metrics.backdropTransitions){
   warnings.push(`Backdrop transition debt: ${metrics.backdropTransitions} declarations reference backdrop-filter in transitions. Blur radius must not be a required interaction animation.`);
@@ -306,7 +361,7 @@ if(metrics.browserApis){
   warnings.push(`Browser API adapters: ${metrics.browserApis} references. Keep them at Web adapter boundaries; do not let them own game state.`);
 }
 if(backdropFiles.size){
-  warnings.push(`Backdrop blur debt is contained to ${backdropFiles.size} approved files; do not add new owners.`);
+  warnings.push(`Backdrop blur debt is frozen to ${backdropFiles.size} approved owner files and exact per-file declaration counts.`);
 }
 
 console.log('Unity UI Toolkit migration audit');
@@ -318,6 +373,7 @@ console.log(`CSS Grid declarations: ${metrics.cssGrid}`);
 console.log(`Pseudo-element selectors: ${metrics.pseudoElements}`);
 console.log(`Backdrop filter declarations: ${metrics.backdropFilters}`);
 console.log(`CSS filter declarations: ${metrics.imageFilters}`);
+console.log(`Non-none CSS filters: ${metrics.nonNoneImageFilters}`);
 console.log(`Linear gradients: ${metrics.linearGradients}`);
 console.log(`Radial gradients: ${metrics.radialGradients}`);
 console.log(`Box shadows: ${metrics.boxShadows}`);
@@ -327,6 +383,7 @@ console.log(`rgb/rgba(var()) compositions: ${metrics.composedColorVariables}`);
 console.log(`CSS math with var(): ${metrics.variableMath}`);
 console.log(`Backdrop filter transitions: ${metrics.backdropTransitions}`);
 console.log(`Browser API references: ${metrics.browserApis}`);
+console.log(`Unity parity ratchet files: ${UNITY_PARITY_BASELINE.size}`);
 
 if(lucideIcons.size){
   console.log('\nIcon source manifest:');
@@ -338,11 +395,11 @@ if(parityByFile.size){
   const rows=[...parityByFile.entries()].map(([file,value])=>({
     file,
     value,
-    score:value.linear*5+value.radial*5+value.shadow*3+value.brightness*4+value.saturate*4+value.backdropTransition*4+value.composedColor*2+value.variableMath,
+    score:value.linear*5+value.radial*5+value.shadow*3+value.filter*4+value.brightness*4+value.saturate*4+value.backdropTransition*4+value.composedColor*2+value.variableMath+value.backdrop,
   })).sort((a,b)=>b.score-a.score || a.file.localeCompare(b.file));
   for(const row of rows){
     const v=row.value;
-    console.log(`- ${row.file}: linear=${v.linear}, radial=${v.radial}, shadow=${v.shadow}, brightness=${v.brightness}, saturate=${v.saturate}, rgbaVar=${v.composedColor}, mathVar=${v.variableMath}, backdropTransition=${v.backdropTransition}, score=${row.score}`);
+    console.log(`- ${row.file}: owner=${UNITY_PARITY_BASELINE.get(row.file)?.owner ?? 'UNCLASSIFIED'}, linear=${v.linear}, radial=${v.radial}, shadow=${v.shadow}, filter=${v.filter}, brightness=${v.brightness}, saturate=${v.saturate}, rgbaVar=${v.composedColor}, mathVar=${v.variableMath}, backdrop=${v.backdrop}, backdropTransition=${v.backdropTransition}, score=${row.score}`);
   }
 }
 

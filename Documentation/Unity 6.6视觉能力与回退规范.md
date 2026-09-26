@@ -137,15 +137,18 @@ Web CSS 不与 USS 逐字等价。Grid、伪元素、Mask、渐变、复杂 Shad
 
 ## 当前 CI 策略
 
-配色、Surface 与 Control 的旧样式治理已结束，当前进入 Unity 6.6 Visual Parity 收敛；在完成兼容存量分类与 Baseline 冻结前：
+W2 Visual Parity 已完成存量分类，`audit:unity` 已从 Telemetry 升级为 **按文件 + 规则类型的精确 Ratchet**。
 
-- 现有迁移硬 Guard 继续阻塞回归；
-- Gradient / box-shadow / brightness / saturate / USS 变量组合等新兼容项先进入 `audit:unity` **Telemetry / Warning**；
-- 不因为历史存量在本阶段突然让 Build 全红；
-- 等视觉治理收敛后统一盘点存量，冻结 Baseline；
-- 再把对应指标升级为 Ratchet：历史值只允许减少，新文件 / 新用法不得扩散。
+当前规则：
 
-这一步是有意的工作流边界，不表示这些效果已经被批准为正式 Unity 方案。
+- 正式 Runtime 的 `linear-gradient()` / `radial-gradient()`、`brightness()` / `saturate()`、`rgb/rgba(var())` 与 Backdrop Transition 基线为 0，不允许重新出现；
+- 现存非空 `box-shadow`、`filter: drop-shadow(...)`、CSS math + var() 与静态 `backdrop-filter` 按文件记录，属于 Web World Adapter、Surface Enhancement 或 Layout Adapter，不视为正式 Unity USS 方案；
+- 新文件出现任何受跟踪兼容债务直接失败；
+- 既有文件的任一指标增加直接失败；
+- 任一指标减少时，同一 PR 必须同步收紧 `UNITY_PARITY_BASELINE`，避免以后回涨到旧上限；
+- Backdrop Owner 同时受 Owner Allowlist 与精确声明数量双重约束，当前只保留真实仍有声明的 7 个文件。
+
+Ratchet 保护的是“债务不扩散”，不是要求 Web 与 USS 逐字相同。World Preview / Selection 等 Web Adapter 后续可以继续减少，但 Unity 侧应由 Renderer / Gizmo / Overlay 等对应职责实现。
 
 ## 官方参考
 
