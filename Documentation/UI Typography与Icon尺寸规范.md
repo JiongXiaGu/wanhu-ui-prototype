@@ -75,3 +75,23 @@ Gameplay 二级中下菜单是图标主导型控件，使用独立的稳定层�
 - Category 使用 Icon Top / Label Bottom；Design / Blueprint Mode 使用独立上下双行 Rail，每行 Icon Left / Label Right；
 - Category Active 使用顶部状态线；Mode Active 不使用状态线，只依靠熟铜图标 / 文字与弱背景；
 - Main Dock 总高 84px；Category 内部高度 64px；Mode Rail 高 64px，由两个约 68×30px 按钮上下组成；图标和标签不得因 Active 改变尺寸。
+
+
+## W3 Typography / Text Layout Parity
+
+W3 不从“某页文字向上或向下挪 1px”开始。先用真实 Runtime Consumer 建立可重复的文字度量基线，再决定 Shared Typography / Control Geometry 的修改。
+
+W3.1 的度量由 `scripts/capture-typography-decision-review.mjs` 输出到 `readability-report.json > typographyMetrics`，至少记录：
+
+- 实际 `font-family / font-size / font-weight / line-height / letter-spacing`；
+- Range 文本框高度与所在控件高度；
+- 文本中心相对控件中心的逻辑像素偏移；
+- 同一控件内 Icon 中心与 Text 中心偏移；
+- Canvas TextMetrics 的 ascent / descent；
+- 中文、数字、Latin 与真实混排样本；
+- 1920×1080 与 3840×2160 下归一化后的几何差异；
+- Browser FontFaceSet 中 Noto Sans SC / Noto Serif SC 的实际加载状态。
+
+W3.1 只建立基线，不把现有 9.5 / 10 / 10.5 / 11.5 / 14.2px 等历史局部值机械改成共享档位。先确认偏移来自字体度量、line-height、控件 padding、图标几何还是缩放取整，再在 W3.2 以后修改正确 Owner。
+
+Review 脚本自身的 CI 路由按组执行：Typography Decision Review 只触发 Readability，不再因为单独修改 Review 脚本而机械跑六组全量回归。
