@@ -36,6 +36,14 @@
   display:flex;
   flex-direction:column;
 }
+.gameplay-screen .workspace--catalog .workspace-primary-rail__favorite{
+  flex:0 0 27px;
+  height:27px;
+  min-height:27px;
+  padding:0 10px;
+  gap:8px;
+  border-radius:8px;
+}
 .gameplay-screen .workspace--catalog .workspace-primary-rail__favorite-row{
   flex:0 0 32px;
   height:32px;
