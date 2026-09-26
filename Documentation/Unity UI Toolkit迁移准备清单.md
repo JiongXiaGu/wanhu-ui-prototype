@@ -129,7 +129,7 @@ Build 在正式编译前执行 `npm run icons:check`，校验 Manifest、104 对
 
 ## 6. 第一批 Unity Vertical Slice
 
-建议先迁：
+第一条 Unity 验证链仍按以下顺序实现：
 
 1. Gameplay Top Shell；
 2. Main Dock；
@@ -140,37 +140,58 @@ Build 在正式编译前执行 `npm run icons:check`，校验 Manifest、104 对
 7. Motion Controller；
 8. Runtime Tooltip。
 
-这一条链能同时验证：
+这条链用于同时验证 UXML / USS 架构、Input System、Focus、Motion、Tool State、Icon Asset、共享 Surface / Filter 与 1080p / 1440p / 4K 缩放。
 
-- UXML / USS 架构；
-- Input System；
-- Focus；
-- Motion；
-- Tool State；
-- Icon Asset；
-- Shared Blur；
-- 1080p / 1440p / 4K 缩放。
+### Web Prep 状态
 
-Vertical Slice 通过后再迁 Settings / Archive / Management。
+Web 侧的结构准备已完成。除 VS1 外，其余 7 项经过源码 / Review 审查后都已经具备可直接映射的稳定结构，不应为了“迁移感”继续重构 React。
 
-### VS1：Gameplay Top Shell 结构收敛
+| Vertical Slice | Web Prep | Unity 映射 |
+| --- | --- | --- |
+| VS1 Gameplay Top Shell | **Ready，已完成结构收敛** | `TopShell.uxml`：TopStatus + ControlTray；C# 绑定世界状态 / Management / Context / Information View |
+| VS2 Main Dock | **Ready，无需额外 Runtime 重构** | `MainDock.uxml`：ModeSwitch + Divider + CategoryStrip；Mode 只 Rebind Category Definition |
+| VS3 Design Workspace | **Ready，无需额外 Runtime 重构** | 固定 4×2 Slot / Pool；现有 Web 已是显式 2 Row × 4 Slot |
+| VS4 Context Utility | **Ready，无需额外 Runtime 重构** | 稳定 Utility Host + `UtilityDefinition / Row / Group` Rebind |
+| VS5 Building Placement | **Ready，无需额外 Runtime 重构** | Shared LeftContextPanel + SecondaryActionBar + ContextUtility；业务由 Placement Controller 持有 |
+| VS6 Shared Dialog | **Ready，无需额外 Runtime 重构** | 单一 Modal Host；Confirm / Text / Number / Choice / Binding Request + Focus / Esc 生命周期 |
+| VS7 Motion Controller | **Ready，无需额外 Runtime 重构** | `UITransitionController` + entering / steady / exiting / hidden + USS opacity / translate |
+| VS8 Runtime Tooltip | **Ready，无需额外 Runtime 重构** | `HoverOverlayRoot` + HoverController + Definition + Placement / Safe Clamp |
 
-第一批先处理 Gameplay Top Shell 的 Web / UXML 结构差异，不改变正式视觉：
+### VS1：Gameplay Top Shell 已完成
 
-- Top Status 从 CSS Grid 改为 Flex Row：WorldState 固定 190、Resources 弹性填充、TimeControls 固定 190；
-- Control Tray 从 CSS Grid 改为 Flex Row：Scene 固定 84、两个真实 Separator 固定 1px、Management 弹性填充、View 固定 44；
-- 纯居中按钮从 Web Grid / place-items 改成 Flex + align / justify center；
-- React DOM 不增加兼容层，继续使用现有真实 Group / Separator / Active Line；
-- Unity UXML 可直接映射为 `TopStatus > WorldState / Resources / TimeControls` 与 `ControlTray > Scene / Separator / Management / Separator / View`；
-- 本批不处理 Map Panel 内部 2×N 目录 Grid；它是独立 Popup 内容结构，后续按固定 Row / Slot 或 ListView 决定。
+PR #49 已把正式 Top Shell 的结构性 Grid 改为可直接映射 UI Toolkit 的 Flex Row，不改变正式视觉：
 
-验收必须保证 940×56 Top Status、400×38 Control Tray、2 / 5 / 1 按钮分组、两个 1×18 Separator、昼夜 Surface 和 Focus / Active 状态保持不变。
+- Top Status：WorldState 固定 190、Resources 弹性填充、TimeControls 固定 190；
+- Control Tray：Scene 固定 84、两个真实 Separator 固定 1px、Management 弹性填充、View 固定 44；
+- Top Tray 图标固定 18px Flex Basis，避免共享 Icon 默认 16px Basis 在 Flex 主轴上压缩；
+- React DOM 继续使用真实 Group / Separator / Active Line，没有新增迁移兼容层；
+- 940×56 Top Status、400×38 Control Tray、2 / 5 / 1 按钮分组、两个 1×18 Separator、昼夜 Surface、Focus / Active 均保持不变；
+- 全仓 CSS Grid 声明由 VS1 前的 118 降到 112；Top Shell 单文件由 11 降到 5，剩余只属于 Map Panel / Management 局部内容，不属于 Top Shell 主结构。
+
+VS1 PR 与合入 main 后的 Build / HUD / Tools / 全量 UI Review 均通过，并已人工检查 1080p Top Shell 与 Active Control Tray 完整截图。
+
+### Vertical Slice 之后
+
+Web Prototype 不再继续为 VS2–VS8 做结构性重写。下一步应进入真实 Unity 6000.6.2f1 工程实施，并在 Player 验证：
+
+- PanelSettings 1080p / 1440p / 4K 与宽高比；
+- Noto Sans SC / Noto Serif SC Font Asset、Fallback 与基线；
+- Input System + Keyboard / Gamepad Focus；
+- Sprite + Tint Icon Pipeline；
+- Shared Surface / 原生 Filter / URP 回退成本；
+- Motion Presence 与 PickingMode；
+- Tooltip / Dialog Overlay Layer；
+- Tool Controller / Command History / World Renderer 边界。
+
+通过第一条 Unity Vertical Slice 后，再迁 Settings / Archive / Management。
 
 ## 7. 数据量策略
 
 - 固定 4×2 Workspace Asset：固定 Slot / Pool，不需要 ListView；
-- Save / Resident 等长列表：ListView / MultiColumnListView；
-- Management 少量固定 Section：普通 VisualElement；
+- Archive / Save：当前 Web 单个城市组可有 32 条、其它组约 18–30 条，Unity 使用 `ListView` 虚拟化 Save Entry；左侧城市组可使用另一 ListView 或小规模绑定列表；
+- Resident 等大规模列表：ListView / MultiColumnListView；
+- Settings：固定 Section + Row，继续消费共享 Select / NumericSlider / Toggle / Binding Control，不因条目多就改成虚拟化；
+- Management：Overview / Finance 等少量固定 Section 使用普通 VisualElement；Inventory 等真正长列表按数据量决定 ListView，不把整个 Management Shell 虚拟化；
 - 实时 Preview：按可见数量管理 RenderTexture。
 
 ## 8. Unity 6 官方能力基线
