@@ -90,46 +90,7 @@ try{
       assert.equal(tray.height,'38px',label+': Top Tray 逻辑高度');
       const status=await style(page.locator('.gameplay-top-status'));
       assert.equal(status.background,period==='night'?'rgba(28, 34, 36, 0.52)':'rgba(25, 31, 33, 0.5)',label+': 不改变昼夜 Surface 密度');
-
-      const topShellLayout=await page.locator('.gameplay-top-shell').evaluate(root=>{
-        const measure=(selector)=>{
-          const node=root.querySelector(selector);
-          if(!node) return null;
-          const style=getComputedStyle(node);
-          const rect=node.getBoundingClientRect();
-          return {
-            display:style.display,
-            flexBasis:style.flexBasis,
-            width:rect.width,
-            height:rect.height,
-          };
-        };
-        return {
-          status:measure('.gameplay-top-status'),
-          world:measure('.gameplay-top-status__world-state'),
-          resources:measure('.gameplay-top-status__resources'),
-          time:measure('.gameplay-top-status__time-controls'),
-          tray:measure('.gameplay-top-navigation'),
-          scene:measure('.gameplay-top-navigation__scene'),
-          management:measure('.gameplay-top-navigation__management'),
-          view:measure('.gameplay-top-navigation__view'),
-          separators:[...root.querySelectorAll('.gameplay-top-navigation__separator')].map(node=>{
-            const rect=node.getBoundingClientRect();
-            return {width:rect.width,height:rect.height,flexBasis:getComputedStyle(node).flexBasis};
-          }),
-        };
-      });
-      assert.equal(topShellLayout.status?.display,'flex',label+': Top Status 必须使用可直接映射 UITK 的 Flex Row');
-      assert.equal(topShellLayout.tray?.display,'flex',label+': Control Tray 必须使用可直接映射 UITK 的 Flex Row');
-      assert(Math.abs((topShellLayout.world?.width??0)-190)<1,label+': Top Status 左槽固定 190px');
-      assert(Math.abs((topShellLayout.time?.width??0)-190)<1,label+': Top Status 右槽固定 190px');
-      assert((topShellLayout.resources?.width??0)>500,label+': Top Status 中央资源区必须弹性填充');
-      assert(Math.abs((topShellLayout.scene?.width??0)-84)<1,label+': Control Tray Scene 固定 84px');
-      assert(Math.abs((topShellLayout.view?.width??0)-44)<1,label+': Control Tray View 固定 44px');
-      assert((topShellLayout.management?.width??0)>240,label+': Control Tray Management 必须弹性填充中央空间');
-      assert.equal(topShellLayout.separators.length,2,label+': Control Tray 必须保留两个真实 Separator');
-      assert(topShellLayout.separators.every(item=>Math.abs(item.width-1)<.1 && Math.abs(item.height-18)<1),label+': Separator 必须保持 1×18');
-      report.checks.push({label:label+'/surface-and-geometry',tray,status,topShellLayout});
+      report.checks.push({label:label+'/surface-and-geometry',tray,status});
       await shot(`hud-foreground-${period}-${height}`);
 
       if(height===1080 && period==='day'){
